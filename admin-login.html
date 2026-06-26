@@ -31,14 +31,13 @@
 
             <div class="text-right mt-2">
                 <button type="button" onclick="triggerAdminRecovery()" class="text-xs text-red-400 hover:underline font-bold tracking-wide">
-                    Request Secure OTP / Reset Link
+                    Request Secure Verification Email
                 </button>
             </div>
         </form>
     </div>
 
     <script>
-        // ⚠️ APNI REAL CREDENTIALS YAHAN PASTE KAREIN
        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -49,56 +48,49 @@
             const password = document.getElementById('admin-password').value;
             const btn = document.getElementById('admin-btn');
 
-            btn.innerText = "Verifying Clearance..."; 
-            btn.disabled = true;
+            btn.innerText = "Verifying Clearance..."; btn.disabled = true;
 
             try {
-                // Strict validation straight from our master portal_users matrix registry
-                const { data: dbUser, error: dbError } = await supabaseClient
-                    .from('portal_users')
-                    .select('*')
-                    .eq('email', email);
-
-                if (dbError) {
-                    alert("Database Node Error: " + dbError.message);
-                    location.reload(); return;
-                }
-
+                const { data: dbUser } = await supabaseClient.from('portal_users').select('*').eq('email', email);
                 const adminRecord = (dbUser && dbUser.length > 0) ? dbUser[0] : null;
 
                 if (!adminRecord || adminRecord.role !== 'admin') {
-                    alert("Security Exception: Access denied. Individual profile match not found inside administrative clusters.");
+                    alert("Security Exception: Access denied.");
                     location.reload(); return;
                 }
 
-                // Strictly evaluate the freshly updated password directly from table records
                 if (adminRecord.password !== password) {
-                    alert("Authentication Failure: Master password incorrect inside table layers.");
+                    alert("Authentication Failure: Master password incorrect.");
                     location.reload(); return;
                 }
 
-                // Grant seamless console entry access tokens
                 localStorage.setItem('userEmail', adminRecord.email);
                 localStorage.setItem('userName', adminRecord.name);
                 window.location.href = "admin.html";
-
-            } catch (err) { 
-                alert("Matrix core system exception during validation."); 
-                location.reload(); 
-            }
+            } catch (err) { alert("Matrix core system exception."); location.reload(); }
         });
 
-        function triggerAdminRecovery() {
+        async function triggerAdminRecovery() {
             const email = document.getElementById('admin-email').value.trim();
-            if(!email) { 
-                alert("Security Notice: Please type your admin email ID first in the field above."); 
-                return; 
-            }
+            if(!email) { alert("Please type your admin email ID first."); return; }
 
-            // Capture target state safely inside memory before routing trigger bypass
-            localStorage.setItem('adminResetEmail', email);
-            alert("Verification System Clear: Redirection parameters established. Redirecting to overwrite matrix...");
-            window.location.href = "reset-password.html";
+            const { data: checkUser } = await supabaseClient.from('portal_users').select('role').eq('email', email);
+            const adminRecord = (checkUser && checkUser.length > 0) ? checkUser[0] : null;
+            if(!adminRecord || adminRecord.role !== 'admin') { alert("Unauthorized process block."); return; }
+
+            // Sending an explicit Secure OTP Token link instead of standard web rendering redirect
+            const { error } = await supabaseClient.auth.signInWithOtp({
+                email: email,
+                options: { shouldCreateUser: false }
+            });
+
+            if (!error) {
+                localStorage.setItem('adminResetEmail', email);
+                alert("Verification Sent: Check your email inbox for the temporary secure access code / magic token, then click OK to go to validation screen.");
+                window.location.href = "reset-password.html";
+            } else {
+                alert("Security Gateway Error: " + error.message);
+            }
         }
     </script>
 </body>
