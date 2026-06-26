@@ -49,9 +49,15 @@
     </div>
 
     <script>
+        // 1. Sabse upar window.onload lagayein jo purani memory saaf karega
+    window.onload = function() {
+        // Jab bhi koi login page par aayega, purana session aur data clear ho jayega
+        localStorage.clear(); 
+        console.log("Purani cache memory safely cleared. Compulsory OTP system activated.");
+    };
         // ⚠️ APNI ASLI SUPABASE CREDENTIALS YAHAN PASTE KAREIN
-        const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
-        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let savedEmail = "";
