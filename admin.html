@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Management Console - Admin Operations</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-100 font-sans min-h-screen">
 
     <header class="bg-gray-900 text-white px-8 py-5 flex justify-between items-center shadow-lg">
-        <h1 class="text-xl font-black tracking-wider text-blue-400">ADMIN CONTROL CENTER (EDIT & POST)</h1>
-        <a href="index.php" class="font-bold text-sm bg-gray-800 px-5 py-2.5 rounded-xl hover:bg-gray-700 border border-gray-700 transition">Exit Session</a>
+        <h1 class="text-xl font-black tracking-wider text-blue-400">ADMIN CONTROL CENTER (SUPABASE)</h1>
+        <a href="index.html" class="font-bold text-sm bg-gray-800 px-5 py-2.5 rounded-xl hover:bg-gray-700 border border-gray-700 transition">Exit Session</a>
     </header>
 
     <main class="p-6 max-w-4xl mx-auto mt-8">
@@ -31,7 +32,7 @@
 
             <div>
                 <label class="block text-sm font-bold text-gray-700 mb-2">Subject Target Context (New or Selected)</label>
-                <input type="text" id="admin-subject" placeholder="e.g., Operating Systems" class="w-full border-2 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-semibold">
+                <input type="text" id="admin-subject" placeholder="e.g., Operating Systems" class="w-full border-2 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-semibold text-gray-800">
             </div>
 
             <div>
@@ -39,39 +40,42 @@
                     <label class="block text-sm font-bold text-gray-700">Paste / Edit Raw Text MCQs</label>
                     <span class="text-xs text-gray-400 font-mono">Format: 1. Question [New Line] A) Opt [New Line] Answer: A</span>
                 </div>
-                <textarea id="admin-paste-area" rows="14" placeholder="1. Which component manages computer memory?&#10;A) Kernel&#10;B) Processor&#10;C) Hard Disk&#10;D) Browser&#10;Answer: A" class="w-full border-2 p-3 rounded-xl font-mono text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                <textarea id="admin-paste-area" rows="14" placeholder="1. Which component manages computer memory?&#10;A) Kernel&#10;B) Processor&#10;C) Hard Disk&#10;D) Browser&#10;Answer: A" class="w-full border-2 p-3 rounded-xl font-mono text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"></textarea>
             </div>
 
             <button id="upload-btn" onclick="parseAndUpload()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-6 rounded-xl transition shadow-lg uppercase text-sm tracking-wide active:scale-[0.99]">
-                Save / Update Subject in SQL
+                Save / Update Subject in Database
             </button>
         </div>
     </main>
 
     <script>
-        // Load subjects into dropdown on page load
-        window.onload = function() {
-            fetch('api.php?action=get_all_exams')
-            .then(res => {
-                if(!res.ok) throw new Error();
-                return res.json();
-            })
-            .then(data => {
+        // ⚠️ APNI ASLI SUPABASE CREDENTIALS YAHAN PASTE KAREIN
+        const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Load all available subjects into dropdown menu dynamically on page load
+        window.onload = async function() {
+            try {
+                const { data, error } = await supabaseClient.from('exams').select('subject');
                 const select = document.getElementById('admin-select-subject');
-                if(Array.isArray(data)) {
-                    data.forEach(sub => {
+                
+                if(data && !error) {
+                    data.forEach(row => {
                         let opt = document.createElement('option');
-                        opt.value = sub;
-                        opt.innerHTML = sub;
+                        opt.value = row.subject;
+                        opt.innerHTML = row.subject;
                         select.appendChild(opt);
                     });
                 }
-            })
-            .catch(() => console.log("Dropdown initialization sync pending dynamic queries."));
+            } catch (err) {
+                console.log("Dropdown synchronization pending database connections.");
+            }
         }
 
-        // Fetch existing questions from database and format them back to standard raw text
-        function fetchSubjectForEditing() {
+        // Fetch existing question schema array from SQL and re-format back to raw text blocks
+        async function fetchSubjectForEditing() {
             const selectedSubject = document.getElementById('admin-select-subject').value;
             if(!selectedSubject) {
                 alert("Please select a subject first.");
@@ -84,17 +88,21 @@
             
             fetchBtn.innerText = "Fetching...";
             fetchBtn.disabled = true;
-            textArea.value = "Loading questions securely from SQL database...";
+            textArea.value = "Executing safe cloud schema parse directly from SQL cluster...";
 
-            fetch(`api.php?action=get_exam&subject=${encodeURIComponent(selectedSubject)}`)
-            .then(res => res.json())
-            .then(data => {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('exams')
+                    .select('questions_json')
+                    .eq('subject', selectedSubject)
+                    .single();
+
                 fetchBtn.innerText = "Fetch Current MCQs";
                 fetchBtn.disabled = false;
 
-                if (data.status === 'success' && Array.isArray(data.questions)) {
+                if (data && !error && Array.isArray(data.questions_json)) {
                     let formattedText = "";
-                    data.questions.forEach((q, index) => {
+                    data.questions_json.forEach((q, index) => {
                         formattedText += `${index + 1}. ${q.question}\n`;
                         const labels = ['A', 'B', 'C', 'D'];
                         
@@ -109,31 +117,30 @@
                     });
                     textArea.value = formattedText.trim();
                 } else {
-                    alert("Failed to fetch questions or paper structure is blank.");
+                    alert("Failed to extract questions data or paper format schema is blank.");
                     textArea.value = "";
                 }
-            })
-            .catch(() => {
+            } catch (err) {
                 fetchBtn.innerText = "Fetch Current MCQs";
                 fetchBtn.disabled = false;
-                alert("Error connecting to database transmission engine.");
+                alert("Fatal pipeline crash during data transmission stream fetch.");
                 textArea.value = "";
-            });
+            }
         }
 
-        // Parse structured raw text blocks and pipe array elements to SQL
-        function parseAndUpload() {
+        // Parse text blocks and upsert structured data safely inside target database table schema
+        async function parseAndUpload() {
             const subject = document.getElementById('admin-subject').value.trim();
             const rawText = document.getElementById('admin-paste-area').value.trim();
             const uploadBtn = document.getElementById('upload-btn');
 
             if(!subject || !rawText) {
-                alert("Please complete both the Subject Title and Question Area console text entries.");
+                alert("Validation Failed: Both Subject Title and Raw Text MCQs fields must be filled.");
                 return;
             }
 
             const questionsArray = [];
-            // Split questions by double newlines safely supporting cross platform CR/LF entries
+            // Safe mapping splitting by double newline structures supporting platform CR/LF inputs
             const blocks = rawText.split(/\r?\n\s*\r?\n/);
 
             blocks.forEach((block) => {
@@ -156,12 +163,12 @@
                         const match = line.match(/^(Answer|Correct|Ans|A)[:\s\-]+([A-D])/i);
                         if (match && match[2]) {
                             const letter = match[2].toUpperCase();
-                            correctIndex = letter.charCodeAt(0) - 65; // Normalizes character index mappings mapping A->0, B->1
+                            correctIndex = letter.charCodeAt(0) - 65; // Normalizes map mappings: A->0, B->1, C->2, D->3
                         }
                     }
                 });
 
-                // Validation Guard clause: Filter and enforce structured items mapping schema structures safely
+                // Validation check structure constraint mapping rules
                 if (questionText && options.length > 0 && correctIndex !== -1) {
                     questionsArray.push({
                         question: questionText,
@@ -172,36 +179,37 @@
             });
 
             if (questionsArray.length === 0) {
-                alert("Parsing Exception Error: Formatting structure rules check failed. Verify template formats match ('Answer: A') configurations correctly.");
+                alert("Parsing Exception: Formatting layout checks failed. Verify elements match template schema layouts explicitly ('Answer: A').");
                 return;
             }
 
-            // Set loading interface metrics during API flight transitions
-            uploadBtn.innerText = "Transmitting To Server Backend Engine...";
+            // Set loading interface mechanics during API flight transactions
+            uploadBtn.innerText = "Transmitting to Supabase Cloud SQL DB...";
             uploadBtn.disabled = true;
 
-            fetch('api.php?action=upload_exam', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ subject: subject, questions: questionsArray })
-            })
-            .then(res => res.json())
-            .then(data => {
-                uploadBtn.innerText = "Save / Update Subject in SQL";
+            try {
+                // Upsert structural parameters safely mapping directly into our custom relational target columns
+                const { error } = await supabaseClient
+                    .from('exams')
+                    .upsert([{ 
+                        subject: subject, 
+                        questions_json: questionsArray 
+                    }]);
+
+                uploadBtn.innerText = "Save / Update Subject in Database";
                 uploadBtn.disabled = false;
 
-                if(data.status === 'success') {
-                    alert(`Successfully updated "${subject}" with ${questionsArray.length} valid MCQs compiled directly inside the database array!`);
+                if(!error) {
+                    alert(`Successfully updated "${subject}" with ${questionsArray.length} valid MCQs mapped perfectly inside the cloud database entries!`);
                     location.reload();
                 } else {
-                    alert("Database write rejected constraint check: " + data.message);
+                    alert("Database write rejected allocation checks: " + error.message);
                 }
-            })
-            .catch(() => {
-                uploadBtn.innerText = "Save / Update Subject in SQL";
+            } catch (err) {
+                uploadBtn.innerText = "Save / Update Subject in Database";
                 uploadBtn.disabled = false;
-                alert("Fatal connection loop timeout error during script execution processing routing.");
-            });
+                alert("Critical timeout exception or transmission error encountered.");
+            }
         }
     </script>
 </body>
