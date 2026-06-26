@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Exam Portal - Direct Secure Login</title>
+    <title>Online Exam Portal - Secure Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen font-sans px-4">
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen font-sans px-4 sm:px-6 lg:px-8">
 
-    <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
-        <h1 class="text-3xl font-black text-blue-500 mb-2 tracking-wide text-center">ONLINE EXAM PORTAL</h1>
-        <p id="portal-desc" class="text-gray-400 mb-6 text-sm text-center">Enter your email and password to access the test series.</p>
+    <div class="bg-gray-800 p-6 sm:p-10 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700 my-4">
+        <h1 class="text-2xl sm:text-3xl font-black text-blue-500 mb-2 tracking-wide text-center uppercase">ONLINE EXAM PORTAL</h1>
+        <p id="portal-desc" class="text-gray-400 mb-6 text-xs sm:text-sm text-center">Enter your email and password to access the test series.</p>
         
-        <form id="direct-login-form" class="space-y-5">
+        <form id="direct-login-form" class="space-y-4 sm:space-y-5">
             <div>
                 <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Email Address</label>
                 <input type="email" id="login-email" required placeholder="student@gmail.com" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
@@ -23,106 +23,54 @@
                 <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
             </div>
             
-            <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 px-4 rounded-xl transition duration-300 shadow-md uppercase text-sm tracking-wider">
+            <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 px-4 rounded-xl transition duration-300 shadow-md uppercase text-xs sm:text-sm tracking-wider active:scale-[0.99]">
                 Sign In / Register
             </button>
         </form>
 
-        <div class="mt-6 text-center text-xs text-gray-500 font-medium">
+        <div class="mt-6 text-center text-[10px] sm:text-xs text-gray-500 font-medium">
             Real-time multi-user student verification cluster.
         </div>
     </div>
 
     <script>
-        // Clear cached credentials instantly when landing on login page
-        window.onload = function() {
-            localStorage.clear();
-            console.log("Session memory refreshed.");
-        };
-
-        // ⚠️ APNI ASLI SUPABASE CREDENTIALS YAHAN PASTE KAREIN
+        window.onload = function() { localStorage.clear(); };
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         document.getElementById('direct-login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
             const loginBtn = document.getElementById('login-btn');
 
-            loginBtn.innerText = "Authenticating Session...";
+            loginBtn.innerText = "Authenticating...";
             loginBtn.disabled = true;
 
             try {
-                // Phase 1: Try LogIn directly
-                const { data: logData, error: logError } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
+                const { data: logData, error: logError } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (logError && logError.message.includes("Invalid login credentials")) {
+                    const { error: regError } = await supabaseClient.auth.signUp({ email, password });
+                    if (regError) { alert(regError.message); resetBtn(); return; }
+                } else if (logError) { alert(logError.message); resetBtn(); return; }
 
-                if (logError) {
-                    // Phase 2: If account doesn't exist, instantly SignUp (Auto-registration)
-                    if (logError.message.includes("Invalid login credentials")) {
-                        const { data: regData, error: regError } = await supabaseClient.auth.signUp({
-                            email: email,
-                            password: password
-                        });
-
-                        if (regError) {
-                            alert("Registration Exception: " + regError.message);
-                            resetBtn();
-                            return;
-                        }
-                    } else {
-                        alert("Authentication Gateway Error: " + logError.message);
-                        resetBtn();
-                        return;
-                    }
-                }
-
-                // Phase 3: Sync and redirect to clean student/admin panel routing tables
-                const { data: userData } = await supabaseClient
-                    .from('portal_users')
-                    .select('*')
-                    .eq('email', email)
-                    .single();
-
+                const { data: userData } = await supabaseClient.from('portal_users').select('*').eq('email', email).single();
                 if (userData) {
                     localStorage.setItem('userEmail', userData.email);
                     localStorage.setItem('userName', userData.name);
                     window.location.href = (userData.role === 'admin') ? "admin.html" : "dashboard.html";
                 } else {
-                    const extractedName = email.split('@')[0];
-                    const { error: insError } = await supabaseClient
-                        .from('portal_users')
-                        .insert([{ 
-                            email: email, 
-                            name: extractedName, 
-                            password: password, 
-                            role: 'student' 
-                        }]);
-
+                    const extName = email.split('@')[0];
+                    const { error: insError } = await supabaseClient.from('portal_users').insert([{ email, name: extName, password, role: 'student' }]);
                     if(!insError) {
                         localStorage.setItem('userEmail', email);
-                        localStorage.setItem('userName', extractedName);
+                        localStorage.setItem('userName', extName);
                         window.location.href = "dashboard.html";
-                    } else {
-                        alert("Database Synchronization Error: " + insError.message);
-                        resetBtn();
-                    }
+                    } else { alert(insError.message); resetBtn(); }
                 }
-
-            } catch (err) {
-                alert("Critical processing exception.");
-                resetBtn();
-            }
-
-            function resetBtn() {
-                loginBtn.innerText = "Sign In / Register";
-                loginBtn.disabled = false;
-            }
+            } catch (err) { alert("Exception hit."); resetBtn(); }
+            function resetBtn() { loginBtn.innerText = "Sign In / Register"; loginBtn.disabled = false; }
         });
     </script>
 </body>
