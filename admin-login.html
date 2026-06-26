@@ -69,24 +69,32 @@
             } catch (err) { alert("Matrix core system exception."); location.reload(); }
         });
 
-        async function triggerAdminRecovery() {
-            const email = document.getElementById('admin-email').value.trim();
-            if(!email) { alert("Security Notice: Please type your admin email ID first in the field above."); return; }
+      async function triggerAdminRecovery() {
+    const email = document.getElementById('admin-email').value.trim();
+    if(!email) { 
+        alert("Security Notice: Please type your admin email ID first in the field above."); 
+        return; 
+    }
 
-            const { data: checkUser } = await supabaseClient.from('portal_users').select('role').eq('email', email).single();
-            if(!checkUser || checkUser.role !== 'admin') { alert("Unauthorized process block."); return; }
+    const { data: checkUser } = await supabaseClient.from('portal_users').select('role').eq('email', email).single();
+    if(!checkUser || checkUser.role !== 'admin') { 
+        alert("Unauthorized process block: Email matching not found inside administrative clusters."); 
+        return; 
+    }
 
-            // Supabase default authentication engine directly triggers security email routing token
-            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-                redirectTo: window.location.origin + '/reset-password.html',
-            });
+    // Capture target state safely inside memory before routing trigger
+    localStorage.setItem('adminResetEmail', email);
 
-            if (!error) {
-                alert("Verification System Clear: A secure password overwrite clearance email has been dispatched to your admin inbox.");
-            } else {
-                alert("Security Link Generation Error: " + error.message);
-            }
-        }
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/reset-password.html',
+    });
+
+    if (!error) {
+        alert("Verification System Clear: A secure password overwrite clearance email has been dispatched to your admin inbox.");
+    } else {
+        alert("Security Link Generation Error: " + error.message);
+    }
+}
     </script>
 </body>
 </html>
