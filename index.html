@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Exam Portal - Secure Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen font-sans px-4">
+
+    <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
+        <h1 class="text-3xl font-black text-blue-500 mb-2 tracking-wide text-center">ONLINE EXAM PORTAL</h1>
+        <p class="text-gray-400 mb-6 text-sm text-center">Sign in securely using your academic credentials.</p>
+        
+        <form id="login-form" class="space-y-5">
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Email Address</label>
+                <input type="email" id="login-email" required placeholder="example@email.com" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Password</label>
+                <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
+            </div>
+            
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 px-4 rounded-xl transition duration-300 shadow-md transform active:scale-95 uppercase text-sm tracking-wider">
+                Sign In To Account
+            </button>
+        </form>
+
+        <div class="mt-6 text-center text-xs text-gray-500 font-medium">
+            Direct database sync via Supabase Cloud SQL Engine.
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ APNI SUPABASE DETAILS YAHAN PASTE KAREIN
+        const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            try {
+                // Supabase se 'portal_users' table query karna
+                const { data, error } = await supabaseClient
+                    .from('portal_users')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+
+                if (data) {
+                    // Password check logic
+                    if (data.password === password) {
+                        localStorage.setItem('userEmail', data.email);
+                        localStorage.setItem('userName', data.name);
+                        
+                        // Routing criteria based on user roles
+                        if (data.role === 'admin') {
+                            window.location.href = "admin.html";
+                        } else {
+                            window.location.href = "dashboard.html";
+                        }
+                    } else {
+                        alert("Authentication Failure: Incorrect Password.");
+                    }
+                } else {
+                    // Seamless Auto-Registration if user/student hits portal for first time
+                    const name = email.split('@')[0];
+                    const { error: registerError } = await supabaseClient
+                        .from('portal_users')
+                        .insert([{ email: email, name: name, password: password, role: 'student' }]);
+                    
+                    if (!registerError) {
+                        localStorage.setItem('userEmail', email);
+                        localStorage.setItem('userName', name);
+                        window.location.href = "dashboard.html";
+                    } else {
+                        alert("Database Registration Error: " + registerError.message);
+                    }
+                }
+            } catch (err) {
+                alert("Critical Connection Mismatch: Verify your Supabase URL and Anon Key parameters.");
+            }
+        });
+    </script>
+</body>
+</html>
