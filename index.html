@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Exam Portal - Secure OTP Login</title>
+    <title>Online Exam Portal - Direct Secure Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -11,158 +11,117 @@
 
     <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
         <h1 class="text-3xl font-black text-blue-500 mb-2 tracking-wide text-center">ONLINE EXAM PORTAL</h1>
-        <p id="portal-desc" class="text-gray-400 mb-6 text-sm text-center">Verify your academic email via secure OTP token.</p>
+        <p id="portal-desc" class="text-gray-400 mb-6 text-sm text-center">Enter your email and password to access the test series.</p>
         
-        <form id="login-form" class="space-y-5">
+        <form id="direct-login-form" class="space-y-5">
             <div>
                 <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Email Address</label>
-                <input type="email" id="login-email" required placeholder="example@email.com" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
+                <input type="email" id="login-email" required placeholder="student@gmail.com" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Password (For New Registration/Log)</label>
+                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Password</label>
                 <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
             </div>
             
-            <button type="submit" id="request-otp-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 px-4 rounded-xl transition duration-300 shadow-md uppercase text-sm tracking-wider">
-                Send Verification OTP
-            </button>
-        </form>
-
-        <form id="otp-form" class="space-y-5 hidden">
-            <div class="bg-blue-950/40 p-4 border border-blue-900/50 rounded-xl text-center">
-                <p class="text-xs text-blue-400 font-bold">OTP has been dispatched securely to:</p>
-                <p id="target-email-display" class="text-sm font-mono text-white mt-1 break-all"></p>
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Enter 6-Digit OTP Token</label>
-                <input type="text" id="otp-token" required maxlength="6" placeholder="123456" class="w-full bg-gray-700 border border-gray-600 tracking-[0.5em] text-center rounded-xl p-3 text-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-black">
-            </div>
-            
-            <button type="submit" id="verify-otp-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-3.5 px-4 rounded-xl transition duration-300 shadow-md uppercase text-sm tracking-wider">
-                Verify Token & Login
+            <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 px-4 rounded-xl transition duration-300 shadow-md uppercase text-sm tracking-wider">
+                Sign In / Register
             </button>
         </form>
 
         <div class="mt-6 text-center text-xs text-gray-500 font-medium">
-            Direct real-time domain authentication engine.
+            Real-time multi-user student verification cluster.
         </div>
     </div>
 
     <script>
-        // 1. Sabse upar window.onload lagayein jo purani memory saaf karega
-    window.onload = function() {
-        // Jab bhi koi login page par aayega, purana session aur data clear ho jayega
-        localStorage.clear(); 
-        console.log("Purani cache memory safely cleared. Compulsory OTP system activated.");
-    };
+        // Clear cached credentials instantly when landing on login page
+        window.onload = function() {
+            localStorage.clear();
+            console.log("Session memory refreshed.");
+        };
+
         // ⚠️ APNI ASLI SUPABASE CREDENTIALS YAHAN PASTE KAREIN
-        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let savedEmail = "";
-        let savedPassword = "";
-
-        // Trigger Phase 1: Requesting OTP from Supabase Infrastructure
-        document.getElementById('login-form').addEventListener('submit', async function(e) {
+        document.getElementById('direct-login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            savedEmail = document.getElementById('login-email').value.trim();
-            savedPassword = document.getElementById('login-password').value;
-            const reqBtn = document.getElementById('request-otp-btn');
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const loginBtn = document.getElementById('login-btn');
 
-            reqBtn.innerText = "Transmitting OTP Request...";
-            reqBtn.disabled = true;
+            loginBtn.innerText = "Authenticating Session...";
+            loginBtn.disabled = true;
 
             try {
-                // Supabase Auth Method for seamless email OTP generation
-                const { error } = await supabaseClient.auth.signInWithOtp({
-                    email: savedEmail,
-                    options: {
-                        shouldCreateUser: true // Automatically signs up if new email addresses hit the platform
+                // Phase 1: Try LogIn directly
+                const { data: logData, error: logError } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (logError) {
+                    // Phase 2: If account doesn't exist, instantly SignUp (Auto-registration)
+                    if (logError.message.includes("Invalid login credentials")) {
+                        const { data: regData, error: regError } = await supabaseClient.auth.signUp({
+                            email: email,
+                            password: password
+                        });
+
+                        if (regError) {
+                            alert("Registration Exception: " + regError.message);
+                            resetBtn();
+                            return;
+                        }
+                    } else {
+                        alert("Authentication Gateway Error: " + logError.message);
+                        resetBtn();
+                        return;
                     }
-                });
-
-                if (!error) {
-                    // Transition Forms UI smoothly
-                    document.getElementById('login-form').classList.add('hidden');
-                    document.getElementById('otp-form').classList.remove('hidden');
-                    document.getElementById('target-email-display').innerText = savedEmail;
-                    document.getElementById('portal-desc').innerText = "Input token confirmation metrics below.";
-                } else {
-                    alert("Auth Gateway Exception: " + error.message);
-                    reqBtn.innerText = "Send Verification OTP";
-                    reqBtn.disabled = false;
-                }
-            } catch (err) {
-                alert("Fatal transition processing mismatch.");
-                reqBtn.innerText = "Send Verification OTP";
-                reqBtn.disabled = false;
-            }
-        });
-
-        // Trigger Phase 2: Verifying Submitted Token and Syncing Custom Table Rows
-        document.getElementById('otp-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const token = document.getElementById('otp-token').value.trim();
-            const verifyBtn = document.getElementById('verify-otp-btn');
-
-            verifyBtn.innerText = "Verifying Token System...";
-            verifyBtn.disabled = true;
-
-            try {
-                // Verifies token with Supabase auth infrastructure
-                const { data: authData, error: authError } = await supabaseClient.auth.verifyOtp({
-                    email: savedEmail,
-                    token: token,
-                    type: 'email'
-                });
-
-                if (authError || !authData.user) {
-                    alert("Invalid Token: Verification allocation failed.");
-                    verifyBtn.innerText = "Verify Token & Login";
-                    verifyBtn.disabled = false;
-                    return;
                 }
 
-                // Token is valid! Now check or synchronize our application mapping table 'portal_users'
+                // Phase 3: Sync and redirect to clean student/admin panel routing tables
                 const { data: userData } = await supabaseClient
                     .from('portal_users')
                     .select('*')
-                    .eq('email', savedEmail)
+                    .eq('email', email)
                     .single();
 
                 if (userData) {
-                    // Existing User: Set state and route according to schema roles
                     localStorage.setItem('userEmail', userData.email);
                     localStorage.setItem('userName', userData.name);
-                    
                     window.location.href = (userData.role === 'admin') ? "admin.html" : "dashboard.html";
                 } else {
-                    // Fresh Verified Student: Add explicitly to portal architecture tables cleanly
-                    const defaultName = savedEmail.split('@')[0];
-                    const { error: insertError } = await supabaseClient
+                    const extractedName = email.split('@')[0];
+                    const { error: insError } = await supabaseClient
                         .from('portal_users')
                         .insert([{ 
-                            email: savedEmail, 
-                            name: defaultName, 
-                            password: savedPassword, 
+                            email: email, 
+                            name: extractedName, 
+                            password: password, 
                             role: 'student' 
                         }]);
 
-                    if(!insertError) {
-                        localStorage.setItem('userEmail', savedEmail);
-                        localStorage.setItem('userName', defaultName);
+                    if(!insError) {
+                        localStorage.setItem('userEmail', email);
+                        localStorage.setItem('userName', extractedName);
                         window.location.href = "dashboard.html";
                     } else {
-                        alert("Data Schema Error: " + insertError.message);
+                        alert("Database Synchronization Error: " + insError.message);
+                        resetBtn();
                     }
                 }
+
             } catch (err) {
-                alert("Critical exception mapping data parameters.");
-                verifyBtn.innerText = "Verify Token & Login";
-                verifyBtn.disabled = false;
+                alert("Critical processing exception.");
+                resetBtn();
+            }
+
+            function resetBtn() {
+                loginBtn.innerText = "Sign In / Register";
+                loginBtn.disabled = false;
             }
         });
     </script>
