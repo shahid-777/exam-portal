@@ -44,40 +44,92 @@
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        document.getElementById('direct-login-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
-            const loginBtn = document.getElementById('login-btn');
+       document.getElementById('direct-login-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const loginBtn = document.getElementById('login-btn');
 
-            loginBtn.innerText = "Authenticating...";
-            loginBtn.disabled = true;
+    loginBtn.innerText = "Authenticating Session...";
+    loginBtn.disabled = true;
 
-            try {
-                const { data: logData, error: logError } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (logError && logError.message.includes("Invalid login credentials")) {
-                    const { error: regError } = await supabaseClient.auth.signUp({ email, password });
-                    if (regError) { alert(regError.message); resetBtn(); return; }
-                } else if (logError) { alert(logError.message); resetBtn(); return; }
+    try {
+        // Phase 1: Check if user exists in our explicit database table first
+        const { data: dbUser, error: dbError } = await supabaseClient
+            .from('portal_users')
+            .select('*')
+            .eq('email', email)
+            .single();
 
-                const { data: userData } = await supabaseClient.from('portal_users').select('*').eq('email', email).single();
-                if (userData) {
-                    localStorage.setItem('userEmail', userData.email);
-                    localStorage.setItem('userName', userData.name);
-                    window.location.href = (userData.role === 'admin') ? "admin.html" : "dashboard.html";
-                } else {
-                    const extName = email.split('@')[0];
-                    const { error: insError } = await supabaseClient.from('portal_users').insert([{ email, name: extName, password, role: 'student' }]);
-                    if(!insError) {
-                        localStorage.setItem('userEmail', email);
-                        localStorage.setItem('userName', extName);
-                        window.location.href = "dashboard.html";
-                    } else { alert(insError.message); resetBtn(); }
-                }
-            } catch (err) { alert("Exception hit."); resetBtn(); }
-            function resetBtn() { loginBtn.innerText = "Sign In / Register"; loginBtn.disabled = false; }
-        });
-        async function triggerPasswordReset() {
+        if (dbError && dbError.code !== 'PGRST116') { // PGRST116 means user not found
+            alert("Database Error: " + dbError.message);
+            resetBtn();
+            return;
+        }
+
+        if (dbUser) {
+            // CASE A: User exists -> STRICT LOGIN ONLY (No bypass, no auto-signup)
+            const { data: logData, error: logError } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (logError) {
+                alert("Security Exception: Invalid Password for this registered account.");
+                resetBtn();
+                return;
+            }
+
+            // Sync credentials and route
+            localStorage.setItem('userEmail', dbUser.email);
+            localStorage.setItem('userName', dbUser.name);
+            window.location.href = (dbUser.role === 'admin') ? "admin.html" : "dashboard.html";
+
+        } else {
+            // CASE B: Absolutely New User -> Fresh Registration Mode
+            const { data: regData, error: regError } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password
+            });
+
+            if (regError) {
+                alert("Registration Gateway Error: " + regError.message);
+                resetBtn();
+                return;
+            }
+
+            // Insert into local table cluster
+            const extractedName = email.split('@')[0];
+            const { error: insError } = await supabaseClient
+                .from('portal_users')
+                .insert([{ 
+                    email: email, 
+                    name: extractedName, 
+                    password: password, 
+                    role: 'student' 
+                }]);
+
+            if(!insError) {
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userName', extractedName);
+                window.location.href = "dashboard.html";
+            } else {
+                alert("Database Initialization Error: " + insError.message);
+                resetBtn();
+            }
+        }
+
+    } catch (err) {
+        alert("Critical hardware processing exception.");
+        resetBtn();
+    }
+
+    function resetBtn() {
+        loginBtn.innerText = "Sign In / Register";
+        loginBtn.disabled = false;
+    }
+});        async function triggerPasswordReset() {
     const email = document.getElementById('login-email').value.trim();
     if(!email) {
         alert("Validation Failed: Please type your registered email address first in the input field above.");
