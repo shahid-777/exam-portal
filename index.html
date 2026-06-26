@@ -26,11 +26,6 @@
             <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 px-4 rounded-xl transition duration-300 shadow-md uppercase text-xs sm:text-sm tracking-wider active:scale-[0.99]">
                 Sign In / Register
             </button>
-            <div class="flex justify-end mt-1">
-    <button type="button" onclick="triggerPasswordReset()" class="text-xs text-blue-400 hover:underline font-bold tracking-wide">
-        Forgot Password?
-    </button>
-</div>
         </form>
 
         <div class="mt-6 text-center text-[10px] sm:text-xs text-gray-500 font-medium">
@@ -39,101 +34,104 @@
     </div>
 
     <script>
-        window.onload = function() { localStorage.clear(); };
-        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        // Clear cached credentials instantly when landing on login page
+        window.onload = function() {
+            localStorage.clear();
+            console.log("Session memory refreshed.");
+        };
+
+        // ⚠️ APNI ASLI SUPABASE CREDENTIALS YAHAN PASTE KAREIN
+        const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      <!-- index.html ke script tag ke andar login event listener ko isse update karein -->
-<script>
-document.getElementById('direct-login-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('login-password').value;
-    const loginBtn = document.getElementById('login-btn');
+        document.getElementById('direct-login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const loginBtn = document.getElementById('login-btn');
 
-    loginBtn.innerText = "Authenticating...";
-    loginBtn.disabled = true;
+            loginBtn.innerText = "Authenticating...";
+            loginBtn.disabled = true;
 
-    try {
-        // Step 1: Use .select() instead of .single() to avoid error crashes for new users
-        const { data: userRows, error: dbError } = await supabaseClient
-            .from('portal_users')
-            .select('*')
-            .eq('email', email);
+            try {
+                // Step 1: Use .select() instead of .single() to avoid error crashes for new users
+                const { data: userRows, error: dbError } = await supabaseClient
+                    .from('portal_users')
+                    .select('*')
+                    .eq('email', email);
 
-        if (dbError) {
-            alert("Database Gateway Error: " + dbError.message);
-            resetBtn();
-            return;
-        }
+                if (dbError) {
+                    alert("Database Gateway Error: " + dbError.message);
+                    resetBtn();
+                    return;
+                }
 
-        // Extract user data if exists
-        const dbUser = (userRows && userRows.length > 0) ? userRows[0] : null;
+                // Extract user data if exists
+                const dbUser = (userRows && userRows.length > 0) ? userRows[0] : null;
 
-        // STRICT SECURITY BLOCK: Admin cannot log in from this student page
-        if (dbUser && dbUser.role === 'admin') {
-            alert("Access Denied: Admin authentication is restricted on this terminal. Please use the secure administrative panel.");
-            resetBtn();
-            return;
-        }
+                // STRICT SECURITY BLOCK: Admin cannot log in from this student page
+                if (dbUser && dbUser.role === 'admin') {
+                    alert("Access Denied: Admin authentication is restricted on this terminal. Please use the secure administrative panel.");
+                    resetBtn();
+                    return;
+                }
 
-        if (dbUser) {
-            // CASE A: User already exists in database -> Perform strict login check
-            const { error: logError } = await supabaseClient.auth.signInWithPassword({ 
-                email: email, 
-                password: password 
-            });
-            
-            if (logError) { 
-                alert("Security Exception: Invalid Password for this registered account."); 
+                if (dbUser) {
+                    // CASE A: User already exists in database -> Perform strict login check
+                    const { error: logError } = await supabaseClient.auth.signInWithPassword({ 
+                        email: email, 
+                        password: password 
+                    });
+                    
+                    if (logError) { 
+                        alert("Security Exception: Invalid Password for this registered account."); 
+                        resetBtn(); 
+                        return; 
+                    }
+                    
+                    localStorage.setItem('userEmail', dbUser.email);
+                    localStorage.setItem('userName', dbUser.name);
+                    window.location.href = "dashboard.html";
+                } else {
+                    // CASE B: Absolutely New User -> Fresh Registration Mode triggered
+                    const { data: regData, error: regError } = await supabaseClient.auth.signUp({ 
+                        email: email, 
+                        password: password 
+                    });
+
+                    if (regError) { 
+                        alert("Registration Gateway Error: " + regError.message); 
+                        resetBtn(); 
+                        return; 
+                    }
+
+                    // Sync configuration inside user registry mapping table
+                    const extName = email.split('@')[0];
+                    const { error: insError } = await supabaseClient
+                        .from('portal_users')
+                        .insert([{ 
+                            email: email, 
+                            name: extName, 
+                            password: password, 
+                            role: 'student' 
+                        }]);
+                    
+                    if (!insError) {
+                        localStorage.setItem('userEmail', email);
+                        localStorage.setItem('userName', extName);
+                        window.location.href = "dashboard.html";
+                    } else {
+                        alert("Database Initialization Error: " + insError.message);
+                        resetBtn();
+                    }
+                }
+            } catch (err) { 
+                alert("Processing Matrix Exception."); 
                 resetBtn(); 
-                return; 
             }
-            
-            localStorage.setItem('userEmail', dbUser.email);
-            localStorage.setItem('userName', dbUser.name);
-            window.location.href = "dashboard.html";
-        } else {
-            // CASE B: Absolutely New User -> Fresh Registration Mode triggered
-            const { data: regData, error: regError } = await supabaseClient.auth.signUp({ 
-                email: email, 
-                password: password 
-            });
-
-            if (regError) { 
-                alert("Registration Gateway Error: " + regError.message); 
-                resetBtn(); 
-                return; 
-            }
-
-            // Sync configuration inside user registry mapping table
-            const extName = email.split('@')[0];
-            const { error: insError } = await supabaseClient
-                .from('portal_users')
-                .insert([{ 
-                    email: email, 
-                    name: extName, 
-                    password: password, 
-                    role: 'student' 
-                }]);
-            
-            if (!insError) {
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userName', extName);
-                window.location.href = "dashboard.html";
-            } else {
-                alert("Database Initialization Error: " + insError.message);
-                resetBtn();
-            }
-        }
-    } catch (err) { 
-        alert("Processing Matrix Exception."); 
-        resetBtn(); 
-    }
-    function resetBtn() { loginBtn.innerText = "Sign In / Register"; loginBtn.disabled = false; }
-});
-</script>
-  
+            function resetBtn() { loginBtn.innerText = "Sign In / Register"; loginBtn.disabled = false; }
+        });
+    </script>
 </body>
 </html>
