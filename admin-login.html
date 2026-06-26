@@ -3,95 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Admin Authentication Gateway</title>
+    <title>Master Overwrite Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-950 text-white flex items-center justify-center min-h-screen font-sans px-4">
-
-    <div class="bg-slate-900 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-red-900/50 relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 via-orange-500 to-red-600"></div>
+    <div class="bg-slate-900 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-red-900/50">
+        <h1 class="text-xl font-black text-red-500 mb-2 text-center uppercase tracking-wider">SECURE ACCOUNT RECOVERY</h1>
+        <p id="target-display" class="text-gray-400 mb-6 text-xs text-center font-mono">Verifying email authorization credentials...</p>
         
-        <h1 class="text-2xl font-black text-red-500 mb-2 tracking-wider text-center uppercase">ADMIN CONSOLE GATEWAY</h1>
-        <p class="text-gray-400 mb-6 text-xs text-center font-mono">Restricted area. Authorized credentials verification cluster.</p>
-        
-        <form id="admin-login-form" class="space-y-4">
+        <form id="secure-verification-form" class="space-y-4">
             <div>
-                <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Admin Security Email</label>
-                <input type="email" id="admin-email" required placeholder="admin@domain.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-red-500 font-mono text-white">
+                <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Enter OTP Token / Magic Code from Email</label>
+                <input type="text" id="email-token" required placeholder="Paste token code here" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-sm outline-none focus:border-red-500 font-mono text-white mb-3">
             </div>
             <div>
-                <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Master Password</label>
-                <input type="password" id="admin-password" required placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-red-500 font-mono text-white">
+                <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Type New Secure Password</label>
+                <input type="password" id="admin-fresh-pass" required placeholder="Minimum 6 characters" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-sm outline-none focus:border-red-500 font-mono text-white">
             </div>
-            
-            <button type="submit" id="admin-btn" class="w-full bg-red-700 hover:bg-red-600 text-white font-black py-3.5 rounded-xl transition uppercase text-xs tracking-widest shadow-md shadow-red-950">
-                Authorize Session
+            <button type="submit" id="final-btn" class="w-full bg-red-700 text-white font-bold py-3 rounded-xl uppercase text-xs tracking-widest hover:bg-red-600 transition shadow-lg shadow-red-950">
+                Verify Email & Save Password
             </button>
-
-            <div class="text-right mt-2">
-                <button type="button" onclick="triggerAdminRecovery()" class="text-xs text-red-400 hover:underline font-bold tracking-wide">
-                    Request Secure Verification Email
-                </button>
-            </div>
         </form>
     </div>
 
     <script>
-       const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
+        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        document.getElementById('admin-login-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('admin-email').value.trim();
-            const password = document.getElementById('admin-password').value;
-            const btn = document.getElementById('admin-btn');
+        const targetEmail = localStorage.getItem('adminResetEmail');
 
-            btn.innerText = "Verifying Clearance..."; btn.disabled = true;
-
-            try {
-                const { data: dbUser } = await supabaseClient.from('portal_users').select('*').eq('email', email);
-                const adminRecord = (dbUser && dbUser.length > 0) ? dbUser[0] : null;
-
-                if (!adminRecord || adminRecord.role !== 'admin') {
-                    alert("Security Exception: Access denied.");
-                    location.reload(); return;
-                }
-
-                if (adminRecord.password !== password) {
-                    alert("Authentication Failure: Master password incorrect.");
-                    location.reload(); return;
-                }
-
-                localStorage.setItem('userEmail', adminRecord.email);
-                localStorage.setItem('userName', adminRecord.name);
-                window.location.href = "admin.html";
-            } catch (err) { alert("Matrix core system exception."); location.reload(); }
-        });
-
-        async function triggerAdminRecovery() {
-            const email = document.getElementById('admin-email').value.trim();
-            if(!email) { alert("Please type your admin email ID first."); return; }
-
-            const { data: checkUser } = await supabaseClient.from('portal_users').select('role').eq('email', email);
-            const adminRecord = (checkUser && checkUser.length > 0) ? checkUser[0] : null;
-            if(!adminRecord || adminRecord.role !== 'admin') { alert("Unauthorized process block."); return; }
-
-            // Sending an explicit Secure OTP Token link instead of standard web rendering redirect
-            const { error } = await supabaseClient.auth.signInWithOtp({
-                email: email,
-                options: { shouldCreateUser: false }
-            });
-
-            if (!error) {
-                localStorage.setItem('adminResetEmail', email);
-                alert("Verification Sent: Check your email inbox for the temporary secure access code / magic token, then click OK to go to validation screen.");
-                window.location.href = "reset-password.html";
+        window.onload = function() {
+            if (targetEmail) {
+                document.getElementById('target-display').innerText = `Target Account: ${targetEmail}`;
             } else {
-                alert("Security Gateway Error: " + error.message);
+                alert("Security Alert: Direct terminal routing unauthorized.");
+                window.location.href = "admin-login.html";
             }
-        }
+        };
+
+        document.getElementById('secure-verification-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const token = document.getElementById('email-token').value.trim();
+            const newPass = document.getElementById('admin-fresh-pass').value;
+            const btn = document.getElementById('final-btn');
+            
+            if(newPass.length < 6) { alert("Baseline Error: Password must be 6+ chars."); return; }
+            
+            btn.innerText = "Verifying Token with Server..."; btn.disabled = true;
+            
+            try {
+                // Phase 1: Verify dynamic email verification token via OTP framework
+                const { error: verifyError } = await supabaseClient.auth.verifyOtp({
+                    email: targetEmail,
+                    token: token,
+                    type: 'magiclink' // using magiclink/email verification context
+                });
+
+                if (verifyError) {
+                    alert("Security Block: Invalid or expired email verification token code!");
+                    btn.innerText = "Verify Email & Save Password"; btn.disabled = false;
+                    return;
+                }
+
+                // Phase 2: Token is valid -> Directly authorize table modification
+                const { error: dbError } = await supabaseClient
+                    .from('portal_users')
+                    .update({ password: newPass })
+                    .eq('email', targetEmail);
+
+                if (dbError) {
+                    alert("Database Sync Failed: " + dbError.message);
+                    btn.innerText = "Verify Email & Save Password"; btn.disabled = false;
+                    return;
+                }
+
+                alert("Verification Perfect: Password successfully updated via email token authorization!");
+                localStorage.removeItem('adminResetEmail');
+                window.location.href = "admin-login.html";
+
+            } catch (err) { 
+                alert("Engine processing failure."); 
+                btn.innerText = "Verify Email & Save Password"; btn.disabled = false;
+            }
+        });
     </script>
 </body>
 </html>
