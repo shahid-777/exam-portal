@@ -26,6 +26,11 @@
             <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 px-4 rounded-xl transition duration-300 shadow-md uppercase text-xs sm:text-sm tracking-wider active:scale-[0.99]">
                 Sign In / Register
             </button>
+            <div class="flex justify-end mt-1">
+    <button type="button" onclick="triggerPasswordReset()" class="text-xs text-blue-400 hover:underline font-bold tracking-wide">
+        Forgot Password?
+    </button>
+</div>
         </form>
 
         <div class="mt-6 text-center text-[10px] sm:text-xs text-gray-500 font-medium">
@@ -72,6 +77,28 @@
             } catch (err) { alert("Exception hit."); resetBtn(); }
             function resetBtn() { loginBtn.innerText = "Sign In / Register"; loginBtn.disabled = false; }
         });
+        async function triggerPasswordReset() {
+    const email = document.getElementById('login-email').value.trim();
+    if(!email) {
+        alert("Validation Failed: Please type your registered email address first in the input field above.");
+        return;
+    }
+    
+    try {
+        // Supabase built-in reset route (Generates token link automatically)
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin + '/reset-password.html',
+        });
+
+        if (!error) {
+            alert(`A secure password recovery link has been dispatched to ${email}. Please check your inbox/spam folder!`);
+        } else {
+            alert("Gateway Error: " + error.message);
+        }
+    } catch(err) {
+        alert("Exception encountered during transmission stream.");
+    }
+}
     </script>
 </body>
 </html>
