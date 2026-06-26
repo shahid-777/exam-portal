@@ -129,27 +129,16 @@
         loginBtn.innerText = "Sign In / Register";
         loginBtn.disabled = false;
     }
-});        async function triggerPasswordReset() {
+});       function triggerPasswordReset() {
     const email = document.getElementById('login-email').value.trim();
     if(!email) {
         alert("Validation Failed: Please type your registered email address first in the input field above.");
         return;
     }
     
-    try {
-        // Supabase built-in reset route (Generates token link automatically)
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.origin + '/reset-password.html',
-        });
-
-        if (!error) {
-            alert(`A secure password recovery link has been dispatched to ${email}. Please check your inbox/spam folder!`);
-        } else {
-            alert("Gateway Error: " + error.message);
-        }
-    } catch(err) {
-        alert("Exception encountered during transmission stream.");
-    }
+    // Explicitly storage configuration set karke route karna
+    localStorage.setItem('resetTargetEmail', email);
+    window.location.href = 'reset-password.html';
 }
     </script>
 </body>
