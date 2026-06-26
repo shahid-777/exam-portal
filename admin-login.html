@@ -99,23 +99,22 @@
                 btn.innerText = "Authorize Session";
             }
         });
+function triggerAdminRecovery() {
+    const email = document.getElementById('admin-email').value.trim();
+    if(!email) { 
+        statusText.innerText = "Notice: Please type your admin email ID first in the field above.";
+        statusText.className = "text-yellow-500 mb-6 text-xs text-center font-mono";
+        return; 
+    }
 
-        function triggerAdminRecovery() {
-            const email = document.getElementById('admin-email').value.trim();
-            if(!email) { 
-                statusText.innerText = "Notice: Please type your admin email ID first in the field above.";
-                statusText.className = "text-yellow-500 mb-6 text-xs text-center font-mono";
-                return; 
-            }
-
-            localStorage.setItem('adminResetEmail', email);
-            statusText.innerText = "Redirection parameters established. Redirecting to overwrite matrix...";
-            statusText.className = "text-green-500 mb-6 text-xs text-center font-mono";
-            
-            setTimeout(() => {
-                window.location.href = "reset-password.html";
-            }, 1000);
-        }
+    localStorage.setItem('adminResetEmail', email);
+    statusText.innerText = "Security redirection parameters verified. Opening validation matrix...";
+    statusText.className = "text-green-500 mb-6 text-xs text-center font-mono";
+    
+    setTimeout(() => {
+        window.location.href = "reset-password.html";
+    }, 8000);
+}
     </script>
 </body>
 </html>
