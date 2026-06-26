@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,11 +18,11 @@
         <form id="admin-login-form" class="space-y-4">
             <div>
                 <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Admin Security Email</label>
-                <input type="email" id="admin-email" required placeholder="admin@domain.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-red-500 font-mono">
+                <input type="email" id="admin-email" required placeholder="admin@domain.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-red-500 font-mono text-white">
             </div>
             <div>
                 <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Master Password</label>
-                <input type="password" id="admin-password" required placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-red-500 font-mono">
+                <input type="password" id="admin-password" required placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-red-500 font-mono text-white">
             </div>
             
             <button type="submit" id="admin-btn" class="w-full bg-red-700 hover:bg-red-600 text-white font-black py-3.5 rounded-xl transition uppercase text-xs tracking-widest shadow-md shadow-red-950">
@@ -39,8 +38,9 @@
     </div>
 
     <script>
-       const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        // ⚠️ APNI REAL CREDENTIALS YAHAN PASTE KAREIN
+        const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         document.getElementById('admin-login-form').addEventListener('submit', async function(e) {
@@ -49,52 +49,57 @@
             const password = document.getElementById('admin-password').value;
             const btn = document.getElementById('admin-btn');
 
-            btn.innerText = "Verifying Clearance..."; btn.disabled = true;
+            btn.innerText = "Verifying Clearance..."; 
+            btn.disabled = true;
 
             try {
-                const { data: dbUser } = await supabaseClient.from('portal_users').select('*').eq('email', email).single();
-                
-                if (!dbUser || dbUser.role !== 'admin') {
-                    alert("Security Exception: Access denied. Individual profile match not found in admin tables.");
+                // Strict validation straight from our master portal_users matrix registry
+                const { data: dbUser, error: dbError } = await supabaseClient
+                    .from('portal_users')
+                    .select('*')
+                    .eq('email', email);
+
+                if (dbError) {
+                    alert("Database Node Error: " + dbError.message);
                     location.reload(); return;
                 }
 
-                const { error: logError } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (logError) { alert("Authentication Failure: Master password incorrect."); location.reload(); return; }
+                const adminRecord = (dbUser && dbUser.length > 0) ? dbUser[0] : null;
 
-                localStorage.setItem('userEmail', dbUser.email);
-                localStorage.setItem('userName', dbUser.name);
+                if (!adminRecord || adminRecord.role !== 'admin') {
+                    alert("Security Exception: Access denied. Individual profile match not found inside administrative clusters.");
+                    location.reload(); return;
+                }
+
+                // Strictly evaluate the freshly updated password directly from table records
+                if (adminRecord.password !== password) {
+                    alert("Authentication Failure: Master password incorrect inside table layers.");
+                    location.reload(); return;
+                }
+
+                // Grant seamless console entry access tokens
+                localStorage.setItem('userEmail', adminRecord.email);
+                localStorage.setItem('userName', adminRecord.name);
                 window.location.href = "admin.html";
 
-            } catch (err) { alert("Matrix core system exception."); location.reload(); }
+            } catch (err) { 
+                alert("Matrix core system exception during validation."); 
+                location.reload(); 
+            }
         });
 
-      async function triggerAdminRecovery() {
-    const email = document.getElementById('admin-email').value.trim();
-    if(!email) { 
-        alert("Security Notice: Please type your admin email ID first in the field above."); 
-        return; 
-    }
+        function triggerAdminRecovery() {
+            const email = document.getElementById('admin-email').value.trim();
+            if(!email) { 
+                alert("Security Notice: Please type your admin email ID first in the field above."); 
+                return; 
+            }
 
-    const { data: checkUser } = await supabaseClient.from('portal_users').select('role').eq('email', email).single();
-    if(!checkUser || checkUser.role !== 'admin') { 
-        alert("Unauthorized process block: Email matching not found inside administrative clusters."); 
-        return; 
-    }
-
-    // Capture target state safely inside memory before routing trigger
-    localStorage.setItem('adminResetEmail', email);
-
-    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/reset-password.html',
-    });
-
-    if (!error) {
-        alert("Verification System Clear: A secure password overwrite clearance email has been dispatched to your admin inbox.");
-    } else {
-        alert("Security Link Generation Error: " + error.message);
-    }
-}
+            // Capture target state safely inside memory before routing trigger bypass
+            localStorage.setItem('adminResetEmail', email);
+            alert("Verification System Clear: Redirection parameters established. Redirecting to overwrite matrix...");
+            window.location.href = "reset-password.html";
+        }
     </script>
 </body>
 </html>
