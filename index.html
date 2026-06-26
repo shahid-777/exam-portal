@@ -56,13 +56,22 @@ document.getElementById('direct-login-form').addEventListener('submit', async fu
     loginBtn.disabled = true;
 
     try {
-        const { data: dbUser } = await supabaseClient
+        // Step 1: Use .select() instead of .single() to avoid error crashes for new users
+        const { data: userRows, error: dbError } = await supabaseClient
             .from('portal_users')
             .select('*')
-            .eq('email', email)
-            .single();
+            .eq('email', email);
 
-        // STRICT SECURITY BLOCK: Admin cannot log in from here
+        if (dbError) {
+            alert("Database Gateway Error: " + dbError.message);
+            resetBtn();
+            return;
+        }
+
+        // Extract user data if exists
+        const dbUser = (userRows && userRows.length > 0) ? userRows[0] : null;
+
+        // STRICT SECURITY BLOCK: Admin cannot log in from this student page
         if (dbUser && dbUser.role === 'admin') {
             alert("Access Denied: Admin authentication is restricted on this terminal. Please use the secure administrative panel.");
             resetBtn();
@@ -70,25 +79,58 @@ document.getElementById('direct-login-form').addEventListener('submit', async fu
         }
 
         if (dbUser) {
-            const { error: logError } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (logError) { alert("Invalid Password."); resetBtn(); return; }
+            // CASE A: User already exists in database -> Perform strict login check
+            const { error: logError } = await supabaseClient.auth.signInWithPassword({ 
+                email: email, 
+                password: password 
+            });
+            
+            if (logError) { 
+                alert("Security Exception: Invalid Password for this registered account."); 
+                resetBtn(); 
+                return; 
+            }
             
             localStorage.setItem('userEmail', dbUser.email);
             localStorage.setItem('userName', dbUser.name);
             window.location.href = "dashboard.html";
         } else {
-            // New student auto-registration
-            const { error: regError } = await supabaseClient.auth.signUp({ email, password });
-            if (regError) { alert(regError.message); resetBtn(); return; }
+            // CASE B: Absolutely New User -> Fresh Registration Mode triggered
+            const { data: regData, error: regError } = await supabaseClient.auth.signUp({ 
+                email: email, 
+                password: password 
+            });
 
+            if (regError) { 
+                alert("Registration Gateway Error: " + regError.message); 
+                resetBtn(); 
+                return; 
+            }
+
+            // Sync configuration inside user registry mapping table
             const extName = email.split('@')[0];
-            await supabaseClient.from('portal_users').insert([{ email, name: extName, password, role: 'student' }]);
+            const { error: insError } = await supabaseClient
+                .from('portal_users')
+                .insert([{ 
+                    email: email, 
+                    name: extName, 
+                    password: password, 
+                    role: 'student' 
+                }]);
             
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('userName', extName);
-            window.location.href = "dashboard.html";
+            if (!insError) {
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userName', extName);
+                window.location.href = "dashboard.html";
+            } else {
+                alert("Database Initialization Error: " + insError.message);
+                resetBtn();
+            }
         }
-    } catch (err) { alert("Processing Exception."); resetBtn(); }
+    } catch (err) { 
+        alert("Processing Matrix Exception."); 
+        resetBtn(); 
+    }
     function resetBtn() { loginBtn.innerText = "Sign In / Register"; loginBtn.disabled = false; }
 });
 </script>
