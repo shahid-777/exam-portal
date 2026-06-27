@@ -1,1 +1,212 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="logo.png">
+    <title>Live Examination Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen select-none">
+
+    <!-- Header bar -->
+    <div class="w-full bg-slate-900 border-b border-slate-800 py-4 px-6 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="bg-white p-1 rounded-lg flex items-center justify-center">
+                <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-sm font-black text-red-500 tracking-wider uppercase leading-none">Live</span>
+                <span id="active-subject-title" class="text-[10px] font-bold text-slate-400 tracking-widest uppercase font-mono mt-0.5">Loading Test...</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2 bg-red-950/40 px-3 py-1.5 rounded-lg border border-red-500/20">
+            <span class="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
+            <span class="text-[10px] font-mono text-red-400 uppercase tracking-wider">Exam Monitoring Active</span>
+        </div>
+    </div>
+
+    <!-- Main Live Test Environment Layout -->
+    <main class="max-w-3xl mx-auto p-4 sm:p-6 mt-4">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 sm:p-8 space-y-6">
+            
+            <!-- Question Header Information Area -->
+            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                <span id="question-counter" class="text-xs font-mono font-black text-slate-400 uppercase tracking-wider">Question -- of --</span>
+                <span class="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-bold border border-amber-200/50">Do not refresh page</span>
+            </div>
+
+            <!-- Dynamic Question Text Space -->
+            <div id="question-text-container">
+                <h2 id="live-question-text" class="text-base sm:text-lg font-black text-slate-800 leading-relaxed">Retrieving examination paper payload securely...</h2>
+            </div>
+
+            <!-- Option Group Choices Matrix -->
+            <div id="options-matrix-container" class="grid grid-cols-1 gap-3 pt-2">
+                <!-- JavaScript automatically populates interactive options buttons here -->
+            </div>
+
+            <!-- Control Actions Pagination Navigation Footer -->
+            <div class="flex justify-between items-center border-t border-slate-100 pt-6 mt-4">
+                <button id="prev-btn" onclick="navigateQuestion(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-5 py-3 rounded-xl transition active:scale-95 disabled:opacity-40 disabled:pointer-events-none">
+                    Previous
+                </button>
+                <button id="next-btn" onclick="navigateQuestion(1)" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition active:scale-95">
+                    Next Question
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let questionsList = [];
+        let currentQuestionIdx = 0;
+        let studentAnswersMapping = {}; // Stores user choices index entries
+
+        window.onload = async function() {
+            const email = localStorage.getItem('userEmail');
+            if(!email) { window.location.href = "index.html"; return; }
+
+            // Extract targeted URL queries parameter tokens safely
+            const urlParams = new URLSearchParams(window.location.search);
+            const subjectParam = urlParams.get('subject');
+
+            if(!subjectParam) {
+                alert("Terminal Error: Subject target configuration validation token missing.");
+                window.location.href = "dashboard.html"; return;
+            }
+
+            document.getElementById('active-subject-title').innerText = decodeURIComponent(subjectParam);
+            await fetchExaminationPaper(decodeURIComponent(subjectParam));
+        };
+
+        // Fetch target paper maps from Supabase nodes dynamically
+        async function fetchExaminationPaper(subjectName) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('exams')
+                    .select('questions_json')
+                    .eq('subject', subjectName)
+                    .single();
+
+                if (error || !data || !Array.isArray(data.questions_json)) {
+                    alert("Failure loading questions structure node data.");
+                    window.location.href = "dashboard.html"; return;
+                }
+
+                questionsList = data.questions_json;
+                if(questionsList.length === 0) {
+                    alert("Notice: This test currently contains no active question nodes.");
+                    window.location.href = "dashboard.html"; return;
+                }
+
+                renderActiveQuestionCard();
+
+            } catch (err) {
+                alert("System network exception sequence.");
+            }
+        }
+
+        // Render target active question indexes elements
+        function renderActiveQuestionCard() {
+            const currentQuestion = questionsList[currentQuestionIdx];
+            
+            // Update question info header elements
+            document.getElementById('question-counter').innerText = `Question ${currentQuestionIdx + 1} of ${questionsList.length}`;
+            document.getElementById('live-question-text').innerText = currentQuestion.question;
+
+            const optionsContainer = document.getElementById('options-matrix-container');
+            optionsContainer.innerHTML = "";
+
+            const optionLabels = ['A', 'B', 'C', 'D'];
+
+            if(Array.isArray(currentQuestion.options)) {
+                currentQuestion.options.forEach((optionText, index) => {
+                    // Highlight selected values
+                    const isSelected = studentAnswersMapping[currentQuestionIdx] === index;
+                    const selectionClasses = isSelected 
+                        ? 'border-blue-600 bg-blue-50/60 ring-2 ring-blue-500/20 text-blue-900' 
+                        : 'border-slate-200 bg-white hover:bg-slate-50/80 text-slate-700';
+
+                    optionsContainer.innerHTML += `
+                        <button onclick="recordStudentChoice(${index})" class="w-full text-left border-2 p-4 text-sm font-semibold rounded-2xl transition duration-150 flex items-center space-x-3 active:scale-[0.99] ${selectionClasses}">
+                            <span class="w-6 h-6 flex items-center justify-center rounded-lg text-xs font-mono font-black ${isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'}">${optionLabels[index]}</span>
+                            <span class="flex-1">${optionText}</span>
+                        </button>
+                    `;
+                });
+            }
+
+            // Pagination edge triggers config adjustments
+            document.getElementById('prev-btn').disabled = currentQuestionIdx === 0;
+            
+            const nextBtn = document.getElementById('next-btn');
+            if (currentQuestionIdx === questionsList.length - 1) {
+                nextBtn.innerText = "Submit Examination Paper";
+                nextBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition active:scale-95";
+            } else {
+                nextBtn.innerText = "Next Question";
+                nextBtn.className = "bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition active:scale-95";
+            }
+        }
+
+        function recordStudentChoice(optionIndex) {
+            studentAnswersMapping[currentQuestionIdx] = optionIndex;
+            renderActiveQuestionCard(); // Re-render option state instantly
+        }
+
+        function navigateQuestion(direction) {
+            if (direction === 1 && currentQuestionIdx === questionsList.length - 1) {
+                processFinalTestSubmission();
+                return;
+            }
+            currentQuestionIdx += direction;
+            renderActiveQuestionCard();
+        }
+
+        // Process final calculations core pipeline scoring mapping indexes rules
+        async function processFinalTestSubmission() {
+            if(!confirm("Are you sure you want to end and submit this examination?")) return;
+
+            let finalCalculatedScore = 0;
+            questionsList.forEach((q, idx) => {
+                const studentSelection = studentAnswersMapping[idx];
+                const targetCorrectIndex = parseInt(q.correct, 10);
+                if(studentSelection !== undefined && studentSelection === targetCorrectIndex) {
+                    finalCalculatedScore++;
+                }
+            });
+
+            const email = localStorage.getItem('userEmail');
+            const name = localStorage.getItem('userName') || email; // Fallback to email if name is missing
+
+            try {
+                // Post calculations score matrices schema into Supabase results table node
+                const { error } = await supabaseClient
+                    .from('results')
+                    .insert({
+                        name: name,
+                        score: finalCalculatedScore
+                    });
+
+                if(error) {
+                    alert("Submission save syncing exception: " + error.message);
+                    return;
+                }
+
+                alert(`Examination submitted successfully! Your evaluated raw score is: ${finalCalculatedScore}`);
+                window.location.href = "dashboard.html";
+
+            } catch (err) {
+                alert("Core network timeout during submission transmission.");
+            }
+        }
+    </script>
+</body>
+</html>
