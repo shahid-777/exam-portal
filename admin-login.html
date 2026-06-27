@@ -47,6 +47,10 @@
 
         document.getElementById('admin-login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // 🔄 Step 1: Login process shuru hote hi local storage ko clear karein taaki purane dynamic cookies/tokens clean ho jayein
+            localStorage.clear();
+
             const email = document.getElementById('admin-email').value.trim();
             const password = document.getElementById('admin-password').value;
             const btn = document.getElementById('admin-btn');
@@ -84,12 +88,15 @@
                 statusText.innerText = "Clearance Granted. Redirecting...";
                 statusText.className = "text-green-500 mb-6 text-xs text-center font-mono";
                 
-                // 🔑 LOCKED UPDATED SECURITY SEED MODULES (Matching the new Admin Guard script)
+                // 🔑 Keys write operation
                 localStorage.setItem('adminEmail', adminRecord.email);
                 localStorage.setItem('adminUserName', adminRecord.name);
                 localStorage.setItem('adminSessionTime', Date.now().toString());
                 
-                window.location.href = "admin.html";
+                // ⏱️ Storage sync buffer (Increased from 100ms to 300ms for stable memory writes)
+                setTimeout(() => {
+                    window.location.href = "admin.html";
+                }, 300);
 
             } catch (err) { 
                 statusText.innerText = "Matrix core system exception during validation.";
@@ -117,7 +124,7 @@
             
             setTimeout(() => {
                 window.location.href = "reset-password.html";
-            }, 2000); // ⏱️ Reduced latency timeout from 8s to 2s for an instant smooth transition
+            }, 2000); 
         }
     </script>
 </body>
