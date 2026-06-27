@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 📥 BROWSER TAB LOGO (FAVICON) CODELINE -->
     <link rel="icon" type="image/png" href="logo.png">
     <title>Secure Admin Authentication Gateway</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,11 +19,11 @@
         <form id="admin-login-form" class="space-y-4" autocomplete="off">
             <div>
                 <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Admin Security Email</label>
-                <input type="email" id="admin-email" autocomplete="chrome-off" name="secure_admin_email_field" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-red-500 font-mono text-white">
+                <input type="email" id="admin-email" name="secure_admin_email_field" autocomplete="one-time-code" placeholder="admin@gmail.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-red-500 font-mono text-white placeholder-slate-600">
             </div>
             <div>
                 <label class="block text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Master Password</label>
-                <input type="password" id="admin-password" required placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-red-500 font-mono text-white">
+                <input type="password" id="admin-password" required placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-red-500 font-mono text-white placeholder-slate-600">
             </div>
             
             <button type="submit" id="admin-btn" class="w-full bg-red-700 hover:bg-red-600 text-white font-black py-3.5 rounded-xl transition uppercase text-xs tracking-widest shadow-md shadow-red-950">
@@ -40,7 +39,6 @@
     </div>
 
     <script>
-        // ⚠️ APNI REAL SUPABASE CREDENTIALS YAHAN UPDATE KAREIN
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -86,8 +84,11 @@
                 statusText.innerText = "Clearance Granted. Redirecting...";
                 statusText.className = "text-green-500 mb-6 text-xs text-center font-mono";
                 
-                localStorage.setItem('userEmail', adminRecord.email);
-                localStorage.setItem('userName', adminRecord.name);
+                // 🔑 LOCKED UPDATED SECURITY SEED MODULES (Matching the new Admin Guard script)
+                localStorage.setItem('adminEmail', adminRecord.email);
+                localStorage.setItem('adminUserName', adminRecord.name);
+                localStorage.setItem('adminSessionTime', Date.now().toString());
+                
                 window.location.href = "admin.html";
 
             } catch (err) { 
@@ -101,22 +102,23 @@
                 btn.innerText = "Authorize Session";
             }
         });
-function triggerAdminRecovery() {
-    const email = document.getElementById('admin-email').value.trim();
-    if(!email) { 
-        statusText.innerText = "Notice: Please type your admin email ID first in the field above.";
-        statusText.className = "text-yellow-500 mb-6 text-xs text-center font-mono";
-        return; 
-    }
 
-    localStorage.setItem('adminResetEmail', email);
-    statusText.innerText = "Security redirection parameters verified. Opening validation matrix...";
-    statusText.className = "text-green-500 mb-6 text-xs text-center font-mono";
-    
-    setTimeout(() => {
-        window.location.href = "reset-password.html";
-    }, 8000);
-}
+        function triggerAdminRecovery() {
+            const email = document.getElementById('admin-email').value.trim();
+            if(!email) { 
+                statusText.innerText = "Notice: Please type your admin email ID first in the field above.";
+                statusText.className = "text-yellow-500 mb-6 text-xs text-center font-mono";
+                return; 
+            }
+
+            localStorage.setItem('adminResetEmail', email);
+            statusText.innerText = "Security redirection parameters verified. Opening validation matrix...";
+            statusText.className = "text-green-500 mb-6 text-xs text-center font-mono";
+            
+            setTimeout(() => {
+                window.location.href = "reset-password.html";
+            }, 2000); // ⏱️ Reduced latency timeout from 8s to 2s for an instant smooth transition
+        }
     </script>
 </body>
 </html>
