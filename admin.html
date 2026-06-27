@@ -1,16 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-    // 🛡️ AUTHENTICATION GUARD: BINA LOGIN ACCESS BLOCK KO LOCK KAREIN
+  <script>
+    // 🛡️ STRICT ADMINISTRATIVE ROUTE GUARD
     (function() {
         const email = localStorage.getItem('userEmail');
+        const loginTime = localStorage.getItem('sessionLoginTime');
         
-        // Agar local storage mein user ka email session nahi milta hai
-        if (!email) {
-            alert("Access Denied: Please sign in via the official entry gateway first.");
-            // Instant redirect to login portal layer
+        // Agar local storage mein email hi nahi hai, toh seedhe baahar bhejo
+        if (!email || !loginTime) {
+            localStorage.clear();
+            alert("Access Denied: Administrative terminal requires official authorization key.");
             window.location.replace("index.html");
+            return;
+        }
+
+        // ⚠️ TRIPLE CHECK SECURITY:
+        // Agar aapka email ya role check administrative permissions se match nahi hota,
+        // (Jaise agar kisi student ne login kiya hua hai aur woh direct admin.html khol rha hai)
+        // Toh aapko aapki official admin email string yahan strictly match karni hogi:
+        const OFFICIAL_ADMIN_EMAIL = "shahid777gauri@gmail.com"; // <-- Apni asli admin email yahan confirm karein
+
+        if (email.toLowerCase() !== OFFICIAL_ADMIN_EMAIL.toLowerCase()) {
+            alert("Security Breach: Your current active account token is not authorized to access the Admin Panel.");
+            window.location.replace("dashboard.html"); // Student ko student dashboard par phek do
+            return;
+        }
+
+        // Session Time Limit Check (Admin ke liye bhi 2 Ghante max lifespan)
+        const currentTimestamp = Date.now();
+        if (currentTimestamp - parseInt(loginTime, 10) > 2 * 60 * 60 * 1000) {
+            localStorage.clear();
+            alert("Admin Session Expired: Please re-authenticate via secure entry gateway.");
+            window.location.replace("index.html");
+            return;
         }
     })();
 </script>
