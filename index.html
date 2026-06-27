@@ -5,46 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="logo.png">
 
-    <title><h1>Computer Science Mock Test - Online Exam Portal</h1></title>
+    <title>Computer Science Mock Test - Online Exam Portal</title>
     
     <meta name="description" content="Access the best online exam portal for [test series]. Practice mock tests, check global leaderboards, and evaluate your academic performance instantly.">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen font-sans px-4 sm:px-6 lg:px-8">
-    <!-- Full Width Responsive Top Navigation Bar -->
-<header class="w-full bg-slate-900/90 backdrop-blur border-b border-slate-800/80 fixed top-0 left-0 z-50 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-lg">
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen font-sans px-4 sm:px-6 lg:px-8 pt-20">
     
-    <!-- Left Section: Logo & University Branding Matrix -->
-    <div class="flex items-center space-x-3.5">
-        <div class="bg-white p-1 rounded-lg shadow-inner flex items-center justify-center">
-            <img src="logo.png" alt="Logo" class="h-9 w-auto object-contain fallback-logo">
+    <header class="w-full bg-slate-900/90 backdrop-blur border-b border-slate-800/80 fixed top-0 left-0 z-50 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-lg">
+        <div class="flex items-center space-x-3.5">
+            <div class="bg-white p-1 rounded-lg shadow-inner flex items-center justify-center">
+                <img src="logo.png" alt="Logo" class="h-9 w-auto object-contain fallback-logo">
+            </div>
+            <div class="flex flex-col justify-center">
+                <span class="text-[10px] font-bold text-slate-400 tracking-widest uppercase font-mono leading-none">Exam Portal</span>
+            </div>
         </div>
-        <div class="flex flex-col justify-center">
-            
-            <span class="text-[10px] font-bold text-slate-400 tracking-widest uppercase font-mono leading-none">Exam Portal</span>
+
+        <div class="flex items-center space-x-2 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-emerald-500/20 shadow-md">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span class="text-[9px] font-mono text-emerald-400 font-bold uppercase tracking-widest">Secure Node Active</span>
         </div>
-    </div>
+    </header>
 
-    <!-- Right Section: Live Micro-Cluster Node Security Status -->
-    <div class="flex items-center space-x-2 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-emerald-500/20 shadow-md">
-        <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-        </span>
-        <span class="text-[9px] font-mono text-emerald-400 font-bold uppercase tracking-widest">Secure Node Active</span>
-    </div>
-
-</header>
-
-
-   
-
-</div>
     <div class="bg-gray-800 p-6 sm:p-10 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700 my-4">
         <h1 class="text-2xl sm:text-3xl font-black text-blue-500 mb-2 tracking-wide text-center uppercase">ONLINE EXAM PORTAL</h1>
-        <p id="portal-desc" class="text-gray-400 mb-6 text-xs sm:text-sm text-center">Enter your email and password to access the test series.</p>
+        <p id="portal-desc" class="text-gray-400 mb-6 text-xs sm:text-sm text-center">Sign in using your corporate identity or email configurations.</p>
         
         <form id="direct-login-form" class="space-y-4 sm:space-y-5">
             <div>
@@ -61,23 +52,70 @@
             </button>
         </form>
 
+        <div class="relative flex py-5 items-center">
+            <div class="flex-grow border-t border-gray-700"></div>
+            <span class="flex-shrink mx-4 text-gray-500 text-[10px] font-bold uppercase tracking-widest">OR</span>
+            <div class="flex-grow border-t border-gray-700"></div>
+        </div>
+
+        <button onclick="signInWithGoogle()" class="w-full flex items-center justify-center space-x-2.5 bg-white hover:bg-gray-100 text-gray-800 font-black py-3.5 px-4 rounded-xl transition duration-200 shadow-md uppercase text-xs sm:text-sm tracking-wider active:scale-[0.99]">
+            <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4 sm:w-5 sm:h-5 object-contain" alt="Google Token Logo">
+            <span>Continue with Google</span>
+        </button>
+
         <div class="mt-6 text-center text-[10px] sm:text-xs text-gray-500 font-medium">
             Real-time multi-user student verification cluster.
         </div>
     </div>
 
     <script>
-        // Clear cached credentials instantly when landing on login page
-        window.onload = function() {
-            localStorage.clear();
-            console.log("Session memory refreshed.");
-        };
-
-        // ⚠️ APNI ASLI SUPABASE CREDENTIALS YAHAN PASTE KAREIN
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // 🔄 HANDLES INBOUND REDIRECTION AND AUTHENTICATION CHECK LOOPS
+        window.onload = async function() {
+            try {
+                // Read current session status maps from active tab runtime context
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (session && session.user) {
+                    const activeUser = session.user;
+                    console.log("Active Google OAuth Payload verified:", activeUser);
+
+                    // Sync user metadata securely into the system memory channels
+                    localStorage.setItem('userEmail', activeUser.email);
+                    
+                    const extractedName = activeUser.user_metadata.full_name || activeUser.email.split('@')[0];
+                    localStorage.setItem('userName', extractedName);
+
+                    // Redirect user safely to dashboard nodes
+                    window.location.href = "dashboard.html";
+                } else {
+                    console.log("No persistent sessions found. Memory clean.");
+                }
+            } catch (err) {
+                console.error("Session catch validation runtime loop failure.");
+            }
+        };
+
+        // 🌐 INTERACTIVE HANDLER: EXECUTES INTER-SERVER GOOGLE SIGN-IN HANDSHAKES
+        async function signInWithGoogle() {
+            try {
+                const { error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        // Redirect maps the candidate directly to home interface domains upon auth success
+                        redirectTo: 'https://exam-portal-cse.online/index.html'
+                    }
+                });
+                if (error) throw error;
+            } catch (err) {
+                alert("Google Authentication Interception: " + err.message);
+            }
+        }
+
+        // Standard Form Handling Engine
         document.getElementById('direct-login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
@@ -88,7 +126,6 @@
             loginBtn.disabled = true;
 
             try {
-                // Step 1: Use .select() instead of .single() to avoid error crashes for new users
                 const { data: userRows, error: dbError } = await supabaseClient
                     .from('portal_users')
                     .select('*')
@@ -100,18 +137,15 @@
                     return;
                 }
 
-                // Extract user data if exists
                 const dbUser = (userRows && userRows.length > 0) ? userRows[0] : null;
 
-                // STRICT SECURITY BLOCK: Admin cannot log in from this student page
                 if (dbUser && dbUser.role === 'admin') {
-                    alert("Access Denied: Admin authentication is restricted on this terminal. Please use the secure administrative panel.");
+                    alert("Access Denied: Admin authentication is restricted on this terminal.");
                     resetBtn();
                     return;
                 }
 
                 if (dbUser) {
-                    // CASE A: User already exists in database -> Perform strict login check
                     const { error: logError } = await supabaseClient.auth.signInWithPassword({ 
                         email: email, 
                         password: password 
@@ -127,7 +161,6 @@
                     localStorage.setItem('userName', dbUser.name);
                     window.location.href = "dashboard.html";
                 } else {
-                    // CASE B: Absolutely New User -> Fresh Registration Mode triggered
                     const { data: regData, error: regError } = await supabaseClient.auth.signUp({ 
                         email: email, 
                         password: password 
@@ -139,7 +172,6 @@
                         return; 
                     }
 
-                    // Sync configuration inside user registry mapping table
                     const extName = email.split('@')[0];
                     const { error: insError } = await supabaseClient
                         .from('portal_users')
@@ -165,14 +197,13 @@
             }
             function resetBtn() { loginBtn.innerText = "Sign In / Register"; loginBtn.disabled = false; }
         });
-        // Automatically handles broken image states seamlessly
-document.querySelectorAll('.fallback-logo').forEach(img => {
-    img.onerror = function() {
-        // If image file fails to load, replace it with a clean text block placeholder dynamically
-        this.style.display = 'none';
-        console.warn("Logo asset missing from core registry folder repository.");
-    };
-});
+
+        document.querySelectorAll('.fallback-logo').forEach(img => {
+            img.onerror = function() {
+                this.style.display = 'none';
+                console.warn("Logo asset missing from core registry folder repository.");
+            };
+        });
     </script>
 </body>
 </html>
