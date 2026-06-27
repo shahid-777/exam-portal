@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 📥 BROWSER TAB LOGO (FAVICON) CODELINE -->
     <link rel="icon" type="image/png" href="logo.png">
     <title>Live Examination Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,16 +13,13 @@
     <!-- 📌 FIXED TOP HEADER ROW -->
     <div class="w-full bg-slate-900 border-b border-slate-800 py-4 px-6 flex items-center justify-between sticky top-0 z-50 shadow-md">
         <div class="flex items-center space-x-4">
-            <!-- 🏠 HOME BUTTON (Auto-Submit Trigger) -->
             <button onclick="triggerHomeRedirect()" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs py-2 px-3 rounded-xl transition active:scale-95">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                 </svg>
                 <span>Home</span>
             </button>
-
             <div class="h-6 w-px bg-slate-800"></div>
-
             <div class="flex items-center space-x-2">
                 <div class="bg-white p-1 rounded-lg flex items-center justify-center">
                     <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain">
@@ -35,7 +31,6 @@
             </div>
         </div>
         
-        <!-- ⏱️ LIVE TIMER WIDGET DISPLAY -->
         <div class="flex items-center space-x-4">
             <div class="bg-slate-950 px-4 py-2 rounded-xl border border-amber-500/30 flex items-center space-x-2">
                 <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
@@ -48,7 +43,6 @@
     <!-- Main Live Test Environment Layout -->
     <main id="main-exam-layout" class="max-w-3xl mx-auto p-4 sm:p-6 mt-6">
         <div class="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 sm:p-8 space-y-6">
-            
             <div class="flex justify-between items-center border-b border-slate-100 pb-4">
                 <span id="question-counter" class="text-xs font-mono font-black text-slate-400 uppercase tracking-wider">Question -- of --</span>
                 <span class="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-bold border border-amber-200/50">Do not refresh page</span>
@@ -61,63 +55,78 @@
             <div id="options-matrix-container" class="grid grid-cols-1 gap-3 pt-2"></div>
 
             <div class="flex justify-between items-center border-t border-slate-100 pt-6 mt-4">
-                <button id="prev-btn" onclick="navigateQuestion(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-5 py-3 rounded-xl transition active:scale-95 disabled:opacity-40 disabled:pointer-events-none">
-                    Previous
-                </button>
-                <button id="next-btn" onclick="navigateQuestion(1)" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition active:scale-95">
-                    Next Question
-                </button>
+                <button id="prev-btn" onclick="navigateQuestion(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-5 py-3 rounded-xl transition active:scale-95 disabled:opacity-40 disabled:pointer-events-none">Previous</button>
+                <button id="next-btn" onclick="navigateQuestion(1)" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition active:scale-95">Next Question</button>
             </div>
         </div>
     </main>
 
-    <!-- 📊 DYNAMIC RESULT ANALYSIS MODAL LAYER (Popup Panel) -->
-    <div id="analysis-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 p-6 sm:p-8 transform transition-all scale-100 space-y-6">
+    <!-- 📊 DYNAMIC FULL-SCREEN RESULT REVIEW PANEL -->
+    <div id="analysis-modal" class="hidden fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-slate-50 w-full max-w-4xl h-[90vh] rounded-2xl shadow-2xl border border-slate-300 flex flex-col overflow-hidden transform transition-all">
             
-            <div class="text-center space-y-1">
-                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2 shadow-inner">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
+            <!-- Modal Fixed Top Dashboard Header -->
+            <div class="bg-white border-b border-slate-200 p-6 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-center sm:text-left space-y-0.5">
+                    <h3 class="text-xl font-black text-slate-900 uppercase tracking-wide">Exam Performance Dashboard</h3>
+                    <p class="text-xs text-slate-400 font-medium">Verify your final marks matrix and correct answers analysis below.</p>
                 </div>
-                <h3 class="text-xl font-black text-slate-900 uppercase tracking-wide">Exam Performance Report</h3>
-                <p class="text-xs text-slate-400 font-medium">Your score metrics have been securely compiled below.</p>
+                <!-- Action Return Dashboard -->
+                <button onclick="window.location.href='dashboard.html'" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3 px-6 rounded-xl uppercase tracking-wider transition shadow-md active:scale-95">
+                    Return to Dashboard
+                </button>
             </div>
 
-            <!-- Stats Grid Breakdown Matrix -->
-            <div class="grid grid-cols-3 gap-3 text-center">
-                <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl">
-                    <span class="block text-[10px] font-mono font-black text-blue-500 uppercase tracking-wider">Total Items</span>
-                    <span id="modal-total" class="text-xl font-mono font-black text-blue-900">0</span>
+            <!-- Stats & Question List Scroll Area Component -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+                
+                <!-- Performance Statistics Bar Row Component -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                    <div class="grid grid-cols-3 gap-2 md:col-span-3 text-center">
+                        <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl">
+                            <span class="block text-[10px] font-mono font-black text-blue-500 uppercase tracking-wider">Total Questions</span>
+                            <span id="modal-total" class="text-xl font-mono font-black text-blue-900">0</span>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-xl">
+                            <span class="block text-[10px] font-mono font-black text-emerald-500 uppercase tracking-wider">Correct Picks</span>
+                            <span id="modal-correct" class="text-xl font-mono font-black text-emerald-900">0</span>
+                        </div>
+                        <div class="bg-red-50 border border-red-100 p-3 rounded-xl">
+                            <span class="block text-[10px] font-mono font-black text-red-500 uppercase tracking-wider">Wrong Picks</span>
+                            <span id="modal-wrong" class="text-xl font-mono font-black text-red-900">0</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl space-y-1">
+                        <div class="flex justify-between items-center text-[11px] font-bold text-slate-500 uppercase">
+                            <span>Accuracy Score:</span>
+                            <span id="modal-percentage" class="font-mono text-blue-600">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div id="modal-progress-bar" class="bg-blue-600 h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-xl">
-                    <span class="block text-[10px] font-mono font-black text-emerald-500 uppercase tracking-wider">Correct</span>
-                    <span id="modal-correct" class="text-xl font-mono font-black text-emerald-900">0</span>
-                </div>
-                <div class="bg-red-50 border border-red-100 p-3 rounded-xl">
-                    <span class="block text-[10px] font-mono font-black text-red-500 uppercase tracking-wider">Wrong</span>
-                    <span id="modal-wrong" class="text-xl font-mono font-black text-red-900">0</span>
-                </div>
-            </div>
 
-            <!-- Accuracy Percentage Bar -->
-            <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl space-y-2">
-                <div class="flex justify-between items-center text-xs font-bold text-slate-600">
-                    <span>Performance Score:</span>
-                    <span id="modal-percentage" class="font-mono text-blue-600">0%</span>
+                <!-- 📝 COMPLETE FULL CONFIGURATION SHEET QUESTIONS REVIEW -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest font-mono border-b border-slate-200 pb-2 flex items-center space-x-2">
+                        <span>Detailed Questionnaire Sheet Validation Matrix</span>
+                    </h4>
+                    <div id="questions-review-list" class="space-y-5">
+                        <!-- Dynamic Detailed Rows Injected Here -->
+                    </div>
                 </div>
-                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                    <div id="modal-progress-bar" class="bg-blue-600 h-full transition-all duration-500" style="width: 0%"></div>
-                </div>
-            </div>
 
-            <!-- Action Button -->
-            <button onclick="window.location.href='dashboard.html'" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black text-xs py-4 px-4 rounded-xl uppercase tracking-widest transition active:scale-[0.99] shadow-md">
-                Return to Dashboard
-            </button>
+            </div>
         </div>
     </div>
+
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
 
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
@@ -168,7 +177,6 @@
 
                 renderActiveQuestionCard();
                 startExamCountdownTimer(); 
-
             } catch (err) {
                 alert("System network exception sequence.");
             }
@@ -176,11 +184,9 @@
 
         function startExamCountdownTimer() {
             if(timerIntervalHook) clearInterval(timerIntervalHook);
-            
             timerIntervalHook = setInterval(() => {
                 if (totalSecondsLeft <= 0) {
                     clearInterval(timerIntervalHook);
-                    alert("Time's Up! Your examination paper is being automatically submitted.");
                     processFinalTestSubmission(true); 
                     return;
                 }
@@ -247,13 +253,9 @@
             }
         }
 
-        // 🧠 DEEP CORE ANALYSIS SUBMISSION HANDLING CORE ENGINE
         async function processFinalTestSubmission(isForcedSubmission = false) {
             if (isSubmitted) return; 
-            
-            if(!isForcedSubmission) {
-                if(!confirm("Are you sure you want to end and submit this examination?")) return;
-            }
+            if(!isForcedSubmission && !confirm("Are you sure you want to end and submit this examination?")) return;
 
             isSubmitted = true;
             clearInterval(timerIntervalHook); 
@@ -261,52 +263,44 @@
             let correctCount = 0;
             let wrongCount = 0;
 
-            // Compute exact granular matrix score components
             questionsList.forEach((q, idx) => {
                 const studentSelection = studentAnswersMapping[idx];
                 const targetCorrectIndex = parseInt(q.correct, 10);
-                
                 if (studentSelection !== undefined) {
-                    if (studentSelection === targetCorrectIndex) {
-                        correctCount++;
-                    } else {
-                        wrongCount++;
-                    }
+                    if (studentSelection === targetCorrectIndex) correctCount++;
+                    else wrongCount++;
+                } else {
+                    wrongCount++; 
                 }
             });
 
             const email = localStorage.getItem('userEmail');
             const name = localStorage.getItem('userName') || email;
-            const totalQs = questionsList.length;
 
             try {
-                // Update results with granular score statistics keys
                 const { error } = await supabaseClient
                     .from('results')
                     .insert({ 
                         name: name, 
-                        score: correctCount, // Backwards-compatible score field
-                        total_questions: totalQs,
+                        score: correctCount, 
+                        total_questions: questionsList.length,
                         correct_answers: correctCount,
                         wrong_answers: wrongCount
                     });
 
                 if(error) {
                     alert("Submission syncing exception: " + error.message);
-                    isSubmitted = false;
-                    return;
+                    isSubmitted = false; return;
                 }
 
-                // Render dynamic Report Modal directly onto the screen viewport seamlessly
-                showAnalysisReportView(totalQs, correctCount, wrongCount);
-
+                showAnalysisReportView(questionsList.length, correctCount, wrongCount);
             } catch (err) {
                 alert("Core network timeout during submission transmission.");
                 isSubmitted = false;
             }
         }
 
-        // 📊 DISPLAY THE DETAILED REPORT METRICS OVERLAY PANEL CONTAINER
+        // 📊 REVIEW RENDERING ENGINE: RENDERS ALL MCQ QUESTIONS DYNAMICALLY WITH SHARP RED/GREEN INDICATORS
         function showAnalysisReportView(total, correct, wrong) {
             document.getElementById('modal-total').innerText = total;
             document.getElementById('modal-correct').innerText = correct;
@@ -316,8 +310,67 @@
             document.getElementById('modal-percentage').innerText = `${scorePercent}%`;
             document.getElementById('modal-progress-bar').style.width = `${scorePercent}%`;
 
-            // Hide main terminal quiz body and lock display over the screen view matrix
-            document.getElementById('main-exam-layout').classList.add('opacity-20', 'pointer-events-none');
+            const reviewListContainer = document.getElementById('questions-review-list');
+            reviewListContainer.innerHTML = ""; 
+            const optionLabels = ['A', 'B', 'C', 'D'];
+
+            // Loop inside the full array list sequence to output every original question row blocks
+            questionsList.forEach((q, idx) => {
+                const studentChoice = studentAnswersMapping[idx];
+                const correctChoice = parseInt(q.correct, 10);
+                const isCorrect = studentChoice === correctChoice;
+                const isUnattempted = studentChoice === undefined;
+
+                let optionsHTML = "";
+                q.options.forEach((optText, oIdx) => {
+                    let optStyle = "border-slate-200 bg-white text-slate-700 shadow-sm";
+                    let statusBadge = "";
+
+                    // 1. Rule 1: Sahi answer hamesha bright green block se high-light hoga
+                    if (oIdx === correctChoice) {
+                        optStyle = "border-emerald-500 bg-emerald-50/80 text-emerald-900 ring-2 ring-emerald-500/30 font-bold";
+                        statusBadge = `
+                            <span class="text-[9px] font-mono tracking-wider font-black bg-emerald-600 text-white px-2 py-1 rounded-lg ml-auto flex items-center space-x-1 shadow-sm">
+                                <span>✓ CORRECT ANSWER</span>
+                            </span>`;
+                    }
+                    // 2. Rule 2: Agar user ne galat choice select ki, toh wo red high-light dikhegi
+                    else if (oIdx === studentChoice && !isCorrect) {
+                        optStyle = "border-red-500 bg-red-50/80 text-red-900 ring-2 ring-red-500/30 font-bold";
+                        statusBadge = `
+                            <span class="text-[9px] font-mono tracking-wider font-black bg-red-600 text-white px-2 py-1 rounded-lg ml-auto flex items-center space-x-1 shadow-sm">
+                                <span>✕ YOUR WRONG PICK</span>
+                            </span>`;
+                    }
+
+                    optionsHTML += `
+                        <div class="flex items-center space-x-3 text-sm p-3.5 rounded-2xl border ${optStyle}">
+                            <span class="w-6 h-6 flex items-center justify-center rounded-xl font-mono text-xs font-black ${oIdx === correctChoice ? 'bg-emerald-600 text-white' : (oIdx === studentChoice ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-500')}">${optionLabels[oIdx]}</span>
+                            <span class="flex-1 font-medium">${optText}</span>
+                            ${statusBadge}
+                        </div>
+                    `;
+                });
+
+                // Generate full structural element container wrapper
+                reviewListContainer.innerHTML += `
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm transition hover:shadow-md">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-mono font-black text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">QUESTION CARD ${idx+1}</span>
+                                <h5 class="text-base font-black text-slate-800 leading-snug pt-1">${q.question}</h5>
+                            </div>
+                            <span class="text-[10px] font-mono uppercase font-black px-2.5 py-1 rounded-xl shrink-0 tracking-wider shadow-sm ${isCorrect ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : (isUnattempted ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-red-100 text-red-800 border border-red-200')}">
+                                ${isCorrect ? '✓ Correct' : (isUnattempted ? '⚠ Skipped' : '✗ Incorrect')}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-1 gap-2.5">${optionsHTML}</div>
+                    </div>
+                `;
+            });
+
+            // Lock live testing layer view and activate fullscreen evaluation sheet
+            document.getElementById('main-exam-layout').classList.add('hidden');
             document.getElementById('analysis-modal').classList.remove('hidden');
         }
     </script>
