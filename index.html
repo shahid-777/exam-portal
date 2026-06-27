@@ -8,7 +8,19 @@
     <title>Computer Science Mock Test - Online Exam Portal</title>
     
     <meta name="description" content="Access the best online exam portal for [test series]. Practice mock tests, check global leaderboards, and evaluate your academic performance instantly.">
-    
+    <script>
+    // 🛡️ AUTHENTICATION GUARD: BINA LOGIN ACCESS BLOCK KO LOCK KAREIN
+    (function() {
+        const email = localStorage.getItem('userEmail');
+        
+        // Agar local storage mein user ka email session nahi milta hai
+        if (!email) {
+            alert("Access Denied: Please sign in via the official entry gateway first.");
+            // Instant redirect to login portal layer
+            window.location.replace("index.html");
+        }
+    })();
+</script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
