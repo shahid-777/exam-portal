@@ -37,20 +37,20 @@
         <h1 class="text-2xl sm:text-3xl font-black text-blue-500 mb-2 tracking-wide text-center uppercase">ONLINE EXAM PORTAL</h1>
         <p id="portal-desc" class="text-gray-400 mb-6 text-xs sm:text-sm text-center">Sign in using your corporate identity or email configurations.</p>
         
-        <form id="direct-login-form" class="space-y-4 sm:space-y-5">
-            <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Email Address</label>
-                <input type="email" id="login-email" required placeholder="student@gmail.com" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Password</label>
-                <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
-            </div>
-            
-            <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 px-4 rounded-xl transition duration-300 shadow-md uppercase text-xs sm:text-sm tracking-wider active:scale-[0.99]">
-                Sign In / Register
-            </button>
-        </form>
+<form id="direct-login-form" class="space-y-4 sm:space-y-5" autocomplete="off">
+    <div>
+        <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Email Address</label>
+        <input type="email" id="login-email" name="clear_email_field" required autocomplete="new-password" placeholder="student@gmail.com" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
+    </div>
+    <div>
+        <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Password</label>
+        <input type="password" id="login-password" name="clear_password_field" required autocomplete="new-password" placeholder="••••••••" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
+    </div>
+    
+    <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 px-4 rounded-xl transition duration-300 shadow-md uppercase text-xs sm:text-sm tracking-wider active:scale-[0.99]">
+        Sign In / Register
+    </button>
+</form>
 
         <div class="relative flex py-5 items-center">
             <div class="flex-grow border-t border-gray-700"></div>
