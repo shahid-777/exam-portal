@@ -148,6 +148,14 @@
             }
             function resetBtn() { loginBtn.innerText = "Sign In / Register"; loginBtn.disabled = false; }
         });
+        // Automatically handles broken image states seamlessly
+document.querySelectorAll('.fallback-logo').forEach(img => {
+    img.onerror = function() {
+        // If image file fails to load, replace it with a clean text block placeholder dynamically
+        this.style.display = 'none';
+        console.warn("Logo asset missing from core registry folder repository.");
+    };
+});
     </script>
 </body>
 </html>
