@@ -166,4 +166,91 @@
                 currentQuestion.options.forEach((optionText, index) => {
                     const isSelected = studentAnswersMapping[currentQuestionIdx] === index;
                     const selectionClasses = isSelected 
-                        ? 'border-blue-600
+                        ? 'border-blue-600 bg-blue-50/60 ring-2 ring-blue-500/20 text-blue-900' 
+                        : 'border-slate-200 bg-white hover:bg-slate-50/80 text-slate-700';
+
+                    optionsContainer.innerHTML += `
+                        <button onclick="recordStudentChoice(${index})" class="w-full text-left border-2 p-4 text-sm font-semibold rounded-2xl transition duration-150 flex items-center space-x-3 active:scale-[0.99] ${selectionClasses}">
+                            <span class="w-6 h-6 flex items-center justify-center rounded-lg text-xs font-mono font-black ${isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'}">${optionLabels[index]}</span>
+                            <span class="flex-1">${optionText}</span>
+                        </button>
+                    `;
+                });
+            }
+
+            document.getElementById('prev-btn').disabled = currentQuestionIdx === 0;
+            const nextBtn = document.getElementById('next-btn');
+            if (currentQuestionIdx === questionsList.length - 1) {
+                nextBtn.innerText = "Submit Examination Paper";
+                nextBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition active:scale-95";
+            } else {
+                nextBtn.innerText = "Next Question";
+                nextBtn.className = "bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition active:scale-95";
+            }
+        }
+
+        function recordStudentChoice(optionIndex) {
+            studentAnswersMapping[currentQuestionIdx] = optionIndex;
+            renderActiveQuestionCard();
+        }
+
+        function navigateQuestion(direction) {
+            if (direction === 1 && currentQuestionIdx === questionsList.length - 1) {
+                processFinalTestSubmission(false);
+                return;
+            }
+            currentQuestionIdx += direction;
+            renderActiveQuestionCard();
+        }
+
+        // 🏠 HOME/BACK TRIGGER LOGIC (Bina submit kiye jaane par auto-submit karega)
+        async function triggerHomeRedirect() {
+            if (confirm("Warning: Aap bina paper submit kiye baahar jaa rhe hain. Jitne questions aapne attempt kiye hain, wo auto-submit ho jayenge. Kya aap sure hain?")) {
+                await processFinalTestSubmission(true);
+            }
+        }
+
+        async function processFinalTestSubmission(isForcedSubmission = false) {
+            if (isSubmitted) return; // Prevent loop execution
+            
+            if(!isForcedSubmission) {
+                if(!confirm("Are you sure you want to end and submit this examination?")) return;
+            }
+
+            isSubmitted = true;
+            clearInterval(timerIntervalHook); 
+
+            let finalCalculatedScore = 0;
+            questionsList.forEach((q, idx) => {
+                const studentSelection = studentAnswersMapping[idx];
+                const targetCorrectIndex = parseInt(q.correct, 10);
+                if(studentSelection !== undefined && studentSelection === targetCorrectIndex) {
+                    finalCalculatedScore++;
+                }
+            });
+
+            const email = localStorage.getItem('userEmail');
+            const name = localStorage.getItem('userName') || email;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('results')
+                    .insert({ name: name, score: finalCalculatedScore });
+
+                if(error) {
+                    alert("Submission syncing exception: " + error.message);
+                    isSubmitted = false; // Unlock if failed
+                    return;
+                }
+
+                alert(`Examination saved successfully! Checked items score is: ${finalCalculatedScore} / ${questionsList.length}`);
+                window.location.href = "dashboard.html";
+
+            } catch (err) {
+                alert("Core network timeout during submission transmission.");
+                isSubmitted = false;
+            }
+        }
+    </script>
+</body>
+</html>
