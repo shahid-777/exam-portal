@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 📥 BROWSER TAB LOGO (FAVICON) CODELINE -->
     <link rel="icon" type="image/png" href="logo.png">
     <title>Live Examination Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen select-none">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen select-none relative">
 
+    <!-- 📌 FIXED TOP HEADER ROW -->
     <div class="w-full bg-slate-900 border-b border-slate-800 py-4 px-6 flex items-center justify-between sticky top-0 z-50 shadow-md">
         <div class="flex items-center space-x-4">
+            <!-- 🏠 HOME BUTTON (Auto-Submit Trigger) -->
             <button onclick="triggerHomeRedirect()" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs py-2 px-3 rounded-xl transition active:scale-95">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
@@ -32,19 +35,18 @@
             </div>
         </div>
         
+        <!-- ⏱️ LIVE TIMER WIDGET DISPLAY -->
         <div class="flex items-center space-x-4">
             <div class="bg-slate-950 px-4 py-2 rounded-xl border border-amber-500/30 flex items-center space-x-2">
                 <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
                 <span class="text-xs font-mono text-gray-400 uppercase tracking-wider">Time Left:</span>
                 <span id="exam-timer-display" class="text-sm font-mono font-black text-amber-400">60:00</span>
             </div>
-            <div class="hidden sm:flex items-center space-x-2 bg-red-950/40 px-3 py-1.5 rounded-lg border border-red-500/20">
-                <span class="text-[10px] font-mono text-red-400 uppercase tracking-wider">Monitoring Active</span>
-            </div>
         </div>
     </div>
 
-    <main class="max-w-3xl mx-auto p-4 sm:p-6 mt-6">
+    <!-- Main Live Test Environment Layout -->
+    <main id="main-exam-layout" class="max-w-3xl mx-auto p-4 sm:p-6 mt-6">
         <div class="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 sm:p-8 space-y-6">
             
             <div class="flex justify-between items-center border-b border-slate-100 pb-4">
@@ -69,6 +71,54 @@
         </div>
     </main>
 
+    <!-- 📊 DYNAMIC RESULT ANALYSIS MODAL LAYER (Popup Panel) -->
+    <div id="analysis-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 p-6 sm:p-8 transform transition-all scale-100 space-y-6">
+            
+            <div class="text-center space-y-1">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2 shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-black text-slate-900 uppercase tracking-wide">Exam Performance Report</h3>
+                <p class="text-xs text-slate-400 font-medium">Your score metrics have been securely compiled below.</p>
+            </div>
+
+            <!-- Stats Grid Breakdown Matrix -->
+            <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl">
+                    <span class="block text-[10px] font-mono font-black text-blue-500 uppercase tracking-wider">Total Items</span>
+                    <span id="modal-total" class="text-xl font-mono font-black text-blue-900">0</span>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-xl">
+                    <span class="block text-[10px] font-mono font-black text-emerald-500 uppercase tracking-wider">Correct</span>
+                    <span id="modal-correct" class="text-xl font-mono font-black text-emerald-900">0</span>
+                </div>
+                <div class="bg-red-50 border border-red-100 p-3 rounded-xl">
+                    <span class="block text-[10px] font-mono font-black text-red-500 uppercase tracking-wider">Wrong</span>
+                    <span id="modal-wrong" class="text-xl font-mono font-black text-red-900">0</span>
+                </div>
+            </div>
+
+            <!-- Accuracy Percentage Bar -->
+            <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl space-y-2">
+                <div class="flex justify-between items-center text-xs font-bold text-slate-600">
+                    <span>Performance Score:</span>
+                    <span id="modal-percentage" class="font-mono text-blue-600">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                    <div id="modal-progress-bar" class="bg-blue-600 h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button onclick="window.location.href='dashboard.html'" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black text-xs py-4 px-4 rounded-xl uppercase tracking-widest transition active:scale-[0.99] shadow-md">
+                Return to Dashboard
+            </button>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
@@ -77,9 +127,9 @@
         let questionsList = [];
         let currentQuestionIdx = 0;
         let studentAnswersMapping = {}; 
-        let totalSecondsLeft = 3600; // ⏱️ 60 Minutes Default Time
+        let totalSecondsLeft = 3600; 
         let timerIntervalHook = null;
-        let isSubmitted = false; // Prevents double submission loops
+        let isSubmitted = false; 
 
         window.onload = async function() {
             const email = localStorage.getItem('userEmail');
@@ -124,7 +174,6 @@
             }
         }
 
-        // ⏱️ TIMER COUNTER FUNCTION
         function startExamCountdownTimer() {
             if(timerIntervalHook) clearInterval(timerIntervalHook);
             
@@ -135,26 +184,15 @@
                     processFinalTestSubmission(true); 
                     return;
                 }
-                
                 totalSecondsLeft--;
-                
                 const minutes = Math.floor(totalSecondsLeft / 60);
                 const seconds = totalSecondsLeft % 60;
-                
-                const displayMinutes = String(minutes).padStart(2, '0');
-                const displaySeconds = String(seconds).padStart(2, '0');
-                
-                document.getElementById('exam-timer-display').innerText = `${displayMinutes}:${displaySeconds}`;
-                
-                if(totalSecondsLeft <= 300) {
-                    document.getElementById('exam-timer-display').className = "text-sm font-mono font-black text-red-500 animate-pulse";
-                }
+                document.getElementById('exam-timer-display').innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             }, 1000);
         }
 
         function renderActiveQuestionCard() {
             const currentQuestion = questionsList[currentQuestionIdx];
-            
             document.getElementById('question-counter').innerText = `Question ${currentQuestionIdx + 1} of ${questionsList.length}`;
             document.getElementById('live-question-text').innerText = currentQuestion.question;
 
@@ -203,15 +241,15 @@
             renderActiveQuestionCard();
         }
 
-        // 🏠 HOME/BACK TRIGGER LOGIC (Bina submit kiye jaane par auto-submit karega)
         async function triggerHomeRedirect() {
             if (confirm("Warning: Aap bina paper submit kiye baahar jaa rhe hain. Jitne questions aapne attempt kiye hain, wo auto-submit ho jayenge. Kya aap sure hain?")) {
                 await processFinalTestSubmission(true);
             }
         }
 
+        // 🧠 DEEP CORE ANALYSIS SUBMISSION HANDLING CORE ENGINE
         async function processFinalTestSubmission(isForcedSubmission = false) {
-            if (isSubmitted) return; // Prevent loop execution
+            if (isSubmitted) return; 
             
             if(!isForcedSubmission) {
                 if(!confirm("Are you sure you want to end and submit this examination?")) return;
@@ -220,36 +258,67 @@
             isSubmitted = true;
             clearInterval(timerIntervalHook); 
 
-            let finalCalculatedScore = 0;
+            let correctCount = 0;
+            let wrongCount = 0;
+
+            // Compute exact granular matrix score components
             questionsList.forEach((q, idx) => {
                 const studentSelection = studentAnswersMapping[idx];
                 const targetCorrectIndex = parseInt(q.correct, 10);
-                if(studentSelection !== undefined && studentSelection === targetCorrectIndex) {
-                    finalCalculatedScore++;
+                
+                if (studentSelection !== undefined) {
+                    if (studentSelection === targetCorrectIndex) {
+                        correctCount++;
+                    } else {
+                        wrongCount++;
+                    }
                 }
             });
 
             const email = localStorage.getItem('userEmail');
             const name = localStorage.getItem('userName') || email;
+            const totalQs = questionsList.length;
 
             try {
+                // Update results with granular score statistics keys
                 const { error } = await supabaseClient
                     .from('results')
-                    .insert({ name: name, score: finalCalculatedScore });
+                    .insert({ 
+                        name: name, 
+                        score: correctCount, // Backwards-compatible score field
+                        total_questions: totalQs,
+                        correct_answers: correctCount,
+                        wrong_answers: wrongCount
+                    });
 
                 if(error) {
                     alert("Submission syncing exception: " + error.message);
-                    isSubmitted = false; // Unlock if failed
+                    isSubmitted = false;
                     return;
                 }
 
-                alert(`Examination saved successfully! Checked items score is: ${finalCalculatedScore} / ${questionsList.length}`);
-                window.location.href = "dashboard.html";
+                // Render dynamic Report Modal directly onto the screen viewport seamlessly
+                showAnalysisReportView(totalQs, correctCount, wrongCount);
 
             } catch (err) {
                 alert("Core network timeout during submission transmission.");
                 isSubmitted = false;
             }
+        }
+
+        // 📊 DISPLAY THE DETAILED REPORT METRICS OVERLAY PANEL CONTAINER
+        function showAnalysisReportView(total, correct, wrong) {
+            document.getElementById('modal-total').innerText = total;
+            document.getElementById('modal-correct').innerText = correct;
+            document.getElementById('modal-wrong').innerText = wrong;
+
+            const scorePercent = total > 0 ? Math.round((correct / total) * 100) : 0;
+            document.getElementById('modal-percentage').innerText = `${scorePercent}%`;
+            document.getElementById('modal-progress-bar').style.width = `${scorePercent}%`;
+
+            // Hide main terminal quiz body and lock display over the screen view matrix
+            document.getElementById('main-exam-layout').classList.add('opacity-20', 'pointer-events-none');
+            document.getElementById('analysis-modal').classList.remove('hidden');
         }
     </script>
 </body>
