@@ -108,26 +108,28 @@
             }
         }
 
-        async function loadLeaderboard() {
-            const { data } = await supabaseClient.from('results').select('*').order('score', { ascending: false });
-            const tbody = document.getElementById('leaderboard-rows');
-            tbody.innerHTML = "";
-            if(data) {
-                data.forEach((row, idx) => {
-                    // 🌟 Filter database name value dynamically
-                    const cleanCandidateName = extractCleanName(row.name);
+      async function loadLeaderboard() {
+    const { data } = await supabaseClient.from('results').select('*').order('score', { ascending: false });
+    const tbody = document.getElementById('leaderboard-rows');
+    tbody.innerHTML = "";
+    if(data) {
+        data.forEach((row, idx) => {
+            // 🔍 DYNAMIC CHECK: Agar row.name nahi milta, toh row.email check karega
+            const rawIdentifier = row.name || row.email || "Candidate User";
+            
+            // Safe filter to extract clean name
+            const cleanCandidateName = extractCleanName(rawIdentifier);
 
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-gray-50/80 transition duration-150">
-                            <td class="py-3.5 px-3 text-center font-bold text-blue-600">#${idx + 1}</td>
-                            <td class="py-3.5 px-3 font-medium text-gray-900 capitalize break-all max-w-[140px] sm:max-w-none">${cleanCandidateName}</td>
-                            <td class="py-3.5 px-3 text-center font-black text-green-600">${row.score}</td>
-                        </tr>
-                    `;
-                });
-            }
-        }
-
+            tbody.innerHTML += `
+                <tr class="hover:bg-gray-50/80 transition duration-150">
+                    <td class="py-3.5 px-3 text-center font-bold text-blue-600">#${idx + 1}</td>
+                    <td class="py-3.5 px-3 font-medium text-gray-900 capitalize break-all max-w-[140px] sm:max-w-none">${cleanCandidateName}</td>
+                    <td class="py-3.5 px-3 text-center font-black text-green-600">${row.score}</td>
+                </tr>
+            `;
+        });
+    }
+}
         // Handles broken logo image fallbacks
         document.querySelectorAll('.fallback-logo').forEach(img => {
             img.onerror = function() {
