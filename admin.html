@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 📥 BROWSER TAB LOGO (FAVICON) CODELINE -->
     <link rel="icon" type="image/png" href="logo.png">
     <title>Management Console - Admin Operations</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -45,7 +44,7 @@
                 <textarea id="admin-paste-area" rows="12" placeholder="1. Which component manages computer memory?&#10;A) Kernel&#10;B) Processor&#10;Answer: A" class="w-full border-2 p-3 rounded-xl font-mono text-xs sm:text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"></textarea>
             </div>
 
-            <button id="upload-btn" onclick="parseAndUpload()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-6 rounded-xl transition duration-200 shadow-lg uppercase text-xs sm:text-sm tracking-wide active:scale-[0.99]">
+            <button id="upload-btn" onclick="handleMCQUploadProcess()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-6 rounded-xl transition duration-200 shadow-lg uppercase text-xs sm:text-sm tracking-wide active:scale-[0.99]">
                 Save / Update Subject in Database
             </button>
         </div>
@@ -94,69 +93,90 @@
             } catch (err) { fetchBtn.innerText = "Fetch MCQs"; fetchBtn.disabled = false; }
         }
 
-      function parseRawMCQs(rawText) {
-    // Text ko lines mein split karna aur empty spaces saaf karna
-    const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-    const questionsArray = [];
-    
-    let currentQuestion = null;
+        // 🔍 ROBUST PARSER: Convert text patterns into strict array schemas mapped to your fetch structure
+        function parseRawMCQs(rawText) {
+            const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            const questionsArray = [];
+            let currentQuestion = null;
+            const lbls = ['A', 'B', 'C', 'D'];
 
-    lines.forEach(line => {
-        // 🔍 Regex check for Question Number (e.g., "32. Which mechanism...")
-        const questionMatch = line.match(/^(\d+)[\s.)-]+(.*)/);
-        
-        if (questionMatch) {
-            // Agar pehle se koi question process ho raha tha, toh use push karein
-            if (currentQuestion && currentQuestion.options.length >= 2 && currentQuestion.answer) {
+            lines.forEach(line => {
+                const questionMatch = line.match(/^(\d+)[\s.)-]+(.*)/);
+                
+                if (questionMatch) {
+                    if (currentQuestion && currentQuestion.options.length >= 2 && currentQuestion.correct !== undefined) {
+                        questionsArray.push(currentQuestion);
+                    }
+                    currentQuestion = {
+                        question: questionMatch[2].trim(),
+                        options: [],
+                        correct: 0
+                    };
+                } 
+                else if (line.match(/^[A-D][\s.)-]+/i)) {
+                    if (currentQuestion) {
+                        const optionText = line.replace(/^[A-D][\s.)-]+/i, '').trim();
+                        currentQuestion.options.push(optionText);
+                    }
+                } 
+                else if (line.toLowerCase().startsWith('answer:') || line.toLowerCase().startsWith('ans:')) {
+                    if (currentQuestion) {
+                        const ansLetter = line.split(':')[1].trim().toUpperCase();
+                        const indexMapping = lbls.indexOf(ansLetter);
+                        currentQuestion.correct = indexMapping !== -1 ? indexMapping : 0;
+                    }
+                }
+            });
+
+            if (currentQuestion && currentQuestion.options.length >= 2 && currentQuestion.correct !== undefined) {
                 questionsArray.push(currentQuestion);
             }
-            // Naya question object shuru karein
-            currentQuestion = {
-                question_text: questionMatch[2].trim(),
-                options: [],
-                answer: ""
-            };
-        } 
-        // 🔍 Regex check for Options (e.g., "A. Flow Control" or "A) Flow Control")
-        else if (line.match(/^[A-D][\s.)-]+/i)) {
-            if (currentQuestion) {
-                // Prefixes like "A.", "B)" ko hata kar sirf text nikalna
-                const optionText = line.replace(/^[A-D][\s.)-]+/i, '').trim();
-                currentQuestion.options.push(optionText);
+
+            return questionsArray;
+        }
+
+        // 📥 CORE EXECUTION DRIVER ENGINE (Upserts JSON mappings into Supabase Node)
+        async function handleMCQUploadProcess() {
+            const subjectInput = document.getElementById('admin-subject').value.trim();
+            const rawText = document.getElementById('admin-paste-area').value.trim(); // 🌟 Fixed ID match here
+            const uploadBtn = document.getElementById('upload-btn');
+
+            if (!subjectInput) { alert("Please input or select a Target Subject."); return; }
+            if (!rawText) { alert("Textarea is empty. Please supply or edit target questions."); return; }
+
+            const parsedQuestions = parseRawMCQs(rawText);
+
+            if (parsedQuestions.length === 0) {
+                alert("Parsing format mismatch validation alert: Format thik karein ya text check karein.");
+                return;
             }
-        } 
-        // 🔍 Regex check for Correct Answer (e.g., "Answer: A" or "Ans: A")
-        else if (line.toLowerCase().startsWith('answer:') || line.toLowerCase().startsWith('ans:')) {
-            if (currentQuestion) {
-                const ansLetter = line.split(':')[1].trim().toUpperCase();
-                currentQuestion.answer = ansLetter;
+
+            uploadBtn.innerText = "Synchronizing Node Records...";
+            uploadBtn.disabled = true;
+
+            try {
+                // Upsert checking to prevent duplicate keys across subject entities
+                const { error } = await supabaseClient
+                    .from('exams')
+                    .upsert({ 
+                        subject: subjectInput, 
+                        questions_json: parsedQuestions 
+                    }, { onConflict: 'subject' });
+
+                if (error) {
+                    alert("Database write error: " + error.message);
+                } else {
+                    alert(`Success! Successfully processed and committed ${parsedQuestions.length} items to database.`);
+                    // Dynamic clean refresh UI reload
+                    setTimeout(() => { window.location.reload(); }, 600);
+                }
+            } catch (err) {
+                alert("Core network timeout framework exception.");
+            } finally {
+                uploadBtn.innerText = "Save / Update Subject in Database";
+                uploadBtn.disabled = false;
             }
         }
-    });
-
-    // Last processed question ko push karein
-    if (currentQuestion && currentQuestion.options.length >= 2 && currentQuestion.answer) {
-        questionsArray.push(currentQuestion);
-    }
-
-    return questionsArray;
-}
-
-// 📥 Submit Event Handler Control
-document.getElementById('upload-btn').addEventListener('click', async function() {
-    const rawText = document.getElementById('mcq-textarea-id').value; // Aapka textarea ID
-    const parsedData = parseRawMCQs(rawText);
-
-    if (parsedData.length === 0) {
-        alert("Parsing format mismatch validation alert: Format thik karein ya text check karein.");
-        return;
-    }
-
-    // Yahan aapka Supabase Insert Query code chalega
-    console.log("Successfully Parsed MCQs Data Structure:", parsedData);
-    // const { error } = await supabaseClient.from('questions_table').insert(parsedData);
-});
-
-</script>
+    </script>
 </body>
 </html>
