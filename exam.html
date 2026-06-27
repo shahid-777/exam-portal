@@ -1,6 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+    // 🛡️ COMBINED AUTH GUARD & SESSION EXPIRY LIFESPAN LOGIC
+    (function() {
+        const email = localStorage.getItem('userEmail');
+        const loginTime = localStorage.getItem('sessionLoginTime');
+        
+        // --- LAYER 1: DIRECT ACCESS PROTECTION ---
+        // Agar koi bina login kiye direct URL daal kar aane ki koshish karega
+        if (!email || !loginTime) {
+            localStorage.clear();
+            alert("Access Denied: Please sign in via the official entry gateway first.");
+            window.location.replace("index.html");
+            return; // Script ko yahi rok do
+        }
+
+        // --- LAYER 2: SESSION EXPIRY TIMEOUT BLOCK ---
+        const currentTimestamp = Date.now();
+        const absoluteExpiryTime = 2 * 60 * 60 * 1000; // 2 Ghante (Milliseconds mein)
+
+        // Agar user logged in hai, lekin uske login kiye hue 2 ghante se upar ho chuka hai
+        if (currentTimestamp - parseInt(loginTime, 10) > absoluteExpiryTime) {
+            localStorage.clear();
+            alert("Session Expired: Your secure token has expired. Please log in again.");
+            window.location.replace("index.html");
+            return;
+        }
+        
+        console.log("Security Handshake Verified. Session Active.");
+    })();
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="logo.png">
