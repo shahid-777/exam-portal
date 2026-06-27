@@ -5,7 +5,7 @@
         // 🛡️ EXCLUSIVE ADMINISTRATIVE ROUTE GUARD & TIMEOUT INTERCEPTOR
         (function() {
             // Admin specific keys fetch loop
-            const adminEmail = localStorage.getItem('shahid.gauri2@gmail.com');
+            const adminEmail = localStorage.getItem('adminEmail');
             const adminLoginTime = localStorage.getItem('adminSessionTime');
             
             // --- LAYER 1: ABSOLUTE ACCESS PROTECTION ---
@@ -17,7 +17,7 @@
             }
 
             // --- LAYER 2: EMAIL PROFILE VERIFICATION ---
-            const OFFICIAL_ADMIN_EMAIL = "shahid777gauri@gmail.com"; 
+            const OFFICIAL_ADMIN_EMAIL = "shahid.gauri2@gmail.com"; 
 
             if (adminEmail.toLowerCase() !== OFFICIAL_ADMIN_EMAIL.toLowerCase()) {
                 alert("Security Breach: Your current active account token is not authorized to access the Admin Panel.");
