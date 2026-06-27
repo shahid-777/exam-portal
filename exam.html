@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,12 +18,20 @@
             </div>
             <div class="flex flex-col">
                 <span class="text-sm font-black text-red-500 tracking-wider uppercase leading-none">Live</span>
-                <span id="active-subject-title" class="text-[10px] font-bold text-slate-400 tracking-widest uppercase font-mono mt-0.5">Loading Test...</span>
+                <span id="active-subject-title" class="text-[10px] font-bold text-slate-400 tracking-widest uppercase font-mono mt-0.5">Loading...</span>
             </div>
         </div>
-        <div class="flex items-center space-x-2 bg-red-950/40 px-3 py-1.5 rounded-lg border border-red-500/20">
-            <span class="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
-            <span class="text-[10px] font-mono text-red-400 uppercase tracking-wider">Exam Monitoring Active</span>
+        
+        <!-- ⏱️ LIVE TIMER WIDGET DISPLAY -->
+        <div class="flex items-center space-x-4">
+            <div class="bg-slate-950 px-4 py-2 rounded-xl border border-amber-500/30 flex items-center space-x-2">
+                <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
+                <span class="text-xs font-mono text-gray-400 uppercase tracking-wider">Time Left:</span>
+                <span id="exam-timer-display" class="text-sm font-mono font-black text-amber-400">60:00</span>
+            </div>
+            <div class="hidden sm:flex items-center space-x-2 bg-red-950/40 px-3 py-1.5 rounded-lg border border-red-500/20">
+                <span class="text-[10px] font-mono text-red-400 uppercase tracking-wider">Monitoring Active</span>
+            </div>
         </div>
     </div>
 
@@ -44,9 +51,7 @@
             </div>
 
             <!-- Option Group Choices Matrix -->
-            <div id="options-matrix-container" class="grid grid-cols-1 gap-3 pt-2">
-                <!-- JavaScript automatically populates interactive options buttons here -->
-            </div>
+            <div id="options-matrix-container" class="grid grid-cols-1 gap-3 pt-2"></div>
 
             <!-- Control Actions Pagination Navigation Footer -->
             <div class="flex justify-between items-center border-t border-slate-100 pt-6 mt-4">
@@ -67,18 +72,19 @@
 
         let questionsList = [];
         let currentQuestionIdx = 0;
-        let studentAnswersMapping = {}; // Stores user choices index entries
+        let studentAnswersMapping = {}; 
+        let totalSecondsLeft = 3600; // ⏱️ 60 minutes default exam time duration
+        let timerIntervalHook = null;
 
         window.onload = async function() {
             const email = localStorage.getItem('userEmail');
             if(!email) { window.location.href = "index.html"; return; }
 
-            // Extract targeted URL queries parameter tokens safely
             const urlParams = new URLSearchParams(window.location.search);
             const subjectParam = urlParams.get('subject');
 
             if(!subjectParam) {
-                alert("Terminal Error: Subject target configuration validation token missing.");
+                alert("Terminal Error: Subject target missing.");
                 window.location.href = "dashboard.html"; return;
             }
 
@@ -86,7 +92,6 @@
             await fetchExaminationPaper(decodeURIComponent(subjectParam));
         };
 
-        // Fetch target paper maps from Supabase nodes dynamically
         async function fetchExaminationPaper(subjectName) {
             try {
                 const { data, error } = await supabaseClient
@@ -107,28 +112,55 @@
                 }
 
                 renderActiveQuestionCard();
+                startExamCountdownTimer(); // ⏱️ Run timer loop instantly after load
 
             } catch (err) {
                 alert("System network exception sequence.");
             }
         }
 
-        // Render target active question indexes elements
+        // ⏱️ TIMER CONTROL RUNNER PIPELINE
+        function startExamCountdownTimer() {
+            if(timerIntervalHook) clearInterval(timerIntervalHook);
+            
+            timerIntervalHook = setInterval(() => {
+                if (totalSecondsLeft <= 0) {
+                    clearInterval(timerIntervalHook);
+                    alert("Time's Up! Your examination paper is being automatically submitted.");
+                    processFinalTestSubmission(true); // Force Auto-submit when clock ticks down
+                    return;
+                }
+                
+                totalSecondsLeft--;
+                
+                const minutes = Math.floor(totalSecondsLeft / 60);
+                const seconds = totalSecondsLeft % 60;
+                
+                // Formatting display string pattern matching double digits
+                const displayMinutes = String(minutes).padStart(2, '0');
+                const displaySeconds = String(seconds).padStart(2, '0');
+                
+                document.getElementById('exam-timer-display').innerText = `${displayMinutes}:${displaySeconds}`;
+                
+                // Warning indicator styling changes at 5 minutes mark
+                if(totalSecondsLeft <= 300) {
+                    document.getElementById('exam-timer-display').className = "text-sm font-mono font-black text-red-500 animate-pulse";
+                }
+            }, 1000);
+        }
+
         function renderActiveQuestionCard() {
             const currentQuestion = questionsList[currentQuestionIdx];
             
-            // Update question info header elements
             document.getElementById('question-counter').innerText = `Question ${currentQuestionIdx + 1} of ${questionsList.length}`;
             document.getElementById('live-question-text').innerText = currentQuestion.question;
 
             const optionsContainer = document.getElementById('options-matrix-container');
             optionsContainer.innerHTML = "";
-
             const optionLabels = ['A', 'B', 'C', 'D'];
 
             if(Array.isArray(currentQuestion.options)) {
                 currentQuestion.options.forEach((optionText, index) => {
-                    // Highlight selected values
                     const isSelected = studentAnswersMapping[currentQuestionIdx] === index;
                     const selectionClasses = isSelected 
                         ? 'border-blue-600 bg-blue-50/60 ring-2 ring-blue-500/20 text-blue-900' 
@@ -143,9 +175,7 @@
                 });
             }
 
-            // Pagination edge triggers config adjustments
             document.getElementById('prev-btn').disabled = currentQuestionIdx === 0;
-            
             const nextBtn = document.getElementById('next-btn');
             if (currentQuestionIdx === questionsList.length - 1) {
                 nextBtn.innerText = "Submit Examination Paper";
@@ -158,21 +188,24 @@
 
         function recordStudentChoice(optionIndex) {
             studentAnswersMapping[currentQuestionIdx] = optionIndex;
-            renderActiveQuestionCard(); // Re-render option state instantly
+            renderActiveQuestionCard();
         }
 
         function navigateQuestion(direction) {
             if (direction === 1 && currentQuestionIdx === questionsList.length - 1) {
-                processFinalTestSubmission();
+                processFinalTestSubmission(false);
                 return;
             }
             currentQuestionIdx += direction;
             renderActiveQuestionCard();
         }
 
-        // Process final calculations core pipeline scoring mapping indexes rules
-        async function processFinalTestSubmission() {
-            if(!confirm("Are you sure you want to end and submit this examination?")) return;
+        async function processFinalTestSubmission(isForcedSubmission = false) {
+            if(!isForcedSubmission) {
+                if(!confirm("Are you sure you want to end and submit this examination?")) return;
+            }
+
+            clearInterval(timerIntervalHook); // Stop timer cycle operations
 
             let finalCalculatedScore = 0;
             questionsList.forEach((q, idx) => {
@@ -184,23 +217,19 @@
             });
 
             const email = localStorage.getItem('userEmail');
-            const name = localStorage.getItem('userName') || email; // Fallback to email if name is missing
+            const name = localStorage.getItem('userName') || email;
 
             try {
-                // Post calculations score matrices schema into Supabase results table node
                 const { error } = await supabaseClient
                     .from('results')
-                    .insert({
-                        name: name,
-                        score: finalCalculatedScore
-                    });
+                    .insert({ name: name, score: finalCalculatedScore });
 
                 if(error) {
-                    alert("Submission save syncing exception: " + error.message);
+                    alert("Submission syncing exception: " + error.message);
                     return;
                 }
 
-                alert(`Examination submitted successfully! Your evaluated raw score is: ${finalCalculatedScore}`);
+                alert(`Examination submitted successfully! Your score is: ${finalCalculatedScore} / ${questionsList.length}`);
                 window.location.href = "dashboard.html";
 
             } catch (err) {
