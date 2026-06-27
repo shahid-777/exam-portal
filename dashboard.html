@@ -90,24 +90,34 @@
         }
 
         async function loadExams() {
-            const { data } = await supabaseClient.from('exams').select('subject');
-            const container = document.getElementById('exams-container');
-            container.innerHTML = "";
-            if(data) {
-                data.forEach(exam => {
-                    container.innerHTML += `
-                        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between space-y-4">
-                            <div>
-                                <h3 class="font-black text-gray-800 text-base sm:text-lg">${exam.subject}</h3>
-                                <p class="text-xs text-gray-400 font-medium">Standard Academic Evaluation Syllabus</p>
-                            </div>
-                            <button onclick="alert('Exam initialization hook configured successfully.')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-4 rounded-xl uppercase tracking-wider transition active:scale-95">Start Examination</button>
-                        </div>
-                    `;
-                });
-            }
-        }
+    const { data } = await supabaseClient.from('exams').select('subject');
+    const container = document.getElementById('exams-container');
+    container.innerHTML = "";
+    if(data) {
+        data.forEach(exam => {
+            const encodedSubject = encodeURIComponent(exam.subject);
 
+            // 🌟 ALERT PURA DELETE KAR DIYA HAI AUR DYNAMIC LINK BIND KIYA HAI
+            container.innerHTML += `
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between space-y-4">
+                    <div>
+                        <h3 class="font-black text-gray-800 text-base sm:text-lg">${exam.subject}</h3>
+                        <p class="text-xs text-gray-400 font-medium">Standard Academic Evaluation Syllabus</p>
+                    </div>
+                    <button onclick="startStudentExamination('${encodedSubject}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-4 rounded-xl uppercase tracking-wider transition active:scale-95">
+                        Start Examination
+                    </button>
+                </div>
+            `;
+        });
+    }
+}
+
+// 🌐 REDIRECT ROUTER ENGINE
+function startStudentExamination(subjectName) {
+    // ?v=1.0.1 browser cache bypass karne ke liye jodna zaroori hai
+    window.location.href = `exam.html?subject=${subjectName}&v=1.0.1`;
+}
       async function loadLeaderboard() {
     const { data } = await supabaseClient.from('results').select('*').order('score', { ascending: false });
     const tbody = document.getElementById('leaderboard-rows');
