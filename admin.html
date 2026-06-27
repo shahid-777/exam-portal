@@ -94,40 +94,69 @@
             } catch (err) { fetchBtn.innerText = "Fetch MCQs"; fetchBtn.disabled = false; }
         }
 
-        async function parseAndUpload() {
-            const subject = document.getElementById('admin-subject').value.trim();
-            const rawText = document.getElementById('admin-paste-area').value.trim();
-            const uploadBtn = document.getElementById('upload-btn');
-            if(!subject || !rawText) { alert("Fields cannot be empty."); return; }
+      function parseRawMCQs(rawText) {
+    // Text ko lines mein split karna aur empty spaces saaf karna
+    const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    const questionsArray = [];
+    
+    let currentQuestion = null;
 
-            const questionsArray = [];
-            const blocks = rawText.split(/\r?\n\s*\r?\n/);
-            blocks.forEach((block) => {
-                const lines = block.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-                if (lines.length < 3) return;
-                let questionText = ""; let options = []; let correctIndex = -1;
-                lines.forEach((line) => {
-                    if (/^\d+[\s\.)]/.test(line)) questionText = line.replace(/^\d+[\s\.)]+/, '').trim();
-                    else if (/^[A-D][\s\.)\-]/i.test(line)) options.push(line.replace(/^[A-D][\s\.)\-]+/i, '').trim());
-                    else if (/^(Answer|Correct|Ans|A)[:\s\-]+([A-D])/i.test(line)) {
-                        const match = line.match(/^(Answer|Correct|Ans|A)[:\s\-]+([A-D])/i);
-                        if (match && match[2]) correctIndex = match[2].toUpperCase().charCodeAt(0) - 65;
-                    }
-                });
-                if (questionText && options.length > 0 && correctIndex !== -1) {
-                    questionsArray.push({ question: questionText, options: options, correct: parseInt(correctIndex, 10) });
-                }
-            });
-
-            if (questionsArray.length === 0) { alert("Parsing format mismatch validation alert."); return; }
-            uploadBtn.innerText = "Transmitting Data Matrix..."; uploadBtn.disabled = true;
-            try {
-                const { error } = await supabaseClient.from('exams').upsert([{ subject: subject, questions_json: questionsArray }]);
-                uploadBtn.innerText = "Save / Update Subject in Database"; uploadBtn.disabled = false;
-                if(!error) { alert("Successfully uploaded adjustments to cloud server!"); location.reload(); }
-                else { alert(error.message); }
-            } catch (err) { uploadBtn.innerText = "Save / Update Subject in Database"; uploadBtn.disabled = false; }
+    lines.forEach(line => {
+        // 🔍 Regex check for Question Number (e.g., "32. Which mechanism...")
+        const questionMatch = line.match(/^(\d+)[\s.)-]+(.*)/);
+        
+        if (questionMatch) {
+            // Agar pehle se koi question process ho raha tha, toh use push karein
+            if (currentQuestion && currentQuestion.options.length >= 2 && currentQuestion.answer) {
+                questionsArray.push(currentQuestion);
+            }
+            // Naya question object shuru karein
+            currentQuestion = {
+                question_text: questionMatch[2].trim(),
+                options: [],
+                answer: ""
+            };
+        } 
+        // 🔍 Regex check for Options (e.g., "A. Flow Control" or "A) Flow Control")
+        else if (line.match(/^[A-D][\s.)-]+/i)) {
+            if (currentQuestion) {
+                // Prefixes like "A.", "B)" ko hata kar sirf text nikalna
+                const optionText = line.replace(/^[A-D][\s.)-]+/i, '').trim();
+                currentQuestion.options.push(optionText);
+            }
+        } 
+        // 🔍 Regex check for Correct Answer (e.g., "Answer: A" or "Ans: A")
+        else if (line.toLowerCase().startsWith('answer:') || line.toLowerCase().startsWith('ans:')) {
+            if (currentQuestion) {
+                const ansLetter = line.split(':')[1].trim().toUpperCase();
+                currentQuestion.answer = ansLetter;
+            }
         }
-    </script>
+    });
+
+    // Last processed question ko push karein
+    if (currentQuestion && currentQuestion.options.length >= 2 && currentQuestion.answer) {
+        questionsArray.push(currentQuestion);
+    }
+
+    return questionsArray;
+}
+
+// 📥 Submit Event Handler Control
+document.getElementById('save-subject-btn').addEventListener('click', async function() {
+    const rawText = document.getElementById('mcq-textarea-id').value; // Aapka textarea ID
+    const parsedData = parseRawMCQs(rawText);
+
+    if (parsedData.length === 0) {
+        alert("Parsing format mismatch validation alert: Format thik karein ya text check karein.");
+        return;
+    }
+
+    // Yahan aapka Supabase Insert Query code chalega
+    console.log("Successfully Parsed MCQs Data Structure:", parsedData);
+    // const { error } = await supabaseClient.from('questions_table').insert(parsedData);
+});
+
+</script>
 </body>
 </html>
