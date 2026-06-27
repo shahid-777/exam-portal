@@ -1,42 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script>
-    // 🛡️ STRICT ADMINISTRATIVE ROUTE GUARD
-    (function() {
-        const email = localStorage.getItem('userEmail');
-        const loginTime = localStorage.getItem('sessionLoginTime');
-        
-        // Agar local storage mein email hi nahi hai, toh seedhe baahar bhejo
-        if (!email || !loginTime) {
-            localStorage.clear();
-            alert("Access Denied: Administrative terminal requires official authorization key.");
-            window.location.replace("index.html");
-            return;
-        }
+    <script>
+        // 🛡️ EXCLUSIVE ADMINISTRATIVE ROUTE GUARD & TIMEOUT INTERCEPTOR
+        (function() {
+            // Admin specific keys fetch loop
+            const adminEmail = localStorage.getItem('adminEmail');
+            const adminLoginTime = localStorage.getItem('adminSessionTime');
+            
+            // --- LAYER 1: ABSOLUTE ACCESS PROTECTION ---
+            if (!adminEmail || !adminLoginTime) {
+                localStorage.clear();
+                alert("Access Denied: Administrative terminal requires official authorization key.");
+                window.location.replace("index.html"); // Redirects back to primary authentication matrix
+                return;
+            }
 
-        // ⚠️ TRIPLE CHECK SECURITY:
-        // Agar aapka email ya role check administrative permissions se match nahi hota,
-        // (Jaise agar kisi student ne login kiya hua hai aur woh direct admin.html khol rha hai)
-        // Toh aapko aapki official admin email string yahan strictly match karni hogi:
-        const OFFICIAL_ADMIN_EMAIL = "shahid777gauri@gmail.com"; // <-- Apni asli admin email yahan confirm karein
+            // --- LAYER 2: EMAIL PROFILE VERIFICATION ---
+            const OFFICIAL_ADMIN_EMAIL = "shahid777gauri@gmail.com"; 
 
-        if (email.toLowerCase() !== OFFICIAL_ADMIN_EMAIL.toLowerCase()) {
-            alert("Security Breach: Your current active account token is not authorized to access the Admin Panel.");
-            window.location.replace("dashboard.html"); // Student ko student dashboard par phek do
-            return;
-        }
+            if (adminEmail.toLowerCase() !== OFFICIAL_ADMIN_EMAIL.toLowerCase()) {
+                alert("Security Breach: Your current active account token is not authorized to access the Admin Panel.");
+                window.location.replace("dashboard.html"); // Drop malicious/student tokens back to standard interface
+                return;
+            }
 
-        // Session Time Limit Check (Admin ke liye bhi 2 Ghante max lifespan)
-        const currentTimestamp = Date.now();
-        if (currentTimestamp - parseInt(loginTime, 10) > 2 * 60 * 60 * 1000) {
-            localStorage.clear();
-            alert("Admin Session Expired: Please re-authenticate via secure entry gateway.");
-            window.location.replace("index.html");
-            return;
-        }
-    })();
-</script>
+            // --- LAYER 3: HARD LIFESPAN EXPIRY CHECK (1 Hour Timeout) ---
+            const currentTimestamp = Date.now();
+            const oneHourInMs = 1 * 60 * 60 * 1000; 
+
+            if (currentTimestamp - parseInt(adminLoginTime, 10) > oneHourInMs) {
+                localStorage.clear();
+                alert("Admin Session Expired: Please re-authenticate via secure entry gateway.");
+                window.location.replace("index.html");
+                return;
+            }
+            console.log("Root Guard clearance status: SECURE");
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="logo.png">
@@ -48,7 +49,7 @@
 
     <header class="bg-gray-900 text-white px-4 sm:px-8 py-4 flex flex-col sm:flex-row gap-3 justify-between items-center shadow-lg text-center sm:text-left">
         <h1 class="text-lg sm:text-xl font-black tracking-wider text-blue-400 uppercase">ADMIN CONTROL CENTER</h1>
-        <a href="index.html" class="w-full sm:w-auto text-center font-bold text-xs bg-gray-800 px-5 py-2.5 rounded-xl hover:bg-gray-700 border border-gray-700 transition">Exit Session</a>
+        <button onclick="logoutAdminSession()" class="w-full sm:w-auto text-center font-bold text-xs bg-gray-800 px-5 py-2.5 rounded-xl hover:bg-gray-700 border border-gray-700 transition">Exit Session</button>
     </header>
 
     <main class="p-4 sm:p-6 max-w-4xl mx-auto">
@@ -129,7 +130,6 @@
             } catch (err) { fetchBtn.innerText = "Fetch MCQs"; fetchBtn.disabled = false; }
         }
 
-        // 🔍 ROBUST PARSER: Convert text patterns into strict array schemas mapped to your fetch structure
         function parseRawMCQs(rawText) {
             const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
             const questionsArray = [];
@@ -171,10 +171,9 @@
             return questionsArray;
         }
 
-        // 📥 CORE EXECUTION DRIVER ENGINE (Upserts JSON mappings into Supabase Node)
         async function handleMCQUploadProcess() {
             const subjectInput = document.getElementById('admin-subject').value.trim();
-            const rawText = document.getElementById('admin-paste-area').value.trim(); // 🌟 Fixed ID match here
+            const rawText = document.getElementById('admin-paste-area').value.trim(); 
             const uploadBtn = document.getElementById('upload-btn');
 
             if (!subjectInput) { alert("Please input or select a Target Subject."); return; }
@@ -191,7 +190,6 @@
             uploadBtn.disabled = true;
 
             try {
-                // Upsert checking to prevent duplicate keys across subject entities
                 const { error } = await supabaseClient
                     .from('exams')
                     .upsert({ 
@@ -203,7 +201,6 @@
                     alert("Database write error: " + error.message);
                 } else {
                     alert(`Success! Successfully processed and committed ${parsedQuestions.length} items to database.`);
-                    // Dynamic clean refresh UI reload
                     setTimeout(() => { window.location.reload(); }, 600);
                 }
             } catch (err) {
@@ -212,6 +209,12 @@
                 uploadBtn.innerText = "Save / Update Subject in Database";
                 uploadBtn.disabled = false;
             }
+        }
+
+        // 🚪 CLEAR INSTANT SESSION LOGOUT SYSTEM FOR ADMIN ENTITY
+        function logoutAdminSession() {
+            localStorage.clear();
+            window.location.replace("index.html");
         }
     </script>
 </body>
