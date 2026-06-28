@@ -17,14 +17,20 @@
 </head>
 <body class="bg-gray-50 font-sans min-h-screen">
 
-    <header class="bg-slate-900 text-white px-4 sm:px-8 py-4 flex flex-col sm:flex-row gap-4 justify-between items-center shadow-md">
-        <div class="flex items-center space-x-3">
-            <img src="logo.png" alt="Logo" class="h-9 w-auto bg-white p-1 rounded-lg">
-            <h1 class="text-md sm:text-lg font-black tracking-wider uppercase text-blue-400">STUDENT TERMINAL</h1>
+       <!-- 🌟 FIX: FULLY OPTIMIZED REFINED MOBILE HEADER -->
+    <header class="bg-slate-900 text-white px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-md sticky top-0 z-50">
+        <div class="flex items-center space-x-2 shrink-0">
+            <img src="logo.png" alt="Logo" class="h-8 w-auto bg-white p-1 rounded-lg">
+            <h1 class="text-xs sm:text-sm font-black tracking-wider uppercase text-blue-400 font-mono">STUDENT PORTAL</h1>
         </div>
-        <div class="flex items-center gap-3 w-full sm:w-auto">
-            <span id="user-display" class="text-xs bg-slate-800 border border-slate-700 px-3 py-2 rounded-xl text-slate-300 font-mono truncate max-w-[180px]">Student</span>
-            <button onclick="logoutSession()" class="bg-red-600/10 hover:bg-red-600 border border-red-500/20 text-red-400 hover:text-white font-bold text-xs py-2 px-4 rounded-xl transition">Logout</button>
+        <div class="flex items-center space-x-2 max-w-[65%] sm:max-w-auto justify-end">
+            <!-- 👤 REAL PROFILE NAME DISPLAY WITHOUT EMAIL -->
+            <span id="user-display" class="text-[11px] sm:text-xs bg-slate-800 border border-slate-700 px-2.5 py-1.5 rounded-xl text-slate-300 font-bold font-sans truncate max-w-[90px] sm:max-w-[150px] text-center">
+                Student
+            </span>
+            <button onclick="logoutSession()" class="bg-red-600/10 hover:bg-red-600 border border-red-500/20 text-red-400 hover:text-white font-black text-[10px] sm:text-xs py-1.5 px-3 rounded-xl transition shrink-0 active:scale-95">
+                Logout
+            </button>
         </div>
     </header>
 
@@ -32,7 +38,7 @@
         
         <div class="lg:col-span-1 space-y-4">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
-                <h3 class="text-sm font-black text-gray-800 uppercase tracking-wider mb-4 border-b pb-2 text-slate-500">Available Test Questionpapers</h3>
+                <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 border-b pb-2 font-mono">Available Questionpapers</h3>
                 <div id="subjects-list-container" class="space-y-2.5">
                     <p class="text-xs text-gray-400 font-semibold animate-pulse">Syncing active question papers...</p>
                 </div>
@@ -77,11 +83,11 @@
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-       window.onload = async function() {
-    // 🚀 FIXED: Email id hata kar user ka real profile name render karega
-    document.getElementById('user-display').innerText = localStorage.getItem('userName') || "Student Terminal";
-    await initializeDashboardData();
-};
+        window.onload = async function() {
+            // 🚀 Renders the exact student profile name instead of the raw email address string
+            document.getElementById('user-display').innerText = localStorage.getItem('userName') || "Student";
+            await initializeDashboardData();
+        };
 
 
         async function initializeDashboardData() {
