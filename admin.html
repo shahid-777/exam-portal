@@ -158,16 +158,50 @@
         }
 
         // 🤖 NEW AI EXPLANATION INJECTION LOOP
-        function injectAIExplanations(questions) {
-            return questions.map(q => {
-                // Agar explanation pehle se nahi h, toh dynamic format generate krdo
-                if (!q.explanation) {
-                    const correctOptionText = q.options[q.correct] || "the selected option";
-                    q.explanation = `AI Analysis: Option (${['A','B','C','D'][q.correct]}) '${correctOptionText}' is correct because it directly satisfies the core computational criteria defined in the question matrix. Alternative variables exhibit structural logical mismatches.`;
-                }
-                return q;
+       // 🤖 REAL GEMINI AI ENGINE: Generates actual proper explanations for each question
+async function generateRealAIExplanations(questions) {
+    // 🔑 Apni Google AI Studio (Gemini) API Key yahan dalein
+    const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+    // Har question ke liye loop chalakar real response fetch karenge
+    const updatedQuestions = await Promise.all(questions.map(async (q) => {
+        if (q.explanation && !q.explanation.includes("AI Analysis:")) return q; // Already generated to skip karein
+
+        const correctLetter = ['A', 'B', 'C', 'D'][q.correct];
+        const correctText = q.options[q.correct];
+
+        // System prompt taaki response hamesha chota aur accurate rahe
+        const promptText = `Question: "${q.question}"
+Options: ${q.options.map((o, i) => ['A','B','C','D'][i] + ') ' + o).join(', ')}
+Correct Answer: Option ${correctLetter} (${correctText})
+
+Provide a precise, 2-sentence highly academic explanation in plain English explaining why this option is correct. Do not use markdown or bold text.`;
+
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: promptText }] }]
+                })
             });
+
+            const data = await response.json();
+            if (data.candidates && data.candidates[0].content.parts[0].text) {
+                q.explanation = data.candidates[0].content.parts[0].text.trim();
+            } else {
+                q.explanation = `Option (${correctLetter}) is correct because it dynamically fulfills the system architecture constraints for ${correctText}.`;
+            }
+        } catch (err) {
+            console.error("Gemini API Error:", err);
+            q.explanation = `Option (${correctLetter}) is the verified correct answer for this core computing framework module.`;
         }
+        return q;
+    }));
+
+    return updatedQuestions;
+}
 
         async function handleMCQUploadProcess() {
             const subjectInput = document.getElementById('admin-subject').value.trim();
