@@ -2,74 +2,72 @@
 <html lang="en">
 <head>
     <script>
-        // 🛡️ CLEAN HYBRID AUTH GUARD & LIFESPAN TIMEOUT (ALERT-FREE FOR MOBILE APP)
         (function() {
-            const email = localStorage.getItem('userEmail');
-            const loginTime = localStorage.getItem('sessionLoginTime');
-            
-            // 🚀 Bina kisi popup alert ke silent inspection lagaya hai taaki mobile app crash na ho
-            if (!email || !loginTime || (Date.now() - parseInt(loginTime, 10) > 2 * 60 * 60 * 1000)) {
-                localStorage.clear();
+            if (!localStorage.getItem('userEmail')) {
                 window.location.replace("index.html");
             }
         })();
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link class="fallback-logo" rel="icon" type="image/png" href="logo.png">
-    <title>Student Dashboard - Examination Terminal</title>
-   
+    <link rel="icon" type="image/png" href="logo.png">
+    <title>Student Control Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans min-h-screen">
-    
-    <div class="w-full bg-slate-900 border-b border-slate-800 py-4 px-6 flex items-center justify-between">
+<body class="bg-gray-50 font-sans min-h-screen">
+
+    <header class="bg-slate-900 text-white px-4 sm:px-8 py-4 flex flex-col sm:flex-row gap-4 justify-between items-center shadow-md">
         <div class="flex items-center space-x-3">
-            <div class="bg-white p-1 rounded-lg flex items-center justify-center">
-                <img src="logo.png" alt="Exam Portal Logo" class="h-8 w-auto object-contain fallback-logo">
-            </div>
-            <div class="flex flex-col">
-                <span class="text-sm font-black text-red-500 tracking-wider uppercase leading-none">Online</span>
-                <span class="text-[10px] font-bold text-slate-400 tracking-widest uppercase font-mono mt-0.5">Exam Portal</span>
-            </div>
+            <img src="logo.png" alt="Logo" class="h-9 w-auto bg-white p-1 rounded-lg">
+            <h1 class="text-md sm:text-lg font-black tracking-wider uppercase text-blue-400">STUDENT TERMINAL</h1>
         </div>
-
-        <div class="hidden sm:flex items-center space-x-2 bg-slate-950 px-3 py-1.5 rounded-lg border border-emerald-500/20">
-            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-wider">Secure Node Active</span>
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <span id="user-display" class="text-xs bg-slate-800 border border-slate-700 px-3 py-2 rounded-xl text-slate-300 font-mono truncate max-w-[180px]">Loading...</span>
+            <button onclick="logoutSession()" class="bg-red-600/10 hover:bg-red-600 border border-red-500/20 text-red-400 hover:text-white font-bold text-xs py-2 px-4 rounded-xl transition">Logout</button>
         </div>
-    </div>
-
-    <header class="bg-gray-900 text-white px-4 sm:px-8 py-4 flex flex-col sm:flex-row gap-3 justify-between items-center shadow-md">
-        <div class="text-center sm:text-left">
-            <h1 class="text-lg sm:text-xl font-black text-blue-400 tracking-wider uppercase">STUDENT PORTAL</h1>
-            <p id="user-display" class="text-xs text-gray-400 font-medium font-mono mt-0.5 break-all"></p>
-        </div>
-        <button onclick="localStorage.clear(); window.location.href='index.html';" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow active:scale-95">
-            Secure Log Out
-        </button>
     </header>
 
-    <main class="p-4 sm:p-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 space-y-4">
-            <h2 class="text-lg font-black text-gray-700 uppercase tracking-wide">Available Examinations</h2>
-            <div id="exams-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+    <main class="max-w-6xl mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="lg:col-span-1 space-y-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
+                <h3 class="text-sm font-black text-gray-800 uppercase tracking-wider mb-4 border-b pb-2 text-slate-500">Available Test Questionpapers</h3>
+                <div id="subjects-list-container" class="space-y-2.5">
+                    <p class="text-xs text-gray-400 font-semibold animate-pulse">Syncing active question papers...</p>
+                </div>
+            </div>
         </div>
 
-        <div class="space-y-4">
-            <h2 class="text-lg font-black text-gray-700 uppercase tracking-wide">Global Leaderboard Panel</h2>
-            <div class="w-full overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
-                <table class="w-full text-left border-collapse min-w-[300px] sm:min-w-full">
-                    <thead>
-                        <tr class="bg-gray-50 border-b border-gray-200 text-[10px] sm:text-xs font-bold uppercase text-gray-500 tracking-wider">
-                            <th class="py-3 px-3 text-center w-12 sm:w-16">Rank</th>
-                            <th class="py-3 px-3">Candidate Name</th>
-                            <th class="py-3 px-3 text-center w-16 sm:w-20">Score</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboard-rows" class="divide-y divide-gray-100 text-xs sm:text-sm font-semibold text-gray-700"></tbody>
-                </table>
+        <div class="lg:col-span-2 space-y-4">
+            <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-200 space-y-5">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4 border-slate-100">
+                    <div>
+                        <h3 class="text-sm font-black text-gray-900 uppercase tracking-wider">Subject Rank & Score Leaderboard</h3>
+                        <p class="text-[11px] font-medium text-slate-400">Select any target subject context to view ranks hierarchy.</p>
+                    </div>
+                    <select id="leaderboard-subject-filter" onchange="loadSubjectWiseLeaderboard()" class="w-full sm:w-56 border-2 p-2 text-xs rounded-xl bg-slate-50 font-bold text-slate-700 outline-none border-slate-200">
+                        <option value="">-- Choose Subject --</option>
+                    </select>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900 text-white text-[10px] sm:text-xs font-mono uppercase tracking-widest">
+                                <th class="p-3.5 rounded-l-xl text-center">Rank</th>
+                                <th class="p-3.5">Student Name / Identifier</th>
+                                <th class="p-3.5 text-center">Score</th>
+                                <th class="p-3.5 text-center rounded-r-xl">Total Items</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-rows-container" class="text-xs font-medium text-gray-700 divide-y divide-gray-100">
+                            <tr>
+                                <td colspan="4" class="text-center p-8 text-gray-400 font-bold">Please select a subject above to compile specific ranks board metrics.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
@@ -80,77 +78,83 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         window.onload = async function() {
-            const email = localStorage.getItem('userEmail');
-            const name = localStorage.getItem('userName');
-            if(!email) { window.location.href = "index.html"; return; }
-            
-            const cleanUserDisplay = name ? name : extractCleanName(email);
-            document.getElementById('user-display').innerText = `Active Account: ${cleanUserDisplay}`;
-            
-            await loadExams();
-            await loadLeaderboard();
+            document.getElementById('user-display').innerText = localStorage.getItem('userEmail') || "Student Terminal";
+            await initializeDashboardData();
         };
 
-        function extractCleanName(inputString) {
-            if (!inputString) return "Anonymous Candidate";
-            if (inputString.includes('@')) {
-                let textPart = inputString.split('@')[0];
-                return textPart.replace(/[._]/g, ' '); 
-            }
-            return inputString;
+        async function initializeDashboardData() {
+            try {
+                const { data: examsData } = await supabaseClient.from('exams').select('subject');
+                const listContainer = document.getElementById('subjects-list-container');
+                const filterDropdown = document.getElementById('leaderboard-subject-filter');
+                listContainer.innerHTML = "";
+                
+                if (examsData && examsData.length > 0) {
+                    examsData.forEach(row => {
+                        listContainer.innerHTML += `
+                            <div class="flex items-center justify-between p-3 bg-slate-50 hover:bg-blue-50/50 rounded-xl border border-slate-200 transition">
+                                <span class="text-xs font-bold text-slate-700 truncate pr-2">${row.subject}</span>
+                                <button onclick="launchExaminationSession('${encodeURIComponent(row.subject)}')" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-wider py-1.5 px-3 rounded-lg shadow-sm transition">Start</button>
+                            </div>`;
+                        
+                        let opt = document.createElement('option');
+                        opt.value = row.subject; opt.innerHTML = row.subject;
+                        filterDropdown.appendChild(opt);
+                    });
+                } else {
+                    listContainer.innerHTML = `<p class="text-xs text-gray-400 font-bold p-2">No question papers uploaded by admin yet.</p>`;
+                }
+            } catch (err) { console.log(err); }
         }
 
-        async function loadExams() {
-            const { data } = await supabaseClient.from('exams').select('subject');
-            const container = document.getElementById('exams-container');
-            container.innerHTML = "";
-            if(data) {
-                data.forEach(exam => {
-                    const encodedSubject = encodeURIComponent(exam.subject);
+        async function loadSubjectWiseLeaderboard() {
+            const targetSubject = document.getElementById('leaderboard-subject-filter').value;
+            const container = document.getElementById('leaderboard-rows-container');
+            if (!targetSubject) {
+                container.innerHTML = `<tr><td colspan="4" class="text-center p-8 text-gray-400 font-bold">Please select a subject above to compile specific ranks board metrics.</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = `<tr><td colspan="4" class="text-center p-8 text-blue-500 font-bold animate-pulse">Compiling subject ranks matrix...</td></tr>`;
+
+            try {
+                // Filters by matching value in 'subject' column of the database schema
+                const { data: resultsData, error } = await supabaseClient
+                    .from('results')
+                    .select('name, score, total_questions')
+                    .eq('subject', targetSubject)
+                    .order('score', { ascending: false });
+
+                if (error || !resultsData || resultsData.length === 0) {
+                    container.innerHTML = `<tr><td colspan="4" class="text-center p-8 text-amber-600 font-bold">No exam submissions recorded yet for this subject.</td></tr>`;
+                    return;
+                }
+
+                container.innerHTML = "";
+                resultsData.forEach((row, index) => {
+                    const currentRank = index + 1;
+                    let rankBadgeStyle = "bg-slate-100 text-slate-600";
+                    if(currentRank === 1) rankBadgeStyle = "bg-amber-500 text-white ring-2 ring-amber-300 font-black";
+                    else if(currentRank === 2) rankBadgeStyle = "bg-slate-300 text-slate-800 font-black";
+                    else if(currentRank === 3) rankBadgeStyle = "bg-orange-400 text-white font-black";
+
                     container.innerHTML += `
-                        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between space-y-4">
-                            <div>
-                                <h3 class="font-black text-gray-800 text-base sm:text-lg">${exam.subject}</h3>
-                                <p class="text-xs text-gray-400 font-medium">Standard Academic Evaluation Syllabus</p>
-                            </div>
-                            <button onclick="startStudentExamination('${encodedSubject}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-4 rounded-xl uppercase tracking-wider transition active:scale-95">
-                                Start Examination
-                            </button>
-                        </div>
-                    `;
+                        <tr class="hover:bg-slate-50/60 transition duration-75">
+                            <td class="p-3 text-center">
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[11px] ${rankBadgeStyle}">${currentRank}</span>
+                            </td>
+                            <td class="p-3 font-semibold text-slate-800">${row.name || 'Anonymous Student'}</td>
+                            <td class="p-3 text-center font-mono font-black text-blue-600">${row.score}</td>
+                            <td class="p-3 text-center font-mono text-slate-400">${row.total_questions || '--'}</td>
+                        </tr>`;
                 });
+            } catch (err) {
+                container.innerHTML = `<tr><td colspan="4" class="text-center p-8 text-red-500 font-bold">Network structural data fetch error.</td></tr>`;
             }
         }
 
-        function startStudentExamination(subjectName) {
-            window.location.href = `exam.html?subject=${subjectName}&v=1.0.1`;
-        }
-
-        async function loadLeaderboard() {
-            const { data } = await supabaseClient.from('results').select('*').order('score', { ascending: false });
-            const tbody = document.getElementById('leaderboard-rows');
-            tbody.innerHTML = "";
-            if(data) {
-                data.forEach((row, idx) => {
-                    const rawIdentifier = row.name || row.email || "Candidate User";
-                    const cleanCandidateName = extractCleanName(rawIdentifier);
-
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-gray-50/80 transition duration-150">
-                            <td class="py-3.5 px-3 text-center font-bold text-blue-600">#${idx + 1}</td>
-                            <td class="py-3.5 px-3 font-medium text-gray-900 capitalize break-all max-w-[140px] sm:max-w-none">${cleanCandidateName}</td>
-                            <td class="py-3.5 px-3 text-center font-black text-green-600">${row.score}</td>
-                        </tr>
-                    `;
-                });
-            }
-        }
-
-        document.querySelectorAll('.fallback-logo').forEach(img => {
-            img.onerror = function() {
-                this.style.display = 'none';
-            };
-        });
+        function launchExaminationSession(encodedSubject) { window.location.href = `exam.html?subject=${encodedSubject}`; }
+        function logoutSession() { localStorage.clear(); window.location.replace("index.html"); }
     </script>
 </body>
 </html>
