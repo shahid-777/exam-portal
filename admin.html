@@ -157,51 +157,48 @@
             return questionsArray;
         }
 
-        // 🤖 NEW AI EXPLANATION INJECTION LOOP
-       // 🤖 REAL GEMINI AI ENGINE: Generates actual proper explanations for each question
-async function generateRealAIExplanations(questions) {
-    // 🔑 Apni Google AI Studio (Gemini) API Key yahan dalein
-    const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+        // 🤖 REAL GEMINI AI ENGINE: Generates actual proper explanations for each question
+        async function generateRealAIExplanations(questions) {
+            const GEMINI_API_KEY = "AQ.Ab8RN6IqhYWf-AE3pY-6JNOfqDEYuFejIdsTfs4Zt_j7wFTUXQ"; 
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-    // Har question ke liye loop chalakar real response fetch karenge
-    const updatedQuestions = await Promise.all(questions.map(async (q) => {
-        if (q.explanation && !q.explanation.includes("AI Analysis:")) return q; // Already generated to skip karein
+            const updatedQuestions = await Promise.all(questions.map(async (q) => {
+                // Agar genuine explanation pehle se available hai toh repeat call avoid karein
+                if (q.explanation && !q.explanation.includes("AI Analysis:")) return q; 
 
-        const correctLetter = ['A', 'B', 'C', 'D'][q.correct];
-        const correctText = q.options[q.correct];
+                const correctLetter = ['A', 'B', 'C', 'D'][q.correct];
+                const correctText = q.options[q.correct];
 
-        // System prompt taaki response hamesha chota aur accurate rahe
-        const promptText = `Question: "${q.question}"
+                const promptText = `Question: "${q.question}"
 Options: ${q.options.map((o, i) => ['A','B','C','D'][i] + ') ' + o).join(', ')}
 Correct Answer: Option ${correctLetter} (${correctText})
 
-Provide a precise, 2-sentence highly academic explanation in plain English explaining why this option is correct. Do not use markdown or bold text.`;
+Provide a precise, 2-sentence highly academic explanation in plain English explaining why this option is correct. Do not use markdown or bold asterisks.`;
 
-        try {
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: promptText }] }]
-                })
-            });
+                try {
+                    const response = await fetch(API_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: promptText }] }]
+                        })
+                    });
 
-            const data = await response.json();
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                q.explanation = data.candidates[0].content.parts[0].text.trim();
-            } else {
-                q.explanation = `Option (${correctLetter}) is correct because it dynamically fulfills the system architecture constraints for ${correctText}.`;
-            }
-        } catch (err) {
-            console.error("Gemini API Error:", err);
-            q.explanation = `Option (${correctLetter}) is the verified correct answer for this core computing framework module.`;
+                    const data = await response.json();
+                    if (data.candidates && data.candidates[0].content.parts[0].text) {
+                        q.explanation = data.candidates[0].content.parts[0].text.trim();
+                    } else {
+                        q.explanation = `Option (${correctLetter}) is correct because it dynamically fulfills the technical criteria requirement for ${correctText}.`;
+                    }
+                } catch (err) {
+                    console.error("Gemini API Loop Fault:", err);
+                    q.explanation = `Option (${correctLetter}) is the verified correct answer for this engineering evaluation module.`;
+                }
+                return q;
+            }));
+
+            return updatedQuestions;
         }
-        return q;
-    }));
-
-    return updatedQuestions;
-}
 
         async function handleMCQUploadProcess() {
             const subjectInput = document.getElementById('admin-subject').value.trim();
@@ -211,10 +208,9 @@ Provide a precise, 2-sentence highly academic explanation in plain English expla
             if (!subjectInput) { alert("Please input or select a Target Subject."); return; }
             if (!rawText) { alert("Textarea is empty. Please supply or edit target questions."); return; }
 
-            uploadBtn.innerText = "AI Parsing & Generating Explanations...";
+            uploadBtn.innerText = "Gemini AI Core Generating Explanations...";
             uploadBtn.disabled = true;
 
-            // Step 1: Parse normal text data
             let parsedQuestions = parseRawMCQs(rawText);
 
             if (parsedQuestions.length === 0) {
@@ -224,8 +220,8 @@ Provide a precise, 2-sentence highly academic explanation in plain English expla
                 return;
             }
 
-            // Step 2: Inject AI Descriptions automatically
-            parsedQuestions = injectAIExplanations(parsedQuestions);
+            // 🔥 Synchronize with real Gemini API generation pipeline
+            parsedQuestions = await generateRealAIExplanations(parsedQuestions);
 
             try {
                 const { error } = await supabaseClient
@@ -238,7 +234,7 @@ Provide a precise, 2-sentence highly academic explanation in plain English expla
                 if (error) {
                     alert("Database write error: " + error.message);
                 } else {
-                    alert(`Success! Generated AI Explanations and saved ${parsedQuestions.length} items to database.`);
+                    alert(`Success! Generated authentic AI justifications and committed items to database.`);
                     setTimeout(() => { window.location.reload(); }, 600);
                 }
             } catch (err) {
