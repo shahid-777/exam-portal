@@ -2,37 +2,26 @@
 <html lang="en">
 <head>
     <script>
-        // 🛡️ EXCLUSIVE ADMINISTRATIVE ROUTE GUARD & TIMEOUT INTERCEPTOR
+        // 🛡️ SILENT ADMINISTRATIVE ROUTE GUARD & TIMEOUT INTERCEPTOR (ALERT-FREE)
         (function() {
-            // Admin specific keys fetch loop
             const adminEmail = localStorage.getItem('adminEmail');
             const adminLoginTime = localStorage.getItem('adminSessionTime');
-            
-            // --- LAYER 1: ABSOLUTE ACCESS PROTECTION ---
-            if (!adminEmail || !adminLoginTime) {
-                localStorage.clear();
-                alert("Access Denied: Administrative terminal requires official authorization key.");
-                window.location.replace("admin-login.html"); // Redirects back to primary authentication matrix
-                return;
-            }
-
-            // --- LAYER 2: EMAIL PROFILE VERIFICATION ---
             const OFFICIAL_ADMIN_EMAIL = "shahid.gauri2@gmail.com"; 
-
-            if (adminEmail.toLowerCase() !== OFFICIAL_ADMIN_EMAIL.toLowerCase()) {
-                alert("Security Breach: Your current active account token is not authorized to access the Admin Panel.");
-                window.location.replace("dashboard.html"); // Drop malicious/student tokens back to standard interface
+            const oneHourInMs = 1 * 60 * 60 * 1000; 
+            
+            // 🚀 Mobile apps ke liye bina kisi popup alert ke silent check execute karein
+            // Layer 1: Missing credentials or token mismatch redirection
+            if (!adminEmail || !adminLoginTime || adminEmail.toLowerCase() !== OFFICIAL_ADMIN_EMAIL.toLowerCase()) {
+                localStorage.clear();
+                window.location.replace("admin-login.html"); 
                 return;
             }
 
-            // --- LAYER 3: HARD LIFESPAN EXPIRY CHECK (1 Hour Timeout) ---
+            // Layer 2: 1-Hour Hard Lifespan Expiry Check
             const currentTimestamp = Date.now();
-            const oneHourInMs = 1 * 60 * 60 * 1000; 
-
             if (currentTimestamp - parseInt(adminLoginTime, 10) > oneHourInMs) {
                 localStorage.clear();
-                alert("Admin Session Expired: Please re-authenticate via secure entry gateway.");
-                window.location.replace("index.html");
+                window.location.replace("admin-login.html");
                 return;
             }
             console.log("Root Guard clearance status: SECURE");
@@ -211,10 +200,9 @@
             }
         }
 
-        // 🚪 CLEAR INSTANT SESSION LOGOUT SYSTEM FOR ADMIN ENTITY
         function logoutAdminSession() {
             localStorage.clear();
-            window.location.replace("index.html");
+            window.location.replace("admin-login.html");
         }
     </script>
 </body>
