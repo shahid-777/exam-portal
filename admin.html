@@ -164,7 +164,7 @@
 
             const updatedQuestions = await Promise.all(questions.map(async (q) => {
                 // Agar genuine explanation pehle se available hai toh repeat call avoid karein
-                if (q.explanation && !q.explanation.includes("AI Analysis:")) return q; 
+               q.explanation = null;
 
                 const correctLetter = ['A', 'B', 'C', 'D'][q.correct];
                 const correctText = q.options[q.correct];
