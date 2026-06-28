@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <script>
-        // 🛡️ ADMINISTRATIVE TERMINAL SECURE ENTRY GATEWAY
         (function() {
             const adminEmail = localStorage.getItem('adminEmail');
             const adminLoginTime = localStorage.getItem('adminSessionTime');
@@ -14,7 +13,7 @@
             }
             const OFFICIAL_ADMIN_EMAIL = "shahid.gauri2@gmail.com"; 
             if (adminEmail.toLowerCase() !== OFFICIAL_ADMIN_EMAIL.toLowerCase()) {
-                alert("Security Breach: Your current active account token is not authorized to access the Admin Panel.");
+                alert("Security Breach: Unauthorized administrative token context.");
                 window.location.replace("dashboard.html");
                 return;
             }
@@ -37,7 +36,7 @@
 
     <header class="bg-gray-900 text-white px-4 sm:px-8 py-4 flex flex-col sm:flex-row gap-3 justify-between items-center shadow-lg">
         <h1 class="text-lg sm:text-xl font-black tracking-wider text-blue-400 uppercase">ADMIN CONTROL CENTER</h1>
-        <button onclick="logoutAdminSession()" class="w-full sm:w-auto text-center font-bold text-xs bg-gray-800 px-5 py-2.5 rounded-xl hover:bg-gray-700 transition">Exit Session</button>
+        <button onclick="logoutAdminSession()" class="w-full sm:w-auto text-center font-bold text-xs bg-gray-800 px-5 py-2.5 rounded-xl hover:bg-gray-700 border border-gray-700 transition">Exit Session</button>
     </header>
 
     <main class="p-4 sm:p-6 max-w-4xl mx-auto">
@@ -61,7 +60,7 @@
 
             <div>
                 <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1.5">Paste / Edit Raw Text MCQs</label>
-                <textarea id="admin-paste-area" rows="14" placeholder="1. What will be the output?&#10;#include <stdio.h>&#10;int main() { return 0; }&#10;A. 10&#10;B. 20&#10;Answer: A" class="w-full border-2 p-3 rounded-xl font-mono text-xs bg-gray-50 text-gray-800 outline-none focus:border-blue-500"></textarea>
+                <textarea id="admin-paste-area" rows="14" placeholder="1. What will be the output?&#10;#include <stdio.h>&#10;int main() { return 0; }&#10;A. 10&#10;B. 20&#10;Answer: A" class="w-full border-2 p-3 rounded-xl font-mono text-xs bg-gray-50 text-gray-800 outline-none"></textarea>
             </div>
 
             <button id="upload-btn" onclick="handleMCQUploadProcess()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-6 rounded-xl transition shadow-lg uppercase text-xs tracking-wide">Save / Update Subject in Database</button>
@@ -108,7 +107,7 @@
             } catch (err) { console.log(err); } finally { fetchBtn.innerText = "Fetch MCQs"; fetchBtn.disabled = false; }
         }
 
-        // 🛠️ ADVANCED ACUMULATOR PARSER FOR COMPILING MULTI-LINE PROGRAM CODES
+        // 🛠️ HIGH-PRECISION STRICT MCQs ACCUMULATOR PARSING ENGINE
         function parseRawMCQs(rawText) {
             const lines = rawText.split('\n');
             const questionsArray = [];
@@ -117,14 +116,22 @@
 
             lines.forEach(lineRaw => {
                 const lineTrimmed = lineRaw.trim();
-                
-                // Check format anchors
+                if (lineTrimmed.length === 0) {
+                    if (currentQuestion && currentQuestion.question.length > 0 && currentQuestion.options.length === 0) {
+                        currentQuestion.question += "\n"; 
+                    }
+                    return;
+                }
+
+                // Strict Question Anchor Match (Must start explicitly with digits at line boundary)
                 const questionMatch = lineTrimmed.match(/^(\d+)[\s.)-]+\s*(.+)/);
-                const optionMatch = lineTrimmed.match(/^([A-D])[\s.)-]+\s*(.+)/i);
+                
+                // 🔐 SUPER STRICT OPTION ANCHOR MATCH (Bypasses any whitespace inline code statements like '*p1')
+                const optionMatch = lineTrimmed.match(/^([A-D])[\s.)]+\s*(.+)/);
+                
                 const answerMatch = lineTrimmed.toLowerCase().startsWith('answer:') || lineTrimmed.toLowerCase().startsWith('ans:');
 
                 if (questionMatch && !optionMatch && !answerMatch) {
-                    // Save previous question if fully compiled
                     if (currentQuestion && currentQuestion.options.length >= 2) {
                         currentQuestion.question = escapeHTML(currentQuestion.question.trim());
                         questionsArray.push(currentQuestion);
@@ -151,7 +158,6 @@
                     }
                 } 
                 else {
-                    // 🔥 IMPORTANT: Agar normal characters ya multi-line programming statement h, toh use content block mein append krte jao
                     if (currentQuestion && currentQuestion.options.length === 0) {
                         currentQuestion.question += "\n" + lineRaw; 
                     }
@@ -171,15 +177,15 @@
             const rawText = document.getElementById('admin-paste-area').value; 
             const uploadBtn = document.getElementById('upload-btn');
 
-            if (!subjectInput || !rawText.trim()) { alert("Please ensure fields are not empty."); return; }
+            if (!subjectInput || !rawText.trim()) { alert("Please ensure fields are supplied."); return; }
 
-            uploadBtn.innerText = "Processing & Saving Structural Logic...";
+            uploadBtn.innerText = "Parsing Code Elements Securely...";
             uploadBtn.disabled = true;
 
             const parsedQuestions = parseRawMCQs(rawText);
 
             if (parsedQuestions.length === 0) {
-                alert("Parsing format validation failure. Please verify text hierarchy.");
+                alert("Parsing verification alert: Layout formatting exception.");
                 uploadBtn.innerText = "Save / Update Subject in Database";
                 uploadBtn.disabled = false;
                 return;
@@ -191,10 +197,10 @@
                     .upsert({ subject: subjectInput, questions_json: parsedQuestions }, { onConflict: 'subject' });
 
                 if (!error) {
-                    alert(`Success! Successfully processed and committed ${parsedQuestions.length} programs to node.`);
+                    alert(`Success! Successfully processed and committed ${parsedQuestions.length} elements.`);
                     setTimeout(() => { window.location.reload(); }, 600);
                 } else {
-                    alert("Database Write Exception: " + error.message);
+                    alert("Database write error: " + error.message);
                 }
             } catch (err) {
                 alert("Core network synchronization fault.");
