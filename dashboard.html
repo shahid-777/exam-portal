@@ -2,35 +2,18 @@
 <html lang="en">
 <head>
     <script>
-    // 🛡️ COMBINED AUTH GUARD & SESSION EXPIRY LIFESPAN LOGIC
-    (function() {
-        const email = localStorage.getItem('userEmail');
-        const loginTime = localStorage.getItem('sessionLoginTime');
-        
-        // --- LAYER 1: DIRECT ACCESS PROTECTION ---
-        // Agar koi bina login kiye direct URL daal kar aane ki koshish karega
-        if (!email || !loginTime) {
-            localStorage.clear();
-            alert("Access Denied: Please sign in via the official entry gateway first.");
-            window.location.replace("index.html");
-            return; // Script ko yahi rok do
-        }
-
-        // --- LAYER 2: SESSION EXPIRY TIMEOUT BLOCK ---
-        const currentTimestamp = Date.now();
-        const absoluteExpiryTime = 2 * 60 * 60 * 1000; // 2 Ghante (Milliseconds mein)
-
-        // Agar user logged in hai, lekin uske login kiye hue 2 ghante se upar ho chuka hai
-        if (currentTimestamp - parseInt(loginTime, 10) > absoluteExpiryTime) {
-            localStorage.clear();
-            alert("Session Expired: Your secure token has expired. Please log in again.");
-            window.location.replace("index.html");
-            return;
-        }
-        
-        console.log("Security Handshake Verified. Session Active.");
-    })();
-</script>
+        // 🛡️ CLEAN HYBRID AUTH GUARD & LIFESPAN TIMEOUT (ALERT-FREE FOR MOBILE APP)
+        (function() {
+            const email = localStorage.getItem('userEmail');
+            const loginTime = localStorage.getItem('sessionLoginTime');
+            
+            // 🚀 Bina kisi popup alert ke silent inspection lagaya hai taaki mobile app crash na ho
+            if (!email || !loginTime || (Date.now() - parseInt(loginTime, 10) > 2 * 60 * 60 * 1000)) {
+                localStorage.clear();
+                window.location.replace("index.html");
+            }
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link class="fallback-logo" rel="icon" type="image/png" href="logo.png">
@@ -38,7 +21,6 @@
    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen">
     
@@ -102,7 +84,6 @@
             const name = localStorage.getItem('userName');
             if(!email) { window.location.href = "index.html"; return; }
             
-            // Display clean layout names
             const cleanUserDisplay = name ? name : extractCleanName(email);
             document.getElementById('user-display').innerText = `Active Account: ${cleanUserDisplay}`;
             
@@ -110,69 +91,61 @@
             await loadLeaderboard();
         };
 
-        // 🌟 HELPER FUNCTION: Email se clean name generate karne ke liye
         function extractCleanName(inputString) {
             if (!inputString) return "Anonymous Candidate";
-            // Agar input ek valid email format hai, toh @ ke pehle ka hissa nikalenge
             if (inputString.includes('@')) {
                 let textPart = inputString.split('@')[0];
-                return textPart.replace(/[._]/g, ' '); // dot aur underscore ko space se badla
+                return textPart.replace(/[._]/g, ' '); 
             }
             return inputString;
         }
 
         async function loadExams() {
-    const { data } = await supabaseClient.from('exams').select('subject');
-    const container = document.getElementById('exams-container');
-    container.innerHTML = "";
-    if(data) {
-        data.forEach(exam => {
-            const encodedSubject = encodeURIComponent(exam.subject);
+            const { data } = await supabaseClient.from('exams').select('subject');
+            const container = document.getElementById('exams-container');
+            container.innerHTML = "";
+            if(data) {
+                data.forEach(exam => {
+                    const encodedSubject = encodeURIComponent(exam.subject);
+                    container.innerHTML += `
+                        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between space-y-4">
+                            <div>
+                                <h3 class="font-black text-gray-800 text-base sm:text-lg">${exam.subject}</h3>
+                                <p class="text-xs text-gray-400 font-medium">Standard Academic Evaluation Syllabus</p>
+                            </div>
+                            <button onclick="startStudentExamination('${encodedSubject}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-4 rounded-xl uppercase tracking-wider transition active:scale-95">
+                                Start Examination
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+        }
 
-            // 🌟 ALERT PURA DELETE KAR DIYA HAI AUR DYNAMIC LINK BIND KIYA HAI
-            container.innerHTML += `
-                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between space-y-4">
-                    <div>
-                        <h3 class="font-black text-gray-800 text-base sm:text-lg">${exam.subject}</h3>
-                        <p class="text-xs text-gray-400 font-medium">Standard Academic Evaluation Syllabus</p>
-                    </div>
-                    <button onclick="startStudentExamination('${encodedSubject}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-4 rounded-xl uppercase tracking-wider transition active:scale-95">
-                        Start Examination
-                    </button>
-                </div>
-            `;
-        });
-    }
-}
+        function startStudentExamination(subjectName) {
+            window.location.href = `exam.html?subject=${subjectName}&v=1.0.1`;
+        }
 
-// 🌐 REDIRECT ROUTER ENGINE
-function startStudentExamination(subjectName) {
-    // ?v=1.0.1 browser cache bypass karne ke liye jodna zaroori hai
-    window.location.href = `exam.html?subject=${subjectName}&v=1.0.1`;
-}
-      async function loadLeaderboard() {
-    const { data } = await supabaseClient.from('results').select('*').order('score', { ascending: false });
-    const tbody = document.getElementById('leaderboard-rows');
-    tbody.innerHTML = "";
-    if(data) {
-        data.forEach((row, idx) => {
-            // 🔍 DYNAMIC CHECK: Agar row.name nahi milta, toh row.email check karega
-            const rawIdentifier = row.name || row.email || "Candidate User";
-            
-            // Safe filter to extract clean name
-            const cleanCandidateName = extractCleanName(rawIdentifier);
+        async function loadLeaderboard() {
+            const { data } = await supabaseClient.from('results').select('*').order('score', { ascending: false });
+            const tbody = document.getElementById('leaderboard-rows');
+            tbody.innerHTML = "";
+            if(data) {
+                data.forEach((row, idx) => {
+                    const rawIdentifier = row.name || row.email || "Candidate User";
+                    const cleanCandidateName = extractCleanName(rawIdentifier);
 
-            tbody.innerHTML += `
-                <tr class="hover:bg-gray-50/80 transition duration-150">
-                    <td class="py-3.5 px-3 text-center font-bold text-blue-600">#${idx + 1}</td>
-                    <td class="py-3.5 px-3 font-medium text-gray-900 capitalize break-all max-w-[140px] sm:max-w-none">${cleanCandidateName}</td>
-                    <td class="py-3.5 px-3 text-center font-black text-green-600">${row.score}</td>
-                </tr>
-            `;
-        });
-    }
-}
-        // Handles broken logo image fallbacks
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-gray-50/80 transition duration-150">
+                            <td class="py-3.5 px-3 text-center font-bold text-blue-600">#${idx + 1}</td>
+                            <td class="py-3.5 px-3 font-medium text-gray-900 capitalize break-all max-w-[140px] sm:max-w-none">${cleanCandidateName}</td>
+                            <td class="py-3.5 px-3 text-center font-black text-green-600">${row.score}</td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
         document.querySelectorAll('.fallback-logo').forEach(img => {
             img.onerror = function() {
                 this.style.display = 'none';
