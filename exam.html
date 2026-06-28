@@ -5,20 +5,16 @@
     (function() {
         const email = localStorage.getItem('userEmail');
         const loginTime = localStorage.getItem('sessionLoginTime');
-        
         if (!email || !loginTime) {
             localStorage.clear();
             alert("Access Denied: Please sign in via the official entry gateway first.");
             window.location.replace("index.html");
             return;
         }
-
         const currentTimestamp = Date.now();
-        const absoluteExpiryTime = 2 * 60 * 60 * 1000;
-
-        if (currentTimestamp - parseInt(loginTime, 10) > absoluteExpiryTime) {
+        if (currentTimestamp - parseInt(loginTime, 10) > 2 * 60 * 60 * 1000) {
             localStorage.clear();
-            alert("Session Expired: Your secure token has expired. Please log in again.");
+            alert("Session Expired: Please log in again.");
             window.location.replace("index.html");
             return;
         }
@@ -36,23 +32,18 @@
     <div class="w-full bg-slate-900 border-b border-slate-800 py-4 px-6 flex items-center justify-between sticky top-0 z-50 shadow-md">
         <div class="flex items-center space-x-4">
             <button onclick="triggerHomeRedirect()" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs py-2 px-3 rounded-xl transition active:scale-95">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
                 <span>Home</span>
             </button>
             <div class="h-6 w-px bg-slate-800"></div>
             <div class="flex items-center space-x-2">
-                <div class="bg-white p-1 rounded-lg flex items-center justify-center">
-                    <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain">
-                </div>
+                <div class="bg-white p-1 rounded-lg flex items-center justify-center"><img src="logo.png" alt="Logo" class="h-8 w-auto object-contain"></div>
                 <div class="flex flex-col">
                     <span class="text-sm font-black text-red-500 tracking-wider uppercase leading-none">Live</span>
                     <span id="active-subject-title" class="text-[10px] font-bold text-slate-400 tracking-widest uppercase font-mono mt-0.5">Loading...</span>
                 </div>
             </div>
         </div>
-        
         <div class="flex items-center space-x-4">
             <div class="bg-slate-950 px-4 py-2 rounded-xl border border-amber-500/30 flex items-center space-x-2">
                 <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
@@ -69,8 +60,9 @@
                 <span class="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-bold border border-amber-200/50">Do not refresh page</span>
             </div>
 
+            <!-- 🛠️ CRUCIAL CHANGE: PRE-WRAP INJECTED TO SUPPORT MULTI-LINE INDENT CODE BLOCKS -->
             <div id="question-text-container">
-                <h2 id="live-question-text" class="text-base sm:text-lg font-black text-slate-800 leading-relaxed">Retrieving examination paper payload securely...</h2>
+                <h2 id="live-question-text" class="text-base sm:text-lg font-bold text-slate-800 leading-relaxed" style="white-space: pre-wrap;">Retrieving examination paper payload securely...</h2>
             </div>
 
             <div id="options-matrix-container" class="grid grid-cols-1 gap-3 pt-2"></div>
@@ -82,6 +74,7 @@
         </div>
     </main>
 
+    <!-- DYNAMIC PERFORMANCE ANALYSIS SCREEN -->
     <div id="analysis-modal" class="hidden fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
         <div class="bg-slate-50 w-full max-w-4xl h-[92vh] rounded-2xl shadow-2xl border border-slate-300 flex flex-col overflow-hidden transform transition-all">
             <div class="bg-white border-b border-slate-200 p-4 sm:p-6 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
@@ -158,7 +151,7 @@
         function renderActiveQuestionCard() {
             const currentQuestion = questionsList[currentQuestionIdx];
             document.getElementById('question-counter').innerText = `Question ${currentQuestionIdx + 1} of ${questionsList.length}`;
-            document.getElementById('live-question-text').innerText = currentQuestion.question;
+            document.getElementById('live-question-text').innerHTML = currentQuestion.question; // Render safe html context
             const optionsContainer = document.getElementById('options-matrix-container'); optionsContainer.innerHTML = "";
             const optionLabels = ['A', 'B', 'C', 'D'];
             if(Array.isArray(currentQuestion.options)) {
@@ -207,11 +200,11 @@
                     let optStyle = "border-slate-200 bg-white text-slate-700";
                     if (oIdx === correctChoice) optStyle = "border-emerald-500 bg-emerald-50/80 text-emerald-900 ring-2 ring-emerald-500/30 font-bold";
                     else if (oIdx === studentChoice && !isCorrect) optStyle = "border-red-500 bg-red-50/80 text-red-900 ring-2 ring-red-500/30 font-bold";
-                    optionsHTML += `<div class="p-4 rounded-2xl border ${optStyle} text-sm">${optionLabels[oIdx] || ''}) ${optText}</div>`;
+                    optionsHTML += `<div class="p-4 rounded-2xl border ${optStyle} text-sm">${optionLabels[oIdx]}) ${optText}</div>`;
                 });
                 reviewListContainer.innerHTML += `
                     <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm">
-                        <h5 class="text-sm font-black text-slate-800 mb-3">${q.question}</h5>
+                        <h5 class="text-sm font-bold text-slate-800 mb-3" style="white-space: pre-wrap;">${q.question}</h5>
                         <div class="grid grid-cols-1 gap-2.5">${optionsHTML}</div>
                     </div>`;
             });
