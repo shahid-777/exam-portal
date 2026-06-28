@@ -23,7 +23,7 @@
             <h1 class="text-md sm:text-lg font-black tracking-wider uppercase text-blue-400">STUDENT TERMINAL</h1>
         </div>
         <div class="flex items-center gap-3 w-full sm:w-auto">
-            <span id="user-display" class="text-xs bg-slate-800 border border-slate-700 px-3 py-2 rounded-xl text-slate-300 font-mono truncate max-w-[180px]">Loading...</span>
+            <span id="user-display" class="text-xs bg-slate-800 border border-slate-700 px-3 py-2 rounded-xl text-slate-300 font-mono truncate max-w-[180px]">Student</span>
             <button onclick="logoutSession()" class="bg-red-600/10 hover:bg-red-600 border border-red-500/20 text-red-400 hover:text-white font-bold text-xs py-2 px-4 rounded-xl transition">Logout</button>
         </div>
     </header>
@@ -77,10 +77,12 @@
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        window.onload = async function() {
-            document.getElementById('user-display').innerText = localStorage.getItem('userEmail') || "Student Terminal";
-            await initializeDashboardData();
-        };
+       window.onload = async function() {
+    // 🚀 FIXED: Email id hata kar user ka real profile name render karega
+    document.getElementById('user-display').innerText = localStorage.getItem('userName') || "Student Terminal";
+    await initializeDashboardData();
+};
+
 
         async function initializeDashboardData() {
             try {
