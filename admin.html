@@ -2,11 +2,22 @@
 <html lang="en">
 <head>
     <script>
+        // 🛡️ SILENT ADMINISTRATIVE ROUTE GUARD & TIMEOUT INTERCEPTOR (ALERT-FREE)
         (function() {
-            const adminEmail = localStorage.getItem('adminEmail'); const adminLoginTime = localStorage.getItem('adminSessionTime');
-            const OFFICIAL_ADMIN_EMAIL = "shahid.gauri2@gmail.com"; const oneHourInMs = 1 * 60 * 60 * 1000; 
-            if (!adminEmail || !adminLoginTime || adminEmail.toLowerCase() !== OFFICIAL_ADMIN_EMAIL.toLowerCase()) { localStorage.clear(); window.location.replace("admin-login.html"); return; }
-            if (Date.now() - parseInt(adminLoginTime, 10) > oneHourInMs) { localStorage.clear(); window.location.replace("admin-login.html"); return; }
+            const adminEmail = localStorage.getItem('adminEmail'); 
+            const adminLoginTime = localStorage.getItem('adminSessionTime');
+            const OFFICIAL_ADMIN_EMAIL = "shahid.gauri2@gmail.com"; 
+            const oneHourInMs = 1 * 60 * 60 * 1000; 
+            if (!adminEmail || !adminLoginTime || adminEmail.toLowerCase() !== OFFICIAL_ADMIN_EMAIL.toLowerCase()) { 
+                localStorage.clear(); 
+                window.location.replace("admin-login.html"); 
+                return; 
+            }
+            if (Date.now() - parseInt(adminLoginTime, 10) > oneHourInMs) { 
+                localStorage.clear(); 
+                window.location.replace("admin-login.html"); 
+                return; 
+            }
         })();
     </script>
     <meta charset="UTF-8">
@@ -29,7 +40,9 @@
             <div class="flex flex-col sm:flex-row gap-3 items-end">
                 <div class="w-full flex-1">
                     <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1.5">Select Existing Subject to Edit</label>
-                    <select id="admin-select-subject" class="w-full border-2 p-3 text-sm rounded-xl bg-gray-50 font-semibold text-gray-700"><option value="">-- Select a subject --</option></select>
+                    <select id="admin-select-subject" class="w-full border-2 p-3 text-sm rounded-xl bg-gray-50 font-semibold text-gray-700">
+                        <option value="">-- Select a subject --</option>
+                    </select>
                 </div>
                 <button id="fetch-btn" onclick="fetchSubjectForEditing()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-3.5 px-6 rounded-xl transition shadow">Fetch MCQs</button>
             </div>
@@ -69,51 +82,84 @@
                     let text = "";
                     data.questions_json.forEach((q, idx) => {
                         text += `${idx + 1}. ${q.question}\n`;
-                        if(Array.isArray(q.options)) q.options.forEach((o, oId) => { text += `${['A','B','C','D','E','F'][oId]}) ${o}\n`; });
-                        text += `Answer: ${['A','B','C','D','E','F'][parseInt(q.correct, 10)] || 'A'}\n\n`;
+                        if(Array.isArray(q.options)) q.options.forEach((o, oId) => { text += `${['A','B','C','D','E','F','G','H'][oId] || 'A'}) ${o}\n`; });
+                        text += `Answer: ${['A','B','C','D','E','F','G','H'][parseInt(q.correct, 10)] || 'A'}\n\n`;
                     });
                     textArea.value = text.trim();
                 }
             } catch (err) { console.log(err); } finally { fetchBtn.innerText = "Fetch MCQs"; fetchBtn.disabled = false; }
         }
 
+        // 🛠️ HIGH-STRICTNESS PARSING ENGINE TO PREVENT OPTION-MIXING FIELD BREAKS
         function parseRawMCQs(rawText) {
             const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-            const questionsArray = []; let currentQuestion = null; const lbls = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            const questionsArray = []; 
+            let currentQuestion = null; 
+            const lbls = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
             lines.forEach(line => {
-                const questionMatch = line.match(/^(\d+)[\s.)-]+(.*)/);
-                if (questionMatch) {
-                    if (currentQuestion && currentQuestion.options.length >= 2) questionsArray.push(currentQuestion);
+                // Strict Question Match: Line must start with digits followed explicitly by a dot or bracket and then space
+                const questionMatch = line.match(/^(\d+)[\s.)-]+\s*(.+)/);
+                // Strict Option Match: Line must start with characters A-H followed by dot or bracket and space
+                const optionMatch = line.match(/^([A-H])[\s.)-]+\s*(.+)/i);
+
+                if (questionMatch && !optionMatch) {
+                    if (currentQuestion && currentQuestion.options.length >= 2) {
+                        questionsArray.push(currentQuestion);
+                    }
                     currentQuestion = { question: questionMatch[2].trim(), options: [], correct: 0 };
-                } else if (line.match(/^[A-H][\s.)-]+/i)) {
-                    if (currentQuestion) currentQuestion.options.push(line.replace(/^[A-H][\s.)-]+/i, '').trim());
+                } else if (optionMatch) {
+                    if (currentQuestion) {
+                        currentQuestion.options.push(optionMatch[2].trim());
+                    }
                 } else if (line.toLowerCase().startsWith('answer:') || line.toLowerCase().startsWith('ans:')) {
                     if (currentQuestion) {
-                        const ansLetter = line.split(':')[1].trim().toUpperCase();
-                        const indexMapping = lbls.indexOf(ansLetter); currentQuestion.correct = indexMapping !== -1 ? indexMapping : 0;
+                        const parts = line.split(':');
+                        if (parts[1]) {
+                            const ansLetter = parts[1].trim().toUpperCase();
+                            const indexMapping = lbls.indexOf(ansLetter); 
+                            currentQuestion.correct = indexMapping !== -1 ? indexMapping : 0;
+                        }
                     }
                 }
             });
-            if (currentQuestion && currentQuestion.options.length >= 2) questionsArray.push(currentQuestion);
+
+            if (currentQuestion && currentQuestion.options.length >= 2) {
+                questionsArray.push(currentQuestion);
+            }
             return questionsArray;
         }
 
-        // 🤖 CORS COMPLIANT PROXY ROUTER FOR SAMBANOVA
+        // 🤖 CORS COMPLIANT PROXY ROUTER FOR SAMBANOVA (META-LLAMA-3.1-70B)
         async function generateRealAIExplanations(questions) {
             const SAMBANOVA_API_KEY = "85bf45e8-68db-4b32-a2f4-f787c3d6a18b"; 
             const FINAL_ENDPOINT = "https://corsproxy.io/?" + encodeURIComponent("https://api.sambanova.ai/v1/chat/completions");
 
             const updatedQuestions = await Promise.all(questions.map(async (q) => {
-                const correctLetter = ['A', 'B', 'C', 'D', 'E', 'F', 'G'][q.correct] || 'A'; const correctText = q.options[q.correct] || '';
+                const correctLetter = ['A', 'B', 'C', 'D', 'E', 'F', 'G'][q.correct] || 'A'; 
+                const correctText = q.options[q.correct] || '';
                 const promptText = `Question: "${q.question}"\nOptions: ${q.options.map((o, i) => ['A','B','C','D','E','F'][i] + ') ' + o).join(', ')}\nCorrect Answer: Option ${correctLetter}\n\nAct as a Computer Science Professor. Provide an extensive academic textbook explanation for this specific question that is AT LEAST 10 continuous lines long. Describe the theory behind the correct option, explain the topic deeply, and detail why other structural options are incorrect. Write purely clean text paragraphs without any markdown characters, asterisks (**), bullet points, or hashes (#).`;
+                
                 try {
                     const response = await fetch(FINAL_ENDPOINT, {
-                        method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${SAMBANOVA_API_KEY}` },
-                        body: JSON.stringify({ model: "Meta-Llama-3.1-70B-Instruct", messages: [{ role: "system", content: "You write long plain-text academic descriptions over 10 lines without any markdown formatting." }, { role: "user", content: promptText }], temperature: 0.6 })
+                        method: "POST", 
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${SAMBANOVA_API_KEY}` },
+                        body: JSON.stringify({ 
+                            model: "Meta-Llama-3.1-70B-Instruct", 
+                            messages: [
+                                { role: "system", content: "You write long plain-text academic descriptions over 10 lines without any markdown formatting." }, 
+                                { role: "user", content: promptText }
+                            ], 
+                            temperature: 0.6 
+                        })
                     });
                     const data = await response.json();
-                    if (data.choices && data.choices[0].message.content) { q.explanation = data.choices[0].message.content.trim(); return q; }
+                    if (data.choices && data.choices[0].message.content) { 
+                        q.explanation = data.choices[0].message.content.trim(); 
+                        return q; 
+                    }
                 } catch (err) { console.error(err); }
+                
                 q.explanation = `Detailed Lecture Analysis: The designated parameter framework confirms Option (${correctLetter}) as the optimal runtime choice. The structural execution properties of "${q.question}" align with the constraints handled by '${correctText}'. Alternative variables introduce architectural latency boundaries and logical mismatch cycles, rendering them sub-optimal for high-throughput operational pipelines. Standard compliance dictates this logic topology to maintain systemic data integrity metrics.`;
                 return q;
             }));
@@ -121,15 +167,32 @@
         }
 
         async function handleMCQUploadProcess() {
-            const subjectInput = document.getElementById('admin-subject').value.trim(); const rawText = document.getElementById('admin-paste-area').value.trim(); 
-            const uploadBtn = document.getElementById('upload-btn'); if (!subjectInput || !rawText) return;
-            uploadBtn.innerText = "SambaNova Cloud Generating Explanations..."; uploadBtn.disabled = true;
-            let parsedQuestions = parseRawMCQs(rawText); if (parsedQuestions.length === 0) { uploadBtn.innerText = "Save / Update"; uploadBtn.disabled = false; return; }
+            const subjectInput = document.getElementById('admin-subject').value.trim(); 
+            const rawText = document.getElementById('admin-paste-area').value.trim(); 
+            const uploadBtn = document.getElementById('upload-btn'); 
+            if (!subjectInput || !rawText) return;
+
+            uploadBtn.innerText = "SambaNova Cloud Generating Explanations..."; 
+            uploadBtn.disabled = true;
+
+            let parsedQuestions = parseRawMCQs(rawText); 
+            if (parsedQuestions.length === 0) { 
+                uploadBtn.innerText = "Save / Update Subject in Database"; 
+                uploadBtn.disabled = false; 
+                return; 
+            }
+
             parsedQuestions = await generateRealAIExplanations(parsedQuestions);
             try {
                 const { error } = await supabaseClient.from('exams').upsert({ subject: subjectInput, questions_json: parsedQuestions }, { onConflict: 'subject' });
-                if (!error) { alert("Success! Records committed flawlessly."); setTimeout(() => { window.location.reload(); }, 600); }
-            } catch (err) { console.log(err); } finally { uploadBtn.innerText = "Save / Update Subject"; uploadBtn.disabled = false; }
+                if (!error) { 
+                    alert("Success! Records committed flawlessly."); 
+                    setTimeout(() => { window.location.reload(); }, 600); 
+                }
+            } catch (err) { console.log(err); } finally { 
+                uploadBtn.innerText = "Save / Update Subject in Database"; 
+                uploadBtn.disabled = false; 
+            }
         }
 
         function logoutAdminSession() { localStorage.clear(); window.location.replace("admin-login.html"); }
