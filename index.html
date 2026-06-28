@@ -74,31 +74,26 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // 🔄 HANDLES INBOUND REDIRECTION AND AUTHENTICATION CHECK LOOPS
-        window.onload = async function() {
-            try {
-                // Read current session status maps from active tab runtime context
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-                
-                if (session && session.user) {
-                    const activeUser = session.user;
-                    console.log("Active Google OAuth Payload verified:", activeUser);
-
-                    // Sync user metadata securely into the system memory channels
-                    localStorage.setItem('userEmail', activeUser.email);
-                    
-                    const extractedName = activeUser.user_metadata.full_name || activeUser.email.split('@')[0];
-                    localStorage.setItem('userName', extractedName);
-
-                    // Redirect user safely to dashboard nodes
-                    window.location.href = "dashboard.html";
-                } else {
-                    console.log("No persistent sessions found. Memory clean.");
-                }
-            } catch (err) {
-                console.error("Session catch validation runtime loop failure.");
-            }
-        };
-
+        // 🔄 INDEX.HTML KE ANDAR ISSE UPDATE KAREIN
+window.onload = async function() {
+    try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        
+        // Sirf tabhi dashboard bhejo jab session BHI ho aur login time BHI registered ho
+        if (session && session.user && localStorage.getItem('sessionLoginTime')) {
+            window.location.href = "dashboard.html";
+        } else if (session && session.user) {
+            // Agar session mil gaya par login time nahi tha, toh pehle time set karo fir bhejo
+            localStorage.setItem('userEmail', session.user.email);
+            const extractedName = session.user.user_metadata.full_name || session.user.email.split('@')[0];
+            localStorage.setItem('userName', extractedName);
+            localStorage.setItem('sessionLoginTime', Date.now().toString());
+            window.location.href = "dashboard.html";
+        }
+    } catch (err) {
+        console.error("Session catch loop bypassed clean.");
+    }
+};
         // 🌐 INTERACTIVE HANDLER: EXECUTES INTER-SERVER GOOGLE SIGN-IN HANDSHAKES
         async function signInWithGoogle() {
             try {
