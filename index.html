@@ -197,7 +197,7 @@
                     .from('portal_users')
                     .select('email, password, name')
                     .eq('email', inputEmail.toLowerCase())
-                    .maybeSingle();
+                     .maybeSingle();
 
                 if (error || !data || data.password !== inputPassword) {
                     alert("Authentication Error: Signature tokens match rejected.");
