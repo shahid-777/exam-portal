@@ -20,6 +20,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen select-none relative">
 
+    <!-- TOP FIXED HEADER ROW -->
     <div class="w-full bg-slate-900 border-b border-slate-800 py-4 px-6 flex items-center justify-between sticky top-0 z-50 shadow-md">
         <div class="flex items-center space-x-4">
             <button onclick="triggerHomeRedirect()" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs py-2 px-3 rounded-xl transition active:scale-95">
@@ -39,60 +40,99 @@
             <div class="bg-slate-950 px-4 py-2 rounded-xl border border-amber-500/30 flex items-center space-x-2">
                 <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
                 <span class="text-xs font-mono text-gray-400 uppercase tracking-wider">Time Left:</span>
-                <span id="exam-timer-display" class="text-sm font-mono font-black text-amber-400">--:--</span>
+                <span id="exam-timer-display" class="text-sm font-mono font-black text-amber-400">60:00</span>
             </div>
         </div>
     </div>
 
-    <main id="main-exam-layout" class="max-w-3xl mx-auto p-4 sm:p-6 mt-6">
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 sm:p-8 space-y-6">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-                <span id="question-counter" class="text-xs font-mono font-black text-slate-400 uppercase tracking-wider">Question -- of --</span>
-                <span class="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-bold border border-amber-200/50">Do not refresh page</span>
+    <!-- MAIN TWO-COLUMN RESPONSIVE LAYOUT -->
+    <div class="max-w-6xl mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- LEFT/MAIN COLUMN: QUESTIONS FIELD -->
+        <main id="main-exam-layout" class="lg:col-span-3 space-y-4">
+            <!-- LIVE STATUS MATRIX BAR -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-3 gap-2 text-center">
+                <div class="bg-blue-50 border border-blue-100 p-2 rounded-xl">
+                    <span class="block text-[9px] font-mono font-black text-blue-500 uppercase tracking-wider">Total</span>
+                    <span id="stats-total" class="text-sm font-mono font-black text-blue-900">0</span>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-100 p-2 rounded-xl">
+                    <span class="block text-[9px] font-mono font-black text-emerald-500 uppercase tracking-wider">Attempted</span>
+                    <span id="stats-attempted" class="text-sm font-mono font-black text-emerald-900">0</span>
+                </div>
+                <div class="bg-slate-100 border border-slate-200 p-2 rounded-xl">
+                    <span class="block text-[9px] font-mono font-black text-slate-500 uppercase tracking-wider">Pending</span>
+                    <span id="stats-pending" class="text-sm font-mono font-black text-slate-700">0</span>
+                </div>
             </div>
 
-            <div id="question-text-container" class="bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-inner">
-                <h2 id="live-question-text" class="text-sm sm:text-base font-medium tracking-wide text-slate-800 leading-relaxed font-mono" style="white-space: pre-wrap;">Retrieving examination paper payload securely...</h2>
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-lg p-5 sm:p-7 space-y-5">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                    <span id="question-counter" class="text-xs font-mono font-black text-slate-400 uppercase tracking-wider">Question -- of --</span>
+                    <span class="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-bold border border-amber-200/50">Do not refresh page</span>
+                </div>
+
+                <div id="question-text-container" class="bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-inner">
+                    <h2 id="live-question-text" class="text-sm sm:text-base font-medium tracking-wide text-slate-800 leading-relaxed font-mono" style="white-space: pre-wrap;">Retrieving examination paper payload...</h2>
+                </div>
+
+                <div id="options-matrix-container" class="grid grid-cols-1 gap-3 pt-1"></div>
+
+                <div class="flex justify-between items-center border-t border-slate-100 pt-5 mt-4">
+                    <button id="prev-btn" onclick="navigateQuestion(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-5 py-3 rounded-xl transition active:scale-95 disabled:opacity-40 disabled:pointer-events-none">Previous</button>
+                    <button id="next-btn" onclick="navigateQuestion(1)" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition active:scale-95">Next Question</button>
+                </div>
             </div>
+        </main>
 
-            <div id="options-matrix-container" class="grid grid-cols-1 gap-3 pt-2"></div>
-
-            <div class="flex justify-between items-center border-t border-slate-100 pt-6 mt-4">
-                <button id="prev-btn" onclick="navigateQuestion(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-5 py-3 rounded-xl transition active:scale-95 disabled:opacity-40 disabled:pointer-events-none">Previous</button>
-                <button id="next-btn" onclick="navigateQuestion(1)" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-6 py-3 rounded-xl uppercase tracking-wider transition active:scale-95">Next Question</button>
+        <!-- RIGHT COLUMN: INTERACTIVE NAVIGATION NUMBERS PALETTE GRID -->
+        <aside class="lg:col-span-1 space-y-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-md">
+                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest font-mono border-b border-slate-100 pb-2 mb-3">Questions Palette</h3>
+                <!-- Dynamic numbers wrapper grid -->
+                <div id="navigation-grid-container" class="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-4 gap-2 max-h-[300px] overflow-y-auto p-1 custom-scrollbar"></div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wide">
+                    <div class="flex items-center space-x-1"><span class="w-2 h-2 bg-emerald-500 rounded-full"></span><span>Answered</span></div>
+                    <div class="flex items-center space-x-1"><span class="w-2 h-2 bg-slate-200 rounded-full"></span><span>Pending</span></div>
+                </div>
             </div>
-        </div>
-    </main>
+            <button onclick="triggerManualFinalSubmit()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3.5 px-4 rounded-xl shadow-md uppercase tracking-wider transition active:scale-95">
+                Finish & Submit Exam
+            </button>
+        </aside>
+    </div>
 
+    <!-- PERFORMANCE REPORT MATRIX SHEET -->
     <div id="analysis-modal" class="hidden fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-        <div class="bg-slate-50 w-full max-w-4xl h-[92vh] rounded-2xl shadow-2xl border border-slate-300 flex flex-col overflow-hidden transform transition-all">
+        <div class="bg-slate-50 w-full max-w-4xl h-[92vh] rounded-2xl shadow-2xl border border-slate-300 flex flex-col overflow-hidden">
             <div class="bg-white border-b border-slate-200 p-4 sm:p-6 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
                 <div class="text-center sm:text-left space-y-0.5">
                     <h3 class="text-lg sm:text-xl font-black text-slate-900 uppercase tracking-wide">Exam Performance Dashboard</h3>
-                    <p class="text-[11px] sm:text-xs text-slate-400 font-medium">Verify your final marks matrix and correct answers analysis below.</p>
                 </div>
-                <button onclick="window.location.href='dashboard.html'" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3 px-6 rounded-xl uppercase tracking-wider transition shadow-md active:scale-95">Return to Dashboard</button>
+                <button onclick="window.location.href='dashboard.html'" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3 px-6 rounded-xl uppercase tracking-wider transition shadow-md">Return to Dashboard</button>
             </div>
-
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar">
                 <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
                     <div class="grid grid-cols-3 gap-2 md:col-span-3 text-center">
-                        <div class="bg-blue-50 border border-blue-100 p-2.5 rounded-xl"><span class="block text-[9px] sm:text-[10px] font-mono font-black text-blue-500 uppercase tracking-wider">Total Questions</span><span id="modal-total" class="text-lg sm:text-xl font-mono font-black text-blue-900">0</span></div>
-                        <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-xl"><span class="block text-[9px] sm:text-[10px] font-mono font-black text-emerald-500 uppercase tracking-wider">Correct Picks</span><span id="modal-correct" class="text-lg sm:text-xl font-mono font-black text-emerald-900">0</span></div>
-                        <div class="bg-red-50 border border-red-100 p-2.5 rounded-xl"><span class="block text-[9px] sm:text-[10px] font-mono font-black text-red-500 uppercase tracking-wider">Wrong Picks</span><span id="modal-wrong" class="text-lg sm:text-xl font-mono font-black text-red-900">0</span></div>
+                        <div class="bg-blue-50 border border-blue-100 p-2.5 rounded-xl"><span class="block text-[10px] font-mono font-black text-blue-500 uppercase">Total Qs</span><span id="modal-total" class="text-lg font-mono font-black text-blue-900">0</span></div>
+                        <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-xl"><span class="block text-[10px] font-mono font-black text-emerald-500 uppercase">Correct</span><span id="modal-correct" class="text-lg font-mono font-black text-emerald-900">0</span></div>
+                        <div class="bg-red-50 border border-red-100 p-2.5 rounded-xl"><span class="block text-[10px] font-mono font-black text-red-500 uppercase">Wrong</span><span id="modal-wrong" class="text-lg font-mono font-black text-red-900">0</span></div>
                     </div>
                     <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl space-y-1">
-                        <div class="flex justify-between items-center text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase"><span>Accuracy Score:</span><span id="modal-percentage" class="font-mono text-blue-600">0%</span></div>
-                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden"><div id="modal-progress-bar" class="bg-blue-600 h-full transition-all duration-500" style="width: 0%"></div></div>
+                        <div class="flex justify-between items-center text-[11px] font-bold text-slate-500 uppercase"><span>Score:</span><span id="modal-percentage" class="font-mono text-blue-600">0%</span></div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden"><div id="modal-progress-bar" class="bg-blue-600 h-full" style="width: 0%"></div></div>
                     </div>
                 </div>
-                <div class="space-y-4">
-                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest font-mono border-b border-slate-200 pb-2">Detailed Questionnaire Sheet Validation Matrix</h4>
-                    <div id="questions-review-list" class="space-y-5"></div>
-                </div>
+                <div id="questions-review-list" class="space-y-5"></div>
             </div>
         </div>
     </div>
+
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
 
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
@@ -119,6 +159,8 @@
                 const durationMinutes = data.duration_minutes || 60; 
                 totalSecondsLeft = durationMinutes * 60;
                 if(questionsList.length === 0) { window.location.href = "dashboard.html"; return; }
+                
+                // Initialize clean live display grids
                 renderActiveQuestionCard(); startExamCountdownTimer(); 
             } catch (err) { console.log(err); }
         }
@@ -133,48 +175,95 @@
             }, 1000);
         }
 
+        // 🛠️ RE-COMPLES STATS AND RENDERS COLOR-CODED BUTTON PALETTE INTERFACE
+        function updateLiveStatsAndNavigationPalette() {
+            let attemptedCount = 0;
+            const gridContainer = document.getElementById('navigation-grid-container');
+            gridContainer.innerHTML = "";
+
+            questionsList.forEach((_, idx) => {
+                const isAnswered = studentAnswersMapping[idx] !== undefined;
+                if (isAnswered) attemptedCount++;
+
+                let stateClasses = "bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200";
+                if (idx === currentQuestionIdx) {
+                    stateClasses = "bg-blue-600 text-white ring-2 ring-blue-400 border-blue-600 font-black scale-105 shadow-sm";
+                } else if (isAnswered) {
+                    stateClasses = "bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600 font-bold";
+                }
+
+                gridContainer.innerHTML += `
+                    <button onclick="jumpToSpecificQuestion(${idx})" class="w-full h-9 flex items-center justify-center text-xs border rounded-xl transition duration-150 active:scale-95 ${stateClasses}">
+                        ${idx + 1}
+                    </button>`;
+            });
+
+            const totalCount = questionsList.length;
+            document.getElementById('stats-total').innerText = totalCount;
+            document.getElementById('stats-attempted').innerText = attemptedCount;
+            document.getElementById('stats-pending').innerText = totalCount - attemptedCount;
+        }
+
         function renderActiveQuestionCard() {
             const currentQuestion = questionsList[currentQuestionIdx];
             document.getElementById('question-counter').innerText = `Question ${currentQuestionIdx + 1} of ${questionsList.length}`;
             document.getElementById('live-question-text').innerHTML = currentQuestion.question; 
             const optionsContainer = document.getElementById('options-matrix-container'); optionsContainer.innerHTML = "";
             const optionLabels = ['A', 'B', 'C', 'D'];
+            
             if(Array.isArray(currentQuestion.options)) {
                 currentQuestion.options.forEach((optionText, index) => {
                     const isSelected = studentAnswersMapping[currentQuestionIdx] === index;
                     optionsContainer.innerHTML += `
-                        <button onclick="recordStudentChoice(${index})" class="w-full text-left border-2 p-4 text-sm font-semibold rounded-2xl flex items-center space-x-3 ${isSelected ? 'border-blue-600 bg-blue-50/60 text-blue-900' : 'border-slate-200 bg-white text-slate-700'}">
+                        <button onclick="recordStudentChoice(${index})" class="w-full text-left border-2 p-4 text-sm font-semibold rounded-2xl flex items-center space-x-3 transition duration-100 ${isSelected ? 'border-blue-600 bg-blue-50/60 text-blue-900 ring-2 ring-blue-500/10' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'}">
                             <span class="w-6 h-6 flex items-center justify-center rounded-lg text-xs font-mono font-black ${isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'}">${optionLabels[index]}</span>
                             <span class="flex-1">${optionText}</span>
                         </button>`;
                 });
             }
             document.getElementById('prev-btn').disabled = currentQuestionIdx === 0;
-            document.getElementById('next-btn').innerText = currentQuestionIdx === questionsList.length - 1 ? "Submit Examination" : "Next Question";
+            document.getElementById('next-btn').innerText = currentQuestionIdx === questionsList.length - 1 ? "Next / Finish" : "Next Question";
+            
+            // Sync side map palette ranks
+            updateLiveStatsAndNavigationPalette();
         }
 
-        function recordStudentChoice(optionIndex) { studentAnswersMapping[currentQuestionIdx] = optionIndex; renderActiveQuestionCard(); }
-        function navigateQuestion(direction) { if (direction === 1 && currentQuestionIdx === questionsList.length - 1) { processFinalTestSubmission(false); return; } currentQuestionIdx += direction; renderActiveQuestionCard(); }
-        async function triggerHomeRedirect() { if (confirm("Warning: Auto-submit active upon exit. Proceed?")) { await processFinalTestSubmission(true); } }
+        function jumpToSpecificQuestion(targetIndex) {
+            currentQuestionIdx = targetIndex;
+            renderActiveQuestionCard();
+        }
+
+        function recordStudentChoice(optionIndex) { 
+            studentAnswersMapping[currentQuestionIdx] = optionIndex; 
+            renderActiveQuestionCard(); 
+        }
+        
+        function navigateQuestion(direction) { 
+            if (direction === 1 && currentQuestionIdx === questionsList.length - 1) { 
+                return; 
+            } 
+            currentQuestionIdx += direction; 
+            renderActiveQuestionCard(); 
+        }
+
+        function triggerManualFinalSubmit() {
+            processFinalTestSubmission(false);
+        }
+
+        async function triggerHomeRedirect() { if (confirm("Auto-submit exam on exit?")) { await processFinalTestSubmission(true); } }
 
         async function processFinalTestSubmission(isForcedSubmission = false) {
-            if (isSubmitted) return; if(!isForcedSubmission && !confirm("Are you sure you want to submit?")) return;
+            if (isSubmitted) return; if(!isForcedSubmission && !confirm("Are you sure you want to finalize and submit your answers?")) return;
             isSubmitted = true; clearInterval(timerIntervalHook); 
             let correctCount = 0; let wrongCount = 0;
             questionsList.forEach((q, idx) => {
                 if (studentAnswersMapping[idx] !== undefined && studentAnswersMapping[idx] === parseInt(q.correct, 10)) correctCount++; else wrongCount++;
             });
             try {
-                // 🚀 CACHE STATE INTERCEPT: Saves completed test context before sync transition
                 localStorage.setItem('lastAttendedSubject', activeSubject);
-
                 await supabaseClient.from('results').insert({ 
                     name: localStorage.getItem('userName') || localStorage.getItem('userEmail'), 
-                    score: correctCount, 
-                    total_questions: questionsList.length, 
-                    correct_answers: correctCount, 
-                    wrong_answers: wrongCount,
-                    subject: activeSubject
+                    score: correctCount, total_questions: questionsList.length, correct_answers: correctCount, wrong_answers: wrongCount, subject: activeSubject
                 });
                 showAnalysisReportView(questionsList.length, correctCount, wrongCount);
             } catch (err) { isSubmitted = false; }
@@ -197,12 +286,14 @@
                     optionsHTML += `<div class="p-4 rounded-2xl border ${optStyle} text-sm">${optionLabels[oIdx]}) ${optText}</div>`;
                 });
                 reviewListContainer.innerHTML += `
-                    <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm">
-                        <h5 class="text-sm font-mono font-medium text-slate-800 mb-3" style="white-space: pre-wrap;">${q.question}</h5>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                        <h5 class="text-sm font-medium text-slate-800 mb-3">${q.question}</h5>
                         <div class="grid grid-cols-1 gap-2.5">${optionsHTML}</div>
                     </div>`;
             });
-            document.getElementById('main-exam-layout').classList.add('hidden'); document.getElementById('analysis-modal').classList.remove('hidden');
+            document.getElementById('main-exam-layout').classList.add('hidden'); 
+            if(document.querySelector('aside')) document.querySelector('aside').classList.add('hidden');
+            document.getElementById('analysis-modal').classList.remove('hidden');
         }
     </script>
 </body>
