@@ -124,8 +124,11 @@
             google.accounts.id.initialize({
                 // 🔥 NOTE: Automatically targets the Google Cloud Console Client ID you set up for your users
                 client_id: "313377576458-c198ssj598dcg6c58c3kmtvtg5sf9m84.apps.googleusercontent.com", 
-                callback: handleGoogleAuthCallbackResponse
+                //callback: handleGoogleAuthCallbackResponse
+                callback: handleCredentialResponse,
+                auto_select: false // 👈 Ise false karne se auto-login prompt band ho jayega
             });
+ 
 
             // Standard dynamic render engine configuration mapping
             google.accounts.id.renderButton(
