@@ -83,6 +83,12 @@
         function escapeHTML(text) {
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
+        // 🧪 Chemical Subscript Formatter Engine
+function formatChemicalFormulas(text) {
+    // Yeh function CO2, SO2, NO2, CH4, O3 jaise patterns ko HTML subscript <sub> me convert kar dega
+    return text.replace(/\b([A-Z][a-z]?)([2-4])\b/g, '$1<sub>$2</sub>')
+               .replace(/\b(NO|SO|CO|CH)([2-4])\b/g, '$1<sub>$2</sub>');
+}
 
         function unescapeHTML(text) {
             return text.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
