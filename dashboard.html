@@ -17,20 +17,14 @@
 </head>
 <body class="bg-gray-50 font-sans min-h-screen">
 
-       <!-- 🌟 FIX: FULLY OPTIMIZED REFINED MOBILE HEADER -->
     <header class="bg-slate-900 text-white px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-md sticky top-0 z-50">
         <div class="flex items-center space-x-2 shrink-0">
             <img src="logo.png" alt="Logo" class="h-8 w-auto bg-white p-1 rounded-lg">
             <h1 class="text-xs sm:text-sm font-black tracking-wider uppercase text-blue-400 font-mono">STUDENT PORTAL</h1>
         </div>
         <div class="flex items-center space-x-2 max-w-[65%] sm:max-w-auto justify-end">
-            <!-- 👤 REAL PROFILE NAME DISPLAY WITHOUT EMAIL -->
-            <span id="user-display" class="text-[11px] sm:text-xs bg-slate-800 border border-slate-700 px-2.5 py-1.5 rounded-xl text-slate-300 font-bold font-sans truncate max-w-[90px] sm:max-w-[150px] text-center">
-                Student
-            </span>
-            <button onclick="logoutSession()" class="bg-red-600/10 hover:bg-red-600 border border-red-500/20 text-red-400 hover:text-white font-black text-[10px] sm:text-xs py-1.5 px-3 rounded-xl transition shrink-0 active:scale-95">
-                Logout
-            </button>
+            <span id="user-display" class="text-[11px] sm:text-xs bg-slate-800 border border-slate-700 px-2.5 py-1.5 rounded-xl text-slate-300 font-bold font-sans truncate max-w-[90px] sm:max-w-[150px] text-center">Student</span>
+            <button onclick="logoutSession()" class="bg-red-600/10 hover:bg-red-600 border border-red-500/20 text-red-400 hover:text-white font-black text-[10px] sm:text-xs py-1.5 px-3 rounded-xl transition shrink-0 active:scale-95">Logout</button>
         </div>
     </header>
 
@@ -84,11 +78,9 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         window.onload = async function() {
-            // 🚀 Renders the exact student profile name instead of the raw email address string
             document.getElementById('user-display').innerText = localStorage.getItem('userName') || "Student";
             await initializeDashboardData();
         };
-
 
         async function initializeDashboardData() {
             try {
@@ -109,6 +101,16 @@
                         opt.value = row.subject; opt.innerHTML = row.subject;
                         filterDropdown.appendChild(opt);
                     });
+
+                    // ⚙️ AUTOMATED LEADERBOARD TRIGGER INJECTION BLOCK
+                    const lastSubject = localStorage.getItem('lastAttendedSubject');
+                    if (lastSubject) {
+                        filterDropdown.value = lastSubject;
+                        // Clears the token state so next fresh dashboard loads normally
+                        localStorage.removeItem('lastAttendedSubject'); 
+                        loadSubjectWiseLeaderboard(); 
+                    }
+
                 } else {
                     listContainer.innerHTML = `<p class="text-xs text-gray-400 font-bold p-2">No question papers uploaded by admin yet.</p>`;
                 }
@@ -126,7 +128,6 @@
             container.innerHTML = `<tr><td colspan="4" class="text-center p-8 text-blue-500 font-bold animate-pulse">Compiling subject ranks matrix...</td></tr>`;
 
             try {
-                // Filters by matching value in 'subject' column of the database schema
                 const { data: resultsData, error } = await supabaseClient
                     .from('results')
                     .select('name, score, total_questions')
