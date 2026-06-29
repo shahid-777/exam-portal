@@ -147,7 +147,6 @@
             if(Array.isArray(currentQuestion.options)) {
                 currentQuestion.options.forEach((optionText, index) => {
                     const isSelected = studentAnswersMapping[currentQuestionIdx] === index;
-                    // 🌟 FIX: Uses .innerHTML rendering to securely parse <sub> formulas on screen matrix
                     optionsContainer.innerHTML += `
                         <button onclick="recordStudentChoice(${index})" class="w-full text-left border-2 p-4 text-sm font-semibold rounded-2xl transition duration-150 flex items-center space-x-3 ${isSelected ? 'border-blue-600 bg-blue-50/60 ring-2 ring-blue-500/20 text-blue-900' : 'border-slate-200 bg-white hover:bg-slate-50/80 text-slate-700'}">
                             <span class="w-6 h-6 flex items-center justify-center rounded-lg text-xs font-mono font-black ${isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'}">${optionLabels[index]}</span>
@@ -198,7 +197,6 @@
                     let optStyle = "border-slate-200 bg-white text-slate-700";
                     if (oIdx === correctChoice) optStyle = "border-emerald-500 bg-emerald-50/80 text-emerald-900 ring-2 ring-emerald-500/30 font-bold";
                     else if (oIdx === studentChoice && !isCorrect) optStyle = "border-red-500 bg-red-50/80 text-red-900 ring-2 ring-red-500/30 font-bold";
-                    // 🌟 FIX: Review list also supports innerHTML rendering for scientific metrics
                     optionsHTML += `<div class="p-4 rounded-2xl border ${optStyle} text-sm">${optionLabels[oIdx]}) ${optText}</div>`;
                 });
                 reviewListContainer.innerHTML += `
