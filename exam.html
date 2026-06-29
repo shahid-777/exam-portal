@@ -25,6 +25,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen select-none relative">
 
+    <!-- TOP FIXED HEADER ROW -->
     <div class="w-full bg-slate-900 border-b border-slate-800 py-4 px-6 flex items-center justify-between sticky top-0 z-50 shadow-md">
         <div class="flex items-center space-x-4">
             <button onclick="triggerHomeRedirect()" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs py-2 px-3 rounded-xl transition active:scale-95">
@@ -49,8 +50,10 @@
         </div>
     </div>
 
+    <!-- MAIN TWO-COLUMN RESPONSIVE LAYOUT -->
     <div class="max-w-6xl mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
         
+        <!-- LEFT COLUMN: QUESTIONS FIELD -->
         <main id="main-exam-layout" class="lg:col-span-3 space-y-4">
             <div class="bg-white rounded-2xl border border-slate-200 shadow-lg p-5 sm:p-7 space-y-5">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-3">
@@ -71,8 +74,10 @@
             </div>
         </main>
 
-        <aside class="lg:col-span-1 lg:sticky lg:top-[88px] space-y-4 h-auto">
+        <!-- RIGHT COLUMN: INTERACTIVE NAVIGATION & STATS -->
+        <aside class="lg:col-span-1 lg:sticky lg:top-[88px] space-y-4 h-auto w-full">
             
+            <!-- LIVE STATUS MATRIX BAR -->
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-3 gap-2 text-center">
                 <div class="bg-blue-50 border border-blue-100 p-2 rounded-xl">
                     <span class="block text-[9px] font-mono font-black text-blue-500 uppercase tracking-wider">Total</span>
@@ -88,6 +93,7 @@
                 </div>
             </div>
 
+            <!-- QUESTIONS PALETTE PANEL -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-md">
                 <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest font-mono border-b border-slate-100 pb-2 mb-3">Questions Palette</h3>
                 <div id="navigation-grid-container" class="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-4 gap-2 max-h-[260px] overflow-y-auto p-1 custom-scrollbar"></div>
@@ -103,6 +109,7 @@
         </aside>
     </div>
 
+    <!-- PERFORMANCE REPORT SCREEN -->
     <div id="analysis-modal" class="hidden fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
         <div class="bg-slate-50 w-full max-w-4xl h-[92vh] rounded-2xl shadow-2xl border border-slate-300 flex flex-col overflow-hidden">
             <div class="bg-white border-b border-slate-200 p-4 sm:p-6 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
@@ -154,7 +161,10 @@
                 totalSecondsLeft = durationMinutes * 60;
                 if(questionsList.length === 0) { window.location.href = "dashboard.html"; return; }
                 
-                renderActiveQuestionCard(); startExamCountdownTimer(); 
+                // 🛠️ PERFORMANCE FIX: Palette skeleton renders exactly ONCE during initial sync pipeline
+                buildNavigationPaletteSkeleton();
+                renderActiveQuestionCard(); 
+                startExamCountdownTimer(); 
             } catch (err) { console.log(err); }
         }
 
@@ -168,32 +178,44 @@
             }, 1000);
         }
 
-        function updateLiveStatsAndNavigationPalette() {
-            let attemptedCount = 0;
+        // 🛠️ HIGH SPEED SKELETON BUILDER ENGINE
+        function buildNavigationPaletteSkeleton() {
             const gridContainer = document.getElementById('navigation-grid-container');
-            gridContainer.innerHTML = "";
-
+            let htmlBuffer = "";
             questionsList.forEach((_, idx) => {
-                const isAnswered = studentAnswersMapping[idx] !== undefined;
-                if (isAnswered) attemptedCount++;
-
-                let stateClasses = "bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200";
-                if (idx === currentQuestionIdx) {
-                    stateClasses = "bg-blue-600 text-white ring-2 ring-blue-400 border-blue-600 font-black scale-105 shadow-sm";
-                } else if (isAnswered) {
-                    stateClasses = "bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600 font-bold";
-                }
-
-                gridContainer.innerHTML += `
-                    <button onclick="jumpToSpecificQuestion(${idx})" class="w-full h-9 flex items-center justify-center text-xs border rounded-xl transition duration-150 active:scale-95 ${stateClasses}">
+                htmlBuffer += `
+                    <button id="palette-btn-${idx}" onclick="jumpToSpecificQuestion(${idx})" class="w-full h-9 flex items-center justify-center text-xs border rounded-xl transition duration-75 active:scale-95 bg-slate-100 text-slate-600 border-slate-200">
                         ${idx + 1}
                     </button>`;
             });
+            gridContainer.innerHTML = htmlBuffer;
+            document.getElementById('stats-total').innerText = questionsList.length;
+        }
 
-            const totalCount = questionsList.length;
-            document.getElementById('stats-total').innerText = totalCount;
+        // 🛠️ ULTRA FAST RE-STYLER (Changes DOM classes instead of rebuilding elements)
+        function fastUpdatePaletteStyles() {
+            let attemptedCount = 0;
+            questionsList.forEach((_, idx) => {
+                const btn = document.getElementById(`palette-btn-${idx}`);
+                if(!btn) return;
+                
+                const isAnswered = studentAnswersMapping[idx] !== undefined;
+                if (isAnswered) attemptedCount++;
+
+                // Reset standard defaults safely
+                btn.className = "w-full h-9 flex items-center justify-center text-xs border rounded-xl transition duration-75 active:scale-95";
+                
+                if (idx === currentQuestionIdx) {
+                    btn.classList.add("bg-blue-600", "text-white", "ring-2", "ring-blue-400", "border-blue-600", "font-black", "scale-105");
+                } else if (isAnswered) {
+                    btn.classList.add("bg-emerald-500", "text-white", "border-emerald-500", "font-bold");
+                } else {
+                    btn.classList.add("bg-slate-100", "text-slate-600", "border-slate-200");
+                }
+            });
+
             document.getElementById('stats-attempted').innerText = attemptedCount;
-            document.getElementById('stats-pending').innerText = totalCount - attemptedCount;
+            document.getElementById('stats-pending').innerText = questionsList.length - attemptedCount;
         }
 
         function renderActiveQuestionCard() {
@@ -216,7 +238,8 @@
             document.getElementById('prev-btn').disabled = currentQuestionIdx === 0;
             document.getElementById('next-btn').innerText = currentQuestionIdx === questionsList.length - 1 ? "Next / Finish" : "Next Question";
             
-            updateLiveStatsAndNavigationPalette();
+            // Fires class switcher matrix instantly
+            fastUpdatePaletteStyles();
         }
 
         function jumpToSpecificQuestion(targetIndex) {
@@ -230,9 +253,7 @@
         }
         
         function navigateQuestion(direction) { 
-            if (direction === 1 && currentQuestionIdx === questionsList.length - 1) { 
-                return; 
-            } 
+            if (direction === 1 && currentQuestionIdx === questionsList.length - 1) return; 
             currentQuestionIdx += direction; 
             renderActiveQuestionCard(); 
         }
