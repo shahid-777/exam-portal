@@ -196,7 +196,7 @@
                 }
 
                 // Redirect to proper panel route if administrator tries entry via main gate
-                const OFFICIAL_ADMIN_EMAIL = "shahid.gauri2@gmail.com";
+                const OFFICIAL_ADMIN_EMAIL = "examportalcse@gmail.com";
                 if(data.email.toLowerCase() === OFFICIAL_ADMIN_EMAIL.toLowerCase()) {
                     localStorage.setItem('adminEmail', data.email);
                     localStorage.setItem('adminSessionTime', Date.now().toString());
