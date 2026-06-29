@@ -13,7 +13,7 @@
             }
             const OFFICIAL_ADMIN_EMAIL = "shahid.gauri2@gmail.com"; 
             if (adminEmail.toLowerCase() !== OFFICIAL_ADMIN_EMAIL.toLowerCase()) {
-                alert("Security Breach: Unauthorized administrative token context.");
+                alert("Security Breach: Your current active account token is not authorized to access the Admin Panel.");
                 window.location.replace("dashboard.html");
                 return;
             }
@@ -36,7 +36,7 @@
 
     <header class="bg-gray-900 text-white px-4 sm:px-8 py-4 flex flex-col sm:flex-row gap-3 justify-between items-center shadow-lg">
         <h1 class="text-lg sm:text-xl font-black tracking-wider text-blue-400 uppercase">ADMIN CONTROL CENTER</h1>
-        <button onclick="logoutAdminSession()" class="w-full sm:w-auto text-center font-bold text-xs bg-gray-800 px-5 py-2.5 rounded-xl hover:bg-gray-700 border border-gray-700 transition">Exit Session</button>
+        <button onclick="logoutAdminSession()" class="w-full sm:w-auto text-center font-bold text-xs bg-gray-800 px-5 py-2.5 rounded-xl hover:bg-gray-700 transition">Exit Session</button>
     </header>
 
     <main class="p-4 sm:p-6 max-w-4xl mx-auto">
@@ -55,12 +55,12 @@
 
             <div>
                 <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1.5">Subject Target Context</label>
-                <input type="text" id="admin-subject" placeholder="e.g., Programming Fundamentals" class="w-full border-2 p-3 text-sm rounded-xl font-semibold text-gray-800">
+                <input type="text" id="admin-subject" placeholder="e.g., General Science" class="w-full border-2 p-3 text-sm rounded-xl font-semibold text-gray-800">
             </div>
 
             <div>
                 <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1.5">Paste / Edit Raw Text MCQs</label>
-                <textarea id="admin-paste-area" rows="14" placeholder="1. What will be the output?&#10;#include <stdio.h>&#10;int main() { return 0; }&#10;A. 10&#10;B. 20&#10;Answer: A" class="w-full border-2 p-3 rounded-xl font-mono text-xs bg-gray-50 text-gray-800 outline-none"></textarea>
+                <textarea id="admin-paste-area" rows="14" placeholder="1. What will be the output?&#10;A. CO2&#10;B. SO2&#10;Answer: B" class="w-full border-2 p-3 rounded-xl font-mono text-xs bg-gray-50 text-gray-800 outline-none"></textarea>
             </div>
 
             <button id="upload-btn" onclick="handleMCQUploadProcess()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-6 rounded-xl transition shadow-lg uppercase text-xs tracking-wide">Save / Update Subject in Database</button>
@@ -83,15 +83,19 @@
         function escapeHTML(text) {
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
-        // 🧪 Chemical Subscript Formatter Engine
-function formatChemicalFormulas(text) {
-    // Yeh function CO2, SO2, NO2, CH4, O3 jaise patterns ko HTML subscript <sub> me convert kar dega
-    return text.replace(/\b([A-Z][a-z]?)([2-4])\b/g, '$1<sub>$2</sub>')
-               .replace(/\b(NO|SO|CO|CH)([2-4])\b/g, '$1<sub>$2</sub>');
-}
 
         function unescapeHTML(text) {
-            return text.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+            // Reverts subscript tags back to plain characters for textbox editing text fields
+            return text.replace(/<sub>([2-4])<\/sub>/g, "$1")
+                       .replace(/&lt;/g, "<")
+                       .replace(/&gt;/g, ">")
+                       .replace(/&amp;/g, "&");
+        }
+
+        // 🧪 AUTOMATED CHEMICAL SUBSCRIPT REPLACEMENT MAPPING FUNCTION
+        function formatChemicalFormulas(text) {
+            return text.replace(/\b(CO|SO|NO|CH|O|N|CFC)([2-4])\b/g, '$1<sub>$2</sub>')
+                       .replace(/\b(N2O)\b/g, 'N<sub>2</sub>O');
         }
 
         async function fetchSubjectForEditing() {
@@ -105,7 +109,7 @@ function formatChemicalFormulas(text) {
                     let text = "";
                     data.questions_json.forEach((q, idx) => {
                         text += `${idx + 1}. ${unescapeHTML(q.question)}\n`;
-                        if(Array.isArray(q.options)) q.options.forEach((o, oId) => { text += `${['A','B','C','D'][oId] || 'A'}. ${o}\n`; });
+                        if(Array.isArray(q.options)) q.options.forEach((o, oId) => { text += `${['A','B','C','D'][oId] || 'A'}. ${unescapeHTML(o)}\n`; });
                         text += `Answer: ${['A','B','C','D'][parseInt(q.correct, 10)] || 'A'}\n\n`;
                     });
                     textArea.value = text.trim();
@@ -113,7 +117,6 @@ function formatChemicalFormulas(text) {
             } catch (err) { console.log(err); } finally { fetchBtn.innerText = "Fetch MCQs"; fetchBtn.disabled = false; }
         }
 
-        // 🛠️ HIGH-PRECISION STRICT MCQs ACCUMULATOR PARSING ENGINE
         function parseRawMCQs(rawText) {
             const lines = rawText.split('\n');
             const questionsArray = [];
@@ -129,17 +132,14 @@ function formatChemicalFormulas(text) {
                     return;
                 }
 
-                // Strict Question Anchor Match (Must start explicitly with digits at line boundary)
                 const questionMatch = lineTrimmed.match(/^(\d+)[\s.)-]+\s*(.+)/);
-                
-                // 🔐 SUPER STRICT OPTION ANCHOR MATCH (Bypasses any whitespace inline code statements like '*p1')
                 const optionMatch = lineTrimmed.match(/^([A-D])[\s.)]+\s*(.+)/);
-                
                 const answerMatch = lineTrimmed.toLowerCase().startsWith('answer:') || lineTrimmed.toLowerCase().startsWith('ans:');
 
                 if (questionMatch && !optionMatch && !answerMatch) {
                     if (currentQuestion && currentQuestion.options.length >= 2) {
-                        currentQuestion.question = escapeHTML(currentQuestion.question.trim());
+                        // 🌟 Injects formula formatting directly into question compilation node
+                        currentQuestion.question = formatChemicalFormulas(escapeHTML(currentQuestion.question.trim()));
                         questionsArray.push(currentQuestion);
                     }
                     currentQuestion = {
@@ -150,7 +150,8 @@ function formatChemicalFormulas(text) {
                 } 
                 else if (optionMatch) {
                     if (currentQuestion) {
-                        currentQuestion.options.push(optionMatch[2].trim());
+                        // 🌟 Injects formula formatting directly into multiple choice selections
+                        currentQuestion.options.push(formatChemicalFormulas(escapeHTML(optionMatch[2].trim())));
                     }
                 } 
                 else if (answerMatch) {
@@ -171,7 +172,7 @@ function formatChemicalFormulas(text) {
             });
 
             if (currentQuestion && currentQuestion.options.length >= 2) {
-                currentQuestion.question = escapeHTML(currentQuestion.question.trim());
+                currentQuestion.question = formatChemicalFormulas(escapeHTML(currentQuestion.question.trim()));
                 questionsArray.push(currentQuestion);
             }
 
@@ -203,7 +204,7 @@ function formatChemicalFormulas(text) {
                     .upsert({ subject: subjectInput, questions_json: parsedQuestions }, { onConflict: 'subject' });
 
                 if (!error) {
-                    alert(`Success! Successfully processed and committed ${parsedQuestions.length} elements.`);
+                    alert(`Success! Updated subject dataset successfully.`);
                     setTimeout(() => { window.location.reload(); }, 600);
                 } else {
                     alert("Database write error: " + error.message);
@@ -218,7 +219,7 @@ function formatChemicalFormulas(text) {
 
         function logoutAdminSession() {
             localStorage.clear();
-            window.location.replace("admin-login.html");
+            window.location.replace("index.html");
         }
     </script>
 </body>
