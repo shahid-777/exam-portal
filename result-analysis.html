@@ -130,29 +130,22 @@ async function calculateRank(subjectName, currentStudentScore) {
     if (!rankDisplay) return;
 
     try {
-        console.log("Calculating rank for subject:", subjectName, "with score:", currentStudentScore);
-
-        // Supabase से इस सब्जेक्ट के सभी रिकॉर्ड्स मंगवाना
-        const { data: allScores, error } = await supabase
+        // 🎯 .eq की जगह .ilike का इस्तेमाल करें ताकि स्मॉल/कैपिटल लेटर का अंतर खत्म हो जाए
+        const { data: allScores, error } = await supabaseClient
             .from('results')
             .select('score')
-            .eq('subject', subjectName);
+            .ilike('subject', subjectName); // 👈 यहाँ बदलाव किया है
 
         if (error) throw error;
 
         if (allScores && allScores.length > 0) {
-            // सभी स्कोर्स को निकालकर बड़े से छोटे (Descending) क्रम में सॉर्ट करना
             const sortedScores = allScores
-                .map(r => parseInt(r.score) !== undefined ? parseInt(r.score) : 0)
+                .map(r => parseInt(r.score) || 0)
                 .sort((a, b) => b - a);
 
-            console.log("All sorted scores for this subject:", sortedScores);
-
-            // करंट स्टूडेंट के स्कोर का इंडेक्स पता करना
             const rank = sortedScores.indexOf(parseInt(currentStudentScore) || 0) + 1;
             const totalStudents = sortedScores.length;
 
-            // UI में डिस्प्ले अपडेट करना
             rankDisplay.innerText = `${rank} / ${totalStudents}`;
         } else {
             rankDisplay.innerText = "1 / 1";
@@ -161,7 +154,8 @@ async function calculateRank(subjectName, currentStudentScore) {
         console.error("Error inside calculateRank:", err);
         rankDisplay.innerText = "--";
     }
-}
+}    
+        
         async function fetchResultMatrixPacket(id) {
             try {
                 const { data, error } = await supabase
