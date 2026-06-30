@@ -188,7 +188,7 @@
             }
         }
 
-        async function executeAuthentication() {
+                async function executeAuthentication() {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value;
 
@@ -208,6 +208,8 @@
                     const savedName = localStorage.getItem('pendingCategoryName');
                     const savedId = localStorage.getItem('pendingCategoryId');
 
+                    // 🎯 फिक्स: अगर 404 आ रहा है, तो सुनिश्चित करें कि पाथ आपकी होस्टिंग के अनुसार सही हो
+                    // यदि आपकी होस्टिंग में clean URLs एक्टिव हैं, तो आप "dashboard.html" की जगह "/dashboard" या "./dashboard.html" का प्रयास कर सकते हैं
                     if (savedName && savedId) {
                         localStorage.removeItem('pendingCategoryName');
                         localStorage.removeItem('pendingCategoryId');
@@ -227,6 +229,7 @@
                 alert(`Error: ${err.message}`);
             }
         }
+
 
         async function signInWithGoogleOAuth() {
             try {
