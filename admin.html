@@ -88,3 +88,93 @@
     </main>
 
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
+
+    <script>
+        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        window.onload = function() {
+            const adminActive = localStorage.getItem('adminEmail');
+            if(!adminActive) { window.location.replace("admin-login.html"); return; }
+            loadAdminDashboardData();
+        };
+
+        async function loadAdminDashboardData() {
+            try {
+                // 1. Dropdown ke liye Categories Fetch karein
+                const { data: categories } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
+                const selectElement = document.getElementById('exam-category-select');
+                
+                if(categories && categories.length > 0) {
+                    selectElement.innerHTML = `<option value="">-- Choose Target Domain Category --</option>`;
+                    categories.forEach(c => {
+                        selectElement.innerHTML += `<option value="${c.id}">${c.category_name}</option>`;
+                    });
+                }
+
+                // 2. Main exams list show karein (With category validation check join mapping)
+                const { data: exams, error } = await supabaseClient.from('exams').select('*').order('id', {ascending: true});
+                const tbody = document.getElementById('admin-exams-tbody');
+                
+                if (error) throw error;
+
+                if(!exams || exams.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-500">Repository is empty.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = "";
+                exams.forEach(ex => {
+                    // Match category row name safely
+                    const matchedCat = categories ? categories.find(c => c.id == ex.category_id) : null;
+                    const catName = matchedCat ? matchedCat.category_name : "🔴 NOT ASSIGNED / GENERAL";
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/5 transition">
+                            <td class="py-3 px-4 font-mono text-slate-500">#00${ex.id}</td>
+                            <td class="py-3 px-4 font-bold text-slate-200 uppercase">${ex.subject}</td>
+                            <td class="py-3 px-4 font-bold text-purple-400 uppercase text-[11px]">${catName}</td>
+                            <td class="py-3 px-4 font-mono text-blue-400">${ex.duration_minutes || '60'} Mins</td>
+                        </tr>`;
+                });
+            } catch(err) {
+                document.getElementById('admin-exams-tbody').innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Sync Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        async function insertExamWithCategory() {
+            const sub = document.getElementById('exam-subject-input').value.trim();
+            const dur = document.getElementById('exam-duration-input').value.trim();
+            const catId = document.getElementById('exam-category-select').value;
+
+            if(!sub || !catId) { alert("Please input Subject Name and select a Category."); return; }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('exams')
+                    .insert({ subject: sub, duration_minutes: parseInt(dur) || 60, category_id: parseInt(catId) });
+
+                if(error) throw error;
+                alert("Success: New Exam compiled and linked with designated category!");
+                document.getElementById('exam-subject-input').value = "";
+                loadAdminDashboardData();
+            } catch(e) { alert("Failed operation: " + e.message); }
+        }
+
+        async function createNewCategory() {
+            const name = document.getElementById('new-cat-name').value.trim();
+            if(!name) return;
+            try {
+                const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name });
+                if(error) throw error;
+                alert("Category Created.");
+                document.getElementById('new-cat-name').value = "";
+                loadAdminDashboardData();
+            } catch(e) { alert(e.message); }
+        }
+
+        function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
+    </script>
+</body>
+</html>
