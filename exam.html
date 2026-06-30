@@ -376,62 +376,70 @@
             }, 1000);
         }
 
-       async function terminateAssessmentProcess() {
-    clearInterval(networkTimerInterval);
-    
-    let totalQuestions = globalLoadedQuestions.length;
-    let correctAnswers = 0;
-    let wrongAnswers = 0;
-    let unattempted = 0;
-
-    globalLoadedQuestions.forEach((q, index) => {
-        const selectedOpt = userResponses[index];
-        if (selectedOpt !== undefined) {
-            if (parseInt(selectedOpt) === parseInt(q.correct)) {
-                correctAnswers++;
-            } else {
-                wrongAnswers++;
-            }
-        } else {
-            unattempted++;
-        }
-    });
-
-    const studentEmail = localStorage.getItem('userEmail') || 'anonymous@portal.com';
-    const currentSubject = document.getElementById('live-subject-title').innerText;
-
-    try {
-        // 🚀 Push detailed analytics packet into Supabase
-        const { data, error } = await supabaseClient
-            .from('results')
-            .insert([{
-                email: studentEmail.toLowerCase(),
-                subject: currentSubject,
-                total_questions: totalQuestions,
-                correct_answers: correctAnswers,
-                wrong_answers: wrongAnswers,
-                unattempted: unattempted,
-                user_responses_json: JSON.stringify(userResponses), 
-                questions_snapshot_json: JSON.stringify(globalLoadedQuestions), 
-                created_at: new Date().toISOString()
-            }])
-            .select(); // यहाँ .maybeSingle() हटाकर सिर्फ .select() किया है ताकि रिस्पॉन्स एरे में मिले
-
-        if (error) throw error;
-        if (!data || data.length === 0) throw new Error("No data returned from database insert.");
-
-        alert(`Test Evaluation Compiled Successfully!`);
+                     async function terminateAssessmentProcess() {
+            clearInterval(networkTimerInterval);
+            
+            let totalQuestions = globalLoadedQuestions.length;
+            let correctAnswers = 0;
+            let wrongAnswers = 0;
+            let unattempted = 0;
         
-        // 🎯 सुरक्षित रूप से पहली रो (row) की ID उठाकर रीडायरेक्ट करें
-        const generatedId = data[0].id;
-        window.location.replace(`result-analysis.html?id=${generatedId}`);
-
-    } catch (err) {
-        console.error("Submission Error Details:", err);
-        alert("Result compilation synchronization error. Check browser console.");
-        window.location.replace("dashboard.html");
-    }
-}
+            globalLoadedQuestions.forEach((q, index) => {
+                const selectedOpt = userResponses[index];
+                if (selectedOpt !== undefined) {
+                    if (parseInt(selectedOpt) === parseInt(q.correct)) {
+                        correctAnswers++;
+                    } else {
+                        wrongAnswers++;
+                    }
+                } else {
+                    unattempted++;
+                }
+            });
+        
+            const studentEmail = localStorage.getItem('userEmail') || 'anonymous@portal.com';
+            // ईमेल से नाम निकालने का एक सुरक्षित तरीका (जैसे: shahid@gmail.com से "shahid")
+            const studentName = studentEmail.split('@')[0].toUpperCase(); 
+            const currentSubject = document.getElementById('live-subject-title').innerText;
+            
+            // आपके स्कीमा के अनुसार स्कोर की गणना (जितने सही उत्तर, उतना स्कोर)
+            let calculatedScore = correctAnswers; 
+        
+            try {
+                // 🚀 आपके SQL स्कीमा के बिल्कुल अनुकूल डेटा पैकेट
+                const { data, error } = await supabaseClient
+                    .from('results')
+                    .insert([{
+                        email: studentEmail.toLowerCase(),
+                        name: studentName,                       // 🎯 स्कीमा के अनुसार आवश्यक
+                        subject: currentSubject,
+                        score: parseInt(calculatedScore) || 0,   // 🎯 स्कीमा में 'NOT NULL' है, इसलिए भेजना ज़रूरी है
+                        total_questions: totalQuestions,
+                        correct_answers: correctAnswers,
+                        wrong_answers: wrongAnswers,
+                        unattempted: unattempted,
+                        user_responses_json: JSON.stringify(userResponses), 
+                        questions_snapshot_json: JSON.stringify(globalLoadedQuestions), 
+                        created_at: new Date().toISOString(),
+                        submitted_at: new Date().toISOString()
+                    }])
+                    .select();
+        
+                if (error) throw error;
+                if (!data || data.length === 0) throw new Error("Database integration failure.");
+        
+                alert(`Test Evaluation Compiled Successfully!`);
+                
+                // सुरक्षित रूप से जनरेटेड ID को रिज़ल्ट एनालिसिस पेज पर भेजना
+                const generatedId = data[0].id;
+                window.location.replace(`result-analysis.html?id=${generatedId}`);
+        
+            } catch (err) {
+                console.error("Detailed Database Error:", err);
+                alert("Result compilation synchronization error. Please check browser console.");
+                window.location.replace("dashboard.html");
+            }
+        }
     </script>
 </body>
 </html>
