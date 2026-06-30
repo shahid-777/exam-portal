@@ -21,7 +21,7 @@
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-8">
         <div>
             <h1 class="text-2xl font-black text-white uppercase tracking-wide">Master Control Console</h1>
-            <p class="text-xs text-slate-400 font-mono mt-1">Manage time operational boundaries, structure categories manually, and map active exam objects.</p>
+            <p class="text-xs text-slate-400 font-mono mt-1">Manage time limits, create categories manually, and inject new exams with full questions arrays.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -31,8 +31,8 @@
                 <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">1. Create Category Manually</h3>
                 <div class="space-y-3 pt-2">
                     <div>
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Category Domain Identifier Name</label>
-                        <input type="text" id="new-cat-name" placeholder="e.g. Rajasthan Patwari, Informatics Assistant" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Category Domain Name</label>
+                        <input type="text" id="new-cat-name" placeholder="e.g. Rajasthan Patwari, REET, SSC" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
                     </div>
                     <button onclick="createNewCategory()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 text-white font-black py-2.5 px-4 rounded-xl text-[11px] tracking-wider uppercase cursor-pointer">Deploy Category Node</button>
                 </div>
@@ -40,25 +40,29 @@
 
             <div class="lg:col-span-2 bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl">
                 <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-blue-500 to-indigo-500"></div>
-                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">2. Link / Inject Exam Objects With Custom Time Constraints</h3>
+                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">2. Create Exam & Inject Questions Matrix</h3>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div>
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Subject / Exam Name</label>
-                        <input type="text" id="exam-subject-input" placeholder="e.g. Computer Organization Architecture" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Exam / Subject Title Name</label>
+                        <input type="text" id="exam-subject-input" placeholder="e.g. Computer Architecture, Web Tech" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">⏱️ Allocation Time Limits (Minutes)</label>
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">⏱️ Allocation Time Limit (Minutes)</label>
                         <input type="number" id="exam-duration-input" value="60" min="1" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">🎯 Select Associated Target Category Node</label>
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">🎯 Select Associated Category Node</label>
                         <select id="exam-category-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none font-bold text-slate-400">
                             <option value="">Syncing database fields...</option>
                         </select>
                     </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">📋 Questions Array Dataset (JSON Format)</label>
+                        <textarea id="exam-questions-json" rows="4" placeholder='[{"question":"What is 2+2?","options":["3","4","5"],"correct":1}]' class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none"></textarea>
+                    </div>
                     <button onclick="insertExamWithCategory()" class="sm:col-span-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition cursor-pointer">
-                        Link & Push to Repository Matrix
+                        Link & Create Exam Entry
                     </button>
                 </div>
             </div>
@@ -86,7 +90,7 @@
                             <th class="py-3 px-4">Subject Name</th>
                             <th class="py-3 px-4">Category Association</th>
                             <th class="py-3 px-4">Time Constraint Boundary</th>
-                            <th class="py-3 px-4 text-center">Runtime Execution Parameters</th>
+                            <th class="py-3 px-4 text-center">Runtime Parameters</th>
                         </tr>
                     </thead>
                     <tbody id="admin-exams-tbody" class="divide-y divide-white/5 font-medium text-slate-300">
@@ -112,7 +116,6 @@
             syncCategoriesDropDowns();
         };
 
-        // 🔄 SYNC ALL DROPDOWNS MATRICES
         async function syncCategoriesDropDowns() {
             try {
                 const { data, error } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
@@ -120,11 +123,9 @@
 
                 globalCategoriesArray = data || [];
                 
-                // Form Dropdown setup
                 const formSelect = document.getElementById('exam-category-select');
                 formSelect.innerHTML = `<option value="">-- Choose Target Category Domain --</option>`;
                 
-                // Filter Dropdown setup
                 const filterSelect = document.getElementById('admin-view-category-filter');
                 filterSelect.innerHTML = `<option value="ALL">-- Show All Categories (Global View) --</option>`;
 
@@ -139,7 +140,6 @@
             } catch(e) { console.error("Dropdown loading execution exception:", e); }
         }
 
-        // 🔄 FETCH EXAMS BASED ON ADMIN TARGET FILTER VALUE
         async function fetchExamsOnAdminSide() {
             const tbody = document.getElementById('admin-exams-tbody');
             const targetFilterValue = document.getElementById('admin-view-category-filter').value;
@@ -147,7 +147,6 @@
             try {
                 let query = supabaseClient.from('exams').select('*');
                 
-                // Filter mapping rule logic checking
                 if(targetFilterValue !== "ALL") {
                     query = query.eq('category_id', parseInt(targetFilterValue));
                 }
@@ -165,28 +164,25 @@
                     const matched = globalCategoriesArray.find(c => c.id == ex.category_id);
                     const nameTag = matched ? matched.category_name : "🔴 NOT ASSIGNED";
 
-                    // Dynamic row execution elements configuration matrix mapping
                     tbody.innerHTML += `
                         <tr class="hover:bg-white/5 transition">
                             <td class="py-3.5 px-4 font-bold text-slate-200 uppercase tracking-wide">${ex.subject}</td>
                             <td class="py-3.5 px-4 font-bold text-purple-400 text-[11px] uppercase">${nameTag}</td>
-                            
                             <td class="py-3.5 px-4">
                                 <div class="flex items-center space-x-2">
-                                    <input type="number" id="inline-time-${encodeURIComponent(ex.subject)}" value="${ex.duration_minutes || 60}" min="1" class="w-16 border border-white/10 bg-slate-900 text-blue-400 font-mono text-xs font-bold text-center px-1 py-1 rounded-lg outline-none focus:border-blue-500/40">
+                                    <input type="number" id="inline-time-${encodeURIComponent(ex.subject)}" value="${ex.duration_minutes || 60}" min="1" class="w-16 border border-white/10 bg-slate-900 text-blue-400 font-mono text-xs font-bold text-center px-1 py-1 rounded-lg outline-none">
                                     <button onclick="updateExamTimingDirect('${encodeURIComponent(ex.subject)}')" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition font-mono text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-wider">Save Time</button>
                                 </div>
                             </td>
-                            <td class="py-3.5 px-4 text-center font-mono text-emerald-400 uppercase text-[10px] tracking-wider">● Questions Objects Bound</td>
+                            <td class="py-3.5 px-4 text-center font-mono text-emerald-400 uppercase text-[10px] tracking-wider">● Active Matrix Bound</td>
                         </tr>`;
                 });
 
             } catch(err) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Pipeline query interrupt execution: ${err.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Pipeline query interrupt: ${err.message}</td></tr>`;
             }
         }
 
-        // 🛠️ ACTION: UPDATE TIMING PARAMETERS FOR INDIVIDUAL EXAMS
         async function updateExamTimingDirect(encodedSubject) {
             const decodedSub = decodeURIComponent(encodedSubject);
             const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
@@ -200,19 +196,30 @@
                     .eq('subject', decodedSub);
 
                 if(error) throw error;
-                alert(`Configuration Saved: ${decodedSub} timing limit updated to ${inputVal} Minutes!`);
+                alert(`Configuration Saved: ${decodedSub} time updated to ${inputVal} Minutes!`);
                 fetchExamsOnAdminSide();
 
             } catch(e) { alert("Update operational failure: " + e.message); }
         }
 
-        // 🛠️ ACTION: INSERT EXAM NODE WITH CATEGORY MAPPING
+        // 🛠️ CREATE EXAM & STORE QUESTIONS MATRIX (FIXED)
         async function insertExamWithCategory() {
             const sub = document.getElementById('exam-subject-input').value.trim();
             const dur = document.getElementById('exam-duration-input').value.trim();
             const catId = document.getElementById('exam-category-select').value;
+            const jsonText = document.getElementById('exam-questions-json').value.trim();
 
-            if(!sub || !catId) { alert("Subject configuration name or Category parameters missing."); return; }
+            if(!sub || !catId) { alert("Subject name or Category parameters missing."); return; }
+
+            let parsedQuestions = [];
+            if(jsonText !== "") {
+                try {
+                    parsedQuestions = JSON.parse(jsonText);
+                } catch(err) {
+                    alert("JSON parsing error! Please ensure your questions array formatting is perfectly standard.");
+                    return;
+                }
+            }
 
             try {
                 const { error } = await supabaseClient
@@ -221,18 +228,20 @@
                         subject: sub, 
                         duration_minutes: parseInt(dur) || 60, 
                         category_id: parseInt(catId),
-                        questions_json: [] // Clean placeholder payload array object mapping initialization
+                        questions_json: parsedQuestions
                     });
 
                 if(error) throw error;
-                alert("Success: Exam entity compiled and linked with designated category domain!");
+                alert(`Success: [ ${sub} ] compiled, mapped, and fully deployed into production repository!`);
+                
+                // Clear input blocks
                 document.getElementById('exam-subject-input').value = "";
+                document.getElementById('exam-questions-json').value = "";
                 fetchExamsOnAdminSide();
 
             } catch(e) { alert("Operation error log: " + e.message); }
         }
 
-        // 🛠️ ACTION: MANUALLY DEPLOY NEW CATEGORIES
         async function createNewCategory() {
             const name = document.getElementById('new-cat-name').value.trim();
             if(!name) { alert("Category tracking name string empty."); return; }
@@ -241,7 +250,7 @@
                 if(error) throw error;
                 alert(`Category node [ ${name} ] successfully established!`);
                 document.getElementById('new-cat-name').value = "";
-                syncCategoriesDropDowns(); // Synchronize layout views
+                syncCategoriesDropDowns();
             } catch(e) { alert(e.message); }
         }
 
