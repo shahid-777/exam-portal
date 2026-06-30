@@ -4,58 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="logo.png">
-    <title>Student Control Terminal — Portal</title>
+    <title>Student Portal Dashboard — Categories</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-slate-900 font-sans min-h-screen text-slate-200 flex flex-col justify-between">
+<body class="bg-slate-950 font-sans min-h-screen text-slate-200 flex flex-col justify-between">
 
-    <header class="w-full bg-slate-950/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50">
+    <header class="w-full bg-slate-900/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50">
         <div class="flex items-center space-x-3">
-            <a href="index.html" class="bg-white/5 border border-white/10 p-2 rounded-xl transition text-slate-400 hover:text-white cursor-pointer mr-1">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
-            </a>
-            <span class="text-sm font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 uppercase">STUDENT PORTAL</span>
+            <div class="bg-white/95 p-1 rounded-xl">
+                <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-sm font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 uppercase leading-none">STUDENT HUB</span>
+                <span class="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">EXAM CATEGORY EXPLORER</span>
+            </div>
         </div>
+        
         <div class="flex items-center space-x-4">
-            <span id="student-user" class="text-xs font-mono font-bold bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">Loading User Node...</span>
-            <button onclick="logout()" class="bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 text-xs font-bold py-1.5 px-4 rounded-xl cursor-pointer">Logout</button>
+            <span id="user-display-email" class="text-xs font-mono text-slate-400 hidden sm:inline-block">student@gmail.com</span>
+            <button onclick="handleUserLogout()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-1.5 px-4 rounded-xl text-xs transition">
+                Logout
+            </button>
         </div>
     </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <section class="w-full bg-slate-900/20 border-b border-white/5 py-3 px-6">
+        <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs font-mono text-slate-400">
+            <button onclick="loadCategoriesView()" class="hover:text-blue-400 font-bold transition">Root Clusters</button>
+            <span id="breadcrumb-arrow" class="hidden">&rarr;</span>
+            <span id="breadcrumb-current-category" class="text-blue-400 font-bold hidden">Selected Category</span>
+        </div>
+    </section>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-8">
         
-        <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 shadow-xl h-fit">
-            <div class="border-b border-white/5 pb-2">
-                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">Available Questionpapers</h3>
-                <p id="filter-status-desc" class="text-[10px] text-slate-500 font-mono mt-0.5">Streaming targeted database items...</p>
-            </div>
-            
-            <div id="exams-container-pane" class="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
-                <div class="text-xs font-mono text-slate-600 uppercase py-4 animate-pulse text-center">Resolving Rows Matrix...</div>
-            </div>
+        <div class="mb-8 space-y-1">
+            <h3 id="workspace-title" class="text-xl font-black text-slate-100 uppercase tracking-wider">
+                Available Exam Streams
+            </h3>
+            <p id="workspace-desc" class="text-xs text-slate-400">
+                Select an academic stream or recruitment category folder to access active examination test papers.
+            </p>
         </div>
 
-        <div class="lg:col-span-2 bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-6 shadow-xl">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-white/5 pb-4 gap-3">
-                <div>
-                    <h3 class="text-sm font-black text-white uppercase tracking-wide">Subject Rank & Score Leaderboard</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Select any target subject context to view ranks hierarchy.</p>
-                </div>
-                <select id="leaderboard-subject-filter" class="border border-white/10 p-2 text-xs rounded-xl bg-slate-900 text-slate-300 outline-none font-bold">
-                    <option value="">-- Choose Subject --</option>
-                </select>
-            </div>
-
-            <div class="text-center py-12 text-slate-500 font-mono text-xs uppercase border border-dashed border-white/5 rounded-xl bg-slate-900/10">
-                Please select a subject above to compile specific ranks board metrics.
+        <div id="portal-dynamic-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="text-center font-mono text-xs text-slate-500 py-12 animate-pulse uppercase col-span-full">
+                Initializing Portal Schema Matrices...
             </div>
         </div>
 
     </main>
 
-    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">
-        &copy; JECRC University — Computer Science Cluster
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/20 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest">
+        &copy; JECRC University — Computer Science Management System Terminal
     </footer>
 
     <script>
@@ -63,66 +65,153 @@
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        window.onload = function() {
-            const userEmail = localStorage.getItem('userEmail');
-            if(!userEmail) { window.location.replace("index.html"); return; }
-            document.getElementById('student-user').innerText = userEmail;
+        let activeUserEmail = "";
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const categoryId = urlParams.get('category_id');
-
-            loadDashboardFilteredExams(categoryId);
+        window.onload = function () {
+            activeUserEmail = localStorage.getItem('userEmail');
+            if (!activeUserEmail) {
+                window.location.replace("index.html");
+                return;
+            }
+            document.getElementById('user-display-email').innerText = activeUserEmail;
+            
+            // App starting state: Load folders view
+            loadCategoriesView();
         };
 
-        async function loadDashboardFilteredExams(catId) {
-            const pane = document.getElementById('exams-container-pane');
-            const desc = document.getElementById('filter-status-desc');
-            
+        // 📁 STEP 1: LOAD ALL MAIN EXAM CATEGORIES (FOLDERS)
+        async function loadCategoriesView() {
+            // Update UI/Header Context
+            document.getElementById('workspace-title').innerText = "Available Exam Streams";
+            document.getElementById('workspace-desc').innerText = "Select a category below to explore its active examinations list.";
+            document.getElementById('breadcrumb-arrow').classList.add('hidden');
+            document.getElementById('breadcrumb-current-category').classList.add('hidden');
+
+            const gridContainer = document.getElementById('portal-dynamic-grid');
+            gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase col-span-full">Mapping Active Categories...</div>`;
+
             try {
-                let query = supabaseClient.from('exams').select('*');
-                
-                if (catId && catId !== "null" && catId !== "undefined" && catId.trim() !== "") {
-                    query = query.eq('category_id', parseInt(catId));
-                    desc.innerText = `Category Cluster Target: Node #${catId}`;
-                } else {
-                    desc.innerText = "Showing Global Active Exam Repositories";
-                }
+                // Fetch distinct categories from 'exams' table to align with what admin lists
+                const { data, error } = await supabaseClient
+                    .from('exams')
+                    .select('category');
 
-                const { data: exams, error } = await query.order('subject', { ascending: true });
-                if(error) throw error;
+                if (error) throw error;
 
-                if(!exams || exams.length === 0) {
-                    pane.innerHTML = `<div class="text-xs font-mono text-slate-500 text-center py-6 uppercase">No matching exams linked to this category yet.</div>`;
+                // Extract unique categories safely, filtering out nulls/blanks
+                const uniqueCategories = [...new Set(data.map(item => item.category).filter(Boolean))];
+
+                if (uniqueCategories.length === 0) {
+                    gridContainer.innerHTML = `
+                        <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
+                            No active exam streams found. Waiting for Admin allocations.
+                        </div>`;
                     return;
                 }
 
-                pane.innerHTML = "";
-                let selectOptions = `<option value="">-- Choose Subject --</option>`;
+                let htmlContent = "";
+                uniqueCategories.forEach(catName => {
+                    htmlContent += `
+                        <div onclick="loadExamsSubView('${encodeURIComponent(catName)}')" class="bg-slate-900/40 border border-white/5 hover:border-blue-500/30 p-6 rounded-2xl shadow-xl hover:bg-slate-900/80 transition transform hover:scale-[1.01] cursor-pointer group relative overflow-hidden flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="p-2.5 bg-blue-500/10 rounded-xl text-blue-400 group-hover:bg-blue-500/20 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h1.5A2.25 2.25 0 0 0 8.25 8.5h3.053c.421 0 .824.168 1.121.467l2.137 2.138a2.25 2.25 0 0 1 .659 1.592v1.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008v-.008ZM13.5 12h.008v.008H13.5V12Zm0 2.25h.008v.008H13.5v-.008ZM15.75 11.25h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008v-.008Z" /></svg>
+                                    </div>
+                                    <span class="text-[10px] font-mono text-slate-500 font-bold uppercase tracking-wider group-hover:text-blue-400/60 transition">Open Folder &rarr;</span>
+                                </div>
+                                <h4 class="text-sm font-black tracking-wide text-slate-100 group-hover:text-blue-400 transition uppercase">${catName}</h4>
+                            </div>
+                        </div>`;
+                });
 
-                exams.forEach(ex => {
-                    const examSubject = ex.subject || "Unnamed Subject Module";
-                    
-                    // Fallback to fetch subject name instead of ID if dynamic tracking needs verification
-                    selectOptions += `<option value="${examSubject}">${examSubject.toUpperCase()}</option>`;
-                    
-                    // 🎯 FIX BINDING: Redirects correctly using standard text routing string matching
-                    pane.innerHTML += `
-                        <div class="flex items-center justify-between bg-slate-900/60 p-4 rounded-xl border border-white/5 hover:border-blue-500/30 hover:bg-slate-900/90 transition shadow-md group">
-                            <span class="text-xs font-bold text-slate-200 truncate pr-2 uppercase tracking-wide group-hover:text-blue-400 transition">${examSubject}</span>
-                            <button onclick="window.location.href='exam.html?subject=${encodeURIComponent(examSubject)}'" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-mono font-black py-2 px-4 rounded-xl shadow transition uppercase tracking-widest shrink-0 cursor-pointer">
-                                Start
+                gridContainer.innerHTML = htmlContent;
+
+            } catch (err) {
+                gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-400 col-span-full">Database parsing cluster connection fault.</div>`;
+            }
+        }
+
+        // 📝 STEP 2: LOAD EXAMS FILTERED BY SELECTED CATEGORY
+        async function loadExamsSubView(encodedCatName) {
+            const categoryName = decodeURIComponent(encodedCatName);
+            
+            // Update Breadcrumb Navigation state
+            document.getElementById('workspace-title').innerText = `${categoryName.toUpperCase()} — ACTIVE PAPERS`;
+            document.getElementById('workspace-desc').innerText = "Select an available test paper below to initialize live terminal examination runtime.";
+            
+            const bArrow = document.getElementById('breadcrumb-arrow');
+            const bCurrent = document.getElementById('breadcrumb-current-category');
+            bArrow.classList.remove('hidden');
+            bCurrent.classList.remove('hidden');
+            bCurrent.innerText = categoryName;
+
+            const gridContainer = document.getElementById('portal-dynamic-grid');
+            gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase col-span-full">Filtering Test Clusters...</div>`;
+
+            try {
+                // Fetch matching records from exams table based on listed admin node category strings
+                const { data: examsList, error } = await supabaseClient
+                    .from('exams')
+                    .select('subject, duration_minutes, questions_json')
+                    .eq('category', categoryName);
+
+                if (error) throw error;
+
+                if (!examsList || examsList.length === 0) {
+                    gridContainer.innerHTML = `
+                        <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
+                            No active exam templates listed inside this folder block yet.
+                        </div>`;
+                    return;
+                }
+
+                let htmlContent = "";
+                examsList.forEach(exam => {
+                    // Safe measurement of questions count mapping elements length
+                    let totalQuestionsCount = 0;
+                    try {
+                        let parsedJson = typeof exam.questions_json === 'string' ? JSON.parse(exam.questions_json) : exam.questions_json;
+                        totalQuestionsCount = parsedJson ? parsedJson.length : 0;
+                    } catch(e) { totalQuestionsCount = 0; }
+
+                    htmlContent += `
+                        <div class="bg-slate-900/20 border border-white/5 hover:border-emerald-500/20 p-5 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
+                            <div class="space-y-1.5">
+                                <span class="text-[9px] font-mono font-black text-slate-500 bg-white/5 px-2 py-0.5 rounded uppercase tracking-wider">Active Evaluation Node</span>
+                                <h4 class="text-sm font-black text-slate-200 tracking-wide leading-snug uppercase pt-1">${exam.subject}</h4>
+                            </div>
+                            
+                            <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1 border-t border-white/5">
+                                <div>Questions: <span class="text-emerald-400 font-bold">${totalQuestionsCount}</span></div>
+                                <div>Duration: <span class="text-blue-400 font-bold">${exam.duration_minutes} Min</span></div>
+                            </div>
+
+                            <button onclick="initializeAssessmentRuntime('${encodeURIComponent(exam.subject)}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition transform active:scale-[0.98] cursor-pointer">
+                                Launch Live Engine
                             </button>
                         </div>`;
                 });
 
-                document.getElementById('leaderboard-subject-filter').innerHTML = selectOptions;
+                gridContainer.innerHTML = htmlContent;
 
-            } catch(err) {
-                pane.innerHTML = `<div class="text-xs font-mono text-red-400 text-center py-4 uppercase">Database parsing matrix failure.</div>`;
+            } catch (err) {
+                gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-400 col-span-full">Failed to compile category elements matrix list.</div>`;
             }
         }
 
-        function logout() { localStorage.clear(); window.location.replace("index.html"); }
+        // 🚀 STEP 3: ROUTE REDIRECTION TO TEST ENVIRONMENT TERMINAL
+        function initializeAssessmentRuntime(encodedSubject) {
+            if(confirm("Confirm action: Do you want to initialize and authorize this secure exam session now?")) {
+                // Routes session to your existing operational test setup path
+                window.location.href = `exam.html?subject=${encodedSubject}`;
+            }
+        }
+
+        function handleUserLogout() {
+            localStorage.clear();
+            window.location.replace("index.html");
+        }
     </script>
 </body>
 </html>
