@@ -156,19 +156,71 @@
 
         // 🎯 कैटेगरी एक्सेस करने का लॉजिक
             // 🎯 1. कैटेगरी क्लिक हैंडलर
+                // 🎯 1. कैटेगरी क्लिक हैंडलर (localStorage का उपयोग करके आईडी सुरक्षित की)
 function accessCategory(categoryName, categoryId) {
     const userEmail = localStorage.getItem('userEmail');
     
     if (!userEmail) {
-        // लॉगिन पेंडिंग है तो नाम और ID दोनों को सुरक्षित रूप से स्टोर करें
-        targetCategoryPending = `${categoryName}&catid=${categoryId}`;
+        // लॉगिन नहीं है: नाम और ID दोनों को ब्राउज़र की पक्की मेमोरी (localStorage) में डाल दें
+        localStorage.setItem('pendingCategoryName', categoryName);
+        localStorage.setItem('pendingCategoryId', categoryId);
+        
         openAuthModal('signin');
     } else {
-        // लॉगिन है तो सीधे रीडायरेक्ट करें
+        // लॉगिन है: सीधे रीडायरेक्ट करें
         window.location.href = `dashboard.html?category=${encodeURIComponent(categoryName)}&catid=${categoryId}`;
     }
 }
 
+// 🎯 2. ऑथेंटिकेशन सबमिट हैंडलर (लॉगिन के तुरंत बाद पक्की मेमोरी से डेटा उठाने का लॉजिक)
+async function executeAuthentication() {
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+
+    if(!email || !password) {
+        alert("Please complete the required matrix vectors.");
+        return;
+    }
+
+    try {
+        if (currentModalMode === "signin") {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+
+            // ईमेल सेव करें
+            localStorage.setItem('userEmail', data.user.email);
+            alert("Profile authenticated successfully!");
+            
+            closeAuthModal();
+            checkActiveSessionState();
+
+            // 🎯 पक्की मेमोरी (localStorage) से सुरक्षित डेटा निकालें
+            const savedName = localStorage.getItem('pendingCategoryName');
+            const savedId = localStorage.getItem('pendingCategoryId');
+
+            if (savedName && savedId) {
+                // उपयोग करने के बाद मेमोरी साफ़ करें ताकि अगली बार क्लैश न हो
+                localStorage.removeItem('pendingCategoryName');
+                localStorage.removeItem('pendingCategoryId');
+
+                // एकदम सटीक यूआरएल स्ट्रक्चर के साथ रीडायरेक्ट करें
+                window.location.href = `dashboard.html?category=${encodeURIComponent(savedName)}&catid=${savedId}`;
+            } else {
+                // अगर डायरेक्ट हेडर से लॉगिन किया था
+                window.location.reload();
+            }
+        } else {
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+            if (error) throw error;
+
+            alert("Registration successful! Initiating Sign In mode.");
+            currentModalMode = "signin";
+            updateModalUI();
+        }
+    } catch (err) {
+        alert(`Error: ${err.message}`);
+    }
+}
 
         function openAuthModal(mode) {
             currentModalMode = mode;
@@ -201,48 +253,7 @@ function accessCategory(categoryName, categoryId) {
             }
         }
 
-       // 🎯 2. ऑथेंटिकेशन सबमिट हैंडलर
-                        async function executeAuthentication() {
-    const email = document.getElementById('auth-email').value.trim();
-    const password = document.getElementById('auth-password').value;
-
-    if(!email || !password) {
-        alert("Please complete the required matrix vectors.");
-        return;
-    }
-
-    try {
-        if (currentModalMode === "signin") {
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) throw error;
-
-            localStorage.setItem('userEmail', data.user.email);
-            alert("Profile authenticated successfully!");
-            
-            closeAuthModal();
-            checkActiveSessionState();
-
-            // 🎯 फिक्स ब्लॉक: अगर यूजर किसी कैटेगरी पर क्लिक करके लॉगिन करने आया था
-            if (targetCategoryPending) {
-                // यूआरएल को सही से बिल्ड करें ताकि 'catid' खराब न हो
-                // targetCategoryPending में पहले से "Name&catid=ID" मौजूद है
-                window.location.href = `dashboard.html?category=${targetCategoryPending}`;
-            } else {
-                // अगर डायरेक्ट हेडर से लॉगिन किया था, तो बस पेज रिफ्रेश करें
-                window.location.reload();
-            }
-        } else {
-            const { data, error } = await supabaseClient.auth.signUp({ email, password });
-            if (error) throw error;
-
-            alert("Registration successful! Initiating Sign In mode.");
-            currentModalMode = "signin";
-            updateModalUI();
-        }
-    } catch (err) {
-        alert(`Error: ${err.message}`);
-    }
-}
+     
         function handleUserLogout() {
             localStorage.removeItem('userEmail');
             alert("Session terminated.");
