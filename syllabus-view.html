@@ -13,11 +13,7 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        .animate-gradient {
-            background: linear-gradient(-45deg, #0f172a, #0f1e3d, #1a103c, #020617);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
+        .animate-gradient { background: linear-gradient(-45deg, #0f172a, #0f1e3d, #1a103c, #020617); background-size: 400% 400%; animation: gradientShift 15s ease infinite; }
     </style>
 </head>
 <body class="animate-gradient font-sans min-h-screen text-slate-200 flex flex-col justify-between">
@@ -29,53 +25,33 @@
             </a>
             <div class="flex items-center space-x-2">
                 <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain bg-white/95 p-1 rounded-xl">
-                <div class="flex flex-col hidden sm:flex">
-                    <span class="text-xs font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 uppercase leading-none">EXAM PORTAL</span>
-                    <span class="text-[8px] font-mono font-bold text-slate-500 tracking-wider mt-0.5 uppercase">Syllabus Node</span>
-                </div>
+                <span class="text-xs font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 uppercase hidden sm:inline-block">EXAM PORTAL</span>
             </div>
         </div>
-        
-        <h2 id="category-title-header" class="text-sm font-black tracking-wider text-slate-200 uppercase truncate max-w-xs hidden md:block">
-            Loading Test Matrix...
-        </h2>
-
-        <div class="flex items-center space-x-4">
-            <a href="index.html" class="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 hover:from-blue-600/30 hover:to-indigo-600/30 border border-blue-500/30 text-[10px] font-mono font-black py-2 px-4 rounded-xl transition uppercase tracking-wider text-blue-400 cursor-pointer">
-                &larr; Exit Cluster
-            </a>
-        </div>
+        <h2 id="category-title-header" class="text-sm font-black tracking-wider text-slate-200 uppercase truncate max-w-xs hidden md:block">Loading...</h2>
+        <a href="index.html" class="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-[10px] font-mono font-black py-2 px-4 rounded-xl border border-blue-500/30 text-blue-400">&larr; Exit Cluster</a>
     </header>
 
     <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-8 space-y-6">
-        
         <div class="bg-slate-900/40 backdrop-blur-xl border border-white/5 p-6 rounded-3xl space-y-2 relative overflow-hidden shadow-2xl">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-blue-500 to-indigo-600"></div>
-            <span class="text-[9px] font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md uppercase tracking-widest">ACTIVE ONLINE EVALUATION</span>
-            <h1 id="main-category-title" class="text-2xl sm:text-3xl font-black text-white tracking-wide uppercase pt-1">Loading Domain...</h1>
-            <p id="main-category-desc" class="text-xs sm:text-sm text-slate-400 font-medium">Synchronizing examination metrics directly from secure repository keys...</p>
+            <span class="text-[9px] font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md uppercase tracking-widest">FILTERED CATEGORY METRICS</span>
+            <h1 id="main-category-title" class="text-2xl sm:text-3xl font-black text-white tracking-wide uppercase pt-1">Loading Exam Node...</h1>
+            <p id="main-category-desc" class="text-xs sm:text-sm text-slate-400 font-medium">Resolving filtered dynamic matrix sets...</p>
         </div>
 
         <div class="bg-slate-950/40 backdrop-blur-xl border border-white/5 rounded-3xl p-6 sm:p-8 space-y-4 shadow-2xl">
-            <div class="flex items-center justify-between border-b border-white/5 pb-3">
-                <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A2.25 2.25 0 0 0 5.969 19.5h12.062a2.25 2.25 0 0 0 2.2-3.006 60.423 60.423 0 0 0-.491-6.347m-15.482 0a44.69 44.69 0 0 1 15.482 0m-15.482 0 4.97-4.97m10.512 4.97-4.97-4.97M10.5 6.75h3" /></svg>
-                    <span>Available Dynamic Mock Papers</span>
-                </h3>
-            </div>
-            
+            <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest flex items-center space-x-2 border-b border-white/5 pb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A2.25 2.25 0 0 0 5.969 19.5h12.062a2.25 2.25 0 0 0 2.2-3.006 60.423 60.423 0 0 0-.491-6.347m-15.482 0a44.69 44.69 0 0 1 15.482 0" /></svg>
+                <span>Available Exams for this Category</span>
+            </h3>
             <div id="tests-content-area" class="space-y-3 pt-1">
-                <div class="space-y-3 animate-pulse py-2">
-                    <div class="h-12 bg-white/5 rounded-xl w-full"></div>
-                </div>
+                <div class="text-center text-xs font-mono text-slate-500 py-4 animate-pulse">Streaming database row arrays...</div>
             </div>
         </div>
-
     </main>
 
-    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 backdrop-blur-sm text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">
-        &copy; JECRC University — Computer Science Management System Terminal
-    </footer>
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
 
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
@@ -83,74 +59,52 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         window.onload = function() {
-            const sessionActive = localStorage.getItem('userEmail');
-            if(!sessionActive) { window.location.replace("index.html"); return; }
-
             const urlParams = new URLSearchParams(window.location.search);
             const categoryId = urlParams.get('category_id');
-
             if(!categoryId) { window.location.replace("index.html"); return; }
-
-            loadOriginalPatternSystem(categoryId);
+            loadCategoryExams(categoryId);
         };
 
-        async function loadOriginalPatternSystem(catId) {
+        async function loadCategoryExams(catId) {
             try {
-                // Fetch dynamic title context mappings
-                const { data: category } = await supabaseClient
-                    .from('exam_categories')
-                    .select('*')
-                    .eq('id', catId)
-                    .maybeSingle();
-
-                if (category) {
-                    document.getElementById('category-title-header').innerText = category.category_name;
-                    document.getElementById('main-category-title').innerText = category.category_name;
-                    document.getElementById('main-category-desc').innerText = category.description || "Active portal integration.";
+                // 1. Category details fetch karein
+                const { data: cat } = await supabaseClient.from('exam_categories').select('*').eq('id', catId).maybeSingle();
+                if(cat) {
+                    document.getElementById('category-title-header').innerText = cat.category_name;
+                    document.getElementById('main-category-title').innerText = cat.category_name;
+                    document.getElementById('main-category-desc').innerText = cat.description || "Dynamic exam cluster integration.";
                 }
 
-                // 🔄 FETCH FROM ORIGINAL 'EXAMS' TABLE WITH CORRECT CORES (subject, duration_minutes)
+                // 2. 🎯 FILTERED FETCH: Sirf wahi exams lao jinka category_id match karta ho
                 const { data: exams, error } = await supabaseClient
                     .from('exams')
                     .select('id, subject, duration_minutes')
-                    .order('subject', { ascending: true });
+                    .eq('category_id', catId)
+                    .order('id', { ascending: true });
 
-                const testsArea = document.getElementById('tests-content-area');
+                const area = document.getElementById('tests-content-area');
+                if(error) throw error;
 
-                if (error) {
-                    testsArea.innerHTML = `<div class="text-xs font-mono text-red-400 p-2">Database Connection interruption.</div>`;
-                    return;
-                }
-
-                if (exams && exams.length > 0) {
-                    testsArea.innerHTML = "";
+                if(exams && exams.length > 0) {
+                    area.innerHTML = "";
                     exams.forEach(ex => {
-                        // 🎯 ONCLICK REDIRECTS TO YOUR ORIGINAL TEST EXECUTOR PAGE WITH ID (e.g. test-running.html ya exam.html)
-                        // Agar aapki test window ka naam kuch aur hai, toh 'test-portal.html' ko change kar lena.
-                        testsArea.innerHTML += `
-                            <div onclick="window.location.href='test-portal.html?exam_id=${ex.id}'" class="flex justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-white/5 hover:border-blue-500/40 hover:bg-slate-900/90 transition duration-200 cursor-pointer group shadow-md">
+                        area.innerHTML += `
+                            <div onclick="window.location.href='test-portal.html?exam_id=${ex.id}'" class="flex justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-white/5 hover:border-blue-500/40 hover:bg-slate-900/90 transition cursor-pointer group shadow-md">
                                 <div class="flex items-center space-x-3">
-                                    <div class="bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20 p-2.5 rounded-xl text-xs font-mono font-black tracking-wider transition">
-                                        LIVE TEST
-                                    </div>
-                                    <span class="text-xs font-bold text-slate-200 uppercase tracking-wide group-hover:text-blue-400 transition">
-                                        ${ex.subject}
-                                    </span>
+                                    <div class="bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20 p-2.5 rounded-xl text-xs font-mono font-black">EXAM</div>
+                                    <span class="text-xs font-bold text-slate-200 uppercase tracking-wide group-hover:text-blue-400 transition">${ex.subject}</span>
                                 </div>
                                 <div class="flex items-center space-x-4">
-                                    <span class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider hidden sm:inline-block">Time: ${ex.duration_minutes || '60'} Mins</span>
-                                    <button class="bg-blue-600 group-hover:bg-blue-500 text-white text-[10px] font-mono font-black py-2 px-4 rounded-xl transition uppercase tracking-wider shadow-lg pointer-events-none">
-                                        Start Test &rarr;
-                                    </button>
+                                    <span class="text-[10px] font-mono text-slate-500">Time: ${ex.duration_minutes || '60'} Mins</span>
+                                    <button class="bg-blue-600 text-white text-[10px] font-mono font-black py-2 px-4 rounded-xl pointer-events-none">Start &rarr;</button>
                                 </div>
                             </div>`;
                     });
                 } else {
-                    testsArea.innerHTML = `<div class="text-xs font-mono text-slate-600 uppercase py-2">No active examination rows configured inside repository.</div>`;
+                    area.innerHTML = `<div class="text-xs font-mono text-slate-600 uppercase text-center py-4">Is category ke andar abhi tak koi exam linked nahi hai.</div>`;
                 }
-
-            } catch (err) {
-                document.getElementById('tests-content-area').innerHTML = `<div class="text-xs text-center py-4 text-red-400 font-mono">Pipeline Fault.</div>`;
+            } catch(e) {
+                document.getElementById('tests-content-area').innerHTML = `<div class="text-xs text-red-400 font-mono text-center">Error reading database node.</div>`;
             }
         }
     </script>
