@@ -127,47 +127,60 @@
         let currentModalMode = "signin";
 
         // 🎯 1. सिंक्रोनाइज़्ड लोड इवेंट
-        window.onload = async function() {
-            const studentSession = localStorage.getItem('userEmail');
-            const adminSession = localStorage.getItem('adminEmail');
+       window.onload = async function() {
+    const studentSession = localStorage.getItem('userEmail');
+    const adminSession = localStorage.getItem('adminEmail');
 
-            // 1. अगर लोकल स्टोरेज में ईमेल पहले से है, तो ही अंदर जाने दो
-            if (studentSession && studentSession !== "null" && studentSession.trim() !== "") {
-                window.location.replace("dashboard.html");
-                return;
-            }
-            if (adminSession && adminSession !== "null" && adminSession.trim() !== "") {
-                window.location.replace("admin_dashboard.html");
-                return;
-            }
+    // 1. अगर लोकल स्टोरेज में ईमेल पहले से है, तो सही डैशबोर्ड पर भेजें
+    if (studentSession && studentSession !== "null" && studentSession.trim() !== "") {
+        // चेक करें कि क्या कोई कैटेगरी पेंडिंग थी (सिर्फ लॉगिन होने पर ही काम करेगा)
+        const savedName = localStorage.getItem('pendingCategoryName');
+        const savedId = localStorage.getItem('pendingCategoryId');
+        
+        if (savedName && savedId) {
+            localStorage.removeItem('pendingCategoryName');
+            localStorage.removeItem('pendingCategoryId');
+            window.location.replace(`dashboard.html?category=${encodeURIComponent(savedName)}&catid=${savedId}`);
+            return;
+        }
 
-            // 2. केवल OAuth/Supabase सेशन चेक करें अगर लोकल स्टोरेज खाली हो
-            try {
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-                
-                if (session && session.user && session.user.email) {
-                    localStorage.setItem('userEmail', session.user.email);
-                    window.location.replace("dashboard.html"); 
-                    return;
-                }
-            } catch (err) {
-                console.error("Session sync error:", err);
-            }
+        window.location.replace("dashboard.html");
+        return;
+    }
+    
+    if (adminSession && adminSession !== "null" && adminSession.trim() !== "") {
+        window.location.replace("admin_dashboard.html");
+        return;
+    }
+
+    // 2. केवल OAuth/Supabase लाइव सेशन चेक करें अगर लोकल स्टोरेज खाली हो
+    try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        
+        if (session && session.user && session.user.email) {
+            localStorage.setItem('userEmail', session.user.email);
             
-            // 3. चेक करें कि क्या कोई कैटेगरी पेंडिंग थी
+            // लॉगिन सफल होने के बाद पेंडिंग कैटेगरी चेक करें
             const savedName = localStorage.getItem('pendingCategoryName');
             const savedId = localStorage.getItem('pendingCategoryId');
             
             if (savedName && savedId) {
                 localStorage.removeItem('pendingCategoryName');
                 localStorage.removeItem('pendingCategoryId');
-                window.location.href = `dashboard.html?category=${encodeURIComponent(savedName)}&catid=${savedId}`;
+                window.location.replace(`dashboard.html?category=${encodeURIComponent(savedName)}&catid=${savedId}`);
                 return;
             }
 
-            // UI अपडेट लोड होने के बाद
-            checkActiveSessionState();
-        };
+            window.location.replace("dashboard.html"); 
+            return;
+        }
+    } catch (err) {
+        console.error("Session sync error:", err);
+    }
+    
+    // 3. अगर यूजर लॉग इन नहीं है, तो रीडायरेक्ट न करें, उसे index.html का UI देखने दें
+    checkActiveSessionState();
+};
 
         function checkActiveSessionState() {
             const userEmail = localStorage.getItem('userEmail');
