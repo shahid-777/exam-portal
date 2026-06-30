@@ -144,6 +144,43 @@
                     </div>`;
             }
         }
+     // Append this processing layer inside your loadCategoryDetails function to load Tests & Programs instantly
+async function loadAdditionalResources(catId) {
+    try {
+        // Fetch matching tests
+        const { data: tests } = await supabaseClient.from('exam_tests').select('*').eq('category_id', catId);
+        // Fetch matching practical programs
+        const { data: programs } = await supabaseClient.from('exam_programs').select('*').eq('category_id', catId);
+        
+        let dynamicResourcesHtml = `<div class="mt-6 space-y-4">`;
+        
+        if(tests && tests.length > 0) {
+            dynamicResourcesHtml += `<h4 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest border-b border-white/5 pb-1">Available Online Test Series</h4>`;
+            tests.forEach(t => {
+                dynamicResourcesHtml += `
+                    <div class="flex justify-between items-center bg-slate-900/50 p-3 rounded-xl border border-white/5">
+                        <span class="text-xs font-bold text-slate-200">${t.test_title}</span>
+                        <a href="${t.test_url}" target="_blank" class="bg-purple-600 hover:bg-purple-500 text-[10px] font-mono font-black py-1 px-3 rounded-md transition uppercase">Start Test &rarr;</a>
+                    </div>`;
+            });
+        }
+        
+        if(programs && programs.length > 0) {
+            dynamicResourcesHtml += `<h4 class="text-xs font-mono font-black text-emerald-400 uppercase tracking-widest border-b border-white/5 pb-1 mt-6">Syllabus Practical Labs / Programs</h4>`;
+            programs.forEach(p => {
+                dynamicResourcesHtml += `
+                    <div class="bg-slate-900/30 p-3 rounded-xl border border-white/5 space-y-2">
+                        <span class="text-xs font-black text-emerald-400 block">${p.program_title}</span>
+                        <pre class="text-[11px] font-mono bg-slate-950/80 p-2.5 rounded-lg border border-white/5 text-slate-300 overflow-x-auto whitespace-pre-wrap">${p.program_code_or_desc}</pre>
+                    </div>`;
+            });
+        }
+        
+        dynamicResourcesHtml += `</div>`;
+        document.getElementById('syllabus-content-area').innerHTML += dynamicResourcesHtml;
+        
+    } catch(e) { console.log("Resource schema attachment error."); }
+}
     </script>
 </body>
 </html>
