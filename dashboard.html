@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="logo.png">
+    <link class="rounded-xl" rel="icon" type="image/png" href="logo.png">
     <title>Student Dashboard — Exam Explorer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -75,10 +75,10 @@
             
             document.getElementById('display-user-session').innerText = activeUser.toLowerCase();
 
-            // 1. डेटाबेस की सारी कैटेगरीज लोड करें
+            // 1. डेटाबेस से सभी उपलब्ध कैटेगरीज पहले रेंडर करें
             await fetchAllDatabaseCategories();
 
-            // 2. यूआरएल पैरामीटर्स चेक करें
+            // 2. यूआरएल पैरामीटर्स के आधार पर करंट स्टेट ट्रैक करें
             const urlParams = new URLSearchParams(window.location.search);
             const categoryParam = urlParams.get('category');
             const catIdParam = urlParams.get('catid');
@@ -90,7 +90,7 @@
             }
         };
 
-        // 🎯 डेटाबेस से सभी कैटेगरीज डायनामिकली फेच करना
+        // 🎯 डेटाबेस की सभी श्रेणियों को ग्रैब करना (समस्या 2 का हल)
         async function fetchAllDatabaseCategories() {
             try {
                 const { data, error } = await supabaseClient.from('categories').select('*');
@@ -102,7 +102,7 @@
                     return;
                 }
 
-                // प्रीमियम फोल्डर UI मैपिंग
+                // डायनामिक प्रीमियम फोल्डर लिस्टिंग यूआई
                 container.innerHTML = data.map(cat => `
                     <div onclick="selectDashboardCategory('${cat.name}', ${cat.id})" class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/30 hover:bg-slate-900/70 transition transform hover:-translate-y-0.5 cursor-pointer group">
                         <div class="flex items-center space-x-4 min-w-0">
@@ -123,7 +123,7 @@
             }
         }
 
-        // 🎯 कैटेगरी चुनने पर व्यूज स्विच करना
+        // 🎯 कैटेगरी चुनने पर व्यूज स्विच करना और एग्जाम्स फेच करना
         async function selectDashboardCategory(categoryName, categoryId) {
             const newUrl = `${window.location.pathname}?category=${encodeURIComponent(categoryName)}&catid=${categoryId}`;
             window.history.pushState({ path: newUrl }, '', newUrl);
@@ -137,7 +137,7 @@
             await fetchActiveCategoryExams(categoryId);
         }
 
-        // 🎯 केवल सेलेक्टेड कैटेगरी के एग्जाम्स रेंडर करना
+        // 🎯 केवल सेलेक्टेड कैट-आईडी के रिस्पॉन्सिव पेपर्स लाना
         async function fetchActiveCategoryExams(categoryId) {
             const listTarget = document.getElementById('active-exams-list-target');
             listTarget.innerHTML = `<p class="text-xs font-mono text-center text-slate-500 animate-pulse">Decrypting encrypted question vaults...</p>`;
@@ -154,7 +154,7 @@
                     return;
                 }
 
-                // आकर्षक परीक्षा कार्ड्स
+                // आकर्षक परीक्षा कार्ड्स फ़ॉर्मेटिंग
                 listTarget.innerHTML = data.map(exam => `
                     <div class="bg-slate-900/50 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/20 transition">
                         <div class="space-y-1">
@@ -172,7 +172,7 @@
             }
         }
 
-        // 🎯 वापस मुख्य कैटेगरी व्यू में जाना
+        // 🎯 वापस कैटेगरीज की सूची में आने का हैंडलर (समस्या 1 का हल)
         function resetToCategoriesView() {
             const cleanUrl = window.location.pathname;
             window.history.pushState({ path: cleanUrl }, '', cleanUrl);
