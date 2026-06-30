@@ -10,6 +10,7 @@
 </head>
 <body class="bg-slate-950 font-sans min-h-screen text-slate-200 flex flex-col justify-between">
 
+    <!-- 🌐 TOP NAVIGATION BAR -->
     <header class="w-full bg-slate-900/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50">
         <div class="flex items-center space-x-3">
             <div class="bg-white/95 p-1 rounded-xl">
@@ -29,6 +30,7 @@
         </div>
     </header>
 
+    <!-- 📁 DYNAMIC BREADCRUMB NAVIGATION -->
     <section class="w-full bg-slate-900/20 border-b border-white/5 py-3 px-6">
         <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs font-mono text-slate-400">
             <button onclick="loadCategoriesView()" class="hover:text-blue-400 font-bold transition">Root Clusters</button>
@@ -37,8 +39,10 @@
         </div>
     </section>
 
+    <!-- 🏛️ MAIN CENTRAL MATRIX WORKSPACE -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-8">
         
+        <!-- View Title Section -->
         <div class="mb-8 space-y-1">
             <h3 id="workspace-title" class="text-xl font-black text-slate-100 uppercase tracking-wider">
                 Available Exam Streams
@@ -48,6 +52,7 @@
             </p>
         </div>
 
+        <!-- DYNAMIC CONTAINER (GRID LAYER) -->
         <div id="portal-dynamic-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div class="text-center font-mono text-xs text-slate-500 py-12 animate-pulse uppercase col-span-full">
                 Initializing Portal Schema Matrices...
@@ -56,6 +61,7 @@
 
     </main>
 
+    <!-- 🌐 FOOTER METRICS INFO -->
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/20 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest">
         &copy; JECRC University — Computer Science Management System Terminal
     </footer>
@@ -79,9 +85,8 @@
             loadCategoriesView();
         };
 
-        // 📁 STEP 1: LOAD ALL MAIN EXAM CATEGORIES (FOLDERS)
+        // 📁 STEP 1: LOAD ALL MAIN EXAM CATEGORIES VIA INNER JOIN RELATION
         async function loadCategoriesView() {
-            // Update UI/Header Context
             document.getElementById('workspace-title').innerText = "Available Exam Streams";
             document.getElementById('workspace-desc').innerText = "Select a category below to explore its active examinations list.";
             document.getElementById('breadcrumb-arrow').classList.add('hidden');
@@ -91,17 +96,28 @@
             gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase col-span-full">Mapping Active Categories...</div>`;
 
             try {
-                // Fetch distinct categories from 'exams' table to align with what admin lists
+                // Fetch exams mapping with their related category text from 'exam_categories' table
                 const { data, error } = await supabaseClient
                     .from('exams')
-                    .select('category');
+                    .select(`
+                        category_id,
+                        exam_categories (
+                            id,
+                            name
+                        )
+                    `);
 
                 if (error) throw error;
 
-                // Extract unique categories safely, filtering out nulls/blanks
-                const uniqueCategories = [...new Set(data.map(item => item.category).filter(Boolean))];
+                // Group items to filter out unique categories safely using a Map
+                const uniqueCategoriesMap = new Map();
+                data.forEach(item => {
+                    if (item.exam_categories && item.exam_categories.id) {
+                        uniqueCategoriesMap.set(item.exam_categories.id, item.exam_categories.name);
+                    }
+                });
 
-                if (uniqueCategories.length === 0) {
+                if (uniqueCategoriesMap.size === 0) {
                     gridContainer.innerHTML = `
                         <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
                             No active exam streams found. Waiting for Admin allocations.
@@ -110,13 +126,14 @@
                 }
 
                 let htmlContent = "";
-                uniqueCategories.forEach(catName => {
+                uniqueCategoriesMap.forEach((catName, catId) => {
                     htmlContent += `
-                        <div onclick="loadExamsSubView('${encodeURIComponent(catName)}')" class="bg-slate-900/40 border border-white/5 hover:border-blue-500/30 p-6 rounded-2xl shadow-xl hover:bg-slate-900/80 transition transform hover:scale-[1.01] cursor-pointer group relative overflow-hidden flex flex-col justify-between">
+                        <div onclick="loadExamsSubView('${catId}', '${encodeURIComponent(catName)}')" class="bg-slate-900/40 border border-white/5 hover:border-blue-500/30 p-6 rounded-2xl shadow-xl hover:bg-slate-900/80 transition transform hover:scale-[1.01] cursor-pointer group relative overflow-hidden flex flex-col justify-between">
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">
                                     <div class="p-2.5 bg-blue-500/10 rounded-xl text-blue-400 group-hover:bg-blue-500/20 transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h1.5A2.25 2.25 0 0 0 8.25 8.5h3.053c.421 0 .824.168 1.121.467l2.137 2.138a2.25 2.25 0 0 1 .659 1.592v1.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008v-.008ZM13.5 12h.008v.008H13.5V12Zm0 2.25h.008v.008H13.5v-.008ZM15.75 11.25h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008v-.008Z" /></svg>
+                                        <!-- Folder SVG Icon -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h1.5A2.25 2.25 0 0 0 8.25 8.5h3.053c.421 0 .824.168 1.121.467l2.137 2.138a2.25 2.25 0 0 1 .659 1.592v1.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25Z" /></svg>
                                     </div>
                                     <span class="text-[10px] font-mono text-slate-500 font-bold uppercase tracking-wider group-hover:text-blue-400/60 transition">Open Folder &rarr;</span>
                                 </div>
@@ -128,15 +145,15 @@
                 gridContainer.innerHTML = htmlContent;
 
             } catch (err) {
-                gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-400 col-span-full">Database parsing cluster connection fault.</div>`;
+                console.error(err);
+                gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-400 col-span-full">Database parsing cluster connection fault: ${err.message || err}</div>`;
             }
         }
 
-        // 📝 STEP 2: LOAD EXAMS FILTERED BY SELECTED CATEGORY
-        async function loadExamsSubView(encodedCatName) {
+        // 📝 STEP 2: LOAD EXAMS FILTERED BY SELECTED CATEGORY ID
+        async function loadExamsSubView(categoryId, encodedCatName) {
             const categoryName = decodeURIComponent(encodedCatName);
             
-            // Update Breadcrumb Navigation state
             document.getElementById('workspace-title').innerText = `${categoryName.toUpperCase()} — ACTIVE PAPERS`;
             document.getElementById('workspace-desc').innerText = "Select an available test paper below to initialize live terminal examination runtime.";
             
@@ -150,11 +167,11 @@
             gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase col-span-full">Filtering Test Clusters...</div>`;
 
             try {
-                // Fetch matching records from exams table based on listed admin node category strings
+                // Fetch exams filtered strictly by numeric category_id from mapping
                 const { data: examsList, error } = await supabaseClient
                     .from('exams')
                     .select('subject, duration_minutes, questions_json')
-                    .eq('category', categoryName);
+                    .eq('category_id', categoryId);
 
                 if (error) throw error;
 
@@ -168,7 +185,6 @@
 
                 let htmlContent = "";
                 examsList.forEach(exam => {
-                    // Safe measurement of questions count mapping elements length
                     let totalQuestionsCount = 0;
                     try {
                         let parsedJson = typeof exam.questions_json === 'string' ? JSON.parse(exam.questions_json) : exam.questions_json;
@@ -203,7 +219,6 @@
         // 🚀 STEP 3: ROUTE REDIRECTION TO TEST ENVIRONMENT TERMINAL
         function initializeAssessmentRuntime(encodedSubject) {
             if(confirm("Confirm action: Do you want to initialize and authorize this secure exam session now?")) {
-                // Routes session to your existing operational test setup path
                 window.location.href = `exam.html?subject=${encodedSubject}`;
             }
         }
