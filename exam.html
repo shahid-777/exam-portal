@@ -21,37 +21,38 @@
 </head>
 <body class="bg-slate-950 font-sans min-h-screen text-slate-200 flex flex-col justify-between select-none">
 
-    <header class="w-full bg-slate-900/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50">
-        <div class="flex items-center space-x-3">
-            <div class="bg-white/95 p-1 rounded-xl shrink-0">
-                <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
-            </div>
-            <div class="flex flex-col">
-                <span id="live-subject-title" class="text-xs font-black tracking-widest text-blue-400 uppercase leading-none">LOADING ASSESSMENT...</span>
-                <span class="text-[8px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">SECURE RUNTIME MONITOR</span>
-            </div>
+   <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-white/5 py-3 px-4 flex items-center justify-between shadow-lg fixed top-0 left-0 right-0 z-50">
+    <div class="flex items-center space-x-2 max-w-[50%] min-w-0">
+        <div class="bg-white/95 p-1 rounded-xl shrink-0">
+            <img src="logo.png" alt="Logo" class="h-7 w-auto object-contain" onerror="this.style.display='none'">
         </div>
-        
-        <div class="flex items-center space-x-3 sm:space-x-4">
-            <button onclick="toggleMobilePalette(true)" class="lg:hidden bg-blue-600/20 border border-blue-500/30 text-blue-400 font-mono text-[10px] font-bold px-2.5 py-1.5 rounded-xl uppercase tracking-wider hover:bg-blue-600/30 transition">
-                Show Palette
-            </button>
-
-            <div class="flex items-center space-x-1.5 bg-slate-900 border border-white/10 px-2.5 py-1 rounded-xl">
-                <label class="text-[10px] font-mono text-slate-400 uppercase">Lang:</label>
-                <select id="global-lang-selector" onchange="switchAssessmentLanguage(this.value)" class="bg-transparent text-xs font-bold text-white outline-none cursor-pointer pr-1">
-                    <option value="en" class="bg-slate-900">English</option>
-                    <option value="hi" class="bg-slate-900">हिन्दी (Auto Translate)</option>
-                </select>
-            </div>
-
-            <div class="bg-red-500/10 border border-red-500/20 px-3 sm:px-4 py-1.5 rounded-xl flex items-center space-x-2">
-                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                <span id="time-counter-clock" class="text-xs font-mono font-black text-red-400 tracking-widest">00:00</span>
-            </div>
+        <div class="flex flex-col truncate">
+            <span id="live-subject-title" class="text-[10px] sm:text-xs font-black tracking-widest text-blue-400 uppercase leading-none truncate">LOADING ASSESSMENT...</span>
+            <span class="text-[7px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5 truncate">SECURE RUNTIME MONITOR</span>
         </div>
-    </header>
+    </div>
+    
+    <div class="flex items-center space-x-2 sm:space-x-4 shrink-0">
+        <div class="flex items-center space-x-1.5 bg-slate-900 border border-white/10 px-2 py-1 rounded-xl">
+            <label class="text-[9px] font-mono text-slate-400 uppercase hidden sm:inline">Lang:</label>
+            <select id="global-lang-selector" onchange="switchAssessmentLanguage(this.value)" class="bg-transparent text-[11px] font-bold text-white outline-none cursor-pointer">
+                <option value="en" class="bg-slate-900">EN</option>
+                <option value="hi" class="bg-slate-900">HI</option>
+            </select>
+        </div>
 
+        <div class="bg-red-500/10 border border-red-500/20 px-2.5 sm:px-4 py-1.5 rounded-xl flex items-center space-x-1.5">
+            <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+            <span id="time-counter-clock" class="text-[11px] sm:text-xs font-mono font-black text-red-400 tracking-widest">00:00</span>
+        </div>
+
+        <button onclick="toggleMobilePalette(true)" class="lg:hidden p-2 text-slate-400 hover:text-white hover:bg-white/5 border border-white/10 rounded-xl transition cursor-pointer" aria-label="Open Menu">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+    </div>
+</header>
     <section class="w-full bg-slate-900/30 border-b border-white/5 py-3 px-6 sticky top-[65px] z-40 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto flex flex-wrap gap-4 items-center justify-between text-xs font-mono">
             <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
