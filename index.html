@@ -122,15 +122,43 @@
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+window.onload = function() {
+    // Check if session data exists in client memory
+    checkActiveUserSession();
+    fetchExamCategories();
+    initializeGoogleAuthenticationEngine();
+};
 
+// 🛡️ DYNAMIC UI SESSION MATRIX CHECKER
+function checkActiveUserSession() {
+    const userEmail = localStorage.getItem('userEmail');
+    const actionsArea = document.getElementById('header-actions');
+    
+    if (userEmail) {
+        // User is logged in: Swap out generic entry button with explicit node identifier & sign-off layout
+        actionsArea.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <span class="text-[11px] font-mono font-black text-emerald-400 bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-500/20 max-w-[180px] sm:max-w-xs truncate">
+                    NODE: ${userEmail}
+                </span>
+                <button onclick="portalLogout()" class="bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 text-xs font-bold py-2 px-4 rounded-xl transition uppercase tracking-wider">
+                    Logout
+                </button>
+            </div>
+        `;
+    }
+}
+
+// Global portal level log-out clear state tool
+function portalLogout() {
+    localStorage.clear();
+    alert("Session terminated. Client portal environment secure.");
+    window.location.reload();
+}
         let localCategoriesCache = [];
 
-        window.onload = function() {
-            // Agar user pehle se logged in hai, toh automatically use categories list accessible rahegi ya dashboard redirect kar sakte hain.
-            fetchExamCategories();
-            initializeGoogleAuthenticationEngine();
-        };
-
+        
+       
         // 🤖 INITIALIZE GOOGLE AUTH CORE
         function initializeGoogleAuthenticationEngine() {
             google.accounts.id.initialize({
