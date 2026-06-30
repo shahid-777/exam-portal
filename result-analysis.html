@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +25,7 @@
         </button>
     </header>
 
-    <section class="max-w-5xl w-full mx-auto px-6 pt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <section class="max-w-5xl w-full mx-auto px-6 pt-8 grid grid-cols-2 sm:grid-cols-5 gap-4">
         <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl text-center">
             <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Total Score</div>
             <div id="metric-score" class="text-xl font-black text-blue-400 mt-1">0 / 0</div>
@@ -43,10 +42,10 @@
             <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Skipped</div>
             <div id="metric-skipped" class="text-xl font-black text-slate-400 mt-1">0</div>
         </div>
-            <div class="bg-slate-900/60 border border-blue-500/20 p-4 rounded-xl flex flex-col items-center">
-        <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Class Rank</span>
-        <span id="display-rank" class="text-xl font-mono font-black text-blue-400 mt-1">Calculating...</span>
-    </div>
+        <div class="bg-slate-900/60 border border-blue-500/20 p-4 rounded-xl flex flex-col items-center justify-center text-center">
+            <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest font-black">Class Rank</span>
+            <span id="display-rank" class="text-xl font-mono font-black text-blue-400 mt-1">Calculating...</span>
+        </div>
     </section>
 
     <main class="flex-1 max-w-5xl w-full mx-auto px-6 py-8 space-y-6">
@@ -77,112 +76,81 @@
                 window.location.replace("dashboard.html");
                 return;
             }
-            fetchResultMatrixPacket(resultId);
+            // 🎯 अब यह सही फंक्शन को कॉल करेगा
+            fetchAndRenderAnalysis(resultId);
         };
-        // 1. मुख्य फैच फंक्शन (इसे अपने मौजूदा फंक्शन से मैच करें या अपडेट करें)
-                // सुनिश्चित करें कि आपकी इस फ़ाइल में Supabase Client का नाम सही है (जैसे: supabaseClient या supabase)
-// अगर आपकी फ़ाइल में पहले से 'const supabase = ...' है, तो नीचे जहाँ 'supabaseClient' लिखा है, उसे 'supabase' कर दें।
 
-async function fetchAndRenderAnalysis(id) {
-    try {
-        console.log("Fetching result for ID:", id);
-        
-        const { data: currentResult, error: fetchError } = await supabaseClient
-            .from('results')
-            .select('*')
-            .eq('id', id)
-            .maybeSingle();
-
-        if (fetchError || !currentResult) throw new Error("Result not found in database.");
-
-        // UI में डेटा सेट करना
-        if(document.getElementById('display-subject')) document.getElementById('display-subject').innerText = currentResult.subject;
-        if(document.getElementById('total-q')) document.getElementById('total-q').innerText = currentResult.total_questions;
-        if(document.getElementById('correct-q')) document.getElementById('correct-q').innerText = currentResult.correct_answers;
-        if(document.getElementById('wrong-q')) document.getElementById('wrong-q').innerText = currentResult.wrong_answers;
-        if(document.getElementById('unattempted-q')) document.getElementById('unattempted-q').innerText = currentResult.unattempted;
-
-        // 🎯 रैंक कैलकुलेशन फंक्शन को कॉल करना (Safe Execution)
-        try {
-            await calculateRank(currentResult.subject, currentResult.score);
-        } catch (rankErr) {
-            console.error("Rank calculation inner error:", rankErr);
-            document.getElementById('display-rank').innerText = "--";
-        }
-
-        // पुराना रेंडरिंग लूप
-        const userResponses = typeof currentResult.user_responses_json === 'string' ? JSON.parse(currentResult.user_responses_json) : currentResult.user_responses_json;
-        const questionsSnapshot = typeof currentResult.questions_snapshot_json === 'string' ? JSON.parse(currentResult.questions_snapshot_json) : currentResult.questions_snapshot_json;
-        
-        if (typeof renderDetailedQuestionsAnalysis === "function") {
-            renderDetailedQuestionsAnalysis(questionsSnapshot, userResponses);
-        }
-
-    } catch (err) {
-        console.error("Main fetch error:", err);
-        if(document.getElementById('display-rank')) document.getElementById('display-rank').innerText = "Error";
-    }
-}
-
-// 🎯 रैंक कैलकुलेट करने का बिल्कुल सुरक्षित तरीका
-async function calculateRank(subjectName, currentStudentScore) {
-    const rankDisplay = document.getElementById('display-rank');
-    if (!rankDisplay) return;
-
-    try {
-        // 🎯 .eq की जगह .ilike का इस्तेमाल करें ताकि स्मॉल/कैपिटल लेटर का अंतर खत्म हो जाए
-        const { data: allScores, error } = await supabaseClient
-            .from('results')
-            .select('score')
-            .ilike('subject', subjectName); // 👈 यहाँ बदलाव किया है
-
-        if (error) throw error;
-
-        if (allScores && allScores.length > 0) {
-            const sortedScores = allScores
-                .map(r => parseInt(r.score) || 0)
-                .sort((a, b) => b - a);
-
-            const rank = sortedScores.indexOf(parseInt(currentStudentScore) || 0) + 1;
-            const totalStudents = sortedScores.length;
-
-            rankDisplay.innerText = `${rank} / ${totalStudents}`;
-        } else {
-            rankDisplay.innerText = "1 / 1";
-        }
-    } catch (err) {
-        console.error("Error inside calculateRank:", err);
-        rankDisplay.innerText = "--";
-    }
-}    
-        
-        async function fetchResultMatrixPacket(id) {
+        async function fetchAndRenderAnalysis(id) {
             try {
-                const { data, error } = await supabase
+                console.log("Fetching result for ID:", id);
+                
+                const { data: currentResult, error: fetchError } = await supabaseClient
                     .from('results')
                     .select('*')
                     .eq('id', id)
                     .maybeSingle();
 
-                if (error || !data) throw new Error("Metrics block inaccessible.");
+                if (fetchError || !currentResult) throw new Error("Result not found in database.");
 
-                // Render Summary Score Board Cards
-                document.getElementById('analysis-subject').innerText = data.subject.toUpperCase();
-                document.getElementById('metric-score').innerText = `${data.correct_answers} / ${data.total_questions}`;
-                document.getElementById('metric-correct').innerText = data.correct_answers;
-                document.getElementById('metric-wrong').innerText = data.wrong_answers;
-                document.getElementById('metric-skipped').innerText = data.unattempted || 0;
+                // शीर्ष कार्ड और मुख्य मैट्रिक्स में डेटा भरना
+                document.getElementById('analysis-subject').innerText = currentResult.subject.toUpperCase();
+                document.getElementById('metric-score').innerText = `${currentResult.correct_answers} / ${currentResult.total_questions}`;
+                document.getElementById('metric-correct').innerText = currentResult.correct_answers;
+                document.getElementById('metric-wrong').innerText = currentResult.wrong_answers;
+                document.getElementById('metric-skipped').innerText = currentResult.unattempted || 0;
 
-                // Parse Json Data Collections safely
-                const userResponses = typeof data.user_responses_json === 'string' ? JSON.parse(data.user_responses_json) : data.user_responses_json;
-                const questionsList = typeof data.questions_snapshot_json === 'string' ? JSON.parse(data.questions_snapshot_json) : data.questions_snapshot_json;
+                // 🎯 रैंक कैलकुलेशन ब्लॉक को कॉल करना (Safe Execution)
+                try {
+                    await calculateRank(currentResult.subject, currentResult.score);
+                } catch (rankErr) {
+                    console.error("Rank calculation inner error:", rankErr);
+                    document.getElementById('display-rank').innerText = "--";
+                }
 
-                renderDetailedAnalysisPipeline(questionsList, userResponses);
+                // JSON डेटा को सुरक्षित रूप से पार्स करना
+                const userResponses = typeof currentResult.user_responses_json === 'string' ? JSON.parse(currentResult.user_responses_json) : currentResult.user_responses_json;
+                const questionsSnapshot = typeof currentResult.questions_snapshot_json === 'string' ? JSON.parse(currentResult.questions_snapshot_json) : currentResult.questions_snapshot_json;
+                
+                // पाइपलाइन रेंडरर को कॉल करना
+                renderDetailedAnalysisPipeline(questionsSnapshot, userResponses);
 
-            } catch(e) {
+            } catch (err) {
+                console.error("Main fetch error:", err);
                 document.getElementById('analysis-pipeline-cards').innerHTML = `<div class="text-center font-mono text-xs text-red-400">Error rendering scoreboard nodes matrix loop.</div>`;
+                if(document.getElementById('display-rank')) document.getElementById('display-rank').innerText = "Error";
             }
         }
+
+        // 🎯 रैंक कैलकुलेट करने का बिल्कुल सटीक तरीका
+        async function calculateRank(subjectName, currentStudentScore) {
+            const rankDisplay = document.getElementById('display-rank');
+            if (!rankDisplay) return;
+
+            try {
+                const { data: allScores, error } = await supabaseClient
+                    .from('results')
+                    .select('score')
+                    .ilike('subject', subjectName);
+
+                if (error) throw error;
+
+                if (allScores && allScores.length > 0) {
+                    const sortedScores = allScores
+                        .map(r => parseInt(r.score) || 0)
+                        .sort((a, b) => b - a);
+
+                    const rank = sortedScores.indexOf(parseInt(currentStudentScore) || 0) + 1;
+                    const totalStudents = sortedScores.length;
+
+                    rankDisplay.innerText = `${rank} / ${totalStudents}`;
+                } else {
+                    rankDisplay.innerText = "1 / 1";
+                }
+            } catch (err) {
+                console.error("Error inside calculateRank:", err);
+                rankDisplay.innerText = "--";
+            }
+        } 
 
         function renderDetailedAnalysisPipeline(questions, responses) {
             const container = document.getElementById('analysis-pipeline-cards');
@@ -212,13 +180,10 @@ async function calculateRank(subjectName, currentStudentScore) {
                     let optStyleClass = "bg-slate-900/20 border-white/5 text-slate-400";
                     let iconBadge = "";
 
-                    // Highlight Core Target System Logic
                     if (optIdx === systemCorrectKey) {
-                        // This option is the absolute CORRECT answer key
                         optStyleClass = "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 font-bold";
                         iconBadge = `<span class="text-[10px] text-emerald-400 font-mono font-black uppercase tracking-wider">[Correct Key]</span>`;
                     } else if (userChoice !== undefined && optIdx === parseInt(userChoice)) {
-                        // User picked this, but it was WRONG
                         optStyleClass = "bg-red-500/10 border-red-500/30 text-red-300 font-medium line-through";
                         iconBadge = `<span class="text-[10px] text-red-400 font-mono font-black uppercase tracking-wider">[Your Choice]</span>`;
                     }
