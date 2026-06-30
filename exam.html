@@ -110,11 +110,33 @@
 
         let globalCategoriesArray = [];
 
-        window.onload = function() {
-            const adminActive = localStorage.getItem('adminEmail');
-            if(!adminActive) { window.location.replace("admin-login.html"); return; }
-            syncCategoriesDropDowns();
-        };
+       window.onload = function() {
+    // 🎯 STUDENT SESSION CLEAR CHECK
+    const studentSession = localStorage.getItem('userEmail');
+    const adminSession = localStorage.getItem('adminEmail');
+
+    // Agar student login hai YA admin login hai (dono case mein paper open hona chahiye testing ke liye)
+    if (!studentSession && !adminSession) {
+        console.warn("No active authorization found. Redirecting to core gate.");
+        window.location.replace("index.html");
+        return;
+    }
+
+    // URL parameters parsing safely
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetSubject = urlParams.get('subject');
+
+    if (!targetSubject) {
+        window.location.replace("dashboard.html");
+        return;
+    }
+    
+    // Set user visual node identity string
+    const activeUser = studentSession || adminSession || "Guest Scholar";
+    console.log("Session verified securely for: " + activeUser);
+
+    streamTargetExamJson(decodeURIComponent(targetSubject));
+};
 
         async function syncCategoriesDropDowns() {
             try {
