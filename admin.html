@@ -215,43 +215,31 @@
         }
 
         // 🎯 CRITICAL TOOL 3: ASSIGN / MAP EXAM TO MULTIPLE CATEGORIES (NEW FUNCTION)
-        async function mapExamToCategoryRoutine() {
-            const encodedSub = document.getElementById('map-exam-subject-select').value;
-            const catId = document.getElementById('map-target-category-select').value;
+       // 🎯 FIXED CORES: UPDATE MATRIX RUNTIME INSTEAD OF DUPLICATING PRIMARY KEYS
+async function mapExamToCategoryRoutine() {
+    const encodedSub = document.getElementById('map-exam-subject-select').value;
+    const catId = document.getElementById('map-target-category-select').value;
 
-            if(!encodedSub || !catId) { alert("Please fetch a subject paper and select a target category node."); return; }
+    if(!encodedSub || !catId) { alert("Please fetch a subject paper and select a target category node."); return; }
 
-            const targetSubjectName = decodeURIComponent(encodedSub);
+    const targetSubjectName = decodeURIComponent(encodedSub);
 
-            try {
-                // Pehle hum pehle se baney hue exam row ka configurations fetch karenge (Time aur Questions)
-                const { data: sourceExam, error: fetchErr } = await supabaseClient
-                    .from('exams')
-                    .select('duration_minutes, questions_json')
-                    .eq('subject', targetSubjectName)
-                    .limit(1)
-                    .maybeSingle();
+    try {
+        // 🔄 DUPLICATE VIOLATION FIX: Insert karne ki jagah hum existing row ko UPDATE karenge
+        const { error } = await supabaseClient
+            .from('exams')
+            .update({ category_id: parseInt(catId) }) // Target category map assign kar di
+            .eq('subject', targetSubjectName);
 
-                if(fetchErr || !sourceExam) throw new Error("Could not replicate source exam structure parameters.");
+        if(error) throw error;
 
-                // Naya relational mapping row copy push kar rhe hain jisme category link bound ho jayega
-                const { error: insertErr } = await supabaseClient
-                    .from('exams')
-                    .insert({
-                        subject: targetSubjectName,
-                        duration_minutes: sourceExam.duration_minutes || 60,
-                        questions_json: sourceExam.questions_json || [],
-                        category_id: parseInt(catId)
-                    });
+        alert(`Success: [ ${targetSubjectName} ] is now mapped to your selected category node!`);
+        syncMasterDashboardControls(); // Reload whole dashboard screens instantly
 
-                if(insertErr) throw insertErr;
-
-                alert(`Success: [ ${targetSubjectName} ] linked successfully into category node row allocation!`);
-                syncMasterDashboardControls(); // Refresh whole grid layers
-
-            } catch(e) { alert("Mapping script failure: " + e.message); }
-        }
-
+    } catch(e) { 
+        alert("Mapping script failure: " + e.message); 
+    }
+}
         // TOOL 2 ACTION: INITIAL DEPLOY EXAM NODE
         async function createNewExamBase() {
             const sub = document.getElementById('exam-subject-input').value.trim();
