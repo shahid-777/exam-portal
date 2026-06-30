@@ -12,52 +12,57 @@
 
     <header class="w-full bg-slate-950/60 border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50">
         <div class="flex items-center space-x-3">
-            <img src="logo.png" alt="Logo" class="h-8 bg-white/95 p-1 rounded-xl">
-            <span class="text-sm font-black tracking-widest text-red-400 uppercase">ROOT TERMINAL</span>
+            <img src="logo.png" alt="Logo" class="h-8 bg-white/95 p-1 rounded-xl" onerror="this.style.display='none'">
+            <span class="text-sm font-black tracking-widest text-red-400 uppercase">ROOT CENTRAL MONITOR</span>
         </div>
         <button onclick="logout()" class="bg-white/5 hover:bg-red-500/10 border border-white/10 text-xs font-bold py-2 px-4 rounded-xl cursor-pointer">Exit Terminal</button>
     </header>
 
-    <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8 space-y-8">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-8">
         <div>
-            <h1 class="text-2xl font-black text-white uppercase tracking-wide">Category Mapping Management</h1>
-            <p class="text-xs text-slate-400 font-mono mt-1">Exams ko manual categories ke sath track aur route karein.</p>
+            <h1 class="text-2xl font-black text-white uppercase tracking-wide">Master Control Console</h1>
+            <p class="text-xs text-slate-400 font-mono mt-1">Manage time limits, create categories manually, and inject new exams seamlessly.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
             <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden h-fit shadow-xl">
                 <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-500 to-orange-500"></div>
-                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">1. Create New Category</h3>
+                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">1. Create Category Manually</h3>
                 <div class="space-y-3 pt-2">
                     <div>
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Category Name</label>
-                        <input type="text" id="new-cat-name" placeholder="e.g. Patwari, Informatics Assistant" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Category Domain Name</label>
+                        <input type="text" id="new-cat-name" placeholder="e.g. Rajasthan Patwari, REET, SSC" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
                     </div>
-                    <button onclick="createNewCategory()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 text-white font-black py-2.5 px-4 rounded-xl text-[11px] tracking-wider uppercase cursor-pointer">Deploy Node</button>
+                    <button onclick="createNewCategory()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 text-white font-black py-2.5 px-4 rounded-xl text-[11px] tracking-wider uppercase cursor-pointer">Deploy Category Node</button>
                 </div>
             </div>
 
             <div class="lg:col-span-2 bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl">
                 <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-blue-500 to-indigo-500"></div>
-                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">2. Link Exam Manually to a Category</h3>
+                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">2. Create Exam & Inject Questions Matrix</h3>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div>
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Subject / Exam Name</label>
-                        <input type="text" id="exam-subject-input" placeholder="e.g. Operating System Advance" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Exam / Subject Title Name</label>
+                        <input type="text" id="exam-subject-input" placeholder="e.g. Computer Architecture, Web Tech" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Duration (Minutes)</label>
-                        <input type="number" id="exam-duration-input" value="60" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">⏱️ Allocation Time Limit (Minutes)</label>
+                        <input type="number" id="exam-duration-input" value="60" min="1" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">🎯 Select Targeted Category Node</label>
-                        <select id="exam-category-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none font-bold text-slate-300">
-                            <option value="">Loading active fields...</option>
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">🎯 Select Associated Category Node</label>
+                        <select id="exam-category-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none font-bold text-slate-400">
+                            <option value="">Syncing database fields...</option>
                         </select>
                     </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">📋 Questions Array Dataset (JSON Format)</label>
+                        <textarea id="exam-questions-json" rows="4" placeholder='[{"question":"What is 2+2?","options":["3","4","5"],"correct":1}]' class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none"></textarea>
+                    </div>
                     <button onclick="insertExamWithCategory()" class="sm:col-span-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition cursor-pointer">
-                        Link & Push to Database Repository
+                        Link & Create Exam Entry
                     </button>
                 </div>
             </div>
@@ -65,22 +70,31 @@
 
         <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 shadow-xl relative">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
-            <div class="flex justify-between items-center border-b border-white/5 pb-2">
-                <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">Database Log Repository: Current Mapping</h3>
-                <button onclick="loadAdminDashboardData()" class="text-[10px] font-mono bg-white/5 px-2.5 py-1 rounded border border-white/10 hover:bg-white/10">Refresh Grid</button>
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-3 gap-3">
+                <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">
+                    Database Log Repository
+                </h3>
+                <div class="flex items-center space-x-2">
+                    <label class="text-[10px] font-mono text-slate-500 uppercase shrink-0">Fetch view for:</label>
+                    <select id="admin-view-category-filter" onchange="fetchExamsOnAdminSide()" class="border border-white/10 p-2 text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none font-bold">
+                        <option value="ALL">-- Show All Categories --</option>
+                    </select>
+                </div>
             </div>
+
             <div class="overflow-x-auto w-full">
                 <table class="w-full text-left text-xs">
                     <thead>
                         <tr class="border-b border-white/5 text-slate-400 font-mono uppercase tracking-wider text-[10px]">
-                            <th class="py-3 px-4">Exam ID</th>
                             <th class="py-3 px-4">Subject Name</th>
-                            <th class="py-3 px-4">Associated Category Node</th>
-                            <th class="py-3 px-4">Duration Bound</th>
+                            <th class="py-3 px-4">Category Association</th>
+                            <th class="py-3 px-4">Time Constraint Boundary</th>
+                            <th class="py-3 px-4 text-center">Runtime Parameters</th>
                         </tr>
                     </thead>
                     <tbody id="admin-exams-tbody" class="divide-y divide-white/5 font-medium text-slate-300">
-                        <tr><td colspan="4" class="text-center py-4 font-mono text-slate-500">Syncing dynamic data arrays...</td></tr>
+                        <tr><td colspan="4" class="text-center py-4 font-mono text-slate-500 animate-pulse">Syncing logs...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -94,83 +108,152 @@
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        let globalCategoriesArray = [];
+
         window.onload = function() {
             const adminActive = localStorage.getItem('adminEmail');
             if(!adminActive) { window.location.replace("admin-login.html"); return; }
-            loadAdminDashboardData();
+            syncCategoriesDropDowns();
         };
 
-        async function loadAdminDashboardData() {
+        async function syncCategoriesDropDowns() {
             try {
-                // 1. Dropdown ke liye Categories Fetch karein
-                const { data: categories } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
-                const selectElement = document.getElementById('exam-category-select');
+                // 🎯 FIXED: id parsing column rule for category list order
+                const { data, error } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
+                if(error) throw error;
+
+                globalCategoriesArray = data || [];
                 
-                if(categories && categories.length > 0) {
-                    selectElement.innerHTML = `<option value="">-- Choose Target Domain Category --</option>`;
-                    categories.forEach(c => {
-                        selectElement.innerHTML += `<option value="${c.id}">${c.category_name}</option>`;
-                    });
+                const formSelect = document.getElementById('exam-category-select');
+                formSelect.innerHTML = `<option value="">-- Choose Target Category Domain --</option>`;
+                
+                const filterSelect = document.getElementById('admin-view-category-filter');
+                filterSelect.innerHTML = `<option value="ALL">-- Show All Categories (Global View) --</option>`;
+
+                globalCategoriesArray.forEach(c => {
+                    const optionHtml = `<option value="${c.id}">${c.category_name.toUpperCase()}</option>`;
+                    formSelect.innerHTML += optionHtml;
+                    filterSelect.innerHTML += optionHtml;
+                });
+
+                fetchExamsOnAdminSide();
+
+            } catch(e) { 
+                console.error("Dropdown crash:", e); 
+                document.getElementById('admin-exams-tbody').innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Setup Initialization Error: ${e.message}</td></tr>`;
+            }
+        }
+
+        async function fetchExamsOnAdminSide() {
+            const tbody = document.getElementById('admin-exams-tbody');
+            const targetFilterValue = document.getElementById('admin-view-category-filter').value;
+            
+            try {
+                let query = supabaseClient.from('exams').select('*');
+                
+                if(targetFilterValue !== "ALL") {
+                    query = query.eq('category_id', parseInt(targetFilterValue));
                 }
 
-                // 2. Main exams list show karein (With category validation check join mapping)
-                const { data: exams, error } = await supabaseClient.from('exams').select('*').order('id', {ascending: true});
-                const tbody = document.getElementById('admin-exams-tbody');
-                
-                if (error) throw error;
+                // 🎯 FIXED: Removed id column ordering constraint to prevent 400 bad request error
+                const { data: exams, error } = await query.order('subject', { ascending: true });
+                if(error) throw error;
 
                 if(!exams || exams.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-500">Repository is empty.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 font-mono text-slate-500 uppercase">No mapped entries tracked for this query category boundary.</td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = "";
                 exams.forEach(ex => {
-                    // Match category row name safely
-                    const matchedCat = categories ? categories.find(c => c.id == ex.category_id) : null;
-                    const catName = matchedCat ? matchedCat.category_name : "🔴 NOT ASSIGNED / GENERAL";
+                    const matched = globalCategoriesArray.find(c => c.id == ex.category_id);
+                    const nameTag = matched ? matched.category_name : "🔴 NOT ASSIGNED";
 
                     tbody.innerHTML += `
                         <tr class="hover:bg-white/5 transition">
-                            <td class="py-3 px-4 font-mono text-slate-500">#00${ex.id}</td>
-                            <td class="py-3 px-4 font-bold text-slate-200 uppercase">${ex.subject}</td>
-                            <td class="py-3 px-4 font-bold text-purple-400 uppercase text-[11px]">${catName}</td>
-                            <td class="py-3 px-4 font-mono text-blue-400">${ex.duration_minutes || '60'} Mins</td>
+                            <td class="py-3.5 px-4 font-bold text-slate-200 uppercase tracking-wide">${ex.subject}</td>
+                            <td class="py-3.5 px-4 font-bold text-purple-400 text-[11px] uppercase">${nameTag}</td>
+                            <td class="py-3.5 px-4">
+                                <div class="flex items-center space-x-2">
+                                    <input type="number" id="inline-time-${encodeURIComponent(ex.subject)}" value="${ex.duration_minutes || 60}" min="1" class="w-16 border border-white/10 bg-slate-900 text-blue-400 font-mono text-xs font-bold text-center px-1 py-1 rounded-lg outline-none">
+                                    <button onclick="updateExamTimingDirect('${encodeURIComponent(ex.subject)}')" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition font-mono text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-wider">Save Time</button>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4 text-center font-mono text-emerald-400 uppercase text-[10px] tracking-wider">● Active Matrix Bound</td>
                         </tr>`;
                 });
+
             } catch(err) {
-                document.getElementById('admin-exams-tbody').innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Sync Error: ${err.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Sync Error: ${err.message}</td></tr>`;
             }
+        }
+
+        async function updateExamTimingDirect(encodedSubject) {
+            const decodedSub = decodeURIComponent(encodedSubject);
+            const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
+
+            if(!inputVal || parseInt(inputVal) < 1) { alert("Invalid timing bounds specified."); return; }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('exams')
+                    .update({ duration_minutes: parseInt(inputVal) })
+                    .eq('subject', decodedSub);
+
+                if(error) throw error;
+                alert(`Configuration Saved: ${decodedSub} time updated to ${inputVal} Minutes!`);
+                fetchExamsOnAdminSide();
+
+            } catch(e) { alert("Update operational failure: " + e.message); }
         }
 
         async function insertExamWithCategory() {
             const sub = document.getElementById('exam-subject-input').value.trim();
             const dur = document.getElementById('exam-duration-input').value.trim();
             const catId = document.getElementById('exam-category-select').value;
+            const jsonText = document.getElementById('exam-questions-json').value.trim();
 
-            if(!sub || !catId) { alert("Please input Subject Name and select a Category."); return; }
+            if(!sub || !catId) { alert("Subject name or Category parameters missing."); return; }
+
+            let parsedQuestions = [];
+            if(jsonText !== "") {
+                try {
+                    parsedQuestions = JSON.parse(jsonText);
+                } catch(err) {
+                    alert("JSON parsing error! Please ensure your questions array formatting is perfectly standard.");
+                    return;
+                }
+            }
 
             try {
                 const { error } = await supabaseClient
                     .from('exams')
-                    .insert({ subject: sub, duration_minutes: parseInt(dur) || 60, category_id: parseInt(catId) });
+                    .insert({ 
+                        subject: sub, 
+                        duration_minutes: parseInt(dur) || 60, 
+                        category_id: parseInt(catId),
+                        questions_json: parsedQuestions
+                    });
 
                 if(error) throw error;
-                alert("Success: New Exam compiled and linked with designated category!");
+                alert(`Success: [ ${sub} ] compiled, mapped, and fully deployed into production repository!`);
+                
                 document.getElementById('exam-subject-input').value = "";
-                loadAdminDashboardData();
-            } catch(e) { alert("Failed operation: " + e.message); }
+                document.getElementById('exam-questions-json').value = "";
+                fetchExamsOnAdminSide();
+
+            } catch(e) { alert("Operation error log: " + e.message); }
         }
 
         async function createNewCategory() {
             const name = document.getElementById('new-cat-name').value.trim();
-            if(!name) return;
+            if(!name) { alert("Category tracking name string empty."); return; }
             try {
                 const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name });
                 if(error) throw error;
-                alert("Category Created.");
+                alert(`Category node [ ${name} ] successfully established!`);
                 document.getElementById('new-cat-name').value = "";
-                loadAdminDashboardData();
+                syncCategoriesDropDowns();
             } catch(e) { alert(e.message); }
         }
 
