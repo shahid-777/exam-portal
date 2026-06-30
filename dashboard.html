@@ -96,7 +96,7 @@
         console.log("Querying database for category:", category);
 
         // Supabase se active category ke exams select karna
-        const { data: exams, error } = await supabse
+        const { data: exams, error } = await supabaseClient
             .from('exams')
             .select('*')
             .ilike('category_name', category); 
