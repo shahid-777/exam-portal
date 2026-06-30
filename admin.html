@@ -1,211 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-        // 🛡️ SILENT ADMINISTRATIVE ROUTE GUARD & TIMEOUT INTERCEPTOR (ALERT-FREE)
-        (function() {
-            const adminEmail = localStorage.getItem('adminEmail');
-            const adminLoginTime = localStorage.getItem('adminSessionTime');
-            const OFFICIAL_ADMIN_EMAIL = "examportalcse@gmail.com"; 
-            const oneHourInMs = 1 * 60 * 60 * 1000; 
-            
-            if (!adminEmail || !adminLoginTime || adminEmail.toLowerCase() !== OFFICIAL_ADMIN_EMAIL.toLowerCase()) {
-                localStorage.clear();
-                window.location.replace("admin-login.html"); 
-                return;
-            }
-
-            const currentTimestamp = Date.now();
-            if (currentTimestamp - parseInt(adminLoginTime, 10) > oneHourInMs) {
-                localStorage.clear();
-                window.location.replace("admin-login.html");
-                return;
-            }
-        })();
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="logo.png">
-    <title>Management Console - Admin Operations</title>
+    <title>Admin Control Terminal — Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-100 font-sans min-h-screen">
+<body class="bg-slate-900 font-sans min-h-screen text-slate-200 flex flex-col justify-between">
 
-    <header class="bg-gray-900 text-white px-4 sm:px-8 py-4 flex flex-col sm:flex-row gap-3 justify-between items-center shadow-lg">
-        <h1 class="text-lg sm:text-xl font-black tracking-wider text-blue-400 uppercase">ADMIN CONTROL CENTER</h1>
-        <button onclick="logoutAdminSession()" class="w-full sm:w-auto text-center font-bold text-xs bg-gray-800 px-5 py-2.5 rounded-xl hover:bg-gray-700 border border-gray-700 transition">Exit Session</button>
+    <header class="w-full bg-slate-950/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <div class="bg-white/95 p-1 rounded-xl">
+                <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-sm font-black tracking-widest text-red-400 uppercase leading-none">ROOT TERMINAL</span>
+                <span class="text-[9px] font-mono font-bold text-slate-500 tracking-wider mt-0.5 uppercase">Admin Master Controller</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span id="admin-user" class="text-xs font-mono font-black text-red-400/80 bg-red-500/10 px-3 py-1.5 rounded-xl border border-red-500/20">ROOT ACTIVE</span>
+            <button onclick="logout()" class="bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 text-xs font-bold py-2 px-4 rounded-xl transition uppercase tracking-wider">Exit Terminal</button>
+        </div>
     </header>
 
-    <main class="p-4 sm:p-6 max-w-4xl mx-auto">
-        <div class="bg-white p-5 sm:p-8 rounded-2xl shadow-md border border-gray-200 space-y-5">
-            <h2 class="text-lg sm:text-xl font-black text-gray-800 uppercase tracking-wide">Add or Edit Subject Question Banks</h2>
-            
-            <div class="flex flex-col sm:flex-row gap-3 items-end">
-                <div class="w-full flex-1">
-                    <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1.5">Select Existing Subject to Edit</label>
-                    <select id="admin-select-subject" class="w-full border-2 p-3 text-sm rounded-xl bg-gray-50 font-semibold text-gray-700">
-                        <option value="">-- Select a subject --</option>
-                    </select>
-                </div>
-                <button id="fetch-btn" onclick="fetchSubjectForEditing()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-3.5 px-6 rounded-xl transition shadow">Fetch MCQs</button>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="sm:col-span-2">
-                    <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1.5">Subject Target Context</label>
-                    <input type="text" id="admin-subject" placeholder="e.g., Quantitative Aptitude & Reasoning" class="w-full border-2 p-3 text-sm rounded-xl font-semibold text-gray-800">
-                </div>
-                <div>
-                    <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1.5">Exam Duration (Minutes)</label>
-                    <input type="number" id="admin-duration" placeholder="e.g., 60" min="1" default="60" class="w-full border-2 p-3 text-sm rounded-xl font-semibold text-gray-800">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs sm:text-sm font-bold text-gray-700 mb-1.5">Paste / Edit Raw Text MCQs</label>
-                <textarea id="admin-paste-area" rows="14" placeholder="1. Sawaal yahan likhein...&#10;A. Option 1&#10;B. Option 2&#10;Answer: A" class="w-full border-2 p-3 rounded-xl font-mono text-xs bg-gray-50 text-gray-800 outline-none"></textarea>
-            </div>
-
-            <button id="upload-btn" onclick="handleMCQUploadProcess()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-6 rounded-xl transition shadow-lg uppercase text-xs tracking-wide">Save / Update Subject in Database</button>
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8 space-y-8">
+        
+        <div class="border-b border-white/5 pb-4">
+            <h1 class="text-2xl font-black text-white uppercase tracking-wide">Dynamic Content Management System</h1>
+            <p class="text-xs text-slate-400 font-mono mt-1">Deploy, structure, and categorize examination schemas manually.</p>
         </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl">
+                <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-500 to-orange-500"></div>
+                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">1. Create New Category Node</h3>
+                
+                <div class="space-y-3 pt-2">
+                    <div>
+                        <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Category Domain Name</label>
+                        <input type="text" id="new-cat-name" placeholder="e.g. RAS Pre, Computer Instructor" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-900 text-white outline-none focus:border-red-500/40 transition">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Short Description</label>
+                        <textarea id="new-cat-desc" rows="3" placeholder="Core recruitment syllabus matrices guidelines..." class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-900 text-white outline-none focus:border-red-500/40 transition resize-none"></textarea>
+                    </div>
+                    <button onclick="createNewCategory()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-2.5 px-4 rounded-xl shadow-lg uppercase text-[11px] tracking-wider transition">
+                        Deploy Category Node
+                    </button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 space-y-6">
+                
+                <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl">
+                    <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+                    <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">2. Map Exam Content / Syllabus Blueprint</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div class="sm:col-span-2">
+                            <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Target Category Dropdown</label>
+                            <select id="syllabus-category-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-bold bg-slate-900 text-slate-200 outline-none focus:border-blue-500/40 transition">
+                                <option value="">Fetching system domains...</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Syllabus HTML / Plain-text Content</label>
+                            <textarea id="syllabus-html-input" rows="6" placeholder="<p><b>Unit 1:</b> DBMS Architecture</p>..." class="w-full border border-white/10 p-2.5 text-xs font-mono rounded-xl bg-slate-900 text-white outline-none focus:border-blue-500/40 transition resize-none"></textarea>
+                        </div>
+                        <button onclick="updateSyllabusContent()" class="sm:col-span-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl shadow-lg uppercase text-[11px] tracking-wider transition">
+                            Save Blueprint Integration
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl">
+                    <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
+                    <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">3. Inject Test Series Link Node</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div>
+                            <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Select Exam Category</label>
+                            <select id="test-category-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-bold bg-slate-900 text-slate-200 outline-none focus:border-purple-500/40 transition">
+                                <option value="">Fetching system domains...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Test Title Heading</label>
+                            <input type="text" id="test-title-input" placeholder="e.g. Mock Test Evaluation 01" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-900 text-white outline-none focus:border-purple-500/40 transition">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Secure Destination URL Link (Google Forms / Mock System URL)</label>
+                            <input type="url" id="test-url-input" placeholder="https://forms.gle/..." class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-900 text-white outline-none focus:border-purple-500/40 transition">
+                        </div>
+                        <button onclick="injectTestSeriesNode()" class="sm:col-span-2 w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-2.5 px-4 rounded-xl shadow-lg uppercase text-[11px] tracking-wider transition">
+                            Deploy Test Node Series
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </main>
+
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">
+        &copy; JECRC University — Root Administrator Security Node
+    </footer>
 
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        window.onload = async function() {
-            try {
-                const { data } = await supabaseClient.from('exams').select('subject');
-                const select = document.getElementById('admin-select-subject');
-                if(data) data.forEach(row => { let opt = document.createElement('option'); opt.value = row.subject; opt.innerHTML = row.subject; select.appendChild(opt); });
-            } catch (err) { console.log("Init completed."); }
-        }
-
-        function sanitizeMathAndChemicalSymbols(text) {
-            return text
-                .replace(/\$([^$]+)\$/g, '<span class="font-mono font-bold text-blue-600 bg-slate-50 px-1.5 py-0.5 rounded-md">$1</span>')
-                .replace(/_(?=[0-9a-zA-Z])/g, '')
-                .replace(/CO2/g, 'CO<sub>2</sub>')
-                .replace(/SO2/g, 'SO<sub>2</sub>')
-                .replace(/\\uparrow/g, '↑')
-                .replace(/\\rightarrow/g, '→')
-                .replace(/\\downarrow/g, '↓')
-                .replace(/\\leftarrow/g, '←');
-        }
-
-        function revertSanitizationForEditing(text) {
-            return text
-                .replace(/<span class="font-mono font-bold text-blue-600 bg-slate-50 px-1.5 py-0.5 rounded-md">([^<]+)<\/span>/g, '$$$1$$')
-                .replace(/↑/g, '\\uparrow')
-                .replace(/→/g, '\\rightarrow')
-                .replace(/↓/g, '\\downarrow')
-                .replace(/←/g, '\\leftarrow');
-        }
-
-        async function fetchSubjectForEditing() {
-            const selectedSubject = document.getElementById('admin-select-subject').value; if(!selectedSubject) return;
-            document.getElementById('admin-subject').value = selectedSubject;
-            const textArea = document.getElementById('admin-paste-area'); const fetchBtn = document.getElementById('fetch-btn');
-            fetchBtn.innerText = "Fetching..."; fetchBtn.disabled = true;
-            try {
-                const { data } = await supabaseClient.from('exams').select('questions_json, duration_minutes').eq('subject', selectedSubject).single();
-                if(data) {
-                    document.getElementById('admin-duration').value = data.duration_minutes || 60;
-                    if (Array.isArray(data.questions_json)) {
-                        let text = "";
-                        data.questions_json.forEach((q, idx) => {
-                            text += `${idx + 1}. ${revertSanitizationForEditing(q.question)}\n`;
-                            if(Array.isArray(q.options)) q.options.forEach((o, oId) => { text += `${['A','B','C','D'][oId] || 'A'}. ${revertSanitizationForEditing(o)}\n`; });
-                            text += `Answer: ${['A','B','C','D'][parseInt(q.correct, 10)] || 'A'}\n\n`;
-                        });
-                        textArea.value = text.trim();
-                    }
-                }
-            } catch (err) { console.log(err); } finally { fetchBtn.innerText = "Fetch MCQs"; fetchBtn.disabled = false; }
-        }
-
-        function parseRawMCQs(rawText) {
-            const lines = rawText.split('\n');
-            const questionsArray = [];
-            let currentQuestion = null;
-            const lbls = ['A', 'B', 'C', 'D'];
-
-            lines.forEach(lineRaw => {
-                const lineTrimmed = lineRaw.trim();
-                if (lineTrimmed.length === 0) return;
-
-                const questionMatch = lineTrimmed.match(/^(\d+)[\s.)-]+\s*(.+)/);
-                const optionMatch = lineTrimmed.match(/^([A-D])[\s.)]+\s*(.+)/);
-                const answerMatch = lineTrimmed.toLowerCase().startsWith('answer:') || lineTrimmed.toLowerCase().startsWith('ans:');
-
-                if (questionMatch && !optionMatch && !answerMatch) {
-                    if (currentQuestion && currentQuestion.options.length >= 2) {
-                        currentQuestion.question = sanitizeMathAndChemicalSymbols(currentQuestion.question.trim());
-                        questionsArray.push(currentQuestion);
-                    }
-                    currentQuestion = { question: questionMatch[2].trim(), options: [], correct: 0 };
-                } 
-                else if (optionMatch) {
-                    if (currentQuestion) currentQuestion.options.push(sanitizeMathAndChemicalSymbols(optionMatch[2].trim()));
-                } 
-                else if (answerMatch) {
-                    if (currentQuestion) {
-                        const parts = lineTrimmed.split(':');
-                        if (parts[1]) {
-                            const ansLetter = parts[1].replace(/[^A-D]/gi, '').trim().toUpperCase();
-                            currentQuestion.correct = lbls.indexOf(ansLetter) !== -1 ? lbls.indexOf(ansLetter) : 0;
-                        }
-                    }
-                }
-            });
-
-            if (currentQuestion && currentQuestion.options.length >= 2) {
-                currentQuestion.question = sanitizeMathAndChemicalSymbols(currentQuestion.question.trim());
-                questionsArray.push(currentQuestion);
+        window.onload = function() {
+            // Check Admin Authentication Gate
+            const adminActive = localStorage.getItem('adminEmail');
+            if(!adminActive) {
+                window.location.replace("admin-login.html");
+                return;
             }
-            return questionsArray;
+            populateDropdowns();
+        };
+
+        // 🔄 FETCH CATEGORIES DYNAMICALLY AND INJECT INTO DROPDOWNS
+        async function populateDropdowns() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('exam_categories')
+                    .select('id, category_name')
+                    .order('category_name', { ascending: true });
+
+                if (error) throw error;
+
+                const syllabusSelect = document.getElementById('syllabus-category-select');
+                const testSelect = document.getElementById('test-category-select');
+
+                let optionsHtml = `<option value="">-- SELECT TARGET EXAMINATION CATEGORY --</option>`;
+                data.forEach(cat => {
+                    optionsHtml += `<option value="${cat.id}">${cat.category_name.toUpperCase()}</option>`;
+                });
+
+                syllabusSelect.innerHTML = optionsHtml;
+                testSelect.innerHTML = optionsHtml;
+
+            } catch (err) {
+                alert("Dropdown sync failed.");
+            }
         }
 
-        async function handleMCQUploadProcess() {
-            const subjectInput = document.getElementById('admin-subject').value.trim();
-            const durationInput = parseInt(document.getElementById('admin-duration').value, 10) || 60;
-            const rawText = document.getElementById('admin-paste-area').value; 
-            const uploadBtn = document.getElementById('upload-btn');
+        // 🛠️ ACTION 1: CREATE NEW DYNAMIC CATEGORY
+        async function createNewCategory() {
+            const name = document.getElementById('new-cat-name').value.trim();
+            const desc = document.getElementById('new-cat-desc').value.trim();
 
-            if (!subjectInput || !rawText.trim()) { alert("Fields cannot be empty."); return; }
-
-            uploadBtn.innerText = "Processing Paper Framework...";
-            uploadBtn.disabled = true;
-
-            const parsedQuestions = parseRawMCQs(rawText);
+            if(!name) { alert("Category name schema missing."); return; }
 
             try {
                 const { error } = await supabaseClient
-                    .from('exams')
-                    .upsert({ 
-                        subject: subjectInput, 
-                        questions_json: parsedQuestions,
-                        duration_minutes: durationInput 
-                    }, { onConflict: 'subject' });
+                    .from('exam_categories')
+                    .insert({ category_name: name, description: desc });
 
-                if (!error) {
-                    alert(`Success! Saved ${parsedQuestions.length} MCQs with ${durationInput} Mins duration.`);
-                    setTimeout(() => { window.location.reload(); }, 600);
-                } else {
-                    alert("Database error: " + error.message);
-                }
+                if(error) throw error;
+
+                alert("Success: New category domain fully initialized!");
+                document.getElementById('new-cat-name').value = "";
+                document.getElementById('new-cat-desc').value = "";
+                populateDropdowns(); // Live sync reload
+
             } catch (err) {
-                alert("Network fault.");
-            } finally {
-                uploadBtn.innerText = "Save / Update Subject in Database";
-                uploadBtn.disabled = false;
+                alert("Failed to build category node: " + err.message);
             }
         }
 
-        function logoutAdminSession() { localStorage.clear(); window.location.replace("index.html"); }
+        // 🛠️ ACTION 2: PUT / UPDATE SYLLABUS MANUAL MAPPING
+        async function updateSyllabusContent() {
+            const categoryId = document.getElementById('syllabus-category-select').value;
+            const content = document.getElementById('syllabus-html-input').value.trim();
+
+            if(!categoryId || !content) { alert("Select a domain and input data schemas."); return; }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('exam_categories')
+                    .update({ syllabus_html_content: content })
+                    .eq('id', categoryId);
+
+                if(error) throw error;
+
+                alert("Success: Syllabus data layout successfully synchronized!");
+                document.getElementById('syllabus-html-input').value = "";
+
+            } catch (err) {
+                alert("Failed to map syllabus content: " + err.message);
+            }
+        }
+
+        // 🛠️ ACTION 3: INJECT TEST SERIES LINK
+        async function injectTestSeriesNode() {
+            const categoryId = document.getElementById('test-category-select').value;
+            const title = document.getElementById('test-title-input').value.trim();
+            const url = document.getElementById('test-url-input').value.trim();
+
+            if(!categoryId || !title || !url) { alert("Complete all variables to secure link routing."); return; }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('exam_tests')
+                    .insert({ category_id: categoryId, test_title: title, test_url: url });
+
+                if(error) throw error;
+
+                alert("Success: Test Series node attached to target framework successfully!");
+                document.getElementById('test-title-input').value = "";
+                document.getElementById('test-url-input').value = "";
+
+            } catch (err) {
+                alert("Failed to map test node layout: " + err.message);
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.replace("admin-login.html");
+        }
     </script>
 </body>
 </html>
