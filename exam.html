@@ -4,268 +4,248 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="logo.png">
-    <title>Live Examination Engine — Terminal</title>
+    <title>Admin Control Terminal — Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-slate-950 font-sans min-h-screen text-slate-200 flex flex-col justify-between select-none">
+<body class="bg-slate-900 font-sans min-h-screen text-slate-200 flex flex-col justify-between">
 
-    <header class="w-full bg-slate-900/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50">
+    <header class="w-full bg-slate-950/60 border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50">
         <div class="flex items-center space-x-3">
-            <div class="bg-white/95 p-1 rounded-xl shrink-0">
-                <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
-            </div>
-            <div class="flex flex-col">
-                <span id="live-subject-title" class="text-xs font-black tracking-widest text-blue-400 uppercase leading-none">LOADING ASSESSMENT...</span>
-                <span class="text-[8px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">SECURE RUNTIME MONITOR</span>
-            </div>
+            <img src="logo.png" alt="Logo" class="h-8 bg-white/95 p-1 rounded-xl" onerror="this.style.display='none'">
+            <span class="text-sm font-black tracking-widest text-red-400 uppercase">ROOT CENTRAL MONITOR</span>
         </div>
-        
-        <div class="bg-red-500/10 border border-red-500/20 px-4 py-1.5 rounded-xl flex items-center space-x-2">
-            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            <span id="time-counter-clock" class="text-xs font-mono font-black text-red-400 tracking-widest">00:00</span>
-        </div>
+        <button onclick="logout()" class="bg-white/5 hover:bg-red-500/10 border border-white/10 text-xs font-bold py-2 px-4 rounded-xl cursor-pointer">Exit Terminal</button>
     </header>
 
-    <section class="w-full bg-slate-900/30 border-b border-white/5 py-3 px-6 sticky top-[65px] z-40 backdrop-blur-sm">
-        <div class="max-w-7xl mx-auto flex flex-wrap gap-4 items-center justify-between text-xs font-mono">
-            <div class="flex items-center space-x-6">
-                <div>Total Questions: <span id="stat-total" class="text-blue-400 font-bold">0</span></div>
-                <div>Attempted: <span id="stat-attempted" class="text-green-400 font-bold">0</span></div>
-                <div>Marked for Review: <span id="stat-marked" class="text-yellow-400 font-bold">0</span></div>
-                <div>Unattempted: <span id="stat-left" class="text-slate-400 font-bold">0</span></div>
-            </div>
-        </div>
-    </section>
-
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-6">
-        
-        <div class="lg:col-span-3 space-y-6">
-            <div id="questions-pipeline-wrapper" class="space-y-6">
-                <div class="text-center text-slate-500 font-mono text-xs py-12 animate-pulse uppercase">
-                    Compiling Objective Array Matrices...
-                </div>
-            </div>
-
-            <div class="pt-4 border-t border-white/5 flex justify-end">
-                <button onclick="terminateAssessmentProcess()" class="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-3 px-8 rounded-xl shadow-xl uppercase text-xs tracking-widest transition transform active:scale-[0.99] cursor-pointer">
-                    Submit Test Evaluation
-                </button>
-            </div>
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-8">
+        <div>
+            <h1 class="text-2xl font-black text-white uppercase tracking-wide">Master Control Console</h1>
+            <p class="text-xs text-slate-400 font-mono mt-1">Manage time operational boundaries, structure categories manually, and map active exam objects.</p>
         </div>
 
-        <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-5 h-fit sticky top-[130px] space-y-4 shadow-xl">
-            <div class="border-b border-white/5 pb-2">
-                <h4 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">Question Palette</h4>
-                <p class="text-[9px] text-slate-500 font-mono mt-0.5">Quick Navigation Cluster</p>
-            </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <div id="palette-grid-buttons" class="grid grid-cols-5 gap-2">
+            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden h-fit shadow-xl">
+                <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-500 to-orange-500"></div>
+                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">1. Create Category Manually</h3>
+                <div class="space-y-3 pt-2">
+                    <div>
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Category Domain Identifier Name</label>
+                        <input type="text" id="new-cat-name" placeholder="e.g. Rajasthan Patwari, Informatics Assistant" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
+                    </div>
+                    <button onclick="createNewCategory()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 text-white font-black py-2.5 px-4 rounded-xl text-[11px] tracking-wider uppercase cursor-pointer">Deploy Category Node</button>
                 </div>
+            </div>
 
-            <div class="pt-2 border-t border-white/5 space-y-1.5 text-[10px] font-mono text-slate-400">
-                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-slate-800 border border-white/10 rounded"></span> <span>Unvisited / Unattempted</span></div>
-                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-green-600 rounded"></span> <span>Attempted</span></div>
-                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-yellow-500 rounded"></span> <span>Marked for Review</span></div>
+            <div class="lg:col-span-2 bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl">
+                <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">2. Link / Inject Exam Objects With Custom Time Constraints</h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div>
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Subject / Exam Name</label>
+                        <input type="text" id="exam-subject-input" placeholder="e.g. Computer Organization Architecture" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">⏱️ Allocation Time Limits (Minutes)</label>
+                        <input type="number" id="exam-duration-input" value="60" min="1" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">🎯 Select Associated Target Category Node</label>
+                        <select id="exam-category-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none font-bold text-slate-400">
+                            <option value="">Syncing database fields...</option>
+                        </select>
+                    </div>
+                    <button onclick="insertExamWithCategory()" class="sm:col-span-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition cursor-pointer">
+                        Link & Push to Repository Matrix
+                    </button>
+                </div>
             </div>
         </div>
 
+        <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 shadow-xl relative">
+            <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-3 gap-3">
+                <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">
+                    Database Log Repository
+                </h3>
+                <div class="flex items-center space-x-2">
+                    <label class="text-[10px] font-mono text-slate-500 uppercase shrink-0">Fetch view for:</label>
+                    <select id="admin-view-category-filter" onchange="fetchExamsOnAdminSide()" class="border border-white/10 p-2 text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none font-bold">
+                        <option value="ALL">-- Show All Categories --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="border-b border-white/5 text-slate-400 font-mono uppercase tracking-wider text-[10px]">
+                            <th class="py-3 px-4">Subject Name</th>
+                            <th class="py-3 px-4">Category Association</th>
+                            <th class="py-3 px-4">Time Constraint Boundary</th>
+                            <th class="py-3 px-4 text-center">Runtime Execution Parameters</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-exams-tbody" class="divide-y divide-white/5 font-medium text-slate-300">
+                        <tr><td colspan="4" class="text-center py-4 font-mono text-slate-500 animate-pulse">Syncing logs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
-    <footer class="w-full text-center py-3 border-t border-white/5 bg-slate-900/40 text-[9px] font-mono text-slate-600 uppercase tracking-widest">
-        &copy; JECRC University — Encryption Secured Node Console
-    </footer>
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
 
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let globalLoadedQuestions = [];
-        let networkTimerInterval = null;
-        
-        // Tracking data mapping structures
-        let userResponses = {}; 
-        let markedForReviewSet = new Set();
+        let globalCategoriesArray = [];
 
         window.onload = function() {
-            const sessionEmail = localStorage.getItem('userEmail');
-            if(!sessionEmail) { window.location.replace("index.html"); return; }
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const targetSubject = urlParams.get('subject');
-
-            if(!targetSubject) { window.location.replace("dashboard.html"); return; }
-            streamTargetExamJson(decodeURIComponent(targetSubject));
+            const adminActive = localStorage.getItem('adminEmail');
+            if(!adminActive) { window.location.replace("admin-login.html"); return; }
+            syncCategoriesDropDowns();
         };
 
-        async function streamTargetExamJson(subjectName) {
+        // 🔄 SYNC ALL DROPDOWNS MATRICES
+        async function syncCategoriesDropDowns() {
             try {
-                const { data, error } = await supabaseClient
-                    .from('exams')
-                    .select('subject, questions_json, duration_minutes')
-                    .eq('subject', subjectName)
-                    .maybeSingle();
+                const { data, error } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
+                if(error) throw error;
 
-                if (error || !data) throw new Error("Data retrieval interruption.");
-
-                document.getElementById('live-subject-title').innerText = data.subject.toUpperCase();
+                globalCategoriesArray = data || [];
                 
-                globalLoadedQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
+                // Form Dropdown setup
+                const formSelect = document.getElementById('exam-category-select');
+                formSelect.innerHTML = `<option value="">-- Choose Target Category Domain --</option>`;
                 
-                renderAssessmentLayout(globalLoadedQuestions);
-                renderNavigationPalette(globalLoadedQuestions.length);
-                updateLiveStatusCounters();
-                initializeRuntimeClock(parseInt(data.duration_minutes) || 60);
+                // Filter Dropdown setup
+                const filterSelect = document.getElementById('admin-view-category-filter');
+                filterSelect.innerHTML = `<option value="ALL">-- Show All Categories (Global View) --</option>`;
 
-            } catch (err) {
-                document.getElementById('questions-pipeline-wrapper').innerHTML = `
-                    <div class="text-center font-mono text-xs text-red-400 border border-red-500/10 p-6 rounded-2xl bg-red-500/5">
-                        Exception caught: Failed to render test objects from 'questions_json'.
-                    </div>`;
-            }
-        }
-
-        function renderAssessmentLayout(questions) {
-            const container = document.getElementById('questions-pipeline-wrapper');
-            container.innerHTML = "";
-
-            if(!questions || questions.length === 0) {
-                container.innerHTML = `<div class="text-center font-mono text-xs text-slate-600 py-6">Question array sequence empty.</div>`;
-                return;
-            }
-
-            questions.forEach((q, index) => {
-                let optionsHtml = "";
-                q.options.forEach((opt, optIdx) => {
-                    optionsHtml += `
-                        <label class="flex items-center space-x-3 bg-slate-900/40 hover:bg-slate-900/80 border border-white/5 hover:border-blue-500/20 p-3.5 rounded-xl cursor-pointer transition">
-                            <input type="radio" name="question-${index}" value="${optIdx}" onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
-                            <span class="text-xs text-slate-300 font-medium">${opt}</span>
-                        </label>
-                    `;
+                globalCategoriesArray.forEach(c => {
+                    const optionHtml = `<option value="${c.id}">${c.category_name.toUpperCase()}</option>`;
+                    formSelect.innerHTML += optionHtml;
+                    filterSelect.innerHTML += optionHtml;
                 });
 
-                container.innerHTML += `
-                    <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex items-start space-x-3">
-                                <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
-                                <h4 class="text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${q.title || q.question || 'Objective Question'}</h4>
-                            </div>
-                            <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-yellow-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-yellow-400 transition shrink-0">
-                                Mark Review
-                            </button>
-                        </div>
-                        <div class="grid grid-cols-1 gap-2.5 pt-1">
-                            ${optionsHtml}
-                        </div>
-                    </div>
-                `;
-            });
+                fetchExamsOnAdminSide();
+
+            } catch(e) { console.error("Dropdown loading execution exception:", e); }
         }
 
-        // RENDER RIGHT NAVIGATION PALETTE
-        function renderNavigationPalette(totalCount) {
-            const grid = document.getElementById('palette-grid-buttons');
-            grid.innerHTML = "";
-            for (let i = 0; i < totalCount; i++) {
-                grid.innerHTML += `
-                    <button onclick="scrollToQuestion(${i})" id="palette-btn-${i}" class="bg-slate-800 border border-white/5 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg hover:bg-slate-700 transition cursor-pointer text-center">
-                        ${i + 1}
-                    </button>
-                `;
-            }
-        }
-
-        // ONCHANGE RESPONSE INTERCEPTOR
-        function registerRadioResponse(qIdx, optIdx) {
-            userResponses[qIdx] = optIdx;
-            updateLiveStatusCounters();
+        // 🔄 FETCH EXAMS BASED ON ADMIN TARGET FILTER VALUE
+        async function fetchExamsOnAdminSide() {
+            const tbody = document.getElementById('admin-exams-tbody');
+            const targetFilterValue = document.getElementById('admin-view-category-filter').value;
             
-            // Palette button update logic
-            const pBtn = document.getElementById(`palette-btn-${qIdx}`);
-            if(!markedForReviewSet.has(qIdx)) {
-                pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+            try {
+                let query = supabaseClient.from('exams').select('*');
+                
+                // Filter mapping rule logic checking
+                if(targetFilterValue !== "ALL") {
+                    query = query.eq('category_id', parseInt(targetFilterValue));
+                }
+
+                const { data: exams, error } = await query.order('subject', { ascending: true });
+                if(error) throw error;
+
+                if(!exams || exams.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 font-mono text-slate-500 uppercase">No mapped entries tracked for this query category boundary.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = "";
+                exams.forEach(ex => {
+                    const matched = globalCategoriesArray.find(c => c.id == ex.category_id);
+                    const nameTag = matched ? matched.category_name : "🔴 NOT ASSIGNED";
+
+                    // Dynamic row execution elements configuration matrix mapping
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/5 transition">
+                            <td class="py-3.5 px-4 font-bold text-slate-200 uppercase tracking-wide">${ex.subject}</td>
+                            <td class="py-3.5 px-4 font-bold text-purple-400 text-[11px] uppercase">${nameTag}</td>
+                            
+                            <td class="py-3.5 px-4">
+                                <div class="flex items-center space-x-2">
+                                    <input type="number" id="inline-time-${encodeURIComponent(ex.subject)}" value="${ex.duration_minutes || 60}" min="1" class="w-16 border border-white/10 bg-slate-900 text-blue-400 font-mono text-xs font-bold text-center px-1 py-1 rounded-lg outline-none focus:border-blue-500/40">
+                                    <button onclick="updateExamTimingDirect('${encodeURIComponent(ex.subject)}')" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition font-mono text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-wider">Save Time</button>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4 text-center font-mono text-emerald-400 uppercase text-[10px] tracking-wider">● Questions Objects Bound</td>
+                        </tr>`;
+                });
+
+            } catch(err) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Pipeline query interrupt execution: ${err.message}</td></tr>`;
             }
         }
 
-        // TOGGLE MARK FOR REVIEW HANDLER
-        function toggleMarkForReview(qIdx) {
-            const mBtn = document.getElementById(`mark-btn-${qIdx}`);
-            const pBtn = document.getElementById(`palette-btn-${qIdx}`);
-            
-            if (markedForReviewSet.has(qIdx)) {
-                markedForReviewSet.delete(qIdx);
-                mBtn.classList.remove("border-yellow-500/50", "text-yellow-400", "bg-yellow-500/10");
-                
-                // Restore palette color based on completion response status
-                if (userResponses[qIdx] !== undefined) {
-                    pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
-                } else {
-                    pBtn.className = "bg-slate-800 border border-white/5 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
-                }
-            } else {
-                markedForReviewSet.add(qIdx);
-                mBtn.classList.add("border-yellow-500/50", "text-yellow-400", "bg-yellow-500/10");
-                pBtn.className = "bg-yellow-500 text-slate-950 font-mono text-xs font-black py-2 rounded-lg transition text-center cursor-pointer";
-            }
-            updateLiveStatusCounters();
+        // 🛠️ ACTION: UPDATE TIMING PARAMETERS FOR INDIVIDUAL EXAMS
+        async function updateExamTimingDirect(encodedSubject) {
+            const decodedSub = decodeURIComponent(encodedSubject);
+            const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
+
+            if(!inputVal || parseInt(inputVal) < 1) { alert("Invalid timing bounds specified."); return; }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('exams')
+                    .update({ duration_minutes: parseInt(inputVal) })
+                    .eq('subject', decodedSub);
+
+                if(error) throw error;
+                alert(`Configuration Saved: ${decodedSub} timing limit updated to ${inputVal} Minutes!`);
+                fetchExamsOnAdminSide();
+
+            } catch(e) { alert("Update operational failure: " + e.message); }
         }
 
-        // PALETTE NAVIGATION CLICK ANIMATION
-        function scrollToQuestion(qIdx) {
-            const el = document.getElementById(`question-card-${qIdx}`);
-            if(el) el.scrollIntoView({ behavior: 'smooth' });
+        // 🛠️ ACTION: INSERT EXAM NODE WITH CATEGORY MAPPING
+        async function insertExamWithCategory() {
+            const sub = document.getElementById('exam-subject-input').value.trim();
+            const dur = document.getElementById('exam-duration-input').value.trim();
+            const catId = document.getElementById('exam-category-select').value;
+
+            if(!sub || !catId) { alert("Subject configuration name or Category parameters missing."); return; }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('exams')
+                    .insert({ 
+                        subject: sub, 
+                        duration_minutes: parseInt(dur) || 60, 
+                        category_id: parseInt(catId),
+                        questions_json: [] // Clean placeholder payload array object mapping initialization
+                    });
+
+                if(error) throw error;
+                alert("Success: Exam entity compiled and linked with designated category domain!");
+                document.getElementById('exam-subject-input').value = "";
+                fetchExamsOnAdminSide();
+
+            } catch(e) { alert("Operation error log: " + e.message); }
         }
 
-        // METRICS COUNTER EVALUATOR
-        function updateLiveStatusCounters() {
-            const total = globalLoadedQuestions.length;
-            const attempted = Object.keys(userResponses).length;
-            const marked = markedForReviewSet.size;
-            const unattempted = total - attempted;
-
-            document.getElementById('stat-total').innerText = total;
-            document.getElementById('stat-attempted').innerText = attempted;
-            document.getElementById('stat-marked').innerText = marked;
-            document.getElementById('stat-left').innerText = unattempted;
+        // 🛠️ ACTION: MANUALLY DEPLOY NEW CATEGORIES
+        async function createNewCategory() {
+            const name = document.getElementById('new-cat-name').value.trim();
+            if(!name) { alert("Category tracking name string empty."); return; }
+            try {
+                const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name });
+                if(error) throw error;
+                alert(`Category node [ ${name} ] successfully established!`);
+                document.getElementById('new-cat-name').value = "";
+                syncCategoriesDropDowns(); // Synchronize layout views
+            } catch(e) { alert(e.message); }
         }
 
-        function initializeRuntimeClock(minutes) {
-            let totalSeconds = minutes * 60;
-            const clock = document.getElementById('time-counter-clock');
-
-            networkTimerInterval = setInterval(() => {
-                let min = Math.floor(totalSeconds / 60);
-                let sec = totalSeconds % 60;
-
-                clock.innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-                
-                if (totalSeconds <= 0) {
-                    clearInterval(networkTimerInterval);
-                    terminateAssessmentProcess();
-                }
-                totalSeconds--;
-            }, 1000);
-        }
-
-        function terminateAssessmentProcess() {
-            clearInterval(networkTimerInterval);
-            let absoluteScore = 0;
-
-            globalLoadedQuestions.forEach((q, index) => {
-                const selectedOpt = userResponses[index];
-                if (selectedOpt !== undefined) {
-                    if (parseInt(selectedOpt) === parseInt(q.correct)) {
-                        absoluteScore++;
-                    }
-                }
-            });
-
-            alert(`Evaluation compiled successfully!\nYour score: ${absoluteScore} Out of ${globalLoadedQuestions.length}`);
-            window.location.replace("dashboard.html");
-        }
+        function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
     </script>
 </body>
 </html>
