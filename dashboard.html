@@ -75,10 +75,10 @@
             
             document.getElementById('display-user-session').innerText = activeUser.toLowerCase();
 
-            // 1. डेटाबेस से सभी उपलब्ध कैटेगरीज पहले रेंडर करें
+            // 1. Fetch all folders from Database table 'exam_categories'
             await fetchAllDatabaseCategories();
 
-            // 2. यूआरएल पैरामीटर्स के आधार पर करंट स्टेट ट्रैक करें
+            // 2. Manage state via URL Params
             const urlParams = new URLSearchParams(window.location.search);
             const categoryParam = urlParams.get('category');
             const catIdParam = urlParams.get('catid');
@@ -90,7 +90,7 @@
             }
         };
 
-        // 🎯 डेटाबेस की सभी श्रेणियों को 'exam_categories' टेबल से लोड करना
+        // 🎯 FIX: Fetches data with mapped 'category_name' column
         async function fetchAllDatabaseCategories() {
             try {
                 const { data, error } = await supabaseClient.from('exam_categories').select('*');
@@ -102,16 +102,16 @@
                     return;
                 }
 
-                // डायनामिक प्रीमियम फोल्डर लिस्टिंग यूआई
+                // UI mapping using exact 'category_name' column
                 container.innerHTML = data.map(cat => `
-                    <div onclick="selectDashboardCategory('${cat.name}', ${cat.id})" class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/30 hover:bg-slate-900/70 transition transform hover:-translate-y-0.5 cursor-pointer group">
+                    <div onclick="selectDashboardCategory('${cat.category_name}', ${cat.id})" class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/30 hover:bg-slate-900/70 transition transform hover:-translate-y-0.5 cursor-pointer group">
                         <div class="flex items-center space-x-4 min-w-0">
                             <div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-xl shrink-0 text-blue-400">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
                                 </svg>
                             </div>
-                            <h4 class="text-xs sm:text-sm font-black text-slate-200 tracking-wider uppercase truncate">${cat.name}</h4>
+                            <h4 class="text-xs sm:text-sm font-black text-slate-200 tracking-wider uppercase truncate">${cat.category_name}</h4>
                         </div>
                         <span class="text-[10px] font-mono font-bold text-slate-500 group-hover:text-blue-400 transition uppercase tracking-wider shrink-0">Open Folder &rarr;</span>
                     </div>
@@ -123,7 +123,7 @@
             }
         }
 
-        // 🎯 कैटेगरी चुनने पर व्यूज स्विच करना और एग्जाम्स फेच करना
+        // 🎯 View Switcher Handler
         async function selectDashboardCategory(categoryName, categoryId) {
             const newUrl = `${window.location.pathname}?category=${encodeURIComponent(categoryName)}&catid=${categoryId}`;
             window.history.pushState({ path: newUrl }, '', newUrl);
@@ -137,7 +137,7 @@
             await fetchActiveCategoryExams(categoryId);
         }
 
-        // 🎯 केवल सेलेक्टेड कैट-आईडी के रिस्पॉन्सिव पेपर्स लाना ('subject' और 'duration_minutes' फ़िक्स के साथ)
+        // 🎯 FIX: Fetches data with mapped 'subject' & 'duration_minutes' columns
         async function fetchActiveCategoryExams(categoryId) {
             const listTarget = document.getElementById('active-exams-list-target');
             listTarget.innerHTML = `<p class="text-xs font-mono text-center text-slate-500 animate-pulse">Decrypting encrypted question vaults...</p>`;
@@ -154,7 +154,7 @@
                     return;
                 }
 
-                // आकर्षक परीक्षा कार्ड्स फ़ॉर्मेटिंग (subject और duration_minutes के साथ सिंक)
+                // UI mapping using exact 'subject' and 'duration_minutes' columns
                 listTarget.innerHTML = data.map(exam => `
                     <div class="bg-slate-900/50 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/20 transition">
                         <div class="space-y-1">
@@ -172,7 +172,7 @@
             }
         }
 
-        // 🎯 वापस कैटेगरीज की सूची में आने का हैंडलर
+        // 🎯 Reset view back to folder list
         function resetToCategoriesView() {
             const cleanUrl = window.location.pathname;
             window.history.pushState({ path: cleanUrl }, '', cleanUrl);
