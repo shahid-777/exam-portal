@@ -1,4 +1,3 @@
- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,10 +56,10 @@
             <p id="main-category-desc" class="text-xs sm:text-sm text-slate-400 font-medium">Resolving relational descriptions from backend database servers...</p>
         </div>
 
-        <div class="bg-slate-950/40 backdrop-blur-xl border border-white/5 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl min-h-[300px] relative">
+        <div class="bg-slate-950/40 backdrop-blur-xl border border-white/5 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative">
             <div class="flex items-center justify-between border-b border-white/5 pb-4">
                 <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 text-indigo-400"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.03 0 1.9.693 2.166 1.638m-7.377 2.24a4.854 4.854 0 0 1 7.377 0M4.5 19.5h15" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 text-blue-400"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.03 0 1.9.693 2.166 1.638m-7.377 2.24a4.854 4.854 0 0 1 7.377 0M4.5 19.5h15" /></svg>
                     <span>Official Syllabus Blueprint & Core Metrics</span>
                 </h3>
             </div>
@@ -69,8 +68,27 @@
                 <div class="space-y-3 animate-pulse py-4">
                     <div class="h-4 bg-white/5 rounded-md w-3/4"></div>
                     <div class="h-4 bg-white/5 rounded-md w-5/6"></div>
-                    <div class="h-4 bg-white/5 rounded-md w-1/2"></div>
                 </div>
+            </div>
+        </div>
+
+        <div class="bg-slate-950/40 backdrop-blur-xl border border-white/5 rounded-3xl p-6 sm:p-8 space-y-4 shadow-2xl">
+            <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest flex items-center space-x-2 border-b border-white/5 pb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A2.25 2.25 0 0 0 5.969 19.5h12.062a2.25 2.25 0 0 0 2.2-3.006 60.423 60.423 0 0 0-.491-6.347m-15.482 0a44.69 44.69 0 0 1 15.482 0m-15.482 0 4.97-4.97m10.512 4.97-4.97-4.97M10.5 6.75h3" /></svg>
+                <span>Available Practice Mock Tests</span>
+            </h3>
+            <div id="tests-content-area" class="space-y-3 pt-1">
+                <p class="text-xs text-slate-500 font-mono">Syncing active mock sessions...</p>
+            </div>
+        </div>
+
+        <div class="bg-slate-950/40 backdrop-blur-xl border border-white/5 rounded-3xl p-6 sm:p-8 space-y-4 shadow-2xl">
+            <h3 class="text-xs font-mono font-black text-emerald-400 uppercase tracking-widest flex items-center space-x-2 border-b border-white/5 pb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" /></svg>
+                <span>Syllabus Coding Programs & Practicals</span>
+            </h3>
+            <div id="programs-content-area" class="space-y-4 pt-1">
+                <p class="text-xs text-slate-500 font-mono">Compiling practical data nodes...</p>
             </div>
         </div>
 
@@ -86,19 +104,17 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         window.onload = function() {
-            // Secure Validation Shield Check
             const sessionActive = localStorage.getItem('userEmail');
             if(!sessionActive) {
                 window.location.replace("index.html");
                 return;
             }
 
-            // Extract Target Category ID Parameter directly via URL string parsing
             const urlParams = new URLSearchParams(window.location.search);
             const categoryId = urlParams.get('category_id');
 
             if(!categoryId) {
-                alert("Matrix reference exception: Missing structural identifier.");
+                alert("Missing structural identifier.");
                 window.location.replace("index.html");
                 return;
             }
@@ -106,81 +122,84 @@
             loadCategoryDetails(categoryId);
         };
 
-        // 🔄 RETRIEVE EXAM CONTENT SCHEMA MATRICES VIA DATA PIPELINE
+        // 🔄 RETRIEVE AND POPULATE EVERYTHING RELATIONAL IN ONE STREAM
         async function loadCategoryDetails(catId) {
             try {
-                // Fetch direct text data rows matching column mapping criteria 
+                // 1. Fetch parent metadata category row
                 const { data: category, error } = await supabaseClient
                     .from('exam_categories')
                     .select('*')
                     .eq('id', catId)
                     .maybeSingle();
 
-                if (error || !category) {
-                    throw new Error("Target record not mapped.");
-                }
+                if (error || !category) throw new Error("Target record missing.");
 
-                // Update Header and Branding Nodes
                 document.getElementById('category-title-header').innerText = category.category_name;
                 document.getElementById('main-category-title').innerText = category.category_name;
-                document.getElementById('main-category-desc').innerText = category.description || "Official syllabus metrics tracking active.";
+                document.getElementById('main-category-desc').innerText = category.description || "Official blueprint tracking active.";
 
-                // 💡 SYLLABUS CONTENT LOGIC PARSER
-                // Agar aapne table mein extra schema save kiya hai toh use dynamically layout par replace karein:
                 if (category.syllabus_html_content) {
                     document.getElementById('syllabus-content-area').innerHTML = category.syllabus_html_content;
                 } else {
                     document.getElementById('syllabus-content-area').innerHTML = `
-                        <div class="border border-white/5 bg-white/5 p-6 rounded-2xl text-center text-xs font-mono text-slate-400 uppercase tracking-wide">
-                            Syllabus content streams currently unprovisioned for this domain.<br>
-                            <span class="text-[10px] text-slate-500 mt-1 block">Deploy resources manually via Administrator Panel node terminal.</span>
-                        </div>`;
+                        <div class="text-center text-xs font-mono text-slate-500 py-4 uppercase">Syllabus content streams unprovisioned.</div>`;
+                }
+
+                // 2. Fetch linked test series array logs
+                const { data: tests } = await supabaseClient
+                    .from('exam_tests')
+                    .select('*')
+                    .eq('category_id', catId);
+
+                const testsArea = document.getElementById('tests-content-area');
+                if(tests && tests.length > 0) {
+                    testsArea.innerHTML = "";
+                    tests.forEach(t => {
+                        testsArea.innerHTML += `
+                            <div class="flex justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-white/5 hover:border-purple-500/20 transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="bg-purple-500/10 text-purple-400 p-2 rounded-lg text-xs font-mono font-bold">MOCK</div>
+                                    <span class="text-xs font-bold text-slate-200 uppercase tracking-wide">${t.test_title}</span>
+                                </div>
+                                <a href="${t.test_url}" target="_blank" class="bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-mono font-black py-2 px-4 rounded-xl transition uppercase tracking-wider shadow-lg shadow-purple-600/10">Start Exam &rarr;</a>
+                            </div>`;
+                    });
+                } else {
+                    testsArea.innerHTML = `<div class="text-xs font-mono text-slate-600 uppercase py-2">No active examination papers deployed for this cluster.</div>`;
+                }
+
+                // 3. Fetch manual programming modules data logs
+                const { data: programs } = await supabaseClient
+                    .from('exam_programs')
+                    .select('*')
+                    .eq('category_id', catId);
+
+                const programsArea = document.getElementById('programs-content-area');
+                if(programs && programs.length > 0) {
+                    programsArea.innerHTML = "";
+                    programs.forEach(p => {
+                        programsArea.innerHTML += `
+                            <div class="bg-slate-900/30 p-4 rounded-xl border border-white/5 space-y-3">
+                                <div class="flex items-center space-x-2 text-emerald-400">
+                                    <span class="text-xs font-black uppercase tracking-wider">${p.program_title}</span>
+                                </div>
+                                <pre class="text-[11px] font-mono bg-slate-950/80 p-3.5 rounded-xl border border-white/5 text-slate-300 overflow-x-auto whitespace-pre-wrap leading-relaxed shadow-inner">${escapeHTML(p.program_code_or_desc)}</pre>
+                            </div>`;
+                    });
+                } else {
+                    programsArea.innerHTML = `<div class="text-xs font-mono text-slate-600 uppercase py-2">No dynamic functional code blocks configured for this syllabus template yet.</div>`;
                 }
 
             } catch (err) {
                 document.getElementById('syllabus-content-area').innerHTML = `
-                    <div class="text-red-400 font-mono text-xs border border-red-500/10 p-4 rounded-xl bg-red-500/5 text-center">
-                        Core interface connectivity failure while mapping data segments.
-                    </div>`;
+                    <div class="text-red-400 font-mono text-xs text-center py-4">Core pipeline intersection fault.</div>`;
             }
         }
-     // Append this processing layer inside your loadCategoryDetails function to load Tests & Programs instantly
-async function loadAdditionalResources(catId) {
-    try {
-        // Fetch matching tests
-        const { data: tests } = await supabaseClient.from('exam_tests').select('*').eq('category_id', catId);
-        // Fetch matching practical programs
-        const { data: programs } = await supabaseClient.from('exam_programs').select('*').eq('category_id', catId);
-        
-        let dynamicResourcesHtml = `<div class="mt-6 space-y-4">`;
-        
-        if(tests && tests.length > 0) {
-            dynamicResourcesHtml += `<h4 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest border-b border-white/5 pb-1">Available Online Test Series</h4>`;
-            tests.forEach(t => {
-                dynamicResourcesHtml += `
-                    <div class="flex justify-between items-center bg-slate-900/50 p-3 rounded-xl border border-white/5">
-                        <span class="text-xs font-bold text-slate-200">${t.test_title}</span>
-                        <a href="${t.test_url}" target="_blank" class="bg-purple-600 hover:bg-purple-500 text-[10px] font-mono font-black py-1 px-3 rounded-md transition uppercase">Start Test &rarr;</a>
-                    </div>`;
-            });
+
+        // Helper framework script tool to cleanly escape code character formats safely inside pre tags
+        function escapeHTML(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
-        
-        if(programs && programs.length > 0) {
-            dynamicResourcesHtml += `<h4 class="text-xs font-mono font-black text-emerald-400 uppercase tracking-widest border-b border-white/5 pb-1 mt-6">Syllabus Practical Labs / Programs</h4>`;
-            programs.forEach(p => {
-                dynamicResourcesHtml += `
-                    <div class="bg-slate-900/30 p-3 rounded-xl border border-white/5 space-y-2">
-                        <span class="text-xs font-black text-emerald-400 block">${p.program_title}</span>
-                        <pre class="text-[11px] font-mono bg-slate-950/80 p-2.5 rounded-lg border border-white/5 text-slate-300 overflow-x-auto whitespace-pre-wrap">${p.program_code_or_desc}</pre>
-                    </div>`;
-            });
-        }
-        
-        dynamicResourcesHtml += `</div>`;
-        document.getElementById('syllabus-content-area').innerHTML += dynamicResourcesHtml;
-        
-    } catch(e) { console.log("Resource schema attachment error."); }
-}
     </script>
 </body>
 </html>
