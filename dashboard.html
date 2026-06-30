@@ -89,63 +89,74 @@
         };
 
         // 🔄 SUPABASE SELECT QUERY WITH DYNAMIC FILTERING
-        async function fetchActiveCategoryExams(category) {
-            const container = document.getElementById('exams-matrix-pipeline');
-            
-            try {
-                // मान लीजिए आपकी 'exams' टेबल में एक 'category_id' या 'category' नाम का कॉलम है
-                // यहाँ हम मान कर चल रहे हैं कि कॉलम का नाम 'category' है
-                const { data: exams, error } = await supabaseClient
-                    .from('exams')
-                    .select('subject, duration_minutes, total_questions, questions_json')
-                    .ilike('category', category); // 🎯 केस-इन्सेन्सिटिव फ़िल्टरिंग
+       async function fetchActiveCategoryExams(category) {
+    const container = document.getElementById('exams-matrix-pipeline');
+    
+    try {
+        console.log("Querying database for category:", category);
 
-                if (error) throw error;
+        // Supabase se active category ke exams select karna
+        const { data: exams, error } = await supabaseClient
+            .from('exams')
+            .select('*')
+            .ilike('category', category); 
 
-                if (!exams || exams.length === 0) {
-                    container.innerHTML = `
-                        <div class="col-span-full text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/[0.01]">
-                            No active exam papers uploaded under this domain block yet.
-                        </div>`;
-                    return;
-                }
+        if (error) throw error;
 
-                let htmlContent = "";
-                exams.forEach(exam => {
-                    // अगर डेटाबेस में टोटल क्वेश्चंस का फिक्स कॉलम नहीं है तो JSON की लेंथ निकालें
-                    let qCount = exam.total_questions;
-                    if(!qCount && exam.questions_json) {
-                        const parsedQ = typeof exam.questions_json === 'string' ? JSON.parse(exam.questions_json) : exam.questions_json;
-                        qCount = parsedQ.length;
-                    }
-
-                    htmlContent += `
-                        <div class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-xl hover:border-blue-500/20 transition">
-                            <div class="space-y-1">
-                                <h3 class="text-md font-bold text-white tracking-wide">${exam.subject}</h3>
-                                <div class="flex items-center space-x-4 pt-1 text-[10px] font-mono text-slate-400">
-                                    <div>Questions: <span class="text-blue-400 font-bold">${qCount || 0}</span></div>
-                                    <div>Duration: <span class="text-blue-400 font-bold">${exam.duration_minutes || 60} Min</span></div>
-                                </div>
-                            </div>
-                            <button onclick="launchExamEngine('${encodeURIComponent(exam.subject)}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-lg transition transform active:scale-95 cursor-pointer">
-                                Launch Live Engine
-                            </button>
-                        </div>
-                    `;
-                });
-
-                container.innerHTML = htmlContent;
-
-            } catch (err) {
-                console.error("Dashboard database mapping error:", err);
-                container.innerHTML = `
-                    <div class="col-span-full text-center font-mono text-xs text-red-400 border border-red-500/10 p-6 rounded-2xl bg-red-500/5">
-                        Failed to map exam clusters from database registry pipeline.
-                    </div>`;
-            }
+        if (!exams || exams.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/[0.01]">
+                    No active exam papers uploaded under this domain block yet.
+                </div>`;
+            return;
         }
 
+        let htmlContent = "";
+        exams.forEach(exam => {
+            let duration = exam.duration_minutes || exam.duration || 60;
+            let qCount = exam.total_questions || 0;
+            
+            // 🎯 FIXED: Agar questions_json pehle se Object hai, toh directly .length lein, parse na karein
+            if(!qCount && exam.questions_json) {
+                if (typeof exam.questions_json === 'string') {
+                    try {
+                        const parsedQ = JSON.parse(exam.questions_json);
+                        qCount = parsedQ.length;
+                    } catch(e) {
+                        qCount = 0;
+                    }
+                } else if (Array.isArray(exam.questions_json)) {
+                    qCount = exam.questions_json.length; // Agar database se direct array mila
+                }
+            }
+
+            htmlContent += `
+                <div class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-xl hover:border-blue-500/20 transition">
+                    <div class="space-y-1">
+                        <h3 class="text-md font-bold text-white tracking-wide">${exam.subject}</h3>
+                        <div class="flex items-center space-x-4 pt-1 text-[10px] font-mono text-slate-400">
+                            <div>Questions: <span class="text-blue-400 font-bold">${qCount}</span></div>
+                            <div>Duration: <span class="text-blue-400 font-bold">${duration} Min</span></div>
+                        </div>
+                    </div>
+                    <button onclick="launchExamEngine('${encodeURIComponent(exam.subject)}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-lg transition transform active:scale-95 cursor-pointer">
+                        Launch Live Engine
+                    </button>
+                </div>
+            `;
+        });
+
+        container.innerHTML = htmlContent;
+
+    } catch (err) {
+        console.error("CRITICAL DASHBOARD ERROR:", err);
+        container.innerHTML = `
+            <div class="col-span-full text-center font-mono text-xs text-red-400 border border-red-500/10 p-6 rounded-2xl bg-red-500/5">
+                Failed to map exam clusters from database registry pipeline.<br>
+                <span class="text-[10px] text-slate-500 mt-2 block">Error: ${err.message || err.details || 'Schema Mismatch'}</span>
+            </div>`;
+    }
+}
         // 🚀 एग्जाम इंजन शुरू करने का नेविगेशन
         function launchExamEngine(subjectName) {
             window.location.href = `exam.html?subject=${subjectName}`;
