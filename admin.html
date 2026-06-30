@@ -21,7 +21,7 @@
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-8">
         <div>
             <h1 class="text-2xl font-black text-white uppercase tracking-wide">Master Control Console</h1>
-            <p class="text-xs text-slate-400 font-mono mt-1">Manage time limits, create categories manually, and inject new exams seamlessly.</p>
+            <p class="text-xs text-slate-400 font-mono mt-1">Deploy new structures or map existing exams into multiple dynamic categories.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -32,9 +32,9 @@
                 <div class="space-y-3 pt-2">
                     <div>
                         <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Category Domain Name</label>
-                        <input type="text" id="new-cat-name" placeholder="e.g. Rajasthan Patwari, REET, SSC" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
+                        <input type="text" id="new-cat-name" placeholder="e.g. Patwari, REET, SSC, Gate" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
                     </div>
-                    <button onclick="createNewCategory()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 text-white font-black py-2.5 px-4 rounded-xl text-[11px] tracking-wider uppercase cursor-pointer">Deploy Category Node</button>
+                    <button onclick="createNewCategory()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 text-white font-black py-2.5 px-4 rounded-xl text-[11px] tracking-wider uppercase cursor-pointer">Deploy Category</button>
                 </div>
             </div>
 
@@ -45,26 +45,45 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div>
                         <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Exam / Subject Title Name</label>
-                        <input type="text" id="exam-subject-input" placeholder="e.g. Computer Architecture, Web Tech" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
+                        <input type="text" id="exam-subject-input" placeholder="e.g. Computer Architecture" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
                     </div>
                     <div>
                         <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">⏱️ Allocation Time Limit (Minutes)</label>
                         <input type="number" id="exam-duration-input" value="60" min="1" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">🎯 Select Associated Category Node</label>
-                        <select id="exam-category-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none font-bold text-slate-400">
-                            <option value="">Syncing database fields...</option>
-                        </select>
-                    </div>
-                    <div class="sm:col-span-2">
                         <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">📋 Questions Array Dataset (JSON Format)</label>
-                        <textarea id="exam-questions-json" rows="4" placeholder='[{"question":"What is 2+2?","options":["3","4","5"],"correct":1}]' class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none"></textarea>
+                        <textarea id="exam-questions-json" rows="3" placeholder='[{"question":"What is 2+2?","options":["3","4","5"],"correct":1}]' class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none"></textarea>
                     </div>
-                    <button onclick="insertExamWithCategory()" class="sm:col-span-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition cursor-pointer">
-                        Link & Create Exam Entry
+                    <button onclick="createNewExamBase()" class="sm:col-span-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition cursor-pointer">
+                        Deploy New Exam Base
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 relative overflow-hidden shadow-xl">
+            <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-teal-500 to-emerald-500"></div>
+            <h3 class="text-xs font-mono font-black text-teal-400 uppercase tracking-widest">3. Manual Mapping: Assign Existing Exam into Multiple Categories</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                <div>
+                    <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">👈 Select Existing Exam Subject</label>
+                    <select id="map-exam-subject-select" class="w-full border border-white/10 p-3 text-xs rounded-xl bg-slate-900 text-white font-bold outline-none">
+                        <option value="">Loading available papers...</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">👉 Choose Category to Assign Into</label>
+                    <select id="map-target-category-select" class="w-full border border-white/10 p-3 text-xs rounded-xl bg-slate-900 text-white font-bold outline-none">
+                        <option value="">Loading active categories...</option>
+                    </select>
+                </div>
+
+                <button onclick="mapExamToCategoryRoutine()" class="md:col-span-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-black py-3 px-4 rounded-xl text-xs tracking-widest uppercase shadow-lg transition cursor-pointer">
+                    Execute Matrix Binding (Link Exam to Category)
+                </button>
             </div>
         </div>
 
@@ -73,10 +92,10 @@
             
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-3 gap-3">
                 <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">
-                    Database Log Repository
+                    Database Log Repository Cluster
                 </h3>
                 <div class="flex items-center space-x-2">
-                    <label class="text-[10px] font-mono text-slate-500 uppercase shrink-0">Fetch view for:</label>
+                    <label class="text-[10px] font-mono text-slate-500 uppercase shrink-0">Filter table view:</label>
                     <select id="admin-view-category-filter" onchange="fetchExamsOnAdminSide()" class="border border-white/10 p-2 text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none font-bold">
                         <option value="ALL">-- Show All Categories --</option>
                     </select>
@@ -113,116 +132,137 @@
         window.onload = function() {
             const adminActive = localStorage.getItem('adminEmail');
             if(!adminActive) { window.location.replace("admin-login.html"); return; }
-            syncCategoriesDropDowns();
+            syncMasterDashboardControls();
         };
 
-        async function syncCategoriesDropDowns() {
+        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS
+        async function syncMasterDashboardControls() {
             try {
-                // 🎯 FIXED: id parsing column rule for category list order
-                const { data, error } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
-                if(error) throw error;
-
-                globalCategoriesArray = data || [];
+                // 1. Fetch Categories
+                const { data: categories, error: catErr } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
+                if(catErr) throw catErr;
+                globalCategoriesArray = categories || [];
                 
-                const formSelect = document.getElementById('exam-category-select');
-                formSelect.innerHTML = `<option value="">-- Choose Target Category Domain --</option>`;
-                
+                // Populating Mapping Target Category Select & Bottom Table Filter
+                const mapCatSelect = document.getElementById('map-target-category-select');
                 const filterSelect = document.getElementById('admin-view-category-filter');
+                
+                mapCatSelect.innerHTML = `<option value="">-- Choose Target Category Domain --</option>`;
                 filterSelect.innerHTML = `<option value="ALL">-- Show All Categories (Global View) --</option>`;
 
                 globalCategoriesArray.forEach(c => {
-                    const optionHtml = `<option value="${c.id}">${c.category_name.toUpperCase()}</option>`;
-                    formSelect.innerHTML += optionHtml;
-                    filterSelect.innerHTML += optionHtml;
+                    const html = `<option value="${c.id}">${c.category_name.toUpperCase()}</option>`;
+                    mapCatSelect.innerHTML += html;
+                    filterSelect.innerHTML += html;
+                });
+
+                // 2. Fetch Exams for Left Mapping Selector
+                const { data: exams, error: exErr } = await supabaseClient.from('exams').select('subject').order('subject', {ascending: true});
+                if(exErr) throw exErr;
+
+                const mapExamSelect = document.getElementById('map-exam-subject-select');
+                mapExamSelect.innerHTML = `<option value="">-- Select Existing Subject Paper --</option>`;
+                
+                // Distinct unique array filter tracking duplication flags
+                let uniqueSubjects = [...new Set(exams.map(e => e.subject))];
+                uniqueSubjects.forEach(sub => {
+                    mapExamSelect.innerHTML += `<option value="${encodeURIComponent(sub)}">${sub.toUpperCase()}</option>`;
                 });
 
                 fetchExamsOnAdminSide();
 
-            } catch(e) { 
-                console.error("Dropdown crash:", e); 
-                document.getElementById('admin-exams-tbody').innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Setup Initialization Error: ${e.message}</td></tr>`;
-            }
+            } catch(e) { console.error("Initialization Sync Crash:", e); }
         }
 
+        // 🔄 LIVE REPOSITORY GRID LOADER
         async function fetchExamsOnAdminSide() {
             const tbody = document.getElementById('admin-exams-tbody');
             const targetFilterValue = document.getElementById('admin-view-category-filter').value;
             
             try {
                 let query = supabaseClient.from('exams').select('*');
-                
                 if(targetFilterValue !== "ALL") {
                     query = query.eq('category_id', parseInt(targetFilterValue));
                 }
 
-                // 🎯 FIXED: Removed id column ordering constraint to prevent 400 bad request error
                 const { data: exams, error } = await query.order('subject', { ascending: true });
                 if(error) throw error;
 
                 if(!exams || exams.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 font-mono text-slate-500 uppercase">No mapped entries tracked for this query category boundary.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 font-mono text-slate-500 uppercase">No records found matching this context view.</td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = "";
                 exams.forEach(ex => {
                     const matched = globalCategoriesArray.find(c => c.id == ex.category_id);
-                    const nameTag = matched ? matched.category_name : "🔴 NOT ASSIGNED";
+                    const nameTag = matched ? matched.category_name : "🔴 UNMAPPED BASE ENTRY";
 
                     tbody.innerHTML += `
                         <tr class="hover:bg-white/5 transition">
                             <td class="py-3.5 px-4 font-bold text-slate-200 uppercase tracking-wide">${ex.subject}</td>
-                            <td class="py-3.5 px-4 font-bold text-purple-400 text-[11px] uppercase">${nameTag}</td>
+                            <td class="py-3.5 px-4 font-bold text-teal-400 text-[11px] uppercase">${nameTag}</td>
                             <td class="py-3.5 px-4">
                                 <div class="flex items-center space-x-2">
                                     <input type="number" id="inline-time-${encodeURIComponent(ex.subject)}" value="${ex.duration_minutes || 60}" min="1" class="w-16 border border-white/10 bg-slate-900 text-blue-400 font-mono text-xs font-bold text-center px-1 py-1 rounded-lg outline-none">
                                     <button onclick="updateExamTimingDirect('${encodeURIComponent(ex.subject)}')" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition font-mono text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-wider">Save Time</button>
                                 </div>
                             </td>
-                            <td class="py-3.5 px-4 text-center font-mono text-emerald-400 uppercase text-[10px] tracking-wider">● Active Matrix Bound</td>
+                            <td class="py-3.5 px-4 text-center font-mono text-emerald-400 uppercase text-[10px] tracking-wider">● Matrix Active</td>
                         </tr>`;
                 });
-
-            } catch(err) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Sync Error: ${err.message}</td></tr>`;
-            }
+            } catch(err) { tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Sync Error: ${err.message}</td></tr>`; }
         }
 
-        async function updateExamTimingDirect(encodedSubject) {
-            const decodedSub = decodeURIComponent(encodedSubject);
-            const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
+        // 🎯 CRITICAL TOOL 3: ASSIGN / MAP EXAM TO MULTIPLE CATEGORIES (NEW FUNCTION)
+        async function mapExamToCategoryRoutine() {
+            const encodedSub = document.getElementById('map-exam-subject-select').value;
+            const catId = document.getElementById('map-target-category-select').value;
 
-            if(!inputVal || parseInt(inputVal) < 1) { alert("Invalid timing bounds specified."); return; }
+            if(!encodedSub || !catId) { alert("Please fetch a subject paper and select a target category node."); return; }
+
+            const targetSubjectName = decodeURIComponent(encodedSub);
 
             try {
-                const { error } = await supabaseClient
+                // Pehle hum pehle se baney hue exam row ka configurations fetch karenge (Time aur Questions)
+                const { data: sourceExam, error: fetchErr } = await supabaseClient
                     .from('exams')
-                    .update({ duration_minutes: parseInt(inputVal) })
-                    .eq('subject', decodedSub);
+                    .select('duration_minutes, questions_json')
+                    .eq('subject', targetSubjectName)
+                    .limit(1)
+                    .maybeSingle();
 
-                if(error) throw error;
-                alert(`Configuration Saved: ${decodedSub} time updated to ${inputVal} Minutes!`);
-                fetchExamsOnAdminSide();
+                if(fetchErr || !sourceExam) throw new Error("Could not replicate source exam structure parameters.");
 
-            } catch(e) { alert("Update operational failure: " + e.message); }
+                // Naya relational mapping row copy push kar rhe hain jisme category link bound ho jayega
+                const { error: insertErr } = await supabaseClient
+                    .from('exams')
+                    .insert({
+                        subject: targetSubjectName,
+                        duration_minutes: sourceExam.duration_minutes || 60,
+                        questions_json: sourceExam.questions_json || [],
+                        category_id: parseInt(catId)
+                    });
+
+                if(insertErr) throw insertErr;
+
+                alert(`Success: [ ${targetSubjectName} ] linked successfully into category node row allocation!`);
+                syncMasterDashboardControls(); // Refresh whole grid layers
+
+            } catch(e) { alert("Mapping script failure: " + e.message); }
         }
 
-        async function insertExamWithCategory() {
+        // TOOL 2 ACTION: INITIAL DEPLOY EXAM NODE
+        async function createNewExamBase() {
             const sub = document.getElementById('exam-subject-input').value.trim();
             const dur = document.getElementById('exam-duration-input').value.trim();
-            const catId = document.getElementById('exam-category-select').value;
             const jsonText = document.getElementById('exam-questions-json').value.trim();
 
-            if(!sub || !catId) { alert("Subject name or Category parameters missing."); return; }
+            if(!sub) { alert("Please input a valid subject description title."); return; }
 
             let parsedQuestions = [];
             if(jsonText !== "") {
-                try {
-                    parsedQuestions = JSON.parse(jsonText);
-                } catch(err) {
-                    alert("JSON parsing error! Please ensure your questions array formatting is perfectly standard.");
-                    return;
-                }
+                try { parsedQuestions = JSON.parse(jsonText); } catch(err) { alert("JSON parsing error! Review syntax blocks."); return; }
             }
 
             try {
@@ -231,29 +271,42 @@
                     .insert({ 
                         subject: sub, 
                         duration_minutes: parseInt(dur) || 60, 
-                        category_id: parseInt(catId),
-                        questions_json: parsedQuestions
+                        questions_json: parsedQuestions,
+                        category_id: null // Created as unmapped master base entry initially
                     });
 
                 if(error) throw error;
-                alert(`Success: [ ${sub} ] compiled, mapped, and fully deployed into production repository!`);
+                alert(`Success: Master base entry [ ${sub} ] deployed! Use Section 3 below to link it into any category.`);
                 
                 document.getElementById('exam-subject-input').value = "";
                 document.getElementById('exam-questions-json').value = "";
-                fetchExamsOnAdminSide();
+                syncMasterDashboardControls();
 
-            } catch(e) { alert("Operation error log: " + e.message); }
+            } catch(e) { alert("Insertion fail: " + e.message); }
         }
 
+        // TOOL 1 ACTION: MANUALLY CREATE CATEGORY
         async function createNewCategory() {
             const name = document.getElementById('new-cat-name').value.trim();
-            if(!name) { alert("Category tracking name string empty."); return; }
+            if(!name) return;
             try {
                 const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name });
                 if(error) throw error;
-                alert(`Category node [ ${name} ] successfully established!`);
+                alert(`Category established!`);
                 document.getElementById('new-cat-name').value = "";
-                syncCategoriesDropDowns();
+                syncMasterDashboardControls();
+            } catch(e) { alert(e.message); }
+        }
+
+        // INLINE ACTION: TIME CONTROLLER
+        async function updateExamTimingDirect(encodedSubject) {
+            const decodedSub = decodeURIComponent(encodedSubject);
+            const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
+            try {
+                const { error } = await supabaseClient.from('exams').update({ duration_minutes: parseInt(inputVal) }).eq('subject', decodedSub);
+                if(error) throw error;
+                alert(`Time limit synchronization complete.`);
+                fetchExamsOnAdminSide();
             } catch(e) { alert(e.message); }
         }
 
