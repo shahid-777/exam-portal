@@ -47,7 +47,7 @@
                 </select>
             </div>
 
-            <div class="text-center py-12 text-slate-500 font-mono text-xs uppercase">
+            <div class="text-center py-12 text-slate-500 font-mono text-xs uppercase border border-dashed border-white/5 rounded-xl bg-slate-900/10">
                 Please select a subject above to compile specific ranks board metrics.
             </div>
         </div>
@@ -64,33 +64,36 @@
             if(!userEmail) { window.location.replace("index.html"); return; }
             document.getElementById('student-user').innerText = userEmail;
 
-            // URL Parameters tracking
+            // URL Parameters parsing safely
             const urlParams = new URLSearchParams(window.location.search);
             const categoryId = urlParams.get('category_id');
 
             loadDashboardFilteredExams(categoryId);
         };
 
-        // 🔄 FILTERED DATA EXTRACTION
+        // 🔄 SAFE PARSING DATA LOADER (FIXED CRASH)
         async function loadDashboardFilteredExams(catId) {
             const pane = document.getElementById('exams-container-pane');
             const desc = document.getElementById('filter-status-desc');
+            
             try {
+                // Base setup for reading original table columns
                 let query = supabaseClient.from('exams').select('id, subject, duration_minutes');
                 
-                // If Category Identifier exists, apply absolute relational check criteria filter
-                if(catId) {
-                    query = query.eq('category_id', catId);
-                    desc.innerText = `Filtered Category Segment Base: Node #${catId}`;
+                // Fail-safe validation check: string parsing criteria
+                if (catId && catId !== "null" && catId !== "undefined" && catId.trim() !== "") {
+                    query = query.eq('category_id', parseInt(catId));
+                    desc.innerText = `Category Cluster Target: Node #${catId}`;
                 } else {
-                    desc.innerText = "Showing General Unfiltered Global Array Entries";
+                    desc.innerText = "Showing Global Active Exam Repositories";
                 }
 
                 const { data: exams, error } = await query.order('id', { ascending: true });
+                
                 if(error) throw error;
 
                 if(!exams || exams.length === 0) {
-                    pane.innerHTML = `<div class="text-xs font-mono text-slate-600 text-center py-6">No matching exams connected to this category group node yet.</div>`;
+                    pane.innerHTML = `<div class="text-xs font-mono text-slate-500 text-center py-6 uppercase">No matching exams linked to this segment dashboard yet.</div>`;
                     return;
                 }
 
@@ -100,11 +103,11 @@
                 exams.forEach(ex => {
                     selectOptions += `<option value="${ex.id}">${ex.subject.toUpperCase()}</option>`;
                     
-                    // 🎯 ONCLICK REDIRECT BINDED TO exam.html Safely
+                    // Direct dynamic trigger to exam.html with solid parameters
                     pane.innerHTML += `
-                        <div class="flex items-center justify-between bg-slate-900/50 p-3.5 rounded-xl border border-white/5 hover:border-blue-500/20 hover:bg-slate-900/80 transition shadow-sm group">
-                            <span class="text-xs font-bold text-slate-300 truncate max-w-[150px] uppercase tracking-wide group-hover:text-blue-400 transition">${ex.subject}</span>
-                            <button onclick="window.location.href='exam.html?exam_id=${ex.id}'" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-mono font-black py-1.5 px-4 rounded-xl shadow transition uppercase tracking-widest cursor-pointer">
+                        <div class="flex items-center justify-between bg-slate-900/60 p-4 rounded-xl border border-white/5 hover:border-blue-500/30 hover:bg-slate-900/90 transition shadow-md group">
+                            <span class="text-xs font-bold text-slate-200 truncate pr-2 uppercase tracking-wide group-hover:text-blue-400 transition">${ex.subject}</span>
+                            <button onclick="window.location.href='exam.html?exam_id=${ex.id}'" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-mono font-black py-2 px-4 rounded-xl shadow transition uppercase tracking-widest shrink-0 cursor-pointer">
                                 Start
                             </button>
                         </div>`;
@@ -113,7 +116,8 @@
                 document.getElementById('leaderboard-subject-filter').innerHTML = selectOptions;
 
             } catch(err) {
-                pane.innerHTML = `<div class="text-xs font-mono text-red-400 text-center py-4">Intersection break fault.</div>`;
+                console.error("Dashboard engine catch exception:", err);
+                pane.innerHTML = `<div class="text-xs font-mono text-red-400 text-center py-4 uppercase">Database parsing matrix failure.</div>`;
             }
         }
 
