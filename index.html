@@ -194,7 +194,225 @@ google.accounts.id.renderButton(
                     .maybeSingle();
 
                 if (error || !data || data.password !== inputPassword) {
+                    alert("Authent<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="logo.png">
+    <title>Online Exam Portal - Gateway Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        /* 🎨 DYNAMIC BACKGROUND GRADIENT ANIMATION KEYFRAMES */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-gradient {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #311042, #020617);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+    </style>
+</head>
+<body class="animate-gradient font-sans min-h-screen text-slate-200 flex flex-col justify-between">
+
+    <header class="w-full bg-slate-950/40 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="bg-white/95 p-1 rounded-xl shadow-inner shadow-black/20">
+                <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-sm font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 uppercase leading-none">EXAM PORTAL</span>
+                <span class="text-[9px] font-mono font-bold text-slate-500 tracking-wider mt-0.5 uppercase">Computer Science Dept</span>
+            </div>
+        </div>
+        <div class="bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full flex items-center space-x-2 shadow-sm shadow-emerald-500/5">
+            <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span>
+            <span class="text-[10px] font-mono font-black text-emerald-400 tracking-wider uppercase">SECURE NODE ACTIVE</span>
+        </div>
+    </header>
+
+    <main class="flex-1 flex items-center justify-center p-4 sm:p-6">
+        <div class="bg-slate-900/60 backdrop-blur-xl max-w-md w-full p-6 sm:p-8 rounded-3xl shadow-2xl border border-white/10 space-y-6 relative overflow-hidden">
+            
+            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600"></div>
+
+            <div class="space-y-2 text-center">
+                <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-blue-400 uppercase tracking-wide">
+                    ONLINE EXAM PORTAL
+                </h2>
+                <p class="text-xs text-slate-400 font-medium">
+                    Sign in using your student corporate identity or email configurations.
+                </p>
+            </div>
+
+            <div class="space-y-4 pt-1">
+                <div>
+                    <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1.5">
+                        Email Address
+                    </label>
+                    <input type="email" id="user-email" placeholder="student@gmail.com" autocomplete="off" class="w-full border border-white/10 p-3 text-sm rounded-xl font-semibold bg-slate-950/50 text-white outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition shadow-inner">
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider">
+                            Password
+                        </label>
+                        <a href="forgot-password.html" class="text-[10px] font-bold text-blue-400 hover:text-blue-300 hover:underline transition">Forgot?</a>
+                    </div>
+                    <input type="password" id="user-password" placeholder="••••••••" class="w-full border border-white/10 p-3 text-sm rounded-xl font-semibold bg-slate-950/50 text-white outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition shadow-inner">
+                </div>
+
+                <button onclick="handleEmailPasswordAuthentication()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-3.5 px-4 rounded-xl shadow-lg shadow-blue-600/20 uppercase text-xs tracking-wider transition transform active:scale-[0.99] mt-2 cursor-pointer">
+                    SIGN IN / REGISTER
+                </button>
+            </div>
+
+            <div class="relative flex py-1 items-center">
+                <div class="flex-grow border-t border-white/5"></div>
+                <span class="flex-shrink mx-4 text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">OR</span>
+                <div class="flex-grow border-t border-white/5"></div>
+            </div>
+
+            <div class="space-y-3 pt-2">
+                <div id="google-auth-btn-container" class="w-full flex justify-center cursor-pointer"></div>
+                
+                <div class="text-center pt-2">
+                    <a href="admin-login.html" class="text-[10px] font-mono font-bold text-slate-500 hover:text-red-400 uppercase tracking-widest transition">
+                        &rarr; Admin Terminal Access
+                    </a>
+                </div>
+            </div>
+
+            <p class="text-[10px] font-mono text-center text-slate-500 font-bold uppercase tracking-wider pt-1">
+                Real-time multi-user student verification cluster.
+            </p>
+        </div>
+    </main>
+
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/20 backdrop-blur-sm text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">
+        &copy; Computer Science Management System Terminal
+    </footer>
+
+    <script>
+        // 🚀 DATABASE AND AUTH PROVIDER SYNCHRONIZATION CONFIG
+        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        window.onload = function () {
+            // Clear prior active session storage states securely on fresh entry
+            localStorage.clear();
+
+            // 🤖 INITIALIZE GOOGLE AUTH ENGINE FOR STUDENTS WITH FORCE POPUP
+            google.accounts.id.initialize({
+                client_id: "313377576458-c198ssj598dcg6c58c3kmtvtg5sf9m84.apps.googleusercontent.com", 
+                callback: handleGoogleAuthCallbackResponse,
+                auto_select: false,
+                ux_mode: "popup" // 👈 Fixed: Active clean popup string removes redirection barriers
+            });
+
+            // Render standard security button layout UI
+            google.accounts.id.renderButton(
+                document.getElementById("google-auth-btn-container"),
+                { theme: "outline", size: "large", text: "signin_with", width: "260" }
+            );
+        };
+
+        // 🛡️ GOOGLE SECURE INTEGRATION METADATA RESOLVER CALLBACK
+        async function handleGoogleAuthCallbackResponse(response) {
+            try {
+                const idToken = response.credential;
+                const base64Url = idToken.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+
+                const payloadObj = JSON.parse(jsonPayload);
+                const googleEmail = payloadObj.email;
+                const googleName = payloadObj.name || googleEmail.split('@')[0];
+
+                // 🔄 CHECK OR REGISTER USER IN PLATFORM TABLE ENGINE
+                const { data: userRow, error: fetchErr } = await supabaseClient
+                    .from('portal_users')
+                    .select('email, name')
+                    .eq('email', googleEmail.toLowerCase())
+                    .maybeSingle();
+
+                if (!userRow) {
+                    // Automatically provision a secure database record for new verified user entries
+                    await supabaseClient.from('portal_users').insert({
+                        email: googleEmail.toLowerCase(),
+                        name: googleName,
+                        password: "GoogleAuthenticatedAccount"
+                    });
+                }
+
+                // 🚨 CRITICAL CLEAN FIX: Clear admin session trace to prevent student dashboards conflict loop
+                localStorage.removeItem('adminEmail');
+                
+                localStorage.setItem('userEmail', googleEmail.toLowerCase());
+                localStorage.setItem('userName', googleName);
+                localStorage.setItem('sessionLoginTime', Date.now().toString());
+
+                window.location.replace("dashboard.html");
+
+            } catch (err) {
+                alert("Identity verification session mapping exception.");
+            }
+        }
+
+        // 📧 MANUAL PLAIN-TEXT SYSTEM AUTH MODULE
+        async function handleEmailPasswordAuthentication() {
+            const inputEmail = document.getElementById('user-email').value.trim();
+            const inputPassword = document.getElementById('user-password').value;
+
+            if (!inputEmail || !inputPassword) { alert("Fields supplied mismatch criteria."); return; }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('portal_users')
+                    .select('email, password, name')
+                    .eq('email', inputEmail.toLowerCase())
+                    .maybeSingle();
+
+                if (error || !data || data.password !== inputPassword) {
                     alert("Authentication Error: Signature tokens match rejected.");
+                    return;
+                }
+
+                const OFFICIAL_ADMIN_EMAIL = "examportalcse@gmail.com";
+                
+                // If Administrator logs in via main student gate
+                if(data.email.toLowerCase() === OFFICIAL_ADMIN_EMAIL.toLowerCase()) {
+                    localStorage.removeItem('userEmail'); // Clean user key trace
+                    localStorage.setItem('adminEmail', data.email.toLowerCase());
+                    localStorage.setItem('adminSessionTime', Date.now().toString());
+                    window.location.replace("admin.html");
+                    return;
+                }
+
+                // Standard student flow layout matrix
+                localStorage.removeItem('adminEmail'); // Strip administrative privilege token
+                localStorage.setItem('userEmail', data.email.toLowerCase());
+                localStorage.setItem('userName', data.name);
+                localStorage.setItem('sessionLoginTime', Date.now().toString());
+
+                window.location.replace("dashboard.html");
+
+            } catch (err) {
+                alert("Core database synchronization interface interruption.");
+            }
+        }
+    </script>
+</body>
+</html>ication Error: Signature tokens match rejected.");
                     return;
                 }
 
