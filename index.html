@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="logo.png">
+    <link class="rounded-xl" rel="icon" type="image/png" href="logo.png">
     <title>Student Hub — Exam Category Explorer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -55,7 +55,7 @@
             <span class="text-[10px] font-mono font-bold text-slate-500 group-hover:text-blue-400 transition uppercase tracking-wider shrink-0">Open Folder &rarr;</span>
         </div>
 
-        <div onclick="accessCategory('Patwari Recruitment Grid', 4)" class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/20 hover:bg-slate-900/60 transition cursor-pointer group">
+        <div onclick="accessCategory('Patwari Recruitment Grid', 4)" class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-purple-500/20 hover:bg-slate-900/60 transition cursor-pointer group">
             <div class="flex items-center space-x-4 min-w-0">
                 <div class="bg-purple-600/10 border border-purple-500/20 p-3 rounded-xl shrink-0 text-purple-400">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,7 +115,7 @@
         </div>
     </div>
 
-    <footer class="w-full text-center py-3 border-t border-white/5 bg-slate-900/40 text-[9px] font-mono text-slate-600 uppercase tracking-widest mt-6">
+    <footer class="w-full text-center py-3 border-t border-white/5 bg-slate-900/40 text-[9px] font-mono text-slate-600 uppercase tracking-widest">
         &copy; Computer Science Management System Terminal
     </footer>
 
@@ -176,7 +176,7 @@
             }
         }
 
-        // 🎯 1. कैटेगरी क्लिक हैंडलर (सुरक्षित ऑथेंटिकेशन चेकिंग)
+        // 🎯 फिक्स: अगर लॉगिन नहीं है तो पॉपअप खोलो और डेटा सुरक्षित करो
         function accessCategory(categoryName, categoryId) {
             const userEmail = localStorage.getItem('userEmail');
             
