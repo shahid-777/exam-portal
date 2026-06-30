@@ -157,9 +157,17 @@
         }
 
         function terminateSessionProcess() {
-            localStorage.removeItem('userEmail');
-            window.location.replace("index.html");
-        }
+    // 1. लोकल स्टोरेज को पूरी तरह साफ़ करें
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('adminEmail');
+    localStorage.clear(); // पूरा बैकअप साफ़ करने के लिए
+
+    alert("Logging out from Student Hub...");
+
+    // 2. वापस लॉगिन स्क्रीन पर रीडायरेक्ट करें
+    window.location.replace("index.html");
+}
+
     </script>
 </body>
 </html>
