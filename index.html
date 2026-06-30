@@ -155,16 +155,21 @@
         }
 
         // 🎯 कैटेगरी एक्सेस करने का लॉजिक
-        function accessCategory(categoryName, categoryId) {
+            // 🎯 1. कैटेगरी क्लिक हैंडलर
+function accessCategory(categoryName, categoryId) {
     const userEmail = localStorage.getItem('userEmail');
     
     if (!userEmail) {
+        // लॉगिन पेंडिंग है तो नाम और ID दोनों को सुरक्षित रूप से स्टोर करें
         targetCategoryPending = `${categoryName}&catid=${categoryId}`;
         openAuthModal('signin');
     } else {
+        // लॉगिन है तो सीधे रीडायरेक्ट करें
         window.location.href = `dashboard.html?category=${encodeURIComponent(categoryName)}&catid=${categoryId}`;
     }
 }
+
+
         function openAuthModal(mode) {
             currentModalMode = mode;
             document.getElementById('auth-modal').classList.remove('hidden');
@@ -196,43 +201,45 @@
             }
         }
 
-        async function executeAuthentication() {
-            const email = document.getElementById('auth-email').value.trim();
-            const password = document.getElementById('auth-password').value;
+       // 🎯 2. ऑथेंटिकेशन सबमिट हैंडलर
+async function executeAuthentication() {
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
 
-            if(!email || !password) {
-                alert("Please complete the required matrix vectors.");
-                return;
+    if(!email || !password) {
+        alert("Please complete the required matrix vectors.");
+        return;
+    }
+
+    try {
+        if (currentModalMode === "signin") {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+
+            localStorage.setItem('userEmail', data.user.email);
+            alert("Profile authenticated successfully!");
+            
+            closeAuthModal();
+            checkActiveSessionState();
+
+            // पेंडिंग चेक करें
+            if (targetCategoryPending) {
+                window.location.href = `dashboard.html?category=${encodeURIComponent(targetCategoryPending)}`;
+            } else {
+                window.location.reload(); // जनरल केस में पेज रिफ्रेश करें
             }
+        } else {
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+            if (error) throw error;
 
-            try {
-                if (currentModalMode === "signin") {
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                    if (error) throw error;
-
-                    localStorage.setItem('userEmail', data.user.email);
-                    alert("Profile authenticated successfully!");
-                    
-                    closeAuthModal();
-                    checkActiveSessionState();
-
-                    // अगर किसी कैटेगरी पर क्लिक करके पॉप-अप खुला था, तो सीधे वहाँ भेजें
-                    if (targetCategoryPending) {
-                        window.location.href = `dashboard.html?category=${encodeURIComponent(targetCategoryPending)}`;
-                    }
-                } else {
-                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                    if (error) throw error;
-
-                    alert("Registration successful! Initiating Sign In mode.");
-                    currentModalMode = "signin";
-                    updateModalUI();
-                }
-            } catch (err) {
-                alert(`Error: ${err.message}`);
-            }
+            alert("Registration successful! Initiating Sign In mode.");
+            currentModalMode = "signin";
+            updateModalUI();
         }
-
+    } catch (err) {
+        alert(`Error: ${err.message}`);
+    }
+}
         function handleUserLogout() {
             localStorage.removeItem('userEmail');
             alert("Session terminated.");
