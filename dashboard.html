@@ -55,51 +55,48 @@
     </footer>
 
     <script>
-        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+       const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
+const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let targetCategoryDomain = "";
+let targetCategoryDomain = "";
 
-        window.onload = function() {
-            // 🔒 1. सुरक्षा गार्ड: चेक करें कि क्या यूज़र लॉगिन है
-            const activeUser = localStorage.getItem('userEmail');
-            if (!activeUser) {
-                // लॉगिन नहीं है तो सीधे होम पेज पर फेंक दो
-                window.location.replace("index.html");
-                return;
-            }
-            document.getElementById('display-user-session').innerText = activeUser.toLowerCase();
+window.onload = function() {
+    const activeUser = localStorage.getItem('userEmail');
+    if (!activeUser) {
+        window.location.replace("index.html");
+        return;
+    }
+    document.getElementById('display-user-session').innerText = activeUser.toLowerCase();
 
-            // 🎯 2. यूआरएल से चुनी गई कैटेगरी का नाम निकालना
-            const urlParams = new URLSearchParams(window.location.search);
-            const categoryParam = urlParams.get('category');
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryParam = urlParams.get('category');
+    const catIdParam = urlParams.get('catid');
 
-            if (!categoryParam) {
-                // अगर बिना कैटेगरी डायरेक्ट डैशबोर्ड खोला तो वापस भेजो
-                window.location.replace("index.html");
-                return;
-            }
+    // अगर कैट आईडी नहीं मिलती या वह 'undefined' स्ट्रिंग है, तो वापस भेजें
+    if (!categoryParam || !catIdParam || catIdParam === 'undefined') {
+        window.location.replace("index.html");
+        return;
+    }
 
-            targetCategoryDomain = decodeURIComponent(categoryParam);
-            document.getElementById('active-category-title').innerText = targetCategoryDomain.toUpperCase();
+    targetCategoryDomain = decodeURIComponent(categoryParam);
+    document.getElementById('active-category-title').innerText = targetCategoryDomain.toUpperCase();
 
-            // 🚀 3. केवल इस कैटेगरी की परीक्षाओं को डेटाबेस से लोड करें
-            fetchActiveCategoryExams(targetCategoryDomain);
-        };
+    // 🚀 डेटाबेस से केवल numeric ID के आधार पर क्वेरी करें
+    fetchActiveCategoryExams(catIdParam);
+};
 
-        // 🔄 SUPABASE SELECT QUERY WITH DYNAMIC FILTERING
-       async function fetchActiveCategoryExams(category) {
+async function fetchActiveCategoryExams(categoryId) {
     const container = document.getElementById('exams-matrix-pipeline');
     
     try {
-        console.log("Querying database for category:", category);
+        console.log("Fetching data for precise category_id:", categoryId);
 
-        // Supabase se active category ke exams select karna
+        // 🎯 केवल और केवल category_id कॉलम का उपयोग (कोई category या category_name नहीं)
         const { data: exams, error } = await supabaseClient
             .from('exams')
             .select('*')
-            .ilike('category_name', category); 
+            .eq('category_id', parseInt(categoryId)); 
 
         if (error) throw error;
 
@@ -116,17 +113,14 @@
             let duration = exam.duration_minutes || exam.duration || 60;
             let qCount = exam.total_questions || 0;
             
-            // 🎯 FIXED: Agar questions_json pehle se Object hai, toh directly .length lein, parse na karein
             if(!qCount && exam.questions_json) {
                 if (typeof exam.questions_json === 'string') {
                     try {
                         const parsedQ = JSON.parse(exam.questions_json);
                         qCount = parsedQ.length;
-                    } catch(e) {
-                        qCount = 0;
-                    }
+                    } catch(e) { qCount = 0; }
                 } else if (Array.isArray(exam.questions_json)) {
-                    qCount = exam.questions_json.length; // Agar database se direct array mila
+                    qCount = exam.questions_json.length;
                 }
             }
 
@@ -153,21 +147,18 @@
         container.innerHTML = `
             <div class="col-span-full text-center font-mono text-xs text-red-400 border border-red-500/10 p-6 rounded-2xl bg-red-500/5">
                 Failed to map exam clusters from database registry pipeline.<br>
-                <span class="text-[10px] text-slate-500 mt-2 block">Error: ${err.message || err.details || 'Schema Mismatch'}</span>
+                <span class="text-[10px] text-slate-500 mt-2 block">Error: ${err.message || 'Schema Mismatch'}</span>
             </div>`;
     }
 }
-        // 🚀 एग्जाम इंजन शुरू करने का नेविगेशन
-        function launchExamEngine(subjectName) {
-            window.location.href = `exam.html?subject=${subjectName}`;
-        }
 
-        // 🔒 लॉगआउट प्रोसेस
-        function terminateSessionProcess() {
-            localStorage.removeItem('userEmail');
-            alert("Session terminated successfully.");
-            window.location.replace("index.html");
-        }
-    </script>
+function launchExamEngine(subjectName) {
+    window.location.href = `exam.html?subject=${subjectName}`;
+}
+
+function terminateSessionProcess() {
+    localStorage.removeItem('userEmail');
+    window.location.replace("index.html");
+}    </script>
 </body>
 </html>
