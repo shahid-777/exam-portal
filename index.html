@@ -121,169 +121,171 @@
 
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let currentModalMode = "signin";
+let currentModalMode = "signin";
 
-        window.onload = async function() {
-            const studentSession = localStorage.getItem('userEmail');
-            const adminSession = localStorage.getItem('adminEmail');
+window.onload = async function() {
+    const studentSession = localStorage.getItem('userEmail');
+    const adminSession = localStorage.getItem('adminEmail');
 
-            if (studentSession && studentSession !== "null" && studentSession.trim() !== "") {
-                window.location.replace("dashboard.html");
-                return;
-            }
-            if (adminSession && adminSession !== "null" && adminSession.trim() !== "") {
-                window.location.replace("admin_dashboard.html");
-                return;
-            }
+    // 🎯 फिक्स 1: पाथ को रूट लेवल '/' पर सेट किया गया
+    if (studentSession && studentSession !== "null" && studentSession.trim() !== "") {
+        window.location.replace("/dashboard.html");
+        return;
+    }
+    if (adminSession && adminSession !== "null" && adminSession.trim() !== "") {
+        window.location.replace("/admin_dashboard.html");
+        return;
+    }
 
-            try {
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-                if (session && session.user && session.user.email) {
-                    localStorage.setItem('userEmail', session.user.email);
-                    window.location.replace("dashboard.html"); 
-                    return;
-                }
-            } catch (err) {
-                console.error("Session sync error:", err);
-            }
+    try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (session && session.user && session.user.email) {
+            localStorage.setItem('userEmail', session.user.email);
+            window.location.replace("/dashboard.html"); 
+            return;
+        }
+    } catch (err) {
+        console.error("Session sync error:", err);
+    }
+    
+    checkActiveSessionState();
+};
+
+function checkActiveSessionState() {
+    const userEmail = localStorage.getItem('userEmail');
+    const btnSignin = document.getElementById('btn-signin-nav');
+    const btnSignup = document.getElementById('btn-signup-nav');
+    const txtEmail = document.getElementById('user-display-email');
+    const btnLogout = document.getElementById('btn-logout-nav');
+
+    if (userEmail) {
+        if(btnSignin) btnSignin.classList.add('hidden');
+        if(btnSignup) btnSignup.classList.add('hidden');
+        if(txtEmail) {
+            txtEmail.innerText = userEmail.toLowerCase();
+            txtEmail.classList.remove('hidden');
+        }
+        if(btnLogout) btnLogout.classList.remove('hidden');
+    } else {
+        if(btnSignin) btnSignin.classList.remove('hidden');
+        if(btnSignup) btnSignup.classList.remove('hidden');
+        if(txtEmail) txtEmail.classList.add('hidden');
+        if(btnLogout) btnLogout.classList.add('hidden');
+    }
+}
+
+// 🎯 फिक्स 2: यूआरएल पाथ सुधार
+function accessCategory(categoryName, categoryId) {
+    const userEmail = localStorage.getItem('userEmail');
+    
+    if (!userEmail || userEmail === "null" || userEmail.trim() === "") {
+        localStorage.setItem('pendingCategoryName', categoryName);
+        localStorage.setItem('pendingCategoryId', categoryId);
+        openAuthModal('signin');
+    } else {
+        window.location.href = `/dashboard.html?category=${encodeURIComponent(categoryName)}&catid=${categoryId}`;
+    }
+}
+
+async function executeAuthentication() {
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+
+    if(!email || !password) {
+        alert("Please complete the required fields.");
+        return;
+    }
+
+    try {
+        if (currentModalMode === "signin") {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+
+            localStorage.setItem('userEmail', data.user.email);
+            closeAuthModal();
             
-            checkActiveSessionState();
-        };
+            const savedName = localStorage.getItem('pendingCategoryName');
+            const savedId = localStorage.getItem('pendingCategoryId');
 
-        function checkActiveSessionState() {
-            const userEmail = localStorage.getItem('userEmail');
-            const btnSignin = document.getElementById('btn-signin-nav');
-            const btnSignup = document.getElementById('btn-signup-nav');
-            const txtEmail = document.getElementById('user-display-email');
-            const btnLogout = document.getElementById('btn-logout-nav');
-
-            if (userEmail) {
-                if(btnSignin) btnSignin.classList.add('hidden');
-                if(btnSignup) btnSignup.classList.add('hidden');
-                if(txtEmail) {
-                    txtEmail.innerText = userEmail.toLowerCase();
-                    txtEmail.classList.remove('hidden');
-                }
-                if(btnLogout) btnLogout.classList.remove('hidden');
+            // 🎯 फिक्स 3: लॉगिन सक्सेस रीडायरेक्शन
+            if (savedName && savedId) {
+                localStorage.removeItem('pendingCategoryName');
+                localStorage.removeItem('pendingCategoryId');
+                window.location.replace(`/dashboard.html?category=${encodeURIComponent(savedName)}&catid=${savedId}`);
             } else {
-                if(btnSignin) btnSignin.classList.remove('hidden');
-                if(btnSignup) btnSignup.classList.remove('hidden');
-                if(txtEmail) txtEmail.classList.add('hidden');
-                if(btnLogout) btnLogout.classList.add('hidden');
+                window.location.replace("/dashboard.html");
             }
-        }
+        } else {
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+            if (error) throw error;
 
-        // 🎯 फिक्स: अगर लॉगिन नहीं है तो पॉपअप खोलो और डेटा सुरक्षित करो
-        function accessCategory(categoryName, categoryId) {
-            const userEmail = localStorage.getItem('userEmail');
-            
-            if (!userEmail || userEmail === "null" || userEmail.trim() === "") {
-                localStorage.setItem('pendingCategoryName', categoryName);
-                localStorage.setItem('pendingCategoryId', categoryId);
-                openAuthModal('signin');
-            } else {
-                window.location.href = `dashboard.html?category=${encodeURIComponent(categoryName)}&catid=${categoryId}`;
-            }
-        }
-
-        async function executeAuthentication() {
-            const email = document.getElementById('auth-email').value.trim();
-            const password = document.getElementById('auth-password').value;
-
-            if(!email || !password) {
-                alert("Please complete the required fields.");
-                return;
-            }
-
-            try {
-                if (currentModalMode === "signin") {
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                    if (error) throw error;
-
-                    localStorage.setItem('userEmail', data.user.email);
-                    closeAuthModal();
-                    
-                    const savedName = localStorage.getItem('pendingCategoryName');
-                    const savedId = localStorage.getItem('pendingCategoryId');
-
-                    if (savedName && savedId) {
-                        localStorage.removeItem('pendingCategoryName');
-                        localStorage.removeItem('pendingCategoryId');
-                        window.location.replace(`dashboard.html?category=${encodeURIComponent(savedName)}&catid=${savedId}`);
-                    } else {
-                        window.location.replace("dashboard.html");
-                    }
-                } else {
-                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                    if (error) throw error;
-
-                    alert("Registration successful! Initiating Sign In mode.");
-                    currentModalMode = "signin";
-                    updateModalUI();
-                }
-            } catch (err) {
-                alert(`Error: ${err.message}`);
-            }
-        }
-
-        async function signInWithGoogleOAuth() {
-            try {
-                const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo: window.location.origin + window.location.pathname 
-                    }
-                });
-                if (error) throw error;
-            } catch (err) {
-                alert(`Google Auth Error: ${err.message}`);
-            }
-        }
-
-        function openAuthModal(mode) {
-            currentModalMode = mode;
-            document.getElementById('auth-modal').classList.remove('hidden');
+            alert("Registration successful! Initiating Sign In mode.");
+            currentModalMode = "signin";
             updateModalUI();
         }
+    } catch (err) {
+        alert(`Error: ${err.message}`);
+    }
+}
 
-        document.getElementById('auth-modal').addEventListener('click', function(e) {
-            if(e.target === this) closeAuthModal();
+async function signInWithGoogleOAuth() {
+    try {
+        const { data, error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin + window.location.pathname 
+            }
         });
+        if (error) throw error;
+    } catch (err) {
+        alert(`Google Auth Error: ${err.message}`);
+    }
+}
 
-        function closeAuthModal() {
-            document.getElementById('auth-modal').classList.add('hidden');
-        }
+function openAuthModal(mode) {
+    currentModalMode = mode;
+    document.getElementById('auth-modal').classList.remove('hidden');
+    updateModalUI();
+}
 
-        function toggleModalMode() {
-            currentModalMode = currentModalMode === "signin" ? "signup" : "signin";
-            updateModalUI();
-        }
+document.getElementById('auth-modal').addEventListener('click', function(e) {
+    if(e.target === this) closeAuthModal();
+});
 
-        function updateModalUI() {
-            const title = document.getElementById('modal-title');
-            const btn = document.getElementById('modal-submit-btn');
-            const link = document.getElementById('modal-toggle-link');
+function closeAuthModal() {
+    document.getElementById('auth-modal').classList.add('hidden');
+}
 
-            if (currentModalMode === "signin") {
-                title.innerText = "Sign In Required";
-                btn.innerText = "Verify Profile";
-                link.innerText = "Don't have an account? Sign Up";
-            } else {
-                title.innerText = "Create Student Profile";
-                btn.innerText = "Register Profile";
-                link.innerText = "Already have an account? Sign In";
-            }
-        }
+function toggleModalMode() {
+    currentModalMode = currentModalMode === "signin" ? "signup" : "signin";
+    updateModalUI();
+}
 
-        function handleUserLogout() {
-            localStorage.removeItem('userEmail');
-            alert("Session terminated.");
-            checkActiveSessionState();
-            window.location.reload();
-        }
-    </script>
+function updateModalUI() {
+    const title = document.getElementById('modal-title');
+    const btn = document.getElementById('modal-submit-btn');
+    const link = document.getElementById('modal-toggle-link');
+
+    if (currentModalMode === "signin") {
+        title.innerText = "Sign In Required";
+        btn.innerText = "Verify Profile";
+        link.innerText = "Don't have an account? Sign Up";
+    } else {
+        title.innerText = "Create Student Profile";
+        btn.innerText = "Register Profile";
+        link.innerText = "Already have an account? Sign In";
+    }
+}
+
+function handleUserLogout() {
+    localStorage.removeItem('userEmail');
+    alert("Session terminated.");
+    checkActiveSessionState();
+    window.location.reload();
+}
+</script>
 </body>
 </html>
