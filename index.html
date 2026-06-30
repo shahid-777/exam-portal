@@ -126,65 +126,35 @@
 
         let currentModalMode = "signin";
 
-        // 🎯 1. सिंक्रोनाइज़्ड लोड इवेंट
-       window.onload = async function() {
-    const studentSession = localStorage.getItem('userEmail');
-    const adminSession = localStorage.getItem('adminEmail');
+        window.onload = async function() {
+            const studentSession = localStorage.getItem('userEmail');
+            const adminSession = localStorage.getItem('adminEmail');
 
-    // 1. अगर लोकल स्टोरेज में ईमेल पहले से है, तो सही डैशबोर्ड पर भेजें
-    if (studentSession && studentSession !== "null" && studentSession.trim() !== "") {
-        // चेक करें कि क्या कोई कैटेगरी पेंडिंग थी (सिर्फ लॉगिन होने पर ही काम करेगा)
-        const savedName = localStorage.getItem('pendingCategoryName');
-        const savedId = localStorage.getItem('pendingCategoryId');
-        
-        if (savedName && savedId) {
-            localStorage.removeItem('pendingCategoryName');
-            localStorage.removeItem('pendingCategoryId');
-            window.location.replace(`dashboard.html?category=${encodeURIComponent(savedName)}&catid=${savedId}`);
-            return;
-        }
-
-        window.location.replace("dashboard.html");
-        return;
-    }
-    
-    if (adminSession && adminSession !== "null" && adminSession.trim() !== "") {
-        window.location.replace("admin_dashboard.html");
-        return;
-    }
-
-    // 2. केवल OAuth/Supabase लाइव सेशन चेक करें अगर लोकल स्टोरेज खाली हो
-    try {
-        const { data: { session }, error } = await supabaseClient.auth.getSession();
-        
-        if (session && session.user && session.user.email) {
-            localStorage.setItem('userEmail', session.user.email);
-            
-            // लॉगिन सफल होने के बाद पेंडिंग कैटेगरी चेक करें
-            const savedName = localStorage.getItem('pendingCategoryName');
-            const savedId = localStorage.getItem('pendingCategoryId');
-            
-            if (savedName && savedId) {
-                localStorage.removeItem('pendingCategoryName');
-                localStorage.removeItem('pendingCategoryId');
-                window.location.replace(`dashboard.html?category=${encodeURIComponent(savedName)}&catid=${savedId}`);
+            if (studentSession && studentSession !== "null" && studentSession.trim() !== "") {
+                window.location.replace("dashboard.html");
+                return;
+            }
+            if (adminSession && adminSession !== "null" && adminSession.trim() !== "") {
+                window.location.replace("admin_dashboard.html");
                 return;
             }
 
-            window.location.replace("dashboard.html"); 
-            return;
-        }
-    } catch (err) {
-        console.error("Session sync error:", err);
-    }
-    
-    // 3. अगर यूजर लॉग इन नहीं है, तो रीडायरेक्ट न करें, उसे index.html का UI देखने दें
-    checkActiveSessionState();
-};
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                if (session && session.user && session.user.email) {
+                    localStorage.setItem('userEmail', session.user.email);
+                    window.location.replace("dashboard.html"); 
+                    return;
+                }
+            } catch (err) {
+                console.error("Session sync error:", err);
+            }
+            
+            checkActiveSessionState();
+        };
 
         function checkActiveSessionState() {
             const userEmail = localStorage.getItem('userEmail');
-            
             const btnSignin = document.getElementById('btn-signin-nav');
             const btnSignup = document.getElementById('btn-signup-nav');
             const txtEmail = document.getElementById('user-display-email');
@@ -206,11 +176,11 @@
             }
         }
 
-        // 🎯 2. कैटेगरी क्लिक हैंडलर
+        // 🎯 1. कैटेगरी क्लिक हैंडलर (सुरक्षित ऑथेंटिकेशन चेकिंग)
         function accessCategory(categoryName, categoryId) {
             const userEmail = localStorage.getItem('userEmail');
             
-            if (!userEmail) {
+            if (!userEmail || userEmail === "null" || userEmail.trim() === "") {
                 localStorage.setItem('pendingCategoryName', categoryName);
                 localStorage.setItem('pendingCategoryId', categoryId);
                 openAuthModal('signin');
@@ -219,7 +189,6 @@
             }
         }
 
-        // 🎯 3. ट्रेडिशनल ईमेल/पासवर्ड ऑथेंटिकेशन सबमिट हैंडलर
         async function executeAuthentication() {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value;
@@ -235,20 +204,17 @@
                     if (error) throw error;
 
                     localStorage.setItem('userEmail', data.user.email);
-                    alert("Profile authenticated successfully!");
-                    
                     closeAuthModal();
-                    checkActiveSessionState();
-
+                    
                     const savedName = localStorage.getItem('pendingCategoryName');
                     const savedId = localStorage.getItem('pendingCategoryId');
 
                     if (savedName && savedId) {
                         localStorage.removeItem('pendingCategoryName');
                         localStorage.removeItem('pendingCategoryId');
-                        window.location.href = `dashboard.html?category=${encodeURIComponent(savedName)}&catid=${savedId}`;
+                        window.location.replace(`dashboard.html?category=${encodeURIComponent(savedName)}&catid=${savedId}`);
                     } else {
-                        window.location.reload();
+                        window.location.replace("dashboard.html");
                     }
                 } else {
                     const { data, error } = await supabaseClient.auth.signUp({ email, password });
@@ -263,7 +229,6 @@
             }
         }
 
-        // 🎯 4. गूगल OAuth ऑथेंटिकेशन लॉन्चर
         async function signInWithGoogleOAuth() {
             try {
                 const { data, error } = await supabaseClient.auth.signInWithOAuth({
