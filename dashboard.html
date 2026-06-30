@@ -6,6 +6,7 @@
     <link rel="icon" type="image/png" href="logo.png">
     <title>Student Dashboard — Exam Explorer</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-950 font-sans min-h-screen text-slate-200 flex flex-col justify-between select-none">
 
@@ -38,46 +39,19 @@
     <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-8">
         
         <div id="categories-view-container" class="space-y-4">
-            
-            <div onclick="selectDashboardCategory('Rajasthan Computer Instructor', 1)" class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/30 hover:bg-slate-900/70 transition transform hover:-translate-y-0.5 cursor-pointer group">
-                <div class="flex items-center space-x-4 min-w-0">
-                    <div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-xl shrink-0 text-blue-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                        </svg>
-                    </div>
-                    <h4 class="text-xs sm:text-sm font-black text-slate-200 tracking-wider uppercase truncate">RAJASTHAN COMPUTER INSTRUCTOR</h4>
-                </div>
-                <span class="text-[10px] font-mono font-bold text-slate-500 group-hover:text-blue-400 transition uppercase tracking-wider shrink-0">Open Folder &rarr;</span>
+            <div class="text-center py-12">
+                <p class="text-xs text-slate-500 font-mono animate-pulse">Connecting to database architecture...</p>
             </div>
-
-            <div onclick="selectDashboardCategory('Patwari Recruitment Grid', 4)" class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-purple-500/30 hover:bg-slate-900/70 transition transform hover:-translate-y-0.5 cursor-pointer group">
-                <div class="flex items-center space-x-4 min-w-0">
-                    <div class="bg-purple-600/10 border border-purple-500/20 p-3 rounded-xl shrink-0 text-purple-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                        </svg>
-                    </div>
-                    <h4 class="text-xs sm:text-sm font-black text-slate-200 tracking-wider uppercase truncate">PATWARI RECRUITMENT GRID</h4>
-                </div>
-                <span class="text-[10px] font-mono font-bold text-slate-500 group-hover:text-purple-400 transition uppercase tracking-wider shrink-0">Open Folder &rarr;</span>
-            </div>
-
         </div>
 
         <div id="exams-view-container" class="space-y-6 hidden">
             
-            <button onclick="resetToCategoriesView()" class="inline-flex items-center space-x-2 text-xs font-mono font-bold text-blue-400 hover:text-blue-300 transition bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/10 px-3 py-1.5 rounded-xl cursor-pointer">
+            <button onclick="resetToCategoriesView()" class="inline-flex items-center space-x-2 text-xs font-mono font-bold text-blue-400 hover:text-blue-300 transition bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/10 px-3 py-1.5 rounded-xl cursor-pointer shadow-md">
                 <span>&larr;</span> <span>Back to Categories</span>
             </button>
 
             <div id="active-exams-list-target" class="space-y-3">
-                <div class="bg-slate-900/20 border border-white/5 p-4 rounded-xl flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-bold text-slate-300">Loading Exam Content...</p>
-                        <p class="text-[10px] font-mono text-slate-600 mt-1">Fetching authorized data sheets...</p>
-                    </div>
-                </div>
+                <p class="text-xs text-center text-slate-500 font-mono">Compiling authorized data sheets...</p>
             </div>
         </div>
 
@@ -88,8 +62,11 @@
     </footer>
 
     <script>
-        // 🎯 1. ऑथेंटिकेशन और व्यू इनिशियलाइजेशन
-        window.onload = function() {
+        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        window.onload = async function() {
             const activeUser = localStorage.getItem('userEmail');
             if (!activeUser || activeUser === "null" || activeUser.trim() === "") {
                 window.location.replace("index.html");
@@ -98,71 +75,117 @@
             
             document.getElementById('display-user-session').innerText = activeUser.toLowerCase();
 
-            // यूआरएल से चेक करें कि क्या यूजर index से किसी कैटेगरी पर क्लिक करके आया है
+            // 1. डेटाबेस की सारी कैटेगरीज लोड करें
+            await fetchAllDatabaseCategories();
+
+            // 2. यूआरएल पैरामीटर्स चेक करें
             const urlParams = new URLSearchParams(window.location.search);
             const categoryParam = urlParams.get('category');
             const catIdParam = urlParams.get('catid');
 
             if (categoryParam && catIdParam && catIdParam !== 'undefined') {
-                // अगर इंडेक्स से डायरेक्ट क्लिक करके आया है, तो सीधे उसका एग्जाम लोड करें
                 selectDashboardCategory(decodeURIComponent(categoryParam), catIdParam);
             } else {
-                // अगर सिर्फ नॉर्मल साइन इन बटन से आया है, तो कैटेगरीज लिस्ट व्यू दिखाएं
                 resetToCategoriesView();
             }
         };
 
-        // 🎯 2. कैटेगरी चुनने पर क्या होगा (View 1 छुपाओ, View 2 दिखाओ)
-        function selectDashboardCategory(categoryName, categoryId) {
-            // यूआरएल को साफ-सुथरा अपडेट करें (बिना पेज रीफ्रेश किए) ताकि बैक बटन सही काम करे
-            const newUrl = `${window.location.pathname}?category=${encodeURIComponent(categoryName)}&catid=${categoryId}`;
-            window.history.pushState({ path: newUrl }, '', newUrl);
+        // 🎯 डेटाबेस से सभी कैटेगरीज डायनामिकली फेच करना
+        async function fetchAllDatabaseCategories() {
+            try {
+                const { data, error } = await supabaseClient.from('categories').select('*');
+                if (error) throw error;
 
-            // UI टेक्सट्स बदलें
-            document.getElementById('active-category-title').innerText = categoryName.toUpperCase();
-            document.getElementById('active-category-desc').innerText = "Review the compiled list of active exam slots below.";
+                const container = document.getElementById('categories-view-container');
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<p class="text-xs font-mono text-center text-slate-600">No folders mapped in structural tables.</p>`;
+                    return;
+                }
 
-            // लेआउट व्यूज को स्विच करें
-            document.getElementById('categories-view-container').classList.add('hidden');
-            document.getElementById('exams-view-container').classList.remove('hidden');
-
-            // 🚀 आपके पुराने फंक्शन को कॉल करें जो डेटाबेस से डेटा लाता है
-            if (typeof fetchActiveCategoryExams === "function") {
-                fetchActiveCategoryExams(categoryId);
-            } else {
-                // डमी आकर्षक फीडबैक अगर आपका ओरिजिनल बैकएंड कनेक्टेड न हो
-                document.getElementById('active-exams-list-target').innerHTML = `
-                    <div class="bg-slate-900/50 border border-emerald-500/10 p-5 rounded-2xl flex items-center justify-between shadow-xl">
-                        <div class="space-y-1">
-                            <span class="px-2 py-0.5 text-[8px] font-mono font-bold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-md uppercase">ACTIVE TEST SHEETS</span>
-                            <h4 class="text-xs sm:text-sm font-bold text-slate-200 mt-1 uppercase">${categoryName} Mock Test Paper 01</h4>
-                            <p class="text-[9px] font-mono text-slate-500">Duration: 180 Mins | Total Marks: 100</p>
+                // प्रीमियम फोल्डर UI मैपिंग
+                container.innerHTML = data.map(cat => `
+                    <div onclick="selectDashboardCategory('${cat.name}', ${cat.id})" class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/30 hover:bg-slate-900/70 transition transform hover:-translate-y-0.5 cursor-pointer group">
+                        <div class="flex items-center space-x-4 min-w-0">
+                            <div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-xl shrink-0 text-blue-400">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-xs sm:text-sm font-black text-slate-200 tracking-wider uppercase truncate">${cat.name}</h4>
                         </div>
-                        <button class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] font-mono uppercase px-3 py-2 rounded-xl transition shadow-lg shadow-blue-600/10">Start</button>
+                        <span class="text-[10px] font-mono font-bold text-slate-500 group-hover:text-blue-400 transition uppercase tracking-wider shrink-0">Open Folder &rarr;</span>
                     </div>
-                `;
+                `).join('');
+
+            } catch (err) {
+                console.error("Failed to load categories:", err);
+                document.getElementById('categories-view-container').innerHTML = `<p class="text-xs text-red-400 font-mono text-center">Data structure fetch exception error.</p>`;
             }
         }
 
-        // 🎯 3. वापस कैटेगरीज लिस्ट में आने का लॉजिक (View 2 छुपाओ, View 1 दिखाओ)
+        // 🎯 कैटेगरी चुनने पर व्यूज स्विच करना
+        async function selectDashboardCategory(categoryName, categoryId) {
+            const newUrl = `${window.location.pathname}?category=${encodeURIComponent(categoryName)}&catid=${categoryId}`;
+            window.history.pushState({ path: newUrl }, '', newUrl);
+
+            document.getElementById('active-category-title').innerText = categoryName.toUpperCase();
+            document.getElementById('active-category-desc').innerText = "Review the compiled list of active exam slots below.";
+
+            document.getElementById('categories-view-container').classList.add('hidden');
+            document.getElementById('exams-view-container').classList.remove('hidden');
+
+            await fetchActiveCategoryExams(categoryId);
+        }
+
+        // 🎯 केवल सेलेक्टेड कैटेगरी के एग्जाम्स रेंडर करना
+        async function fetchActiveCategoryExams(categoryId) {
+            const listTarget = document.getElementById('active-exams-list-target');
+            listTarget.innerHTML = `<p class="text-xs font-mono text-center text-slate-500 animate-pulse">Decrypting encrypted question vaults...</p>`;
+
+            try {
+                const { data, error } = await supabaseClient.from('exams').select('*').eq('category_id', categoryId);
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    listTarget.innerHTML = `
+                        <div class="text-center p-8 bg-slate-900/20 border border-dashed border-white/5 rounded-2xl">
+                            <p class="text-xs font-mono text-slate-500">No examinations are currently active in this stream folder.</p>
+                        </div>`;
+                    return;
+                }
+
+                // आकर्षक परीक्षा कार्ड्स
+                listTarget.innerHTML = data.map(exam => `
+                    <div class="bg-slate-900/50 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/20 transition">
+                        <div class="space-y-1">
+                            <span class="px-2 py-0.5 text-[8px] font-mono font-bold bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-md uppercase">LIVE METRIC SHEET</span>
+                            <h4 class="text-xs sm:text-sm font-bold text-slate-200 mt-1 uppercase">${exam.title || exam.name}</h4>
+                            <p class="text-[9px] font-mono text-slate-500">Duration: ${exam.duration || '180'} Mins | Authorization Block: EX-${exam.id}</p>
+                        </div>
+                        <button class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] font-mono uppercase px-4 py-2 rounded-xl transition shadow-lg shadow-blue-600/10 cursor-pointer">Start</button>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error("Failed to load exams:", err);
+                listTarget.innerHTML = `<p class="text-xs text-red-400 font-mono text-center">Error parsing authorized parameters.</p>`;
+            }
+        }
+
+        // 🎯 वापस मुख्य कैटेगरी व्यू में जाना
         function resetToCategoriesView() {
-            // यूआरएल से पैरामीटर्स हटा दें ताकि फ्रेश डैशबोर्ड दिखे
             const cleanUrl = window.location.pathname;
             window.history.pushState({ path: cleanUrl }, '', cleanUrl);
 
-            // हेडिंग्स वापस डिफॉल्ट करें
             document.getElementById('active-category-title').innerText = "AVAILABLE EXAM STREAMS";
             document.getElementById('active-category-desc').innerText = "Select a category below to explore its active examinations list.";
 
-            // लेआउट व्यूज रिस्टोर करें
             document.getElementById('exams-view-container').classList.add('hidden');
             document.getElementById('categories-view-container').classList.remove('hidden');
         }
 
-        // 🎯 4. लॉगआउट
         function handleUserLogout() {
             localStorage.removeItem('userEmail');
-            alert("Session terminated.");
             window.location.replace("index.html");
         }
     </script>
