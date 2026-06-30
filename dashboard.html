@@ -233,6 +233,23 @@
             localStorage.clear();
             window.location.replace("index.html");
         }
+        // Example implementation with error handling
+async function fetchExamData() {
+    try {
+        const { data, error } = await supabase
+            .from('exams')
+            .select('subject, duration, questions') // select only what you need
+            .timeout(10000); // Set a reasonable timeout threshold (10s)
+
+        if (error) throw error;
+        
+        // Render data...
+    } catch (err) {
+        console.error("Supabase Fetch Failed:", err.message);
+        // Alert the user or show a "Retry" button
+        alert("Network timeout. Please check your internet connection and try again.");
+    }
+}
     </script>
 </body>
 </html>
