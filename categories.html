@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="logo.png">
+    <title>Exam Hub — Explore Categories</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-gradient {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2e1065, #020617);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+    </style>
+</head>
+<body class="animate-gradient font-sans min-h-screen text-slate-200 flex flex-col justify-between">
+
+    <header class="w-full bg-slate-950/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg shrink-0 z-50 sticky top-0">
+        <div class="flex items-center space-x-3">
+            <div class="bg-white/95 p-1 rounded-xl shadow-inner shadow-black/20">
+                <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-sm font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 uppercase leading-none">EXAM PORTAL</span>
+                <span class="text-[9px] font-mono font-bold text-slate-500 tracking-wider mt-0.5 uppercase">Academic Hub Matrix</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span id="user-display" class="text-xs font-mono font-bold text-slate-400 hidden sm:inline-block">Welcome, Explorer</span>
+            <button onclick="logout()" class="bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 text-xs font-bold py-2 px-4 rounded-xl transition uppercase tracking-wider">Logout</button>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-8 space-y-10">
+        
+        <div class="text-center max-w-2xl mx-auto space-y-4">
+            <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-blue-400 uppercase">
+                Select Category To Browse Tests
+            </h1>
+            <p class="text-xs text-slate-400 font-medium font-mono uppercase tracking-wider">
+                Isolate structural schemas according to dynamic recruitment syllabus matrices.
+            </p>
+            
+            <div class="relative pt-2">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                </div>
+                <input type="text" id="category-search" oninput="filterCategories()" placeholder="Search exam name (e.g. RAS, Patwari, Computer Science)..." class="w-full bg-slate-950/40 backdrop-blur-md border border-white/10 focus:border-blue-500/50 p-4 pl-12 text-sm rounded-2xl outline-none transition focus:ring-4 focus:ring-blue-500/5 font-semibold text-white shadow-2xl">
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest px-1">POPULAR EXAMINATION DOMAINS</h3>
+            <div id="categories-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="animate-pulse bg-slate-900/40 border border-white/5 h-24 rounded-2xl"></div>
+                <div class="animate-pulse bg-slate-900/40 border border-white/5 h-24 rounded-2xl"></div>
+                <div class="animate-pulse bg-slate-900/40 border border-white/5 h-24 rounded-2xl"></div>
+                <div class="animate-pulse bg-slate-900/40 border border-white/5 h-24 rounded-2xl"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 backdrop-blur-sm text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0 mt-10">
+        &copy; JECRC University — Examination Content Management Cluster Node
+    </footer>
+
+    <script>
+        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let localCategoriesCache = [];
+
+        window.onload = function() {
+            const userEmail = localStorage.getItem('userEmail');
+            if(!userEmail) {
+                window.location.replace("index.html");
+                return;
+            }
+            document.getElementById('user-display').innerText = `Node Active: ${userEmail}`;
+            fetchExamCategories();
+        };
+
+        // 🔄 FETCH AND GENERATE SYSTEM CATEGORIES MATRIX VIA DATABASE
+        async function fetchExamCategories() {
+            try {
+                // Fetch direct categorical list array mapping from Supabase table 'exam_categories'
+                const { data, error } = await supabaseClient
+                    .from('exam_categories')
+                    .select('*')
+                    .order('category_name', { ascending: true });
+
+                if(error) throw error;
+
+                localCategoriesCache = data || [];
+                renderCategories(localCategoriesCache);
+
+            } catch (err) {
+                document.getElementById('categories-grid').innerHTML = `
+                    <div class="col-span-full text-center text-red-400 font-mono text-xs border border-red-500/10 p-6 rounded-2xl bg-red-500/5">
+                        Failed to map dynamic framework pipelines. Contact Root Server Administration.
+                    </div>`;
+            }
+        }
+
+        // 🎨 RENDER THE PREMIUM DYNAMIC LAYOUT CARD STRUCTURE
+        function renderCategories(list) {
+            const grid = document.getElementById('categories-grid');
+            grid.innerHTML = "";
+
+            if(list.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center text-slate-500 font-mono text-xs py-10">
+                        No examination nodes match query constraints.
+                    </div>`;
+                return;
+            }
+
+            list.forEach(cat => {
+                const card = document.createElement('div');
+                card.className = "group bg-slate-900/40 hover:bg-slate-900/80 border border-white/5 hover:border-blue-500/30 p-5 rounded-2xl flex items-center justify-between cursor-pointer transition transform hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/5 duration-300 relative overflow-hidden";
+                card.onclick = () => window.location.href = `syllabus-view.html?category_id=${cat.id}`;
+
+                card.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-gradient-to-br from-blue-600/20 to-indigo-600/10 group-hover:from-blue-600/30 group-hover:to-indigo-600/20 p-3.5 rounded-xl border border-white/5 group-hover:border-blue-500/20 transition duration-300 text-blue-400 group-hover:text-blue-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
+                        </div>
+                        <div class="flex flex-col">
+                            <h4 class="text-base font-bold text-slate-100 group-hover:text-blue-400 transition tracking-wide uppercase">${cat.category_name}</h4>
+                            <p class="text-[11px] text-slate-500 group-hover:text-slate-400 transition font-medium mt-0.5">${cat.description || 'Explore custom exam structure templates and structured tests.'}</p>
+                        </div>
+                    </div>
+                    <div class="text-slate-600 group-hover:text-blue-400 transform group-hover:translate-x-1 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                    </div>
+                    <div class="absolute bottom-0 left-0 h-[2px] w-0 bg-blue-500 group-hover:w-full transition-all duration-500"></div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // 🔍 REAL-TIME SYSTEM SEARCH ENGINE FOR INSTANT QUERY LOOKUP
+        function filterCategories() {
+            const query = document.getElementById('category-search').value.toLowerCase().trim();
+            const filtered = localCategoriesCache.filter(cat => 
+                cat.category_name.toLowerCase().includes(query) || 
+                (cat.description && cat.description.toLowerCase().includes(query))
+            );
+            renderCategories(filtered);
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.replace("index.html");
+        }
+    </script>
+</body>
+</html>
