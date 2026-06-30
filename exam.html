@@ -27,18 +27,47 @@
         </div>
     </header>
 
-    <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-8 space-y-6">
+    <section class="w-full bg-slate-900/30 border-b border-white/5 py-3 px-6 sticky top-[65px] z-40 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto flex flex-wrap gap-4 items-center justify-between text-xs font-mono">
+            <div class="flex items-center space-x-6">
+                <div>Total Questions: <span id="stat-total" class="text-blue-400 font-bold">0</span></div>
+                <div>Attempted: <span id="stat-attempted" class="text-green-400 font-bold">0</span></div>
+                <div>Marked for Review: <span id="stat-marked" class="text-yellow-400 font-bold">0</span></div>
+                <div>Unattempted: <span id="stat-left" class="text-slate-400 font-bold">0</span></div>
+            </div>
+        </div>
+    </section>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-6">
         
-        <div id="questions-pipeline-wrapper" class="space-y-6">
-            <div class="text-center text-slate-500 font-mono text-xs py-12 animate-pulse uppercase">
-                Compiling Objective Array Matrices...
+        <div class="lg:col-span-3 space-y-6">
+            <div id="questions-pipeline-wrapper" class="space-y-6">
+                <div class="text-center text-slate-500 font-mono text-xs py-12 animate-pulse uppercase">
+                    Compiling Objective Array Matrices...
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/5 flex justify-end">
+                <button onclick="terminateAssessmentProcess()" class="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-3 px-8 rounded-xl shadow-xl uppercase text-xs tracking-widest transition transform active:scale-[0.99] cursor-pointer">
+                    Submit Test Evaluation
+                </button>
             </div>
         </div>
 
-        <div class="pt-4 border-t border-white/5 flex justify-end">
-            <button onclick="terminateAssessmentProcess()" class="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-3 px-8 rounded-xl shadow-xl uppercase text-xs tracking-widest transition transform active:scale-[0.99] cursor-pointer">
-                Submit Test Evaluation
-            </button>
+        <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-5 h-fit sticky top-[130px] space-y-4 shadow-xl">
+            <div class="border-b border-white/5 pb-2">
+                <h4 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">Question Palette</h4>
+                <p class="text-[9px] text-slate-500 font-mono mt-0.5">Quick Navigation Cluster</p>
+            </div>
+            
+            <div id="palette-grid-buttons" class="grid grid-cols-5 gap-2">
+                </div>
+
+            <div class="pt-2 border-t border-white/5 space-y-1.5 text-[10px] font-mono text-slate-400">
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-slate-800 border border-white/10 rounded"></span> <span>Unvisited / Unattempted</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-green-600 rounded"></span> <span>Attempted</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-yellow-500 rounded"></span> <span>Marked for Review</span></div>
+            </div>
         </div>
 
     </main>
@@ -54,6 +83,10 @@
 
         let globalLoadedQuestions = [];
         let networkTimerInterval = null;
+        
+        // Tracking data mapping structures
+        let userResponses = {}; 
+        let markedForReviewSet = new Set();
 
         window.onload = function() {
             const sessionEmail = localStorage.getItem('userEmail');
@@ -66,7 +99,6 @@
             streamTargetExamJson(decodeURIComponent(targetSubject));
         };
 
-        // 🔄 FETCH DATA FROM 'EXAMS' BY EXACT SUBJECT MATCHING
         async function streamTargetExamJson(subjectName) {
             try {
                 const { data, error } = await supabaseClient
@@ -79,10 +111,11 @@
 
                 document.getElementById('live-subject-title').innerText = data.subject.toUpperCase();
                 
-                // Parse questions array format securely
                 globalLoadedQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
                 
                 renderAssessmentLayout(globalLoadedQuestions);
+                renderNavigationPalette(globalLoadedQuestions.length);
+                updateLiveStatusCounters();
                 initializeRuntimeClock(parseInt(data.duration_minutes) || 60);
 
             } catch (err) {
@@ -107,17 +140,22 @@
                 q.options.forEach((opt, optIdx) => {
                     optionsHtml += `
                         <label class="flex items-center space-x-3 bg-slate-900/40 hover:bg-slate-900/80 border border-white/5 hover:border-blue-500/20 p-3.5 rounded-xl cursor-pointer transition">
-                            <input type="radio" name="question-${index}" value="${optIdx}" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
+                            <input type="radio" name="question-${index}" value="${optIdx}" onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
                             <span class="text-xs text-slate-300 font-medium">${opt}</span>
                         </label>
                     `;
                 });
 
                 container.innerHTML += `
-                    <div class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl">
-                        <div class="flex items-start space-x-3">
-                            <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q.${index + 1}</span>
-                            <h4 class="text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${q.title || q.question || 'Objective Question'}</h4>
+                    <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="flex items-start space-x-3">
+                                <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
+                                <h4 class="text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${q.title || q.question || 'Objective Question'}</h4>
+                            </div>
+                            <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-yellow-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-yellow-400 transition shrink-0">
+                                Mark Review
+                            </button>
                         </div>
                         <div class="grid grid-cols-1 gap-2.5 pt-1">
                             ${optionsHtml}
@@ -125,6 +163,73 @@
                     </div>
                 `;
             });
+        }
+
+        // RENDER RIGHT NAVIGATION PALETTE
+        function renderNavigationPalette(totalCount) {
+            const grid = document.getElementById('palette-grid-buttons');
+            grid.innerHTML = "";
+            for (let i = 0; i < totalCount; i++) {
+                grid.innerHTML += `
+                    <button onclick="scrollToQuestion(${i})" id="palette-btn-${i}" class="bg-slate-800 border border-white/5 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg hover:bg-slate-700 transition cursor-pointer text-center">
+                        ${i + 1}
+                    </button>
+                `;
+            }
+        }
+
+        // ONCHANGE RESPONSE INTERCEPTOR
+        function registerRadioResponse(qIdx, optIdx) {
+            userResponses[qIdx] = optIdx;
+            updateLiveStatusCounters();
+            
+            // Palette button update logic
+            const pBtn = document.getElementById(`palette-btn-${qIdx}`);
+            if(!markedForReviewSet.has(qIdx)) {
+                pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+            }
+        }
+
+        // TOGGLE MARK FOR REVIEW HANDLER
+        function toggleMarkForReview(qIdx) {
+            const mBtn = document.getElementById(`mark-btn-${qIdx}`);
+            const pBtn = document.getElementById(`palette-btn-${qIdx}`);
+            
+            if (markedForReviewSet.has(qIdx)) {
+                markedForReviewSet.delete(qIdx);
+                mBtn.classList.remove("border-yellow-500/50", "text-yellow-400", "bg-yellow-500/10");
+                
+                // Restore palette color based on completion response status
+                if (userResponses[qIdx] !== undefined) {
+                    pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+                } else {
+                    pBtn.className = "bg-slate-800 border border-white/5 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+                }
+            } else {
+                markedForReviewSet.add(qIdx);
+                mBtn.classList.add("border-yellow-500/50", "text-yellow-400", "bg-yellow-500/10");
+                pBtn.className = "bg-yellow-500 text-slate-950 font-mono text-xs font-black py-2 rounded-lg transition text-center cursor-pointer";
+            }
+            updateLiveStatusCounters();
+        }
+
+        // PALETTE NAVIGATION CLICK ANIMATION
+        function scrollToQuestion(qIdx) {
+            const el = document.getElementById(`question-card-${qIdx}`);
+            if(el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // METRICS COUNTER EVALUATOR
+        function updateLiveStatusCounters() {
+            const total = globalLoadedQuestions.length;
+            const attempted = Object.keys(userResponses).length;
+            const marked = markedForReviewSet.size;
+            const unattempted = total - attempted;
+
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-attempted').innerText = attempted;
+            document.getElementById('stat-marked').innerText = marked;
+            document.getElementById('stat-left').innerText = unattempted;
         }
 
         function initializeRuntimeClock(minutes) {
@@ -150,9 +255,9 @@
             let absoluteScore = 0;
 
             globalLoadedQuestions.forEach((q, index) => {
-                const checkedRadio = document.querySelector(`input[name="question-${index}"]:checked`);
-                if(checkedRadio) {
-                    if(parseInt(checkedRadio.value) === parseInt(q.correct)) {
+                const selectedOpt = userResponses[index];
+                if (selectedOpt !== undefined) {
+                    if (parseInt(selectedOpt) === parseInt(q.correct)) {
                         absoluteScore++;
                     }
                 }
