@@ -43,6 +43,10 @@
             <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Skipped</div>
             <div id="metric-skipped" class="text-xl font-black text-slate-400 mt-1">0</div>
         </div>
+            <div class="bg-slate-900/60 border border-blue-500/20 p-4 rounded-xl flex flex-col items-center">
+        <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Class Rank</span>
+        <span id="display-rank" class="text-xl font-mono font-black text-blue-400 mt-1">Calculating...</span>
+    </div>
     </section>
 
     <main class="flex-1 max-w-5xl w-full mx-auto px-6 py-8 space-y-6">
@@ -75,6 +79,71 @@
             }
             fetchResultMatrixPacket(resultId);
         };
+        // 1. मुख्य फैच फंक्शन (इसे अपने मौजूदा फंक्शन से मैच करें या अपडेट करें)
+async function fetchAndRenderAnalysis(id) {
+    try {
+        // करंट छात्र का रिज़ल्ट फैच करें
+        const { data: currentResult, error: fetchError } = await supabaseClient
+            .from('results')
+            .select('*')
+            .eq('id', id)
+            .maybeSingle();
+
+        if (fetchError || !currentResult) throw new Error("Result not found.");
+
+        // UI में बेसिक डेटा सेट करें
+        document.getElementById('display-subject').innerText = currentResult.subject;
+        document.getElementById('total-q').innerText = currentResult.total_questions;
+        document.getElementById('correct-q').innerText = currentResult.correct_answers;
+        document.getElementById('wrong-q').innerText = currentResult.wrong_answers;
+        document.getElementById('unattempted-q').innerText = currentResult.unattempted;
+
+        // 🎯 रैंक कैलकुलेट करने वाले फंक्शन को कॉल करें
+        await calculateRank(currentResult.subject, currentResult.score);
+
+        // पुराना रेंडरिंग लूप यहाँ जारी रखें...
+        const userResponses = typeof currentResult.user_responses_json === 'string' ? JSON.parse(currentResult.user_responses_json) : currentResult.user_responses_json;
+        const questionsSnapshot = typeof currentResult.questions_snapshot_json === 'string' ? JSON.parse(currentResult.questions_snapshot_json) : currentResult.questions_snapshot_json;
+        renderDetailedQuestionsAnalysis(questionsSnapshot, userResponses);
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById('display-rank').innerText = "--";
+    }
+}
+
+// 🎯 2. रैंक कैलकुलेट करने का नया फंक्शन
+async function calculateRank(subjectName, currentStudentScore) {
+    try {
+        // डेटाबेस से उस पर्टिकुलर सब्जेक्ट के सभी छात्रों के स्कोर मंगाएं
+        const { data: allScores, error } = await supabaseClient
+            .from('results')
+            .select('score')
+            .eq('subject', subjectName);
+
+        if (error) throw error;
+
+        if (allScores && allScores.length > 0) {
+            // स्कोर्स को केवल एक एरे में निकालें और बड़े से छोटे (Descending Order) में सॉर्ट करें
+            const sortedScores = allScores
+                .map(r => parseInt(r.score) || 0)
+                .sort((a, b) => b - a);
+
+            // करंट छात्र के स्कोर का पहला इंडेक्स (पायदान) ढूंढें
+            // +1 इसलिए क्योंकि इंडेक्स 0 से शुरू होता है
+            const rank = sortedScores.indexOf(parseInt(currentStudentScore) || 0) + 1;
+            const totalStudents = sortedScores.length;
+
+            // UI में रैंक सेट करें (जैसे: 1st out of 25)
+            document.getElementById('display-rank').innerText = `${rank} / ${totalStudents}`;
+        } else {
+            document.getElementById('display-rank').innerText = "1 / 1";
+        }
+    } catch (err) {
+        console.error("Rank calculation error:", err);
+        document.getElementById('display-rank').innerText = "Error";
+    }
+}
 
         async function fetchResultMatrixPacket(id) {
             try {
