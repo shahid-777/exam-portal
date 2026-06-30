@@ -138,41 +138,44 @@
         }
 
         // 🎯 FIX: Fetches data with mapped 'subject' & 'duration_minutes' columns
-        async function fetchActiveCategoryExams(categoryId) {
-            const listTarget = document.getElementById('active-exams-list-target');
-            listTarget.innerHTML = `<p class="text-xs font-mono text-center text-slate-500 animate-pulse">Decrypting encrypted question vaults...</p>`;
+                      async function fetchActiveCategoryExams(categoryId) {
+    const listTarget = document.getElementById('active-exams-list-target');
+    listTarget.innerHTML = `<p class="text-xs font-mono text-center text-slate-500 animate-pulse">Decrypting encrypted question vaults...</p>`;
 
-            try {
-                const { data, error } = await supabaseClient.from('exams').select('*').eq('category_id', categoryId);
-                if (error) throw error;
+    try {
+        const { data, error } = await supabaseClient.from('exams').select('*').eq('category_id', categoryId);
+        if (error) throw error;
 
-                if (!data || data.length === 0) {
-                    listTarget.innerHTML = `
-                        <div class="text-center p-8 bg-slate-900/20 border border-dashed border-white/5 rounded-2xl">
-                            <p class="text-xs font-mono text-slate-500">No examinations are currently active in this stream folder.</p>
-                        </div>`;
-                    return;
-                }
-
-                // UI mapping using exact 'subject' and 'duration_minutes' columns
-               // 🎯 इस हिस्से को fetchActiveCategoryExams फंक्शन के अंदर अपडेट करें
-listTarget.innerHTML = data.map(exam => `
-    <div class="bg-slate-900/50 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/20 transition">
-        <div class="space-y-1">
-            <span class="px-2 py-0.5 text-[8px] font-mono font-bold bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-md uppercase">LIVE METRIC SHEET</span>
-            <h4 class="text-xs sm:text-sm font-bold text-slate-200 mt-1 uppercase">${exam.subject || 'Untitled Exam'}</h4>
-            <p class="text-[9px] font-mono text-slate-500">Duration: ${exam.duration_minutes || '60'} Mins | Authorization Block: EX-${exam.id}</p>
-        </div>
-        <button onclick="startExamination(${exam.id})" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] font-mono uppercase px-4 py-2 rounded-xl transition shadow-lg shadow-blue-600/10 cursor-pointer">Start</button>
-    </div>
-`).join('');
-
-            } catch (err) {
-                console.error("Failed to load exams:", err);
-                listTarget.innerHTML = `<p class="text-xs text-red-400 font-mono text-center">Error parsing authorized parameters.</p>`;
-            }
+        if (!data || data.length === 0) {
+            listTarget.innerHTML = `
+                <div class="text-center p-8 bg-slate-900/20 border border-dashed border-white/5 rounded-2xl">
+                    <p class="text-xs font-mono text-slate-500">No examinations are currently active in this stream folder.</p>
+                </div>`;
+            return;
         }
 
+        // 🚀 फिक्स: यहाँ exam.id की जगह सीधे exam.subject पास किया जा रहा है ताकि undefined का लूप न बने
+        listTarget.innerHTML = data.map(exam => {
+            // अगर id कॉलम न मिले तो subject का उपयोग करें, या फिर जो भी वैलिड हो
+            const examToken = exam.id || exam.exam_id || encodeURIComponent(exam.subject);
+            
+            return `
+                <div class="bg-slate-900/50 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/20 transition">
+                    <div class="space-y-1">
+                        <span class="px-2 py-0.5 text-[8px] font-mono font-bold bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-md uppercase">LIVE METRIC SHEET</span>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-200 mt-1 uppercase">${exam.subject || 'Untitled Exam'}</h4>
+                        <p class="text-[9px] font-mono text-slate-500">Duration: ${exam.duration_minutes || '60'} Mins | Authorization Block: ACTIVE</p>
+                    </div>
+                    <button onclick="startExamination('${examToken}')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] font-mono uppercase px-4 py-2 rounded-xl transition shadow-lg shadow-blue-600/10 cursor-pointer">Start</button>
+                </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error("Failed to load exams:", err);
+        listTarget.innerHTML = `<p class="text-xs text-red-400 font-mono text-center">Error parsing authorized parameters.</p>`;
+    }
+}
         // 🎯 Reset view back to folder list
         function resetToCategoriesView() {
             const cleanUrl = window.location.pathname;
