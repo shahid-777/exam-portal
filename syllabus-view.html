@@ -123,79 +123,82 @@
         };
 
         // 🔄 RETRIEVE AND POPULATE EVERYTHING RELATIONAL IN ONE STREAM
-       // 🔄 RETRIEVE AND POPULATE EVERYTHING RELATIONAL IN ONE STREAM
-async function loadCategoryDetails(catId) {
-    try {
-        // 1. Fetch parent metadata category row
-        const { data: category, error } = await supabaseClient
-            .from('exam_categories')
-            .select('*')
-            .eq('id', catId)
-            .maybeSingle();
+        async function loadCategoryDetails(catId) {
+            try {
+                // 1. Fetch parent metadata category row
+                const { data: category, error } = await supabaseClient
+                    .from('exam_categories')
+                    .select('*')
+                    .eq('id', catId)
+                    .maybeSingle();
 
-        if (error || !category) throw new Error("Target record missing.");
+                if (error || !category) throw new Error("Target record missing.");
 
-        document.getElementById('category-title-header').innerText = category.category_name;
-        document.getElementById('main-category-title').innerText = category.category_name;
-        document.getElementById('main-category-desc').innerText = category.description || "Official blueprint tracking active.";
+                document.getElementById('category-title-header').innerText = category.category_name;
+                document.getElementById('main-category-title').innerText = category.category_name;
+                document.getElementById('main-category-desc').innerText = category.description || "Official blueprint tracking active.";
 
-        if (category.syllabus_html_content) {
-            document.getElementById('syllabus-content-area').innerHTML = category.syllabus_html_content;
-        } else {
-            document.getElementById('syllabus-content-area').innerHTML = `
-                <div class="text-center text-xs font-mono text-slate-500 py-4 uppercase">Syllabus content streams unprovisioned.</div>`;
-        }
+                if (category.syllabus_html_content) {
+                    document.getElementById('syllabus-content-area').innerHTML = category.syllabus_html_content;
+                } else {
+                    document.getElementById('syllabus-content-area').innerHTML = `
+                        <div class="text-center text-xs font-mono text-slate-500 py-4 uppercase">Syllabus content streams unprovisioned.</div>`;
+                }
 
-        // 2. Fetch linked test series array logs
-        const { data: tests } = await supabaseClient
-            .from('exam_tests')
+                // 2. Fetch linked test series array logs
+                const { data: tests } = await supabaseClient
+                    .from('exam_tests')
                     .select('*')
                     .eq('category_id', catId);
 
-        const testsArea = document.getElementById('tests-content-area');
-        if(tests && tests.length > 0) {
-            testsArea.innerHTML = "";
-            tests.forEach(t => {
-                testsArea.innerHTML += `
-                    <div onclick="window.open('${t.test_url}', '_blank')" class="flex justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-white/5 hover:border-purple-500/30 hover:bg-slate-900/80 transition cursor-pointer group">
-                        <div class="flex items-center space-x-3">
-                            <div class="bg-purple-500/10 text-purple-400 group-hover:bg-purple-500/20 p-2 rounded-lg text-xs font-mono font-bold transition">MOCK</div>
-                            <span class="text-xs font-bold text-slate-200 uppercase tracking-wide group-hover:text-purple-400 transition">${t.test_title}</span>
-                        </div>
-                        <a href="${t.test_url}" target="_blank" class="bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-mono font-black py-2 px-4 rounded-xl transition uppercase tracking-wider shadow-lg shadow-purple-600/10 pointer-events-none">Start Exam &rarr;</a>
-                    </div>`;
-            });
-        } else {
-            testsArea.innerHTML = `<div class="text-xs font-mono text-slate-600 uppercase py-2">No active examination papers deployed for this cluster.</div>`;
+                const testsArea = document.getElementById('tests-content-area');
+                if(tests && tests.length > 0) {
+                    testsArea.innerHTML = "";
+                    tests.forEach(t => {
+                        testsArea.innerHTML += `
+                            <div onclick="window.open('${t.test_url}', '_blank')" class="flex justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-white/5 hover:border-purple-500/30 hover:bg-slate-900/80 transition cursor-pointer group">
+                                <div class="flex items-center space-x-3">
+                                    <div class="bg-purple-500/10 text-purple-400 group-hover:bg-purple-500/20 p-2 rounded-lg text-xs font-mono font-bold transition">MOCK</div>
+                                    <span class="text-xs font-bold text-slate-200 uppercase tracking-wide group-hover:text-purple-400 transition">${t.test_title}</span>
+                                </div>
+                                <button class="bg-purple-600 group-hover:bg-purple-500 text-white text-[10px] font-mono font-black py-2 px-4 rounded-xl transition uppercase tracking-wider shadow-lg shadow-purple-600/10 pointer-events-none">Start Exam &rarr;</button>
+                            </div>`;
+                    });
+                } else {
+                    testsArea.innerHTML = `<div class="text-xs font-mono text-slate-600 uppercase py-2">No active examination papers deployed for this cluster.</div>`;
+                }
+
+                // 3. Fetch manual programming modules data logs
+                const { data: programs } = await supabaseClient
+                    .from('exam_programs')
+                    .select('*')
+                    .eq('category_id', catId);
+
+                const programsArea = document.getElementById('programs-content-area');
+                if(programs && programs.length > 0) {
+                    programsArea.innerHTML = "";
+                    programs.forEach(p => {
+                        programsArea.innerHTML += `
+                            <div class="bg-slate-900/30 p-4 rounded-xl border border-white/5 space-y-3">
+                                <div class="flex items-center space-x-2 text-emerald-400">
+                                    <span class="text-xs font-black uppercase tracking-wider">${p.program_title}</span>
+                                </div>
+                                <pre class="text-[11px] font-mono bg-slate-950/80 p-3.5 rounded-xl border border-white/5 text-slate-300 overflow-x-auto whitespace-pre-wrap leading-relaxed shadow-inner select-all">${escapeHTML(p.program_code_or_desc)}</pre>
+                            </div>`;
+                    });
+                } else {
+                    programsArea.innerHTML = `<div class="text-xs font-mono text-slate-600 uppercase py-2">No dynamic functional code blocks configured for this syllabus template yet.</div>`;
+                }
+
+            } catch (err) {
+                document.getElementById('syllabus-content-area').innerHTML = `
+                    <div class="text-red-400 font-mono text-xs text-center py-4">Core pipeline intersection fault.</div>`;
+            }
         }
 
-        // 3. Fetch manual programming modules data logs
-        const { data: programs } = await supabaseClient
-            .from('exam_programs')
-            .select('*')
-            .eq('category_id', catId);
-
-        const programsArea = document.getElementById('programs-content-area');
-        if(programs && programs.length > 0) {
-            programsArea.innerHTML = "";
-            programs.forEach(p => {
-                programsArea.innerHTML += `
-                    <div class="bg-slate-900/30 p-4 rounded-xl border border-white/5 space-y-3">
-                        <div class="flex items-center space-x-2 text-emerald-400">
-                            <span class="text-xs font-black uppercase tracking-wider">${p.program_title}</span>
-                        </div>
-                        <pre class="text-[11px] font-mono bg-slate-950/80 p-3.5 rounded-xl border border-white/5 text-slate-300 overflow-x-auto whitespace-pre-wrap leading-relaxed shadow-inner select-all">${escapeHTML(p.program_code_or_desc)}</pre>
-                    </div>`;
-            });
-        } else {
-            programsArea.innerHTML = `<div class="text-xs font-mono text-slate-600 uppercase py-2">No dynamic functional code blocks configured for this syllabus template yet.</div>`;
+        function escapeHTML(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
-
-    } catch (err) {
-        document.getElementById('syllabus-content-area').innerHTML = `
-            <div class="text-red-400 font-mono text-xs text-center py-4">Core pipeline intersection fault.</div>`;
-    }
-}
     </script>
 </body>
 </html>
