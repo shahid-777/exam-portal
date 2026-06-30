@@ -96,10 +96,10 @@
         console.log("Querying database for category:", category);
 
         // Supabase se active category ke exams select karna
-        const { data: exams, error } = await supabaseClient
+        const { data: exams, error } = await supabse
             .from('exams')
             .select('*')
-            .ilike('category', category); 
+            .ilike('category_name', category); 
 
         if (error) throw error;
 
