@@ -29,24 +29,24 @@
     <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8 space-y-8">
         
         <div class="border-b border-white/5 pb-4">
-            <h1 class="text-2xl font-black text-white uppercase tracking-wide">Dynamic Content Management System</h1>
-            <p class="text-xs text-slate-400 font-mono mt-1">Deploy, structure, and categorize examination schemas manually.</p>
+            <h1 class="text-2xl font-black text-white uppercase tracking-wide">Dynamic Syllabus & Program CMS</h1>
+            <p class="text-xs text-slate-400 font-mono mt-1">Deploy and classify category blueprints, test nodes, and programs manually.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl">
+            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl h-fit">
                 <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-500 to-orange-500"></div>
                 <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">1. Create New Category Node</h3>
                 
                 <div class="space-y-3 pt-2">
                     <div>
                         <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Category Domain Name</label>
-                        <input type="text" id="new-cat-name" placeholder="e.g. RAS Pre, Computer Instructor" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-900 text-white outline-none focus:border-red-500/40 transition">
+                        <input type="text" id="new-cat-name" placeholder="e.g. Computer Science Core" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-900 text-white outline-none focus:border-red-500/40 transition">
                     </div>
                     <div>
                         <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Short Description</label>
-                        <textarea id="new-cat-desc" rows="3" placeholder="Core recruitment syllabus matrices guidelines..." class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-900 text-white outline-none focus:border-red-500/40 transition resize-none"></textarea>
+                        <textarea id="new-cat-desc" rows="3" placeholder="Syllabus tracking matrices guidelines..." class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-900 text-white outline-none focus:border-red-500/40 transition resize-none"></textarea>
                     </div>
                     <button onclick="createNewCategory()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-2.5 px-4 rounded-xl shadow-lg uppercase text-[11px] tracking-wider transition">
                         Deploy Category Node
@@ -63,13 +63,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                         <div class="sm:col-span-2">
                             <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Target Category Dropdown</label>
-                            <select id="syllabus-category-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-bold bg-slate-900 text-slate-200 outline-none focus:border-blue-500/40 transition">
+                            <select id="syllabus-category-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-bold bg-slate-900 text-slate-200 outline-none focus:border-blue-500/40 transition class-dropdown">
                                 <option value="">Fetching system domains...</option>
                             </select>
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Syllabus HTML / Plain-text Content</label>
-                            <textarea id="syllabus-html-input" rows="6" placeholder="<p><b>Unit 1:</b> DBMS Architecture</p>..." class="w-full border border-white/10 p-2.5 text-xs font-mono rounded-xl bg-slate-900 text-white outline-none focus:border-blue-500/40 transition resize-none"></textarea>
+                            <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Syllabus Theory Structure (HTML/Text)</label>
+                            <textarea id="syllabus-html-input" rows="4" placeholder="<p><b>Unit 1:</b> Introduction to Programming</p>..." class="w-full border border-white/10 p-2.5 text-xs font-mono rounded-xl bg-slate-900 text-white outline-none focus:border-blue-500/40 transition resize-none"></textarea>
                         </div>
                         <button onclick="updateSyllabusContent()" class="sm:col-span-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl shadow-lg uppercase text-[11px] tracking-wider transition">
                             Save Blueprint Integration
@@ -78,13 +78,38 @@
                 </div>
 
                 <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl">
+                    <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-green-500 to-emerald-500"></div>
+                    <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">3. Put Syllabus Programs / Practical Code Manually</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div>
+                            <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Select Syllabus Domain</label>
+                            <select id="program-category-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-bold bg-slate-900 text-slate-200 outline-none focus:border-green-500/40 transition class-dropdown">
+                                <option value="">Fetching system domains...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Program Title / Aim</label>
+                            <input type="text" id="program-title-input" placeholder="e.g. WAP to find Prime Numbers" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-900 text-white outline-none focus:border-green-500/40 transition">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Program Code Block / Solutions Structure</label>
+                            <textarea id="program-code-input" rows="6" placeholder="Write full program solution logic or script blocks here..." class="w-full border border-white/10 p-2.5 text-xs font-mono rounded-xl bg-slate-900 text-white outline-none focus:border-green-500/40 transition resize-none"></textarea>
+                        </div>
+                        <button onclick="injectManualProgram()" class="sm:col-span-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-4 rounded-xl shadow-lg uppercase text-[11px] tracking-wider transition">
+                            Deploy Practical Program Node
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl">
                     <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
-                    <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">3. Inject Test Series Link Node</h3>
+                    <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">4. Inject Test Series Link Node</h3>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                         <div>
                             <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Select Exam Category</label>
-                            <select id="test-category-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-bold bg-slate-900 text-slate-200 outline-none focus:border-purple-500/40 transition">
+                            <select id="test-category-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-bold bg-slate-900 text-slate-200 outline-none focus:border-purple-500/40 transition class-dropdown">
                                 <option value="">Fetching system domains...</option>
                             </select>
                         </div>
@@ -93,7 +118,7 @@
                             <input type="text" id="test-title-input" placeholder="e.g. Mock Test Evaluation 01" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-900 text-white outline-none focus:border-purple-500/40 transition">
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Secure Destination URL Link (Google Forms / Mock System URL)</label>
+                            <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Secure Destination URL Link</label>
                             <input type="url" id="test-url-input" placeholder="https://forms.gle/..." class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-900 text-white outline-none focus:border-purple-500/40 transition">
                         </div>
                         <button onclick="injectTestSeriesNode()" class="sm:col-span-2 w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-2.5 px-4 rounded-xl shadow-lg uppercase text-[11px] tracking-wider transition">
@@ -107,17 +132,12 @@
 
     </main>
 
-    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">
-        &copy; JECRC University — Root Administrator Security Node
-    </footer>
-
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         window.onload = function() {
-            // Check Admin Authentication Gate
             const adminActive = localStorage.getItem('adminEmail');
             if(!adminActive) {
                 window.location.replace("admin-login.html");
@@ -126,7 +146,6 @@
             populateDropdowns();
         };
 
-        // 🔄 FETCH CATEGORIES DYNAMICALLY AND INJECT INTO DROPDOWNS
         async function populateDropdowns() {
             try {
                 const { data, error } = await supabaseClient
@@ -136,97 +155,85 @@
 
                 if (error) throw error;
 
-                const syllabusSelect = document.getElementById('syllabus-category-select');
-                const testSelect = document.getElementById('test-category-select');
-
+                const dropdowns = document.querySelectorAll('.class-dropdown');
                 let optionsHtml = `<option value="">-- SELECT TARGET EXAMINATION CATEGORY --</option>`;
                 data.forEach(cat => {
                     optionsHtml += `<option value="${cat.id}">${cat.category_name.toUpperCase()}</option>`;
                 });
 
-                syllabusSelect.innerHTML = optionsHtml;
-                testSelect.innerHTML = optionsHtml;
+                dropdowns.forEach(dropdown => {
+                    dropdown.innerHTML = optionsHtml;
+                });
 
             } catch (err) {
                 alert("Dropdown sync failed.");
             }
         }
 
-        // 🛠️ ACTION 1: CREATE NEW DYNAMIC CATEGORY
         async function createNewCategory() {
             const name = document.getElementById('new-cat-name').value.trim();
             const desc = document.getElementById('new-cat-desc').value.trim();
-
             if(!name) { alert("Category name schema missing."); return; }
-
             try {
-                const { error } = await supabaseClient
-                    .from('exam_categories')
-                    .insert({ category_name: name, description: desc });
-
+                const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name, description: desc });
                 if(error) throw error;
-
                 alert("Success: New category domain fully initialized!");
                 document.getElementById('new-cat-name').value = "";
                 document.getElementById('new-cat-desc').value = "";
-                populateDropdowns(); // Live sync reload
-
-            } catch (err) {
-                alert("Failed to build category node: " + err.message);
-            }
+                populateDropdowns();
+            } catch (err) { alert("Error: " + err.message); }
         }
 
-        // 🛠️ ACTION 2: PUT / UPDATE SYLLABUS MANUAL MAPPING
         async function updateSyllabusContent() {
             const categoryId = document.getElementById('syllabus-category-select').value;
             const content = document.getElementById('syllabus-html-input').value.trim();
-
             if(!categoryId || !content) { alert("Select a domain and input data schemas."); return; }
+            try {
+                const { error } = await supabaseClient.from('exam_categories').update({ syllabus_html_content: content }).eq('id', categoryId);
+                if(error) throw error;
+                alert("Success: Syllabus data layout synchronized!");
+                document.getElementById('syllabus-html-input').value = "";
+            } catch (err) { alert("Error: " + err.message); }
+        }
+
+        // 🔥 ACTION: DEPLOY SYLLABUS PROGRAMS MANUALLY
+        async function injectManualProgram() {
+            const categoryId = document.getElementById('program-category-select').value;
+            const title = document.getElementById('program-title-input').value.trim();
+            const codeContent = document.getElementById('program-code-input').value.trim();
+
+            if(!categoryId || !title || !codeContent) { alert("Please complete all fields to deploy the program node."); return; }
 
             try {
                 const { error } = await supabaseClient
-                    .from('exam_categories')
-                    .update({ syllabus_html_content: content })
-                    .eq('id', categoryId);
+                    .from('exam_programs')
+                    .insert({ category_id: categoryId, program_title: title, program_code_or_desc: codeContent });
 
                 if(error) throw error;
 
-                alert("Success: Syllabus data layout successfully synchronized!");
-                document.getElementById('syllabus-html-input').value = "";
-
-            } catch (err) {
-                alert("Failed to map syllabus content: " + err.message);
+                alert("Success: Practical Program successfully attached to this syllabus category!");
+                document.getElementById('program-title-input').value = "";
+                document.getElementById('program-code-input').value = "";
+            } catch(err) {
+                alert("Pipeline Interruption: " + err.message);
             }
         }
 
-        // 🛠️ ACTION 3: INJECT TEST SERIES LINK
         async function injectTestSeriesNode() {
             const categoryId = document.getElementById('test-category-select').value;
             const title = document.getElementById('test-title-input').value.trim();
             const url = document.getElementById('test-url-input').value.trim();
-
-            if(!categoryId || !title || !url) { alert("Complete all variables to secure link routing."); return; }
-
+            if(!categoryId || !title || !url) { alert("Complete all fields."); return; }
             try {
-                const { error } = await supabaseClient
-                    .from('exam_tests')
-                    .insert({ category_id: categoryId, test_title: title, test_url: url });
-
+                const { error } = await supabaseClient.from('exam_tests').insert({ category_id: categoryId, test_title: title, test_url: url });
                 if(error) throw error;
-
-                alert("Success: Test Series node attached to target framework successfully!");
+                alert("Success: Test Series node attached!");
                 document.getElementById('test-title-input').value = "";
                 document.getElementById('test-url-input').value = "";
-
-            } catch (err) {
-                alert("Failed to map test node layout: " + err.message);
-            }
+            } catch (err) { alert("Error: " + err.message); }
         }
 
-        function logout() {
-            localStorage.clear();
-            window.location.replace("admin-login.html");
-        }
+        function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
     </script>
 </body>
 </html>
