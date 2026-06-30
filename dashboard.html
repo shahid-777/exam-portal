@@ -90,10 +90,10 @@
             }
         };
 
-        // 🎯 डेटाबेस की सभी श्रेणियों को ग्रैब करना (समस्या 2 का हल)
+        // 🎯 डेटाबेस की सभी श्रेणियों को 'exam_categories' टेबल से लोड करना
         async function fetchAllDatabaseCategories() {
             try {
-                const { data, error } = await supabaseClient.from('categories').select('*');
+                const { data, error } = await supabaseClient.from('exam_categories').select('*');
                 if (error) throw error;
 
                 const container = document.getElementById('categories-view-container');
@@ -137,7 +137,7 @@
             await fetchActiveCategoryExams(categoryId);
         }
 
-        // 🎯 केवल सेलेक्टेड कैट-आईडी के रिस्पॉन्सिव पेपर्स लाना
+        // 🎯 केवल सेलेक्टेड कैट-आईडी के रिस्पॉन्सिव पेपर्स लाना ('subject' और 'duration_minutes' फ़िक्स के साथ)
         async function fetchActiveCategoryExams(categoryId) {
             const listTarget = document.getElementById('active-exams-list-target');
             listTarget.innerHTML = `<p class="text-xs font-mono text-center text-slate-500 animate-pulse">Decrypting encrypted question vaults...</p>`;
@@ -154,13 +154,13 @@
                     return;
                 }
 
-                // आकर्षक परीक्षा कार्ड्स फ़ॉर्मेटिंग
+                // आकर्षक परीक्षा कार्ड्स फ़ॉर्मेटिंग (subject और duration_minutes के साथ सिंक)
                 listTarget.innerHTML = data.map(exam => `
                     <div class="bg-slate-900/50 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/20 transition">
                         <div class="space-y-1">
                             <span class="px-2 py-0.5 text-[8px] font-mono font-bold bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-md uppercase">LIVE METRIC SHEET</span>
-                            <h4 class="text-xs sm:text-sm font-bold text-slate-200 mt-1 uppercase">${exam.title || exam.name}</h4>
-                            <p class="text-[9px] font-mono text-slate-500">Duration: ${exam.duration || '180'} Mins | Authorization Block: EX-${exam.id}</p>
+                            <h4 class="text-xs sm:text-sm font-bold text-slate-200 mt-1 uppercase">${exam.subject || 'Untitled Exam'}</h4>
+                            <p class="text-[9px] font-mono text-slate-500">Duration: ${exam.duration_minutes || '60'} Mins | Authorization Block: EX-${exam.id}</p>
                         </div>
                         <button class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] font-mono uppercase px-4 py-2 rounded-xl transition shadow-lg shadow-blue-600/10 cursor-pointer">Start</button>
                     </div>
@@ -172,7 +172,7 @@
             }
         }
 
-        // 🎯 वापस कैटेगरीज की सूची में आने का हैंडलर (समस्या 1 का हल)
+        // 🎯 वापस कैटेगरीज की सूची में आने का हैंडलर
         function resetToCategoriesView() {
             const cleanUrl = window.location.pathname;
             window.history.pushState({ path: cleanUrl }, '', cleanUrl);
