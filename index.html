@@ -128,16 +128,32 @@
 
         // 🎯 1. सिंक्रोनाइज़्ड लोड इवेंट (OAuth और Normal Session दोनों को एक ही जगह हैंडल करेगा)
         window.onload = async function() {
-            // बेसिक हेडर स्टेट चेक
-            checkActiveSessionState();
+    const studentSession = localStorage.getItem('userEmail');
+    const adminSession = localStorage.getItem('adminEmail');
 
-            try {
-                // Supabase का एक्टिव सेशन चेक करें (OAuth रीडायरेक्शन के बाद ईमेल ग्रैब करने के लिए)
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-                
-                if (session && session.user) {
-                    localStorage.setItem('userEmail', session.user.email);
-                    checkActiveSessionState(); // हेडर अपडेट करें
+    // 1. अगर लोकल स्टोरेज में ईमेल पहले से है, तो ही अंदर जाने दो
+    if (studentSession && studentSession !== "null" && studentSession.trim() !== "") {
+        window.location.replace("dashboard.html");
+        return;
+    }
+    if (adminSession && adminSession !== "null" && adminSession.trim() !== "") {
+        window.location.replace("admin-dashboard.html");
+        return;
+    }
+
+    // 2. केवल OAuth/Supabase सेशन चेक करें अगर लोकल स्टोरेज खाली हो (फर्स्ट टाइम लॉगिन के लिए)
+    try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        
+        if (session && session.user && session.user.email) {
+            localStorage.setItem('userEmail', session.user.email);
+            window.location.replace("dashboard.html"); // सीधे डैशबोर्ड पर भेजें
+        }
+    } catch (err) {
+        console.error("Session sync error:", err);
+    }
+};
+ 
                     
                     // चेक करें कि क्या कोई कैटेगरी पेंडिंग थी
                     const savedName = localStorage.getItem('pendingCategoryName');
