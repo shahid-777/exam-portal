@@ -54,6 +54,10 @@
 
     </main>
 
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">
+        &copy; JECRC University — Computer Science Cluster
+    </footer>
+
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
@@ -70,13 +74,11 @@
             loadDashboardFilteredExams(categoryId);
         };
 
-        // 🔄 ERROR-PROOF SAFE DATA LOADER
         async function loadDashboardFilteredExams(catId) {
             const pane = document.getElementById('exams-container-pane');
             const desc = document.getElementById('filter-status-desc');
             
             try {
-                // 🎯 FIXED: Select all (*) columns dynamically taaki ID field na hone par bhi crash na ho
                 let query = supabaseClient.from('exams').select('*');
                 
                 if (catId && catId !== "null" && catId !== "undefined" && catId.trim() !== "") {
@@ -87,11 +89,10 @@
                 }
 
                 const { data: exams, error } = await query.order('subject', { ascending: true });
-                
                 if(error) throw error;
 
                 if(!exams || exams.length === 0) {
-                    pane.innerHTML = `<div class="text-xs font-mono text-slate-500 text-center py-6 uppercase">No matching exams linked to this segment dashboard yet.</div>`;
+                    pane.innerHTML = `<div class="text-xs font-mono text-slate-500 text-center py-6 uppercase">No matching exams linked to this category yet.</div>`;
                     return;
                 }
 
@@ -99,18 +100,16 @@
                 let selectOptions = `<option value="">-- Choose Subject --</option>`;
 
                 exams.forEach(ex => {
-                    // Fail-safe tracking variables mapping fallback
                     const examSubject = ex.subject || "Unnamed Subject Module";
                     
-                    // Agar database row mein system generated id text available na ho, toh subject text ko hi parameter parameter switch bana denge redirect ke liye
-                    const targetIdentifier = ex.id || examSubject;
-
-                    selectOptions += `<option value="${targetIdentifier}">${examSubject.toUpperCase()}</option>`;
+                    // Fallback to fetch subject name instead of ID if dynamic tracking needs verification
+                    selectOptions += `<option value="${examSubject}">${examSubject.toUpperCase()}</option>`;
                     
+                    // 🎯 FIX BINDING: Redirects correctly using standard text routing string matching
                     pane.innerHTML += `
                         <div class="flex items-center justify-between bg-slate-900/60 p-4 rounded-xl border border-white/5 hover:border-blue-500/30 hover:bg-slate-900/90 transition shadow-md group">
                             <span class="text-xs font-bold text-slate-200 truncate pr-2 uppercase tracking-wide group-hover:text-blue-400 transition">${examSubject}</span>
-                            <button onclick="window.location.href='exam.html?exam_id=${encodeURIComponent(targetIdentifier)}'" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-mono font-black py-2 px-4 rounded-xl shadow transition uppercase tracking-widest shrink-0 cursor-pointer">
+                            <button onclick="window.location.href='exam.html?subject=${encodeURIComponent(examSubject)}'" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-mono font-black py-2 px-4 rounded-xl shadow transition uppercase tracking-widest shrink-0 cursor-pointer">
                                 Start
                             </button>
                         </div>`;
@@ -119,7 +118,6 @@
                 document.getElementById('leaderboard-subject-filter').innerHTML = selectOptions;
 
             } catch(err) {
-                console.error("Dashboard error log intercept:", err);
                 pane.innerHTML = `<div class="text-xs font-mono text-red-400 text-center py-4 uppercase">Database parsing matrix failure.</div>`;
             }
         }
