@@ -343,22 +343,61 @@
             }, 1000);
         }
 
-        function terminateAssessmentProcess() {
-            clearInterval(networkTimerInterval);
-            let absoluteScore = 0;
+        async function terminateAssessmentProcess() {
+    clearInterval(networkTimerInterval);
+    
+    let totalQuestions = globalLoadedQuestions.length;
+    let correctAnswers = 0;
+    let wrongAnswers = 0;
+    let unattempted = 0;
 
-            globalLoadedQuestions.forEach((q, index) => {
-                const selectedOpt = userResponses[index];
-                if (selectedOpt !== undefined) {
-                    if (parseInt(selectedOpt) === parseInt(q.correct)) {
-                        absoluteScore++;
-                    }
-                }
-            });
-
-            alert(`Evaluation compiled successfully!\nYour score: ${absoluteScore} Out of ${globalLoadedQuestions.length}`);
-            window.location.replace("dashboard.html");
+    // Calculate detailed scores matrix
+    globalLoadedQuestions.forEach((q, index) => {
+        const selectedOpt = userResponses[index];
+        if (selectedOpt !== undefined) {
+            if (parseInt(selectedOpt) === parseInt(q.correct)) {
+                correctAnswers++;
+            } else {
+                wrongAnswers++;
+            }
+        } else {
+            unattempted++;
         }
+    });
+
+    const studentEmail = localStorage.getItem('userEmail') || 'anonymous@portal.com';
+    const currentSubject = document.getElementById('live-subject-title').innerText;
+
+    try {
+        // 🚀 Push detailed analytics packet into Supabase 'results' table
+        const { data, error } = await supabaseClient
+            .from('results')
+            .insert([{
+                email: studentEmail.toLowerCase(),
+                subject: currentSubject,
+                total_questions: totalQuestions,
+                correct_answers: correctAnswers,
+                wrong_answers: wrongAnswers,
+                unattempted: unattempted,
+                user_responses_json: JSON.stringify(userResponses), // Saves user ticks
+                questions_snapshot_json: JSON.stringify(globalLoadedQuestions), // Saves correct keys matrix
+                created_at: new Date().toISOString()
+            }])
+            .select()
+            .maybeSingle();
+
+        if (error) throw error;
+
+        alert(`Test Evaluation Compiled Successfully!`);
+        // 🎯 Redirect straight to the Analysis Dashboard with the new result ID
+        window.location.replace(`result-analysis.html?id=${data.id}`);
+
+    } catch (err) {
+        console.error(err);
+        alert("Result compilation synchronization error. Directing to main desk.");
+        window.location.replace("dashboard.html");
+    }
+}
     </script>
 </body>
 </html>
