@@ -86,70 +86,74 @@
         };
 
         // 📁 STEP 1: LOAD ALL MAIN EXAM CATEGORIES VIA INNER JOIN RELATION
-        async function loadCategoriesView() {
-            document.getElementById('workspace-title').innerText = "Available Exam Streams";
-            document.getElementById('workspace-desc').innerText = "Select a category below to explore its active examinations list.";
-            document.getElementById('breadcrumb-arrow').classList.add('hidden');
-            document.getElementById('breadcrumb-current-category').classList.add('hidden');
+       // 📁 STEP 1: FAIL-PROOF TWO-STEP QUERY (NO JOIN OVERHEAD)
+async function loadCategoriesView() {
+    document.getElementById('workspace-title').innerText = "Available Exam Streams";
+    document.getElementById('workspace-desc').innerText = "Select a category below to explore its active examinations list.";
+    document.getElementById('breadcrumb-arrow').classList.add('hidden');
+    document.getElementById('breadcrumb-current-category').classList.add('hidden');
 
-            const gridContainer = document.getElementById('portal-dynamic-grid');
-            gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase col-span-full">Mapping Active Categories...</div>`;
+    const gridContainer = document.getElementById('portal-dynamic-grid');
+    gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase col-span-full">Mapping Active Categories...</div>`;
 
-            try {
-                // Fetch exams mapping with their related category text from 'exam_categories' table
-                const { data, error } = await supabaseClient
-                    .from('exams')
-                    .select(`
-                        category_id,
-                        exam_categories (
-                            id,
-                            name
-                        )
-                    `);
+    try {
+        // 1. Sabse pehle saari distinct category IDs exams table se nikalenge
+        const { data: examsData, error: examsErr } = await supabaseClient
+            .from('exams')
+            .select('category_id');
 
-                if (error) throw error;
+        if (examsErr) throw examsErr;
 
-                // Group items to filter out unique categories safely using a Map
-                const uniqueCategoriesMap = new Map();
-                data.forEach(item => {
-                    if (item.exam_categories && item.exam_categories.id) {
-                        uniqueCategoriesMap.set(item.exam_categories.id, item.exam_categories.name);
-                    }
-                });
+        // Unique category IDs ka set banaenge (nulls filter karke)
+        const activeCategoryIds = [...new Set(examsData.map(item => item.category_id).filter(Boolean))];
 
-                if (uniqueCategoriesMap.size === 0) {
-                    gridContainer.innerHTML = `
-                        <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
-                            No active exam streams found. Waiting for Admin allocations.
-                        </div>`;
-                    return;
-                }
-
-                let htmlContent = "";
-                uniqueCategoriesMap.forEach((catName, catId) => {
-                    htmlContent += `
-                        <div onclick="loadExamsSubView('${catId}', '${encodeURIComponent(catName)}')" class="bg-slate-900/40 border border-white/5 hover:border-blue-500/30 p-6 rounded-2xl shadow-xl hover:bg-slate-900/80 transition transform hover:scale-[1.01] cursor-pointer group relative overflow-hidden flex flex-col justify-between">
-                            <div class="space-y-3">
-                                <div class="flex items-center justify-between">
-                                    <div class="p-2.5 bg-blue-500/10 rounded-xl text-blue-400 group-hover:bg-blue-500/20 transition">
-                                        <!-- Folder SVG Icon -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h1.5A2.25 2.25 0 0 0 8.25 8.5h3.053c.421 0 .824.168 1.121.467l2.137 2.138a2.25 2.25 0 0 1 .659 1.592v1.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25Z" /></svg>
-                                    </div>
-                                    <span class="text-[10px] font-mono text-slate-500 font-bold uppercase tracking-wider group-hover:text-blue-400/60 transition">Open Folder &rarr;</span>
-                                </div>
-                                <h4 class="text-sm font-black tracking-wide text-slate-100 group-hover:text-blue-400 transition uppercase">${catName}</h4>
-                            </div>
-                        </div>`;
-                });
-
-                gridContainer.innerHTML = htmlContent;
-
-            } catch (err) {
-                console.error(err);
-                gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-400 col-span-full">Database parsing cluster connection fault: ${err.message || err}</div>`;
-            }
+        if (activeCategoryIds.length === 0) {
+            gridContainer.innerHTML = `
+                <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
+                    No active exam streams found. Waiting for Admin allocations.
+                </div>`;
+            return;
         }
 
+        // 2. Ab directly 'exam_categories' table se un IDs ke names uthaenge bina kisi Join table ke
+        const { data: categoriesData, error: catErr } = await supabaseClient
+            .from('exam_categories')
+            .select('id, name')
+            .in('id', activeCategoryIds);
+
+        if (catErr) throw catErr;
+
+        if (!categoriesData || categoriesData.length === 0) {
+            gridContainer.innerHTML = `
+                <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
+                    No matching category names configured in system master nodes.
+                </div>`;
+            return;
+        }
+
+        let htmlContent = "";
+        categoriesData.forEach(cat => {
+            htmlContent += `
+                <div onclick="loadExamsSubView('${cat.id}', '${encodeURIComponent(cat.name)}')" class="bg-slate-900/40 border border-white/5 hover:border-blue-500/30 p-6 rounded-2xl shadow-xl hover:bg-slate-900/80 transition transform hover:scale-[1.01] cursor-pointer group relative overflow-hidden flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="p-2.5 bg-blue-500/10 rounded-xl text-blue-400 group-hover:bg-blue-500/20 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h1.5A2.25 2.25 0 0 0 8.25 8.5h3.053c.421 0 .824.168 1.121.467l2.137 2.138a2.25 2.25 0 0 1 .659 1.592v1.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25Z" /></svg>
+                            </div>
+                            <span class="text-[10px] font-mono text-slate-500 font-bold uppercase tracking-wider group-hover:text-blue-400/60 transition">Open Folder &rarr;</span>
+                        </div>
+                        <h4 class="text-sm font-black tracking-wide text-slate-100 group-hover:text-blue-400 transition uppercase">${cat.name}</h4>
+                    </div>
+                </div>`;
+        });
+
+        gridContainer.innerHTML = htmlContent;
+
+    } catch (err) {
+        console.error(err);
+        gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-400 col-span-full">Database parsing cluster connection fault: ${err.message || err}</div>`;
+    }
+}
         // 📝 STEP 2: LOAD EXAMS FILTERED BY SELECTED CATEGORY ID
         async function loadExamsSubView(categoryId, encodedCatName) {
             const categoryName = decodeURIComponent(encodedCatName);
