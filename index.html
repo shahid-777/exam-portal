@@ -121,25 +121,21 @@
             localStorage.clear();
 
             // 🤖 INITIALIZE GOOGLE AUTH ENGINE FOR STUDENTS
-            google.accounts.id.initialize({
-                client_id: "313377576458-c198ssj598dcg6c58c3kmtvtg5sf9m84.apps.googleusercontent.com", 
-                callback: handleGoogleAuthCallbackResponse,
-               auto_select: false, // 👈 Explicitly block dynamic background overlay banner execution
-                ux_mode: "redirect"
-            });
+           // 🎯 GOOGLE IDENTITY ENGINE SETUP (POPUP MODE RESET)
+google.accounts.id.initialize({
+    client_id: "313377576458-c198ssj598dcg6c58c3kmtvtg5sf9m84.apps.googleusercontent.com", 
+    callback: handleGoogleAuthCallbackResponse,
+    auto_select: false,
+    ux_mode: "popup" // 👈 Ise wapas POPUP mode par reset kar diya hai taaki URI mismatch na aaye
+});
 
-            // Standard dynamic render engine configuration mapping
-            google.accounts.id.renderButton(
-                document.getElementById("google-auth-element-root"),
-                { 
-                    theme: "filled_blue", 
-                    size: "large", 
-                    type: "standard", 
-                    text: "continue_with", 
-                    width: "320",
-                    shape: "pill"
-                }
-            );
+// Render the standard security button layout
+google.accounts.id.renderButton(
+    document.getElementById("google-auth-btn-container"),
+    { theme: "outline", size: "large", text: "signin_with" }
+);
+
+   
 
             // google.accounts.id.prompt() is completely omitted to kill auto-popups loop.
         };
