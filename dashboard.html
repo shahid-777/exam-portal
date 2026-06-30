@@ -64,23 +64,21 @@
             if(!userEmail) { window.location.replace("index.html"); return; }
             document.getElementById('student-user').innerText = userEmail;
 
-            // URL Parameters parsing safely
             const urlParams = new URLSearchParams(window.location.search);
             const categoryId = urlParams.get('category_id');
 
             loadDashboardFilteredExams(categoryId);
         };
 
-        // 🔄 SAFE PARSING DATA LOADER (FIXED CRASH)
+        // 🔄 ERROR-PROOF SAFE DATA LOADER
         async function loadDashboardFilteredExams(catId) {
             const pane = document.getElementById('exams-container-pane');
             const desc = document.getElementById('filter-status-desc');
             
             try {
-                // Base setup for reading original table columns
-                let query = supabaseClient.from('exams').select('id, subject, duration_minutes');
+                // 🎯 FIXED: Select all (*) columns dynamically taaki ID field na hone par bhi crash na ho
+                let query = supabaseClient.from('exams').select('*');
                 
-                // Fail-safe validation check: string parsing criteria
                 if (catId && catId !== "null" && catId !== "undefined" && catId.trim() !== "") {
                     query = query.eq('category_id', parseInt(catId));
                     desc.innerText = `Category Cluster Target: Node #${catId}`;
@@ -88,7 +86,7 @@
                     desc.innerText = "Showing Global Active Exam Repositories";
                 }
 
-                const { data: exams, error } = await query.order('id', { ascending: true });
+                const { data: exams, error } = await query.order('subject', { ascending: true });
                 
                 if(error) throw error;
 
@@ -101,13 +99,18 @@
                 let selectOptions = `<option value="">-- Choose Subject --</option>`;
 
                 exams.forEach(ex => {
-                    selectOptions += `<option value="${ex.id}">${ex.subject.toUpperCase()}</option>`;
+                    // Fail-safe tracking variables mapping fallback
+                    const examSubject = ex.subject || "Unnamed Subject Module";
                     
-                    // Direct dynamic trigger to exam.html with solid parameters
+                    // Agar database row mein system generated id text available na ho, toh subject text ko hi parameter parameter switch bana denge redirect ke liye
+                    const targetIdentifier = ex.id || examSubject;
+
+                    selectOptions += `<option value="${targetIdentifier}">${examSubject.toUpperCase()}</option>`;
+                    
                     pane.innerHTML += `
                         <div class="flex items-center justify-between bg-slate-900/60 p-4 rounded-xl border border-white/5 hover:border-blue-500/30 hover:bg-slate-900/90 transition shadow-md group">
-                            <span class="text-xs font-bold text-slate-200 truncate pr-2 uppercase tracking-wide group-hover:text-blue-400 transition">${ex.subject}</span>
-                            <button onclick="window.location.href='exam.html?exam_id=${ex.id}'" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-mono font-black py-2 px-4 rounded-xl shadow transition uppercase tracking-widest shrink-0 cursor-pointer">
+                            <span class="text-xs font-bold text-slate-200 truncate pr-2 uppercase tracking-wide group-hover:text-blue-400 transition">${examSubject}</span>
+                            <button onclick="window.location.href='exam.html?exam_id=${encodeURIComponent(targetIdentifier)}'" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-mono font-black py-2 px-4 rounded-xl shadow transition uppercase tracking-widest shrink-0 cursor-pointer">
                                 Start
                             </button>
                         </div>`;
@@ -116,7 +119,7 @@
                 document.getElementById('leaderboard-subject-filter').innerHTML = selectOptions;
 
             } catch(err) {
-                console.error("Dashboard engine catch exception:", err);
+                console.error("Dashboard error log intercept:", err);
                 pane.innerHTML = `<div class="text-xs font-mono text-red-400 text-center py-4 uppercase">Database parsing matrix failure.</div>`;
             }
         }
