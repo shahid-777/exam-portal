@@ -32,7 +32,7 @@
             <div class="flex items-center space-x-6">
                 <div>Total Questions: <span id="stat-total" class="text-blue-400 font-bold">0</span></div>
                 <div>Attempted: <span id="stat-attempted" class="text-green-400 font-bold">0</span></div>
-                <div>Marked for Review: <span id="stat-marked" class="text-yellow-400 font-bold">0</span></div>
+                <div>Marked for Review: <span id="stat-marked" class="text-red-400 font-bold">0</span></div>
                 <div>Unattempted: <span id="stat-left" class="text-slate-400 font-bold">0</span></div>
             </div>
         </div>
@@ -57,16 +57,16 @@
         <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-5 h-fit sticky top-[130px] space-y-4 shadow-xl">
             <div class="border-b border-white/5 pb-2">
                 <h4 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">Question Palette</h4>
-                <p class="text-[9px] text-slate-500 font-mono mt-0.5">Quick Navigation Cluster</p>
+                <p class="text-[9px] text-slate-500 font-mono mt-0.5">Random Navigation Grid Mapping</p>
             </div>
             
             <div id="palette-grid-buttons" class="grid grid-cols-5 gap-2">
                 </div>
 
             <div class="pt-2 border-t border-white/5 space-y-1.5 text-[10px] font-mono text-slate-400">
-                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-slate-800 border border-white/10 rounded"></span> <span>Unvisited / Unattempted</span></div>
-                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-green-600 rounded"></span> <span>Attempted</span></div>
-                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-yellow-500 rounded"></span> <span>Marked for Review</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-slate-800 border border-white/10 rounded"></span> <span>Unattempted (Slate/Gray)</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-green-600 rounded"></span> <span>Attempted (Green)</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-red-600 rounded"></span> <span>Marked for Review (Red)</span></div>
             </div>
         </div>
 
@@ -88,12 +88,10 @@
         let markedForReviewSet = new Set();
 
         window.onload = function() {
-            // 🚨 VALIDATION CLEARANCE: Check both user and admin configurations safely
             const studentSession = localStorage.getItem('userEmail');
             const adminSession = localStorage.getItem('adminEmail');
 
             if(!studentSession && !adminSession) { 
-                console.warn("No active authorization token detected.");
                 window.location.replace("index.html"); 
                 return; 
             }
@@ -109,7 +107,6 @@
             streamTargetExamJson(decodeURIComponent(targetSubject));
         };
 
-        // 🔄 FETCH DATA FROM 'EXAMS' BY EXACT SUBJECT MATCHING
         async function streamTargetExamJson(subjectName) {
             try {
                 const { data, error } = await supabaseClient
@@ -133,7 +130,7 @@
             } catch (err) {
                 document.getElementById('questions-pipeline-wrapper').innerHTML = `
                     <div class="text-center font-mono text-xs text-red-400 border border-red-500/10 p-6 rounded-2xl bg-red-500/5">
-                        Exception caught: Failed to render test objects from 'questions_json'.
+                        Failed to render test objects from 'questions_json'.
                     </div>`;
             }
         }
@@ -149,8 +146,6 @@
 
             questions.forEach((q, index) => {
                 let optionsHtml = "";
-                
-                // Support options strings array standard structure securely
                 const optionsArray = q.options || [];
                 
                 optionsArray.forEach((opt, optIdx) => {
@@ -162,7 +157,6 @@
                     `;
                 });
 
-                // Target structure container
                 const questionText = q.title || q.question || 'Objective Question';
 
                 container.innerHTML += `
@@ -172,7 +166,7 @@
                                 <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
                                 <h4 class="text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${questionText}</h4>
                             </div>
-                            <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-yellow-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-yellow-400 transition shrink-0">
+                            <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-red-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition shrink-0">
                                 Mark Review
                             </button>
                         </div>
@@ -184,54 +178,73 @@
             });
         }
 
+        // RENDER RIGHT NAVIGATION PALETTE
         function renderNavigationPalette(totalCount) {
             const grid = document.getElementById('palette-grid-buttons');
             grid.innerHTML = "";
             for (let i = 0; i < totalCount; i++) {
                 grid.innerHTML += `
-                    <button onclick="scrollToQuestion(${i})" id="palette-btn-${i}" class="bg-slate-800 border border-white/5 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg hover:bg-slate-700 transition cursor-pointer text-center">
+                    <button onclick="scrollToQuestion(${i})" id="palette-btn-${i}" class="bg-slate-800 border border-white/10 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg hover:bg-slate-700 transition cursor-pointer text-center">
                         ${i + 1}
                     </button>
                 `;
             }
         }
 
+        // 🎯 RANDOM NAVIGATION CLICK ROUTINE (RANDOM JUMPING SYSTEM)
+        function scrollToQuestion(qIdx) {
+            const el = document.getElementById(`question-card-${qIdx}`);
+            if(el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+                
+                // Visual bounce highlight pattern to catch user's eye
+                el.classList.add('border-blue-500/40', 'bg-slate-900/40');
+                setTimeout(() => {
+                    el.classList.remove('border-blue-500/40', 'bg-slate-900/40');
+                }, 1500);
+            }
+        }
+
+        // ONCHANGE RESPONSE INTERCEPTOR
         function registerRadioResponse(qIdx, optIdx) {
             userResponses[qIdx] = optIdx;
             updateLiveStatusCounters();
             
             const pBtn = document.getElementById(`palette-btn-${qIdx}`);
+            // Agar review marked nahi h, toh button simply green show karega
             if(!markedForReviewSet.has(qIdx)) {
                 pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
             }
         }
 
+        // 🎯 TOGGLE MARK FOR REVIEW HANDLER (RED REFRACTOR)
         function toggleMarkForReview(qIdx) {
             const mBtn = document.getElementById(`mark-btn-${qIdx}`);
             const pBtn = document.getElementById(`palette-btn-${qIdx}`);
             
             if (markedForReviewSet.has(qIdx)) {
+                // Remove mark state
                 markedForReviewSet.delete(qIdx);
-                mBtn.classList.remove("border-yellow-500/50", "text-yellow-400", "bg-yellow-500/10");
+                mBtn.classList.remove("border-red-500/50", "text-red-400", "bg-red-500/10");
+                mBtn.innerText = "Mark Review";
                 
+                // Color fallback hierarchy checks
                 if (userResponses[qIdx] !== undefined) {
                     pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
                 } else {
-                    pBtn.className = "bg-slate-800 border border-white/5 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+                    pBtn.className = "bg-slate-800 border border-white/10 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
                 }
             } else {
+                // Add mark state (Strict Red Mapping)
                 markedForReviewSet.add(qIdx);
-                mBtn.classList.add("border-yellow-500/50", "text-yellow-400", "bg-yellow-500/10");
-                pBtn.className = "bg-yellow-500 text-slate-950 font-mono text-xs font-black py-2 rounded-lg transition text-center cursor-pointer";
+                mBtn.classList.add("border-red-500/50", "text-red-400", "bg-red-500/10");
+                mBtn.innerText = "🔴 Marked";
+                pBtn.className = "bg-red-600 text-white font-mono text-xs font-black py-2 rounded-lg transition text-center cursor-pointer";
             }
             updateLiveStatusCounters();
         }
 
-        function scrollToQuestion(qIdx) {
-            const el = document.getElementById(`question-card-${qIdx}`);
-            if(el) el.scrollIntoView({ behavior: 'smooth' });
-        }
-
+        // METRICS COUNTER EVALUATOR
         function updateLiveStatusCounters() {
             const total = globalLoadedQuestions.length;
             const attempted = Object.keys(userResponses).length;
