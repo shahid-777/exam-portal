@@ -245,6 +245,52 @@
             alert("Session terminated.");
             checkActiveSessionState();
         }
+            // 🎯 गूगल ऑथेंटिकेशन को इनिशियलाइज़ करने का फंक्शन
+async function signInWithGoogleOAuth() {
+    try {
+        // अगर कोई कैटेगरी पेंडिंग थी, तो उसे रीडायरेक्ट यूआरएल में पास करने के लिए लोकल स्टोरेज में सेव कर लेते हैं
+        if (targetCategoryPending) {
+            localStorage.setItem('pendingCategory', targetCategoryPending);
+        }
+
+        const { data, error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                // यह आपके लाइव सर्वर या लोकलहोस्ट का डोमेन यूआरएल होना चाहिए
+                redirectTo: window.location.origin + window.location.pathname 
+            }
+        });
+
+        if (error) throw error;
+    } catch (err) {
+        alert(`Google Auth Error: ${err.message}`);
+    }
+}
+
+// 🎯 गूगल से वापस आने के बाद सेशन कैप्चर करने के लिए window.onload में ये लाइनें जोड़ें:
+const originalOnload = window.onload;
+window.onload = async function() {
+    if(originalOnload) originalOnload();
+
+    // Supabase का एक्टिव सेशन चेक करें (OAuth रीडायरेक्शन के बाद ईमेल ग्रैब करने के लिए)
+    const { data: { session }, error } = await supabaseClient.auth.getSession();
+    
+    if (session && session.user) {
+        // गूगल से मिले ईमेल को लोकल स्टोरेज में डालें
+        localStorage.setItem('userEmail', session.user.email);
+        
+        // चेक करें कि क्या कोई कैटेगरी पेंडिंग थी
+        const savedCategory = localStorage.getItem('pendingCategory');
+        if (savedCategory) {
+            localStorage.removeItem('pendingCategory');
+            window.location.href = `dashboard.html?category=${encodeURIComponent(savedCategory)}`;
+            return;
+        }
+        
+        // हेडर स्टेट रिफ्रेश करें
+        checkActiveSessionState();
+    }
+};
     </script>
 </body>
 </html>
