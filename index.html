@@ -3,339 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="logo.png">
-    <title>Online Exam Portal — Gateway</title>
+    <title>Online Exam Portal - Secure OTP Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .animate-gradient {
-            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2e1065, #020617);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="animate-gradient font-sans min-h-screen text-slate-200 flex flex-col justify-between">
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen font-sans px-4">
 
-    <header class="w-full bg-slate-950/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg shrink-0 z-40 sticky top-0">
-        <div class="flex items-center space-x-3">
-            <div class="bg-white/95 p-1 rounded-xl shadow-inner shadow-black/20">
-                <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain">
-            </div>
-            <div class="flex flex-col">
-                <span class="text-sm font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 uppercase leading-none">EXAM PORTAL</span>
-                <span class="text-[9px] font-mono font-bold text-slate-500 tracking-wider mt-0.5 uppercase">Academic Hub Matrix</span>
-            </div>
-        </div>
-       <div id="header-actions" class="flex items-center space-x-4">
-    <button id="main-auth-btn" onclick="openAuthModal()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border border-white/10 text-xs font-black py-2.5 px-5 rounded-xl transition uppercase tracking-widest shadow-lg shadow-blue-600/10 active:scale-[0.98]">
-        Sign In / Sign Up
-    </button>
-</div>
-    </header>
-
-    <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-8 space-y-10 z-10">
+    <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
+        <h1 class="text-3xl font-black text-blue-500 mb-2 tracking-wide text-center">ONLINE EXAM PORTAL</h1>
+        <p id="portal-desc" class="text-gray-400 mb-6 text-sm text-center">Verify your academic email via secure OTP token.</p>
         
-        <div class="text-center max-w-2xl mx-auto space-y-4">
-            <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-blue-400 uppercase">
-                Select Category To Browse Tests
-            </h1>
-            <p class="text-xs text-slate-400 font-medium font-mono uppercase tracking-wider">
-                Explore structural schemas according to dynamic recruitment syllabus matrices.
-            </p>
-            
-            <div class="relative pt-2">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-                </div>
-                <input type="text" id="category-search" oninput="filterCategories()" placeholder="Search exam name (e.g. RAS, Patwari, Computer Science)..." class="w-full bg-slate-950/40 backdrop-blur-md border border-white/10 focus:border-blue-500/50 p-4 pl-12 text-sm rounded-2xl outline-none transition focus:ring-4 focus:ring-blue-500/5 font-semibold text-white shadow-2xl">
+        <form id="login-form" class="space-y-5">
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Email Address</label>
+                <input type="email" id="login-email" required placeholder="example@email.com" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
             </div>
-        </div>
-
-        <div class="space-y-4">
-            <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest px-1">POPULAR EXAMINATION DOMAINS</h3>
-            <div id="categories-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="animate-pulse bg-slate-900/40 border border-white/5 h-24 rounded-2xl"></div>
-                <div class="animate-pulse bg-slate-900/40 border border-white/5 h-24 rounded-2xl"></div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Password (For New Registration/Log)</label>
+                <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-gray-700 border border-gray-600 rounded-xl p-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-semibold">
             </div>
-        </div>
-    </main>
-
-    <div id="auth-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-slate-900/95 border border-white/10 max-w-md w-full p-6 sm:p-8 rounded-3xl shadow-2xl space-y-5 relative transform scale-95 transition-transform duration-300">
             
-            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 rounded-t-3xl"></div>
-
-            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-500 hover:text-slate-300 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+            <button type="submit" id="request-otp-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 px-4 rounded-xl transition duration-300 shadow-md uppercase text-sm tracking-wider">
+                Send Verification OTP
             </button>
+        </form>
 
-            <div class="text-center space-y-1">
-                <h3 class="text-xl font-black text-white uppercase tracking-wide">Authentication Required</h3>
-                <p class="text-xs text-slate-400">Please login or register to access exam resources.</p>
+        <form id="otp-form" class="space-y-5 hidden">
+            <div class="bg-blue-950/40 p-4 border border-blue-900/50 rounded-xl text-center">
+                <p class="text-xs text-blue-400 font-bold">OTP has been dispatched securely to:</p>
+                <p id="target-email-display" class="text-sm font-mono text-white mt-1 break-all"></p>
             </div>
-
-            <div class="space-y-4 pt-1">
-                <div>
-                    <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Email Address</label>
-                    <input type="email" id="user-email" placeholder="student@gmail.com" autocomplete="off" class="w-full border border-white/10 p-3 text-sm rounded-xl font-semibold bg-slate-950/50 text-white outline-none focus:border-blue-500/50 transition shadow-inner">
-                </div>
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider">Password</label>
-                        <a href="forgot-password.html" class="text-[10px] font-bold text-blue-400 hover:text-blue-300 hover:underline transition">Forgot?</a>
-                    </div>
-                    <input type="password" id="user-password" placeholder="••••••••" class="w-full border border-white/10 p-3 text-sm rounded-xl font-semibold bg-slate-950/50 text-white outline-none focus:border-blue-500/50 transition shadow-inner">
-                </div>
-                <button onclick="handleEmailPasswordAuthentication()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-xl shadow-lg shadow-blue-600/20 uppercase text-xs tracking-wider transition transform active:scale-[0.99]">
-                    Sign In / Register
-                </button>
-            </div>
-
-            <div class="relative flex py-1 items-center">
-                <div class="flex-grow border-t border-white/5"></div>
-                <span class="flex-shrink mx-4 text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">OR</span>
-                <div class="flex-grow border-t border-white/5"></div>
-            </div>
-
-            <div class="flex justify-center">
-                <div id="google-auth-element-root"></div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 tracking-wider">Enter 6-Digit OTP Token</label>
+                <input type="text" id="otp-token" required maxlength="6" placeholder="123456" class="w-full bg-gray-700 border border-gray-600 tracking-[0.5em] text-center rounded-xl p-3 text-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-black">
             </div>
             
-            <div class="text-center">
-                <a href="admin-login.html" class="text-[10px] font-mono font-bold text-slate-500 hover:text-red-400 transition uppercase tracking-widest">&rarr; Admin Terminal Access</a>
-            </div>
+            <button type="submit" id="verify-otp-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-3.5 px-4 rounded-xl transition duration-300 shadow-md uppercase text-sm tracking-wider">
+                Verify Token & Login
+            </button>
+        </form>
+
+        <div class="mt-6 text-center text-xs text-gray-500 font-medium">
+            Direct real-time domain authentication engine.
         </div>
     </div>
 
-    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 backdrop-blur-sm text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0 mt-10">
-        &copy; Examination Content Management Cluster Node
-    </footer>
-
     <script>
-        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        // ⚠️ APNI ASLI SUPABASE CREDENTIALS YAHAN PASTE KAREIN
+        const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+        const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-window.onload = function() {
-    // Check if session data exists in client memory
-    checkActiveUserSession();
-    fetchExamCategories();
-    initializeGoogleAuthenticationEngine();
-};
 
-// 🛡️ DYNAMIC UI SESSION MATRIX CHECKER
-function checkActiveUserSession() {
-    const userEmail = localStorage.getItem('userEmail');
-    const actionsArea = document.getElementById('header-actions');
-    
-    if (userEmail) {
-        // User is logged in: Swap out generic entry button with explicit node identifier & sign-off layout
-        actionsArea.innerHTML = `
-            <div class="flex items-center space-x-3">
-                <span class="text-[11px] font-mono font-black text-emerald-400 bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-500/20 max-w-[180px] sm:max-w-xs truncate">
-                    NODE: ${userEmail}
-                </span>
-                <button onclick="portalLogout()" class="bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 text-xs font-bold py-2 px-4 rounded-xl transition uppercase tracking-wider">
-                    Logout
-                </button>
-            </div>
-        `;
-    }
-}
+        let savedEmail = "";
+        let savedPassword = "";
 
-// Global portal level log-out clear state tool
-function portalLogout() {
-    localStorage.clear();
-    alert("Session terminated. Client portal environment secure.");
-    window.location.reload();
-}
-        let localCategoriesCache = [];
+        // Trigger Phase 1: Requesting OTP from Supabase Infrastructure
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            savedEmail = document.getElementById('login-email').value.trim();
+            savedPassword = document.getElementById('login-password').value;
+            const reqBtn = document.getElementById('request-otp-btn');
 
-        
-       
-        // 🤖 INITIALIZE GOOGLE AUTH CORE
-        function initializeGoogleAuthenticationEngine() {
-            google.accounts.id.initialize({
-                client_id: "313377576458-c198ssj598dcg6c58c3kmtvtg5sf9m84.apps.googleusercontent.com", 
-                callback: handleGoogleAuthCallbackResponse,
-                auto_select: false
-            });
-            google.accounts.id.renderButton(
-                document.getElementById("google-auth-element-root"),
-                { theme: "filled_blue", size: "large", type: "standard", text: "continue_with", width: "320", shape: "pill" }
-            );
-        }
+            reqBtn.innerText = "Transmitting OTP Request...";
+            reqBtn.disabled = true;
 
-        // 🔄 FETCH SYSTEM CATEGORIES VIA DATABASE (PUBLICLY VIEWABLE)
-        async function fetchExamCategories() {
             try {
-                const { data, error } = await supabaseClient
-                    .from('exam_categories')
-                    .select('*')
-                    .order('category_name', { ascending: true });
+                // Supabase Auth Method for seamless email OTP generation
+                const { error } = await supabaseClient.auth.signInWithOtp({
+                    email: savedEmail,
+                    options: {
+                        shouldCreateUser: true // Automatically signs up if new email addresses hit the platform
+                    }
+                });
 
-                if(error) throw error;
-                localCategoriesCache = data || [];
-                renderCategories(localCategoriesCache);
-            } catch (err) {
-                document.getElementById('categories-grid').innerHTML = `
-                    <div class="col-span-full text-center text-red-400 font-mono text-xs border border-red-500/10 p-6 rounded-2xl bg-red-500/5">
-                        Failed to map dynamic framework pipelines. Contact Administration.
-                    </div>`;
-            }
-        }
-
-        // 🎨 RENDER THE PREMIUM DYNAMIC LAYOUT CARD STRUCTURE
-        function renderCategories(list) {
-            const grid = document.getElementById('categories-grid');
-            grid.innerHTML = "";
-
-            if(list.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center text-slate-500 font-mono text-xs py-10">No examination nodes match query constraints.</div>`;
-                return;
-            }
-
-            list.forEach(cat => {
-                const card = document.createElement('div');
-                card.className = "group bg-slate-900/40 hover:bg-slate-900/80 border border-white/5 hover:border-blue-500/30 p-5 rounded-2xl flex items-center justify-between cursor-pointer transition transform hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/5 duration-300 relative overflow-hidden";
-                
-                // 🔒 BINA SIGN-IN KE ACCESS BLOCKED: Click karne par direct Modal khulega!
-                card.onclick = () => handleCategoryClick(cat.id);
-
-                card.innerHTML = `
-                    <div class="flex items-center space-x-4">
-                        <div class="bg-gradient-to-br from-blue-600/20 to-indigo-600/10 group-hover:from-blue-600/30 group-hover:to-indigo-600/20 p-3.5 rounded-xl border border-white/5 group-hover:border-blue-500/20 transition duration-300 text-blue-400 group-hover:text-blue-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
-                        </div>
-                        <div class="flex flex-col">
-                            <h4 class="text-base font-bold text-slate-100 group-hover:text-blue-400 transition tracking-wide uppercase">${cat.category_name}</h4>
-                            <p class="text-[11px] text-slate-500 group-hover:text-slate-400 transition font-medium mt-0.5">${cat.description || 'Explore custom exam structure templates and structured tests.'}</p>
-                        </div>
-                    </div>
-                    <div class="text-slate-600 group-hover:text-blue-400 transform group-hover:translate-x-1 transition duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                    </div>
-                    <div class="absolute bottom-0 left-0 h-[2px] w-0 bg-blue-500 group-hover:w-full transition-all duration-500"></div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // 🛡️ INTERCEPTOR GATEKEEPER LOGIC
-        function handleCategoryClick(categoryId) {
-            const userEmail = localStorage.getItem('userEmail');
-            if (userEmail) {
-                // Verified User: Seedha syllabus/content route par bypass karein
-                window.location.href = `syllabus-view.html?category_id=${categoryId}`;
-            } else {
-                // Anonymous Guest: Block content and trigger Authentication UI Modal Layer
-                openAuthModal();
-            }
-        }
-
-        // 🔍 REAL-TIME SEARCH FILTER
-        function filterCategories() {
-            const query = document.getElementById('category-search').value.toLowerCase().trim();
-            const filtered = localCategoriesCache.filter(cat => 
-                cat.category_name.toLowerCase().includes(query) || 
-                (cat.description && cat.description.toLowerCase().includes(query))
-            );
-            renderCategories(filtered);
-        }
-
-        // 🦾 MODAL UI CONTROL MATRIX
-        function openAuthModal() {
-            const modal = document.getElementById('auth-modal');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                modal.querySelector('div').classList.remove('scale-95');
-            }, 10);
-        }
-
-        function closeAuthModal() {
-            const modal = document.getElementById('auth-modal');
-            modal.classList.add('opacity-0');
-            modal.querySelector('div').classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-
-        // 🛡️ GOOGLE AUTH RESOLVER MODULE
-        async function handleGoogleAuthCallbackResponse(response) {
-            try {
-                const idToken = response.credential;
-                const base64Url = idToken.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-
-                const payloadObj = JSON.parse(jsonPayload);
-                const googleEmail = payloadObj.email;
-                const googleName = payloadObj.name || googleEmail.split('@')[0];
-
-                const { data: userRow } = await supabaseClient
-                    .from('portal_users')
-                    .select('email, name')
-                    .eq('email', googleEmail.toLowerCase())
-                    .maybeSingle();
-
-                if (!userRow) {
-                    await supabaseClient.from('portal_users').insert({
-                        email: googleEmail.toLowerCase(),
-                        name: googleName,
-                        password: "GoogleAuthenticatedAccount"
-                    });
+                if (!error) {
+                    // Transition Forms UI smoothly
+                    document.getElementById('login-form').classList.add('hidden');
+                    document.getElementById('otp-form').classList.remove('hidden');
+                    document.getElementById('target-email-display').innerText = savedEmail;
+                    document.getElementById('portal-desc').innerText = "Input token confirmation metrics below.";
+                } else {
+                    alert("Auth Gateway Exception: " + error.message);
+                    reqBtn.innerText = "Send Verification OTP";
+                    reqBtn.disabled = false;
                 }
-
-                localStorage.setItem('userEmail', googleEmail.toLowerCase());
-                localStorage.setItem('userName', googleName);
-                
-                closeAuthModal();
-                alert("Login successful! Please re-select your target category domain.");
-                window.location.reload();
-
             } catch (err) {
-                alert("Identity verification exception.");
+                alert("Fatal transition processing mismatch.");
+                reqBtn.innerText = "Send Verification OTP";
+                reqBtn.disabled = false;
             }
-        }
+        });
 
-        // 📧 MANUAL EMAIL AUTH WORKFLOW
-        async function handleEmailPasswordAuthentication() {
-            const inputEmail = document.getElementById('user-email').value.trim();
-            const inputPassword = document.getElementById('user-password').value;
+        // Trigger Phase 2: Verifying Submitted Token and Syncing Custom Table Rows
+        document.getElementById('otp-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const token = document.getElementById('otp-token').value.trim();
+            const verifyBtn = document.getElementById('verify-otp-btn');
 
-            if (!inputEmail || !inputPassword) { alert("Please complete all signature protocols."); return; }
+            verifyBtn.innerText = "Verifying Token System...";
+            verifyBtn.disabled = true;
 
             try {
-                const { data, error } = await supabaseClient
-                    .from('portal_users')
-                    .select('email, password, name')
-                    .eq('email', inputEmail.toLowerCase())
-                    .maybeSingle();
+                // Verifies token with Supabase auth infrastructure
+                const { data: authData, error: authError } = await supabaseClient.auth.verifyOtp({
+                    email: savedEmail,
+                    token: token,
+                    type: 'email'
+                });
 
-                if (error || !data || data.password !== inputPassword) {
-                    alert("Invalid email or security token sequence passphrase.");
+                if (authError || !authData.user) {
+                    alert("Invalid Token: Verification allocation failed.");
+                    verifyBtn.innerText = "Verify Token & Login";
+                    verifyBtn.disabled = false;
                     return;
                 }
 
-                localStorage.setItem('userEmail', data.email.toLowerCase());
-                localStorage.setItem('userName', data.name);
+                // Token is valid! Now check or synchronize our application mapping table 'portal_users'
+                const { data: userData } = await supabaseClient
+                    .from('portal_users')
+                    .select('*')
+                    .eq('email', savedEmail)
+                    .single();
 
-                closeAuthModal();
-                alert("Login successful! Your portal environment node is now active.");
-                window.location.reload();
+                if (userData) {
+                    // Existing User: Set state and route according to schema roles
+                    localStorage.setItem('userEmail', userData.email);
+                    localStorage.setItem('userName', userData.name);
+                    
+                    window.location.href = (userData.role === 'admin') ? "admin.html" : "dashboard.html";
+                } else {
+                    // Fresh Verified Student: Add explicitly to portal architecture tables cleanly
+                    const defaultName = savedEmail.split('@')[0];
+                    const { error: insertError } = await supabaseClient
+                        .from('portal_users')
+                        .insert([{ 
+                            email: savedEmail, 
+                            name: defaultName, 
+                            password: savedPassword, 
+                            role: 'student' 
+                        }]);
 
+                    if(!insertError) {
+                        localStorage.setItem('userEmail', savedEmail);
+                        localStorage.setItem('userName', defaultName);
+                        window.location.href = "dashboard.html";
+                    } else {
+                        alert("Data Schema Error: " + insertError.message);
+                    }
+                }
             } catch (err) {
-                alert("Database cluster node pipeline interruption.");
+                alert("Critical exception mapping data parameters.");
+                verifyBtn.innerText = "Verify Token & Login";
+                verifyBtn.disabled = false;
             }
-        }
+        });
     </script>
 </body>
 </html>
