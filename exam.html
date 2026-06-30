@@ -26,7 +26,7 @@
                 <label class="text-[10px] font-mono text-slate-400 uppercase">Lang:</label>
                 <select id="global-lang-selector" onchange="switchAssessmentLanguage(this.value)" class="bg-transparent text-xs font-bold text-white outline-none cursor-pointer pr-1">
                     <option value="en" class="bg-slate-900">English</option>
-                    <option value="hi" class="bg-slate-900">हिन्दी (Hindi)</option>
+                    <option value="hi" class="bg-slate-900">हिन्दी (Auto Translate)</option>
                 </select>
             </div>
 
@@ -92,7 +92,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let globalLoadedQuestions = [];
-        let currentSelectedLanguage = "en"; // Default state translation handler flag
+        let currentSelectedLanguage = "en"; 
         let networkTimerInterval = null;
         
         let userResponses = {}; 
@@ -133,7 +133,7 @@
                 
                 globalLoadedQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
                 
-                renderAssessmentLayout(); // Call clean layout configuration
+                renderAssessmentLayout(); 
                 renderNavigationPalette(globalLoadedQuestions.length);
                 updateLiveStatusCounters();
                 initializeRuntimeClock(parseInt(data.duration_minutes) || 60);
@@ -146,49 +146,67 @@
             }
         }
 
-        // 🔄 RENDERING PIPELINE ENHANCED FOR MULTI-LANGUAGE DECRYPTION
-        function renderAssessmentLayout() {
-            const container = document.getElementById('questions-pipeline-wrapper');
-            container.innerHTML = "";
-
-            if(!globalLoadedQuestions || globalLoadedQuestions.length === 0) {
-                container.innerHTML = `<div class="text-center font-mono text-xs text-slate-600 py-6">Question array sequence empty.</div>`;
-                return;
+        // 🎯 CORE BACKEND FREE TRANSLATOR ENGINE FUNCTION (NON-API KEY DRIVEN)
+        async function translateTextOnline(text, targetLang) {
+            if (!text || targetLang === "en") return text;
+            try {
+                // Using rapid transparent public mirror endpoints matrix
+                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+                const res = await fetch(url);
+                const json = await res.json();
+                return json[0].map(item => item[0]).join('');
+            } catch (e) {
+                console.error("Translation fault handler bypass:", e);
+                return text; // Return source text fallback if network drops
             }
+        }
 
-            globalLoadedQuestions.forEach((q, index) => {
-                let optionsHtml = "";
-                
-                // 🎯 Smart Choice Logic: Check if localized text keys exist, else fallback gracefully
-                let activeQuestionText = "";
-                let activeOptionsArray = [];
+        // 🔄 RENDERING PIPELINE ENHANCED WITH LIVE INLINE AUTOMATIC TRANSLATION
+        async function renderAssessmentLayout() {
+            const container = document.getElementById('questions-pipeline-wrapper');
+            
+            // Temporary loader state layout matrix to prevent users clicking blank boxes during fetch
+            container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing Language Layout Matrices...</div>`;
 
+            let finalHtml = "";
+
+            for (let index = 0; index < globalLoadedQuestions.length; index++) {
+                const q = globalLoadedQuestions[index];
+                const rawQuestionText = q.title || q.question || 'Objective Question';
+                const optionsArray = q.options || [];
+
+                // 🎯 Dynamically Translate Title/Question Text
+                let translatedTitle = rawQuestionText;
                 if (currentSelectedLanguage === "hi") {
-                    activeQuestionText = q.question_hi || q.title_hi || q.question || q.title || "Objective Question (Hindi Missing)";
-                    activeOptionsArray = q.options_hi || q.options || [];
-                } else {
-                    activeQuestionText = q.question_en || q.title_en || q.question || q.title || "Objective Question";
-                    activeOptionsArray = q.options_en || q.options || [];
+                    translatedTitle = await translateTextOnline(rawQuestionText, "hi");
                 }
-                
-                activeOptionsArray.forEach((opt, optIdx) => {
-                    // Retain checked property state if user switches language mid-test
+
+                let optionsHtml = "";
+                for (let optIdx = 0; optIdx < optionsArray.length; optIdx++) {
+                    const rawOptText = optionsArray[optIdx];
+                    
+                    // 🎯 Dynamically Translate Options Elements
+                    let translatedOpt = rawOptText;
+                    if (currentSelectedLanguage === "hi") {
+                        translatedOpt = await translateTextOnline(rawOptText, "hi");
+                    }
+
                     const isChecked = userResponses[index] === optIdx ? "checked" : "";
 
                     optionsHtml += `
                         <label class="flex items-center space-x-3 bg-slate-900/40 hover:bg-slate-900/80 border border-white/5 hover:border-blue-500/20 p-3.5 rounded-xl cursor-pointer transition">
                             <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
-                            <span class="text-xs text-slate-300 font-medium">${opt}</span>
+                            <span class="text-xs text-slate-300 font-medium">${translatedOpt}</span>
                         </label>
                     `;
-                });
+                }
 
-                container.innerHTML += `
+                finalHtml += `
                     <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
                         <div class="flex items-start justify-between gap-4">
                             <div class="flex items-start space-x-3">
                                 <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
-                                <h4 class="text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${activeQuestionText}</h4>
+                                <h4 class="text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${translatedTitle}</h4>
                             </div>
                             <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-red-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition shrink-0">
                                 ${markedForReviewSet.has(index) ? '🔴 Marked' : 'Mark Review'}
@@ -199,22 +217,22 @@
                         </div>
                     </div>
                 `;
-                
-                // Re-apply style constraints for marked fields dynamically on structural reload
+            }
+
+            container.innerHTML = finalHtml;
+
+            // Re-apply style parameters for active marks post translation layout render loop
+            globalLoadedQuestions.forEach((_, index) => {
                 if (markedForReviewSet.has(index)) {
-                    setTimeout(() => {
-                        const mBtn = document.getElementById(`mark-btn-${index}`);
-                        if(mBtn) mBtn.classList.add("border-red-500/50", "text-red-400", "bg-red-500/10");
-                    }, 0);
+                    const mBtn = document.getElementById(`mark-btn-${index}`);
+                    if(mBtn) mBtn.classList.add("border-red-500/50", "text-red-400", "bg-red-500/10");
                 }
             });
         }
 
-        // 🎯 DYNAMIC LANGUAGE ACTION INTERCEPTOR (WITHOUT RE-INITIALIZING TIMER)
         function switchAssessmentLanguage(selectedLang) {
             currentSelectedLanguage = selectedLang;
-            renderAssessmentLayout(); // Fast structural re-render matching chosen context strings
-            console.log("Language interface set to: " + selectedLang);
+            renderAssessmentLayout(); // Fast client side live automatic translation translation fetch routine triggers
         }
 
         function renderNavigationPalette(totalCount) {
