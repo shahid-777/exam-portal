@@ -155,19 +155,16 @@
         }
 
         // 🎯 कैटेगरी एक्सेस करने का लॉजिक
-        function accessCategory(categoryName) {
-            const userEmail = localStorage.getItem('userEmail');
-            
-            if (!userEmail) {
-                // लॉगिन नहीं है तो पेंडिंग में सेव करें और मोडल खोलें
-                targetCategoryPending = categoryName;
-                openAuthModal('signin');
-            } else {
-                // लॉगिन है तो सीधे dashboard.html पर भेजें जहाँ उस कैटेगरी की परीक्षा लिस्ट दिखेगी
-                window.location.href = `dashboard.html?category=${encodeURIComponent(categoryName)}`;
-            }
-        }
-
+        function accessCategory(categoryName, categoryId) {
+    const userEmail = localStorage.getItem('userEmail');
+    
+    if (!userEmail) {
+        targetCategoryPending = `${categoryName}&catid=${categoryId}`;
+        openAuthModal('signin');
+    } else {
+        window.location.href = `dashboard.html?category=${encodeURIComponent(categoryName)}&catid=${categoryId}`;
+    }
+}
         function openAuthModal(mode) {
             currentModalMode = mode;
             document.getElementById('auth-modal').classList.remove('hidden');
