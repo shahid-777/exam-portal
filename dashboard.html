@@ -158,9 +158,11 @@
 
         async function terminateSessionProcess() {
     try {
-        // 1. Supabase के क्लाइंट सेशन को भी लॉगआउट करें (ताकि वह टोकन डिलीट कर दे)
-        if (window.supabaseClient && supabaseClient.auth) {
+        // 1. Supabase के क्लाइंट सेशन को लॉगआउट करें (auth.signOut() को सुरक्षित रूप से चलाएं)
+        if (typeof supabaseClient !== 'undefined' && supabaseClient.auth) {
             await supabaseClient.auth.signOut();
+        } else if (typeof supabase !== 'undefined' && supabase.auth) {
+            await supabase.auth.signOut();
         }
     } catch (err) {
         console.error("Supabase signOut error:", err);
