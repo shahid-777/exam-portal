@@ -21,9 +21,19 @@
             </div>
         </div>
         
-        <div class="bg-red-500/10 border border-red-500/20 px-4 py-1.5 rounded-xl flex items-center space-x-2">
-            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            <span id="time-counter-clock" class="text-xs font-mono font-black text-red-400 tracking-widest">00:00</span>
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-1.5 bg-slate-900 border border-white/10 px-2.5 py-1 rounded-xl">
+                <label class="text-[10px] font-mono text-slate-400 uppercase">Lang:</label>
+                <select id="global-lang-selector" onchange="switchAssessmentLanguage(this.value)" class="bg-transparent text-xs font-bold text-white outline-none cursor-pointer pr-1">
+                    <option value="en" class="bg-slate-900">English</option>
+                    <option value="hi" class="bg-slate-900">हिन्दी (Hindi)</option>
+                </select>
+            </div>
+
+            <div class="bg-red-500/10 border border-red-500/20 px-4 py-1.5 rounded-xl flex items-center space-x-2">
+                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                <span id="time-counter-clock" class="text-xs font-mono font-black text-red-400 tracking-widest">00:00</span>
+            </div>
         </div>
     </header>
 
@@ -82,6 +92,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let globalLoadedQuestions = [];
+        let currentSelectedLanguage = "en"; // Default state translation handler flag
         let networkTimerInterval = null;
         
         let userResponses = {}; 
@@ -122,7 +133,7 @@
                 
                 globalLoadedQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
                 
-                renderAssessmentLayout(globalLoadedQuestions);
+                renderAssessmentLayout(); // Call clean layout configuration
                 renderNavigationPalette(globalLoadedQuestions.length);
                 updateLiveStatusCounters();
                 initializeRuntimeClock(parseInt(data.duration_minutes) || 60);
@@ -135,39 +146,52 @@
             }
         }
 
-        function renderAssessmentLayout(questions) {
+        // 🔄 RENDERING PIPELINE ENHANCED FOR MULTI-LANGUAGE DECRYPTION
+        function renderAssessmentLayout() {
             const container = document.getElementById('questions-pipeline-wrapper');
             container.innerHTML = "";
 
-            if(!questions || questions.length === 0) {
+            if(!globalLoadedQuestions || globalLoadedQuestions.length === 0) {
                 container.innerHTML = `<div class="text-center font-mono text-xs text-slate-600 py-6">Question array sequence empty.</div>`;
                 return;
             }
 
-            questions.forEach((q, index) => {
+            globalLoadedQuestions.forEach((q, index) => {
                 let optionsHtml = "";
-                const optionsArray = q.options || [];
                 
-                optionsArray.forEach((opt, optIdx) => {
+                // 🎯 Smart Choice Logic: Check if localized text keys exist, else fallback gracefully
+                let activeQuestionText = "";
+                let activeOptionsArray = [];
+
+                if (currentSelectedLanguage === "hi") {
+                    activeQuestionText = q.question_hi || q.title_hi || q.question || q.title || "Objective Question (Hindi Missing)";
+                    activeOptionsArray = q.options_hi || q.options || [];
+                } else {
+                    activeQuestionText = q.question_en || q.title_en || q.question || q.title || "Objective Question";
+                    activeOptionsArray = q.options_en || q.options || [];
+                }
+                
+                activeOptionsArray.forEach((opt, optIdx) => {
+                    // Retain checked property state if user switches language mid-test
+                    const isChecked = userResponses[index] === optIdx ? "checked" : "";
+
                     optionsHtml += `
                         <label class="flex items-center space-x-3 bg-slate-900/40 hover:bg-slate-900/80 border border-white/5 hover:border-blue-500/20 p-3.5 rounded-xl cursor-pointer transition">
-                            <input type="radio" name="question-${index}" value="${optIdx}" onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
+                            <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
                             <span class="text-xs text-slate-300 font-medium">${opt}</span>
                         </label>
                     `;
                 });
-
-                const questionText = q.title || q.question || 'Objective Question';
 
                 container.innerHTML += `
                     <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
                         <div class="flex items-start justify-between gap-4">
                             <div class="flex items-start space-x-3">
                                 <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
-                                <h4 class="text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${questionText}</h4>
+                                <h4 class="text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${activeQuestionText}</h4>
                             </div>
                             <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-red-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition shrink-0">
-                                Mark Review
+                                ${markedForReviewSet.has(index) ? '🔴 Marked' : 'Mark Review'}
                             </button>
                         </div>
                         <div class="grid grid-cols-1 gap-2.5 pt-1">
@@ -175,10 +199,24 @@
                         </div>
                     </div>
                 `;
+                
+                // Re-apply style constraints for marked fields dynamically on structural reload
+                if (markedForReviewSet.has(index)) {
+                    setTimeout(() => {
+                        const mBtn = document.getElementById(`mark-btn-${index}`);
+                        if(mBtn) mBtn.classList.add("border-red-500/50", "text-red-400", "bg-red-500/10");
+                    }, 0);
+                }
             });
         }
 
-        // RENDER RIGHT NAVIGATION PALETTE
+        // 🎯 DYNAMIC LANGUAGE ACTION INTERCEPTOR (WITHOUT RE-INITIALIZING TIMER)
+        function switchAssessmentLanguage(selectedLang) {
+            currentSelectedLanguage = selectedLang;
+            renderAssessmentLayout(); // Fast structural re-render matching chosen context strings
+            console.log("Language interface set to: " + selectedLang);
+        }
+
         function renderNavigationPalette(totalCount) {
             const grid = document.getElementById('palette-grid-buttons');
             grid.innerHTML = "";
@@ -191,13 +229,10 @@
             }
         }
 
-        // 🎯 RANDOM NAVIGATION CLICK ROUTINE (RANDOM JUMPING SYSTEM)
         function scrollToQuestion(qIdx) {
             const el = document.getElementById(`question-card-${qIdx}`);
             if(el) {
                 el.scrollIntoView({ behavior: 'smooth' });
-                
-                // Visual bounce highlight pattern to catch user's eye
                 el.classList.add('border-blue-500/40', 'bg-slate-900/40');
                 setTimeout(() => {
                     el.classList.remove('border-blue-500/40', 'bg-slate-900/40');
@@ -205,37 +240,31 @@
             }
         }
 
-        // ONCHANGE RESPONSE INTERCEPTOR
         function registerRadioResponse(qIdx, optIdx) {
             userResponses[qIdx] = optIdx;
             updateLiveStatusCounters();
             
             const pBtn = document.getElementById(`palette-btn-${qIdx}`);
-            // Agar review marked nahi h, toh button simply green show karega
             if(!markedForReviewSet.has(qIdx)) {
                 pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
             }
         }
 
-        // 🎯 TOGGLE MARK FOR REVIEW HANDLER (RED REFRACTOR)
         function toggleMarkForReview(qIdx) {
             const mBtn = document.getElementById(`mark-btn-${qIdx}`);
             const pBtn = document.getElementById(`palette-btn-${qIdx}`);
             
             if (markedForReviewSet.has(qIdx)) {
-                // Remove mark state
                 markedForReviewSet.delete(qIdx);
                 mBtn.classList.remove("border-red-500/50", "text-red-400", "bg-red-500/10");
                 mBtn.innerText = "Mark Review";
                 
-                // Color fallback hierarchy checks
                 if (userResponses[qIdx] !== undefined) {
                     pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
                 } else {
                     pBtn.className = "bg-slate-800 border border-white/10 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
                 }
             } else {
-                // Add mark state (Strict Red Mapping)
                 markedForReviewSet.add(qIdx);
                 mBtn.classList.add("border-red-500/50", "text-red-400", "bg-red-500/10");
                 mBtn.innerText = "🔴 Marked";
@@ -244,7 +273,6 @@
             updateLiveStatusCounters();
         }
 
-        // METRICS COUNTER EVALUATOR
         function updateLiveStatusCounters() {
             const total = globalLoadedQuestions.length;
             const attempted = Object.keys(userResponses).length;
@@ -258,6 +286,7 @@
         }
 
         function initializeRuntimeClock(minutes) {
+            if(networkTimerInterval) clearInterval(networkTimerInterval);
             let totalSeconds = minutes * 60;
             const clock = document.getElementById('time-counter-clock');
 
