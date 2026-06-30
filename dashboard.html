@@ -61,31 +61,51 @@
 
         let targetCategoryDomain = "";
 
-        window.onload = function() {
-            const activeUser = localStorage.getItem('userEmail');
-            if (!activeUser) {
-                window.location.replace("index.html");
-                return;
-            }
-            document.getElementById('display-user-session').innerText = activeUser.toLowerCase();
+      window.onload = async function() {
+    // 1. ऑथेंटिकेशन चेक
+    const activeUser = localStorage.getItem('userEmail');
+    if (!activeUser || activeUser === "null" || activeUser.trim() === "") {
+        window.location.replace("index.html");
+        return;
+    }
+    
+    // यूजर का ईमेल डिस्प्ले करें
+    const displayElement = document.getElementById('display-user-session');
+    if (displayElement) {
+        displayElement.innerText = activeUser.toLowerCase();
+    }
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const categoryParam = urlParams.get('category');
-            const catIdParam = urlParams.get('catid');
+    // 2. यूआरएल से पैरामीटर्स निकालें
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryParam = urlParams.get('category');
+    const catIdParam = urlParams.get('catid');
 
-            // सुरक्षा गार्ड: पैरामीटर अमान्य होने पर वापस रूट इंडेक्स पर भेजें
-            if (!categoryParam || !catIdParam || catIdParam === 'undefined') {
-                window.location.replace("index.html");
-                return;
-            }
+    // 3. पैरामीटर्स की जांच
+    const titleElement = document.getElementById('active-category-title');
+    
+    if (!categoryParam || !catIdParam || catIdParam === 'undefined') {
+        // 💡 फिक्स: अगर पैरामीटर नहीं हैं, तो index.html पर भेजने के बजाय डैशबोर्ड पर ही रोकें
+        console.log("No specific category selected. Loading general dashboard.");
+        if (titleElement) {
+            titleElement.innerText = "WELCOME TO STUDENT HUB";
+        }
+        // यहाँ आप चाहें तो कोई डिफॉल्ट मैसेज दिखा सकते हैं, जैसे: "कृपया होम पेज से कोई स्ट्रीम चुनें।"
+        return; 
+    }
 
-            targetCategoryDomain = decodeURIComponent(categoryParam);
-            document.getElementById('active-category-title').innerText = targetCategoryDomain.toUpperCase();
+    // 4. अगर पैरामीटर्स मौजूद हैं, तो डेटा लोड करें
+    targetCategoryDomain = decodeURIComponent(categoryParam);
+    if (titleElement) {
+        titleElement.innerText = targetCategoryDomain.toUpperCase();
+    }
 
-            // 🚀 डेटाबेस आर्किटेक्चर से केवल संख्यात्मक ID के आधार पर रिकॉर्ड्स निकालें
-            fetchActiveCategoryExams(catIdParam);
-        };
-
+    // डेटाबेस आर्किटेक्चर से केवल संख्यात्मक ID के आधार पर रिकॉर्ड्स निकालें
+    if (typeof fetchActiveCategoryExams === "function") {
+        fetchActiveCategoryExams(catIdParam);
+    } else {
+        console.error("fetchActiveCategoryExams function is not defined.");
+    }
+};
         async function fetchActiveCategoryExams(categoryId) {
             const container = document.getElementById('exams-matrix-pipeline');
             
