@@ -67,7 +67,6 @@
 
         async function loadCategoryExams(catId) {
             try {
-                // 1. Category details fetch karein
                 const { data: cat } = await supabaseClient.from('exam_categories').select('*').eq('id', catId).maybeSingle();
                 if(cat) {
                     document.getElementById('category-title-header').innerText = cat.category_name;
@@ -75,7 +74,7 @@
                     document.getElementById('main-category-desc').innerText = cat.description || "Dynamic exam cluster integration.";
                 }
 
-                // 2. 🎯 FILTERED FETCH: Sirf wahi exams lao jinka category_id match karta ho
+                // FILTERED FETCH: Sirf category_id se match khane wale exams hi load honge
                 const { data: exams, error } = await supabaseClient
                     .from('exams')
                     .select('id, subject, duration_minutes')
@@ -88,8 +87,9 @@
                 if(exams && exams.length > 0) {
                     area.innerHTML = "";
                     exams.forEach(ex => {
+                        // 🎯 REDIRECT TARGET CHANGED TO exam.html Safely
                         area.innerHTML += `
-                            <div onclick="window.location.href='test-portal.html?exam_id=${ex.id}'" class="flex justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-white/5 hover:border-blue-500/40 hover:bg-slate-900/90 transition cursor-pointer group shadow-md">
+                            <div onclick="window.location.href='exam.html?exam_id=${ex.id}'" class="flex justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-white/5 hover:border-blue-500/40 hover:bg-slate-900/90 transition duration-200 cursor-pointer group shadow-md">
                                 <div class="flex items-center space-x-3">
                                     <div class="bg-blue-500/10 text-blue-400 group-hover:bg-blue-500/20 p-2.5 rounded-xl text-xs font-mono font-black">EXAM</div>
                                     <span class="text-xs font-bold text-slate-200 uppercase tracking-wide group-hover:text-blue-400 transition">${ex.subject}</span>
