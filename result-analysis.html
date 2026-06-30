@@ -80,42 +80,59 @@
             fetchResultMatrixPacket(resultId);
         };
         // 1. मुख्य फैच फंक्शन (इसे अपने मौजूदा फंक्शन से मैच करें या अपडेट करें)
+                // सुनिश्चित करें कि आपकी इस फ़ाइल में Supabase Client का नाम सही है (जैसे: supabaseClient या supabase)
+// अगर आपकी फ़ाइल में पहले से 'const supabase = ...' है, तो नीचे जहाँ 'supabaseClient' लिखा है, उसे 'supabase' कर दें।
+
 async function fetchAndRenderAnalysis(id) {
     try {
-        // करंट छात्र का रिज़ल्ट फैच करें
+        console.log("Fetching result for ID:", id);
+        
         const { data: currentResult, error: fetchError } = await supabaseClient
             .from('results')
             .select('*')
             .eq('id', id)
             .maybeSingle();
 
-        if (fetchError || !currentResult) throw new Error("Result not found.");
+        if (fetchError || !currentResult) throw new Error("Result not found in database.");
 
-        // UI में बेसिक डेटा सेट करें
-        document.getElementById('display-subject').innerText = currentResult.subject;
-        document.getElementById('total-q').innerText = currentResult.total_questions;
-        document.getElementById('correct-q').innerText = currentResult.correct_answers;
-        document.getElementById('wrong-q').innerText = currentResult.wrong_answers;
-        document.getElementById('unattempted-q').innerText = currentResult.unattempted;
+        // UI में डेटा सेट करना
+        if(document.getElementById('display-subject')) document.getElementById('display-subject').innerText = currentResult.subject;
+        if(document.getElementById('total-q')) document.getElementById('total-q').innerText = currentResult.total_questions;
+        if(document.getElementById('correct-q')) document.getElementById('correct-q').innerText = currentResult.correct_answers;
+        if(document.getElementById('wrong-q')) document.getElementById('wrong-q').innerText = currentResult.wrong_answers;
+        if(document.getElementById('unattempted-q')) document.getElementById('unattempted-q').innerText = currentResult.unattempted;
 
-        // 🎯 रैंक कैलकुलेट करने वाले फंक्शन को कॉल करें
-        await calculateRank(currentResult.subject, currentResult.score);
+        // 🎯 रैंक कैलकुलेशन फंक्शन को कॉल करना (Safe Execution)
+        try {
+            await calculateRank(currentResult.subject, currentResult.score);
+        } catch (rankErr) {
+            console.error("Rank calculation inner error:", rankErr);
+            document.getElementById('display-rank').innerText = "--";
+        }
 
-        // पुराना रेंडरिंग लूप यहाँ जारी रखें...
+        // पुराना रेंडरिंग लूप
         const userResponses = typeof currentResult.user_responses_json === 'string' ? JSON.parse(currentResult.user_responses_json) : currentResult.user_responses_json;
         const questionsSnapshot = typeof currentResult.questions_snapshot_json === 'string' ? JSON.parse(currentResult.questions_snapshot_json) : currentResult.questions_snapshot_json;
-        renderDetailedQuestionsAnalysis(questionsSnapshot, userResponses);
+        
+        if (typeof renderDetailedQuestionsAnalysis === "function") {
+            renderDetailedQuestionsAnalysis(questionsSnapshot, userResponses);
+        }
 
     } catch (err) {
-        console.error(err);
-        document.getElementById('display-rank').innerText = "--";
+        console.error("Main fetch error:", err);
+        if(document.getElementById('display-rank')) document.getElementById('display-rank').innerText = "Error";
     }
 }
 
-// 🎯 2. रैंक कैलकुलेट करने का नया फंक्शन
+// 🎯 रैंक कैलकुलेट करने का बिल्कुल सुरक्षित तरीका
 async function calculateRank(subjectName, currentStudentScore) {
+    const rankDisplay = document.getElementById('display-rank');
+    if (!rankDisplay) return;
+
     try {
-        // डेटाबेस से उस पर्टिकुलर सब्जेक्ट के सभी छात्रों के स्कोर मंगाएं
+        console.log("Calculating rank for subject:", subjectName, "with score:", currentStudentScore);
+
+        // Supabase से इस सब्जेक्ट के सभी रिकॉर्ड्स मंगवाना
         const { data: allScores, error } = await supabaseClient
             .from('results')
             .select('score')
@@ -124,27 +141,27 @@ async function calculateRank(subjectName, currentStudentScore) {
         if (error) throw error;
 
         if (allScores && allScores.length > 0) {
-            // स्कोर्स को केवल एक एरे में निकालें और बड़े से छोटे (Descending Order) में सॉर्ट करें
+            // सभी स्कोर्स को निकालकर बड़े से छोटे (Descending) क्रम में सॉर्ट करना
             const sortedScores = allScores
-                .map(r => parseInt(r.score) || 0)
+                .map(r => parseInt(r.score) !== undefined ? parseInt(r.score) : 0)
                 .sort((a, b) => b - a);
 
-            // करंट छात्र के स्कोर का पहला इंडेक्स (पायदान) ढूंढें
-            // +1 इसलिए क्योंकि इंडेक्स 0 से शुरू होता है
+            console.log("All sorted scores for this subject:", sortedScores);
+
+            // करंट स्टूडेंट के स्कोर का इंडेक्स पता करना
             const rank = sortedScores.indexOf(parseInt(currentStudentScore) || 0) + 1;
             const totalStudents = sortedScores.length;
 
-            // UI में रैंक सेट करें (जैसे: 1st out of 25)
-            document.getElementById('display-rank').innerText = `${rank} / ${totalStudents}`;
+            // UI में डिस्प्ले अपडेट करना
+            rankDisplay.innerText = `${rank} / ${totalStudents}`;
         } else {
-            document.getElementById('display-rank').innerText = "1 / 1";
+            rankDisplay.innerText = "1 / 1";
         }
     } catch (err) {
-        console.error("Rank calculation error:", err);
-        document.getElementById('display-rank').innerText = "Error";
+        console.error("Error inside calculateRank:", err);
+        rankDisplay.innerText = "--";
     }
 }
-
         async function fetchResultMatrixPacket(id) {
             try {
                 const { data, error } = await supabaseClient
