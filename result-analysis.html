@@ -133,7 +133,7 @@ async function calculateRank(subjectName, currentStudentScore) {
         console.log("Calculating rank for subject:", subjectName, "with score:", currentStudentScore);
 
         // Supabase से इस सब्जेक्ट के सभी रिकॉर्ड्स मंगवाना
-        const { data: allScores, error } = await supabaseClient
+        const { data: allScores, error } = await supabase
             .from('results')
             .select('score')
             .eq('subject', subjectName);
@@ -164,7 +164,7 @@ async function calculateRank(subjectName, currentStudentScore) {
 }
         async function fetchResultMatrixPacket(id) {
             try {
-                const { data, error } = await supabaseClient
+                const { data, error } = await supabase
                     .from('results')
                     .select('*')
                     .eq('id', id)
