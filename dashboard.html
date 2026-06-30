@@ -189,6 +189,20 @@ listTarget.innerHTML = data.map(exam => `
             localStorage.removeItem('userEmail');
             window.location.replace("index.html");
         }
+        // 🎯 स्टार्ट बटन पर क्लिक होने का हैंडलर
+function startExamination(examId) {
+    if (!examId) {
+        alert("Invalid Examination ID token.");
+        return;
+    }
+    
+    // उदाहरण के लिए, यह यूजर को quiz.html पर ले जाएगा और यूआरएल में examid पास कर देगा
+    alert("Initiating exam session for ID: " + examId);
+    window.location.href = `quiz.html?examid=${examId}`;
+    
+    // 💡 नोट: अगर आपके क्विज़ पेज का नाम कुछ और है (जैसे test.html), 
+    // तो ऊपर 'quiz.html' की जगह अपनी फ़ाइल का नाम लिख लें।
+}
     </script>
 </body>
 </html>
