@@ -93,7 +93,7 @@
         // 🎯 डेटाबेस की सभी श्रेणियों को ग्रैब करना (समस्या 2 का हल)
         async function fetchAllDatabaseCategories() {
             try {
-                const { data, error } = await supabaseClient.from('categories').select('*');
+                const { data, error } = await supabaseClient.from('exam_categories').select('*');
                 if (error) throw error;
 
                 const container = document.getElementById('categories-view-container');
