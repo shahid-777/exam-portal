@@ -106,7 +106,7 @@
 
                 // डायनामिक प्रीमियम फोल्डर लिस्टिंग यूआई
                 container.innerHTML = data.map(cat => `
-                    <div onclick="selectDashboardCategory('${cat.name}', ${cat.id})" class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/30 hover:bg-slate-900/70 transition transform hover:-translate-y-0.5 cursor-pointer group">
+                    <div onclick="selectDashboardCategory('${cat.category_name}', ${cat.id})" class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl flex items-center justify-between shadow-xl hover:border-blue-500/30 hover:bg-slate-900/70 transition transform hover:-translate-y-0.5 cursor-pointer group">
                         <div class="flex items-center space-x-4 min-w-0">
                             <div class="bg-blue-600/10 border border-blue-500/20 p-3 rounded-xl shrink-0 text-blue-400">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
