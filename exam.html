@@ -209,29 +209,40 @@
         // 🔄 RENDERING PIPELINE WITH BATCH PROCESSING
                     // 🔄 पूरी तरह से सुधारा गया रेंडरिंग फंक्शन (English और Hindi दोनों के लिए 100% फिक्स)
 // 🔄 अल्टीमेट फिक्स - यह हर हाल में ऑप्शंस को स्क्रीन पर लाएगा
+// 🔄 डेटा पार्सिंग मिसमैच को ठीक करने वाला सुदृढ़ फंक्शन
 async function renderAssessmentLayout() {
     const container = document.getElementById('questions-pipeline-wrapper');
     container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing Language Layout Matrices...</div>`;
 
     let finalHtml = "";
     
-    // 🎯 केस 1: ENGLISH (Direct Safe Render)
+    // 🎯 केस 1: ENGLISH (Direct Safe Render with String-to-Array Fix)
     if (currentSelectedLanguage === "en") {
         for (let index = 0; index < globalLoadedQuestions.length; index++) {
             const q = globalLoadedQuestions[index];
             const questionText = q.question || q.title || q.text || 'Objective Question';
             
-            // 🚀 स्मार्ट डिटेक्शन: अगर 'options' न मिले तो 'choices' या 'options_json' चेक करें
-            const optionsArray = q.options || q.choices || q.options_json || [];
+            // 🚀 स्टेप 1: डेटाबेस से आने वाले संभावित पेलोड की प्रॉपर्टीज को चेक करें
+            let rawOptions = q.options || q.choices || q.options_json || [];
+
+            // 🚀 स्टेप 2 (मुख्य फिक्स): अगर विकल्प स्ट्रिंग के रूप में बंद हैं, तो उन्हें ऐरे में बदलें
+            if (typeof rawOptions === 'string') {
+                try {
+                    rawOptions = JSON.parse(rawOptions);
+                } catch(e) {
+                    // यदि JSON.parse फेल हो, तो स्ट्रिंग को क्लीन करके एरे बनाने का प्रयास करें
+                    rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim());
+                }
+            }
 
             let optionsHtml = "";
-            if (optionsArray && Array.isArray(optionsArray) && optionsArray.length > 0) {
-                for (let optIdx = 0; optIdx < optionsArray.length; optIdx++) {
+            if (rawOptions && Array.isArray(rawOptions) && rawOptions.length > 0) {
+                for (let optIdx = 0; optIdx < rawOptions.length; optIdx++) {
                     const isChecked = userResponses[index] === optIdx ? "checked" : "";
                     optionsHtml += `
                         <label class="flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2">
                             <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
-                            <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${optionsArray[optIdx]}</span>
+                            <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${rawOptions[optIdx]}</span>
                         </label>
                     `;
                 }
@@ -265,15 +276,19 @@ async function renderAssessmentLayout() {
         for (let index = 0; index < globalLoadedQuestions.length; index++) {
             const q = globalLoadedQuestions[index];
             const rawQuestionText = q.question || q.title || q.text || 'Objective Question';
-            const optionsArray = q.options || q.choices || q.options_json || [];
+            
+            let rawOptions = q.options || q.choices || q.options_json || [];
+            if (typeof rawOptions === 'string') {
+                try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
+            }
 
             let translatedTitle = (translatedArrayPool && translatedArrayPool[textPointerIndex]) ? translatedArrayPool[textPointerIndex] : rawQuestionText;
             textPointerIndex++;
 
             let optionsHtml = "";
-            if (optionsArray && Array.isArray(optionsArray) && optionsArray.length > 0) {
-                for (let optIdx = 0; optIdx < optionsArray.length; optIdx++) {
-                    const rawOptText = optionsArray[optIdx];
+            if (rawOptions && Array.isArray(rawOptions) && rawOptions.length > 0) {
+                for (let optIdx = 0; optIdx < rawOptions.length; optIdx++) {
+                    const rawOptText = rawOptions[optIdx];
                     let translatedOpt = (translatedArrayPool && translatedArrayPool[textPointerIndex]) ? translatedArrayPool[textPointerIndex] : rawOptText;
                     textPointerIndex++;
 
@@ -311,7 +326,7 @@ async function renderAssessmentLayout() {
 
     container.innerHTML = finalHtml;
 
-    // पैलेट बटन्स के कलर्स को सिंक करना
+    // पैलेट कलर्स सिंक करना
     globalLoadedQuestions.forEach((_, index) => {
         const pBtn = document.getElementById(`palette-btn-${index}`);
         if (markedForReviewSet.has(index)) {
@@ -322,7 +337,8 @@ async function renderAssessmentLayout() {
             if(pBtn) pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
         }
     });
-}
+}       
+        
         function switchAssessmentLanguage(selectedLang) {
             currentSelectedLanguage = selectedLang;
             renderAssessmentLayout(); 
