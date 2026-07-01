@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" translate="no">
+<html lang="en" translate="auto">
 <head>
     <meta name="google" content="notranslate">
     <meta charset="UTF-8">
@@ -208,28 +208,35 @@
 
         // 🔄 RENDERING PIPELINE WITH BATCH PROCESSING
                     // 🔄 पूरी तरह से सुधारा गया रेंडरिंग फंक्शन (English और Hindi दोनों के लिए 100% फिक्स)
+// 🔄 अल्टीमेट फिक्स - यह हर हाल में ऑप्शंस को स्क्रीन पर लाएगा
 async function renderAssessmentLayout() {
     const container = document.getElementById('questions-pipeline-wrapper');
     container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing Language Layout Matrices...</div>`;
 
     let finalHtml = "";
     
-    // 🎯 केस 1: अगर लैंग्वेज ENGLISH है (बिना किसी ट्रांसलेशन API के सीधे डेटाबेस से रेंडर करें)
+    // 🎯 केस 1: ENGLISH (Direct Safe Render)
     if (currentSelectedLanguage === "en") {
         for (let index = 0; index < globalLoadedQuestions.length; index++) {
             const q = globalLoadedQuestions[index];
-            const questionText = q.question || q.title || 'Objective Question';
-            const optionsArray = q.options || [];
+            const questionText = q.question || q.title || q.text || 'Objective Question';
+            
+            // 🚀 स्मार्ट डिटेक्शन: अगर 'options' न मिले तो 'choices' या 'options_json' चेक करें
+            const optionsArray = q.options || q.choices || q.options_json || [];
 
             let optionsHtml = "";
-            for (let optIdx = 0; optIdx < optionsArray.length; optIdx++) {
-                const isChecked = userResponses[index] === optIdx ? "checked" : "";
-                optionsHtml += `
-                    <label class="flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2">
-                        <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
-                        <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${optionsArray[optIdx]}</span>
-                    </label>
-                `;
+            if (optionsArray && Array.isArray(optionsArray) && optionsArray.length > 0) {
+                for (let optIdx = 0; optIdx < optionsArray.length; optIdx++) {
+                    const isChecked = userResponses[index] === optIdx ? "checked" : "";
+                    optionsHtml += `
+                        <label class="flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2">
+                            <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
+                            <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${optionsArray[optIdx]}</span>
+                        </label>
+                    `;
+                }
+            } else {
+                optionsHtml = `<p class="text-[10px] text-slate-600 font-mono pl-2">⚠️ No valid options array found in data payload.</p>`;
             }
 
             finalHtml += `
@@ -250,33 +257,37 @@ async function renderAssessmentLayout() {
             `;
         }
     } 
-    // 🎯 केस 2: अगर लैंग्वेज HINDI है (तभी केवल ट्रांसलेशन पूल एक्टिव होगा)
+    // 🎯 केस 2: HINDI (With Translation Pool)
     else if (currentSelectedLanguage === "hi") {
         let translatedArrayPool = await translateBulkQuestions(globalLoadedQuestions, "hi");
         let textPointerIndex = 0;
 
         for (let index = 0; index < globalLoadedQuestions.length; index++) {
             const q = globalLoadedQuestions[index];
-            const rawQuestionText = q.question || q.title || 'Objective Question';
-            const optionsArray = q.options || [];
+            const rawQuestionText = q.question || q.title || q.text || 'Objective Question';
+            const optionsArray = q.options || q.choices || q.options_json || [];
 
             let translatedTitle = (translatedArrayPool && translatedArrayPool[textPointerIndex]) ? translatedArrayPool[textPointerIndex] : rawQuestionText;
             textPointerIndex++;
 
             let optionsHtml = "";
-            for (let optIdx = 0; optIdx < optionsArray.length; optIdx++) {
-                const rawOptText = optionsArray[optIdx];
-                let translatedOpt = (translatedArrayPool && translatedArrayPool[textPointerIndex]) ? translatedArrayPool[textPointerIndex] : rawOptText;
-                textPointerIndex++;
+            if (optionsArray && Array.isArray(optionsArray) && optionsArray.length > 0) {
+                for (let optIdx = 0; optIdx < optionsArray.length; optIdx++) {
+                    const rawOptText = optionsArray[optIdx];
+                    let translatedOpt = (translatedArrayPool && translatedArrayPool[textPointerIndex]) ? translatedArrayPool[textPointerIndex] : rawOptText;
+                    textPointerIndex++;
 
-                const isChecked = userResponses[index] === optIdx ? "checked" : "";
+                    const isChecked = userResponses[index] === optIdx ? "checked" : "";
 
-                optionsHtml += `
-                    <label class="flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2">
-                        <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
-                        <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${translatedOpt}</span>
-                    </label>
-                `;
+                    optionsHtml += `
+                        <label class="flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2">
+                            <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
+                            <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${translatedOpt}</span>
+                        </label>
+                    `;
+                }
+            } else {
+                optionsHtml = `<p class="text-[10px] text-slate-600 font-mono pl-2">⚠️ No valid options array found in data payload.</p>`;
             }
 
             finalHtml += `
@@ -300,7 +311,7 @@ async function renderAssessmentLayout() {
 
     container.innerHTML = finalHtml;
 
-    // सिंक सिलेक्टेड स्टेट कलर्स ऑन पैलेट बटन
+    // पैलेट बटन्स के कलर्स को सिंक करना
     globalLoadedQuestions.forEach((_, index) => {
         const pBtn = document.getElementById(`palette-btn-${index}`);
         if (markedForReviewSet.has(index)) {
@@ -312,7 +323,6 @@ async function renderAssessmentLayout() {
         }
     });
 }
-
         function switchAssessmentLanguage(selectedLang) {
             currentSelectedLanguage = selectedLang;
             renderAssessmentLayout(); 
