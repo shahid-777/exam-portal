@@ -4,7 +4,7 @@
     <meta name="google" content="notranslate">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="logo.png">
+    <link class="rounded-xl" rel="icon" type="image/png" href="logo.png">
     <title>Live Examination Engine — Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -53,6 +53,7 @@
         </button>
     </div>
 </header>
+
     <section class="w-full bg-slate-900/30 border-b border-white/5 py-3 px-6 sticky top-[65px] z-40 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto flex flex-wrap gap-4 items-center justify-between text-xs font-mono">
             <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -80,28 +81,28 @@
             </div>
         </div>
 
-<div id="palette-sidebar" class="fixed inset-y-0 right-0 z-50 w-80 max-w-[85vw] bg-slate-950 border-l border-white/10 p-5 h-screen transform translate-x-full lg:translate-x-0 lg:sticky lg:h-[calc(100vh-150px)] lg:top-[140px] lg:w-80 lg:bg-slate-900/40 lg:border lg:border-white/5 lg:rounded-2xl transition-transform duration-300 ease-in-out flex flex-col justify-start shadow-2xl">
-    
-    <div class="space-y-4 flex flex-col min-h-0 justify-start">
-        <div class="border-b border-white/5 pb-2 flex items-center justify-between">
-            <div>
-                <h4 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">Question Palette</h4>
-                <p class="text-[9px] text-slate-500 font-mono mt-0.5">Random Navigation Grid Mapping</p>
+        <div id="palette-sidebar" class="fixed inset-y-0 right-0 z-50 w-80 max-w-[85vw] bg-slate-950 border-l border-white/10 p-5 h-screen transform translate-x-full lg:translate-x-0 lg:sticky lg:h-[calc(100vh-150px)] lg:top-[140px] lg:w-80 lg:bg-slate-900/40 lg:border lg:border-white/5 lg:rounded-2xl transition-transform duration-300 ease-in-out flex flex-col justify-start shadow-2xl">
+            
+            <div class="space-y-4 flex flex-col min-h-0 justify-start">
+                <div class="border-b border-white/5 pb-2 flex items-center justify-between">
+                    <div>
+                        <h4 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">Question Palette</h4>
+                        <p class="text-[9px] text-slate-500 font-mono mt-0.5">Random Navigation Grid Mapping</p>
+                    </div>
+                    <button onclick="toggleMobilePalette(false)" class="lg:hidden text-slate-400 hover:text-white font-mono text-[11px] border border-white/10 px-2 py-1 rounded-md bg-white/5 transition cursor-pointer">
+                        ✕ Close
+                    </button>
+                </div>
+                
+                <div id="palette-grid-buttons" class="grid grid-cols-5 gap-2 overflow-y-auto pr-1 max-h-[60vh] lg:max-h-[380px] items-start content-start"></div>
             </div>
-            <button onclick="toggleMobilePalette(false)" class="lg:hidden text-slate-400 hover:text-white font-mono text-[11px] border border-white/10 px-2 py-1 rounded-md bg-white/5 transition cursor-pointer">
-                ✕ Close
-            </button>
-        </div>
-        
-        <div id="palette-grid-buttons" class="grid grid-cols-5 gap-2 overflow-y-auto pr-1 max-h-[60vh] lg:max-h-[380px] items-start content-start"></div>
-    </div>
 
-    <div class="pt-3 mt-auto border-t border-white/5 space-y-1.5 text-[10px] font-mono text-slate-400 shrink-0">
-        <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-slate-800 border border-white/10 rounded"></span> <span>Unattempted (Slate)</span></div>
-        <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-green-600 rounded"></span> <span>Attempted (Green)</span></div>
-        <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-red-600 rounded"></span> <span>Marked for Review (Red)</span></div>
-    </div>
-</div>
+            <div class="pt-3 mt-auto border-t border-white/5 space-y-1.5 text-[10px] font-mono text-slate-400 shrink-0">
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-slate-800 border border-white/10 rounded"></span> <span>Unattempted (Slate)</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-green-600 rounded"></span> <span>Attempted (Green)</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-red-600 rounded"></span> <span>Marked for Review (Red)</span></div>
+            </div>
+        </div>
     </main>
 
     <footer class="w-full text-center py-3 border-t border-white/5 bg-slate-900/40 text-[9px] font-mono text-slate-600 uppercase tracking-widest mt-6">
@@ -120,7 +121,6 @@
         let userResponses = {}; 
         let markedForReviewSet = new Set();
 
-        // Mobile View Palette Show/Hide Handler
         function toggleMobilePalette(shouldShow) {
             const sidebar = document.getElementById('palette-sidebar');
             if (shouldShow) {
@@ -178,7 +178,6 @@
             }
         }
 
-        // 🚀 BULK TRANSLATION SYSTEM
         async function translateBulkQuestions(questions, targetLang) {
             if (!questions || questions.length === 0 || targetLang === "en") return null;
             
@@ -187,7 +186,7 @@
                 const separator = " ||| "; 
 
                 questions.forEach(q => {
-                    const qText = q.title || q.question || 'Objective Question';
+                    const qText = q.question || q.title || 'Objective Question';
                     textSegments.push(qText);
                     (q.options || []).forEach(opt => textSegments.push(opt));
                 });
@@ -206,7 +205,7 @@
             }
         }
 
-        // 🔄 RENDERING PIPELINE WITH BATCH PROCESSING
+        // 🔄 सुधारा गया मुख्य रेंडरिंग फंक्शन (ऑप्शंस विज़िबिलिटी फिक्स)
         async function renderAssessmentLayout() {
             const container = document.getElementById('questions-pipeline-wrapper');
             container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing Language Layout Matrices...</div>`;
@@ -222,12 +221,13 @@
 
             for (let index = 0; index < globalLoadedQuestions.length; index++) {
                 const q = globalLoadedQuestions[index];
-                const rawQuestionText = q.title || q.question || 'Objective Question';
+                const rawQuestionText = q.question || q.title || 'Objective Question';
                 const optionsArray = q.options || [];
 
                 let translatedTitle = (translatedArrayPool && translatedArrayPool[textPointerIndex]) ? translatedArrayPool[textPointerIndex] : rawQuestionText;
                 textPointerIndex++;
 
+                // 🎯 विकल्प (Options) जनरेट करने का सुदृढ़ लूप
                 let optionsHtml = "";
                 for (let optIdx = 0; optIdx < optionsArray.length; optIdx++) {
                     const rawOptText = optionsArray[optIdx];
@@ -238,9 +238,9 @@
                     const isChecked = userResponses[index] === optIdx ? "checked" : "";
 
                     optionsHtml += `
-                        <label class="flex items-center space-x-3 bg-slate-900/40 hover:bg-slate-900/80 border border-white/5 hover:border-blue-500/20 p-3.5 rounded-xl cursor-pointer transition">
+                        <label class="flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2">
                             <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
-                            <span class="text-xs text-slate-300 font-medium">${translatedOpt}</span>
+                            <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${translatedOpt}</span>
                         </label>
                     `;
                 }
@@ -248,15 +248,15 @@
                 finalHtml += `
                     <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
                         <div class="flex items-start justify-between gap-4">
-                            <div class="flex items-start space-x-3">
-                                <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
-                                <h4 class="text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${translatedTitle}</h4>
+                            <div class="flex items-start space-x-3 min-w-0">
+                                <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md shrink-0">Q. ${index + 1}</span>
+                                <h4 class="text-xs sm:text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${translatedTitle}</h4>
                             </div>
                             <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-red-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition shrink-0">
                                 ${markedForReviewSet.has(index) ? '🔴 Marked' : 'Mark Review'}
                             </button>
                         </div>
-                        <div class="grid grid-cols-1 gap-2.5 pt-1">
+                        <div class="grid grid-cols-1 gap-1 pt-1">
                             ${optionsHtml}
                         </div>
                     </div>
@@ -265,7 +265,7 @@
 
             container.innerHTML = finalHtml;
 
-            // Sync Palette State Colors
+            // सिंक सिलेक्टेड स्टेट कलर्स ऑन पैलेट बटन
             globalLoadedQuestions.forEach((_, index) => {
                 const pBtn = document.getElementById(`palette-btn-${index}`);
                 if (markedForReviewSet.has(index)) {
@@ -296,7 +296,6 @@
         }
 
         function scrollToQuestion(qIdx) {
-            // Auto close drawer menu panel on mobile screens after picking target card
             if (window.innerWidth < 1024) {
                 toggleMobilePalette(false);
             }
@@ -321,7 +320,6 @@
             }
         }
 
-        // Toggles State Matrix
         function toggleMarkForReview(qIdx) {
             const mBtn = document.getElementById(`mark-btn-${qIdx}`);
             const pBtn = document.getElementById(`palette-btn-${qIdx}`);
@@ -376,7 +374,7 @@
             }, 1000);
         }
 
-                     async function terminateAssessmentProcess() {
+        async function terminateAssessmentProcess() {
             clearInterval(networkTimerInterval);
             
             let totalQuestions = globalLoadedQuestions.length;
@@ -398,22 +396,18 @@
             });
         
             const studentEmail = localStorage.getItem('userEmail') || 'anonymous@portal.com';
-            // ईमेल से नाम निकालने का एक सुरक्षित तरीका (जैसे: shahid@gmail.com से "shahid")
             const studentName = studentEmail.split('@')[0].toUpperCase(); 
             const currentSubject = document.getElementById('live-subject-title').innerText;
-            
-            // आपके स्कीमा के अनुसार स्कोर की गणना (जितने सही उत्तर, उतना स्कोर)
             let calculatedScore = correctAnswers; 
         
             try {
-                // 🚀 आपके SQL स्कीमा के बिल्कुल अनुकूल डेटा पैकेट
                 const { data, error } = await supabaseClient
                     .from('results')
                     .insert([{
                         email: studentEmail.toLowerCase(),
-                        name: studentName,                       // 🎯 स्कीमा के अनुसार आवश्यक
+                        name: studentName,                       
                         subject: currentSubject,
-                        score: parseInt(calculatedScore) || 0,   // 🎯 स्कीमा में 'NOT NULL' है, इसलिए भेजना ज़रूरी है
+                        score: parseInt(calculatedScore) || 0,   
                         total_questions: totalQuestions,
                         correct_answers: correctAnswers,
                         wrong_answers: wrongAnswers,
@@ -429,8 +423,6 @@
                 if (!data || data.length === 0) throw new Error("Database integration failure.");
         
                 alert(`Test Evaluation Compiled Successfully!`);
-                
-                // सुरक्षित रूप से जनरेटेड ID को रिज़ल्ट एनालिसिस पेज पर भेजना
                 const generatedId = data[0].id;
                 window.location.replace(`result-analysis.html?id=${generatedId}`);
         
