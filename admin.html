@@ -285,7 +285,118 @@ async function mapExamToCategoryRoutine() {
                 syncMasterDashboardControls();
             } catch(e) { alert(e.message); }
         }
+                // 🚀 इंटेलिजेंट ऑटो-पार्सर इंजन (सादे टेक्स्ट को सुंदर MCQs में बदलने के लिए)
+function autoFormatRawTextToJSON(rawText) {
+    // टेक्स्ट को लाइनों में विभाजित करें
+    const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    const questionsList = [];
+    
+    let currentQuestion = null;
+    let currentOptions = [];
+    let currentCorrect = 0;
 
+    // विभिन्न फॉर्मेट्स को पकड़ने के लिए रेगुलर एक्सप्रेशंस (Regex)
+    const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
+    const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
+    const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // 1. यदि लाइन एक नया प्रश्न है
+        if (questionRegex.test(line)) {
+            // यदि पुराना प्रश्न प्रोसेस हो चुका है, तो उसे पुश करें
+            if (currentQuestion) {
+                questionsList.push({
+                    question: currentQuestion,
+                    options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
+                    correct: currentCorrect
+                });
+            }
+            // नए प्रश्न को इनिशियलाइज़ करें (Q. 1 या 1. को हटाकर सिर्फ टेक्स्ट रखें)
+            currentQuestion = line.replace(questionRegex, '').trim();
+            currentOptions = [];
+            currentCorrect = 0;
+        } 
+        // 2. यदि लाइन एक उत्तर कुंजी (Answer Key) है
+        else if (answerRegex.test(line)) {
+            const match = line.match(answerRegex);
+            const ansChar = match[2].toUpperCase();
+            // A,B,C,D को 0,1,2,3 इंडेक्स में बदलें
+            if (['A', 'B', 'C', 'D'].includes(ansChar)) {
+                currentCorrect = ansChar.charCodeAt(0) - 65;
+            } else {
+                currentCorrect = (parseInt(ansChar) - 1) || 0;
+            }
+        } 
+        // 3. यदि लाइन एक विकल्प (Option) है
+        else if (optionRegex.test(line)) {
+            const optionText = line.replace(optionRegex, '').trim();
+            currentOptions.push(optionText);
+        } 
+        // 4. यदि यह प्रोग्रामिंग कोड, डायग्राम टेक्स्ट या प्रश्न का ही बढ़ा हुआ भाग है
+        else {
+            if (currentQuestion && currentOptions.length === 0) {
+                // यह प्रश्न का ही कोड ब्लॉक या निरंतर भाग है (जैसे C Code snippet)
+                currentQuestion += "\n" + line;
+            } else if (currentOptions.length > 0) {
+                // यह आखिरी विकल्प का बढ़ा हुआ भाग है
+                currentOptions[currentOptions.length - 1] += " " + line;
+            } else {
+                // अगर बिना किसी हेडर के पहला टेक्स्ट है, तो इसे पहला प्रश्न मान लें
+                currentQuestion = line;
+            }
+        }
+    }
+
+    // अंतिम प्रश्न को पुश करें
+    if (currentQuestion) {
+        questionsList.push({
+            question: currentQuestion,
+            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
+            correct: currentCorrect
+        });
+    }
+
+    return questionsList;
+}
+
+// 🎯 Supabase में डेटा डिप्लॉय करने वाला फंक्शन
+async function deployExamBase() {
+    const subjectName = document.getElementById('exam-subject-input').value.trim();
+    const durationLimit = document.getElementById('exam-duration-input').value.trim();
+    const categoryId = document.getElementById('exam-category-select').value;
+    const rawTextData = document.getElementById('questions-textarea').value.trim();
+
+    if (!subjectName || !rawTextData) {
+        alert("Please fulfill subject title and questions matrix blocks.");
+        return;
+    }
+
+    // 🚀 ऑटो-फॉर्मेटर इंजन को कॉल करें
+    const formattedJsonPayload = autoFormatRawTextToJSON(rawTextData);
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('exams')
+            .insert([{
+                subject: subjectName,
+                duration_minutes: parseInt(durationLimit) || 60,
+                category_id: parseInt(categoryId),
+                questions_json: formattedJsonPayload // ऑटो-फॉर्मेटेड JSON ऑब्जेक्ट सीधे पास करें
+            }])
+            .select();
+
+        if (error) throw error;
+        
+        alert("🎉 Master Control Console: New Exam Structure Deployed Successfully!");
+        document.getElementById('questions-textarea').value = ""; // क्लियर इनपुट
+        
+    } catch (err) {
+        console.error("Deployment crashed:", err);
+        alert(`Parsing Exception: ${err.message}`);
+    }
+}
         // INLINE ACTION: TIME CONTROLLER
         async function updateExamTimingDirect(encodedSubject) {
             const decodedSub = decodeURIComponent(encodedSubject);
