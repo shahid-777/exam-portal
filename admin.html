@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            <!-- 🟦 सेक्शन 2: एग्जाम डिप्लॉयमेंट एवं एडिटर हब -->
+            <!-- 🟦 सेक्शन 2: एग्जाम डिप्लॉयमेंट एवं एडिटर हब (Three-Box Workflow Installed) -->
             <div class="lg:col-span-2 bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl">
                 <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-blue-500 to-indigo-500"></div>
                 <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">2. Create Exam & Inject Questions Matrix</h3>
@@ -58,6 +58,7 @@
                         <input type="number" id="exam-duration-input" value="60" min="1" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none focus:border-blue-500/30 transition">
                     </div>
                     
+                    <!-- 📦 बॉक्स 3: मुख्य टेक्स्ट एरिया (नया सबमिशन और लोड किया गया डेटा दोनों इसी में हैंडल होंगे) -->
                     <div class="sm:col-span-2">
                         <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">📋 Questions Array Dataset (Plain Text or JSON Format)</label>
                         <textarea id="exam-questions-json" rows="6" placeholder='Paste plain text MCQs directly or structured JSON framework here...' class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none focus:border-blue-500/30 transition"></textarea>
@@ -75,22 +76,24 @@
                     </div>
                 </div>
 
-                <!-- 🚀 1. कैटेगरीज फेच और डिपेंडेंट सब्जेक्ट ड्रॉपडाउन मैनेजमेंट ब्लॉक -->
+                <!-- 🚀 1. कैटेगरीज फेच और डिपेंडेंट सब्जेक्ट ड्रॉपडाउन मैनेजमेंट ब्लॉक (Three-Box Architecture) -->
                 <div class="border-t border-white/5 pt-4 mt-2 space-y-3">
                     <h4 class="text-[11px] font-mono font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                         <span>⚙️</span> Manage & Edit Active Exams
                     </h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- 🎯 बॉक्स 1: श्रेणी चयन बॉक्स -->
                         <div>
-                            <label class="block text-[9px] font-mono text-slate-500 uppercase tracking-wider mb-1">Step 1: Select Category</label>
-                            <select id="admin-category-fetch-selector" onchange="fetchExamsByCategory(this.value)" class="w-full bg-slate-900 border border-white/10 p-2.5 rounded-xl text-xs text-white outline-none focus:border-purple-500/30 transition cursor-pointer font-medium">
-                                <option value="">-- Choose Category First --</option>
+                            <label class="block text-[9px] font-mono text-slate-500 uppercase tracking-wider mb-1">Step 1: Categories Box</label>
+                            <select id="admin-category-fetch-selector" onchange="fetchExamsByCategory(this.value)" class="w-full bg-slate-900 border border-white/10 p-2.5 rounded-xl text-xs text-white outline-none focus:border-purple-500/30 transition cursor-pointer font-medium uppercase">
+                                <option value="">-- Choose Category --</option>
                             </select>
                         </div>
+                        <!-- 🎯 बॉक्स 2: विषय चयन बॉक्स -->
                         <div>
-                            <label class="block text-[9px] font-mono text-slate-500 uppercase tracking-wider mb-1">Step 2: Select Subject (Auto-Loads into Box)</label>
-                            <select id="admin-exams-fetch-selector" onchange="fetchExamDataToEditor(this.value)" class="w-full bg-slate-900 border border-white/10 p-2.5 rounded-xl text-xs text-white outline-none focus:border-purple-500/30 transition cursor-pointer font-medium" disabled>
-                                <option value="">-- Select Category First --</option>
+                            <label class="block text-[9px] font-mono text-slate-500 uppercase tracking-wider mb-1">Step 2: Subjects Box (Auto-Loads into Box 3)</label>
+                            <select id="admin-exams-fetch-selector" onchange="fetchExamDataToEditor(this.value)" class="w-full bg-slate-900 border border-white/10 p-2.5 rounded-xl text-xs text-white outline-none focus:border-purple-500/30 transition cursor-pointer font-medium uppercase" disabled>
+                                <option value="">-- Select Subject --</option>
                             </select>
                         </div>
                     </div>
@@ -154,7 +157,8 @@
                 </table>
             </div>
         </div>
-    </main>
+    </main> 
+    
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
 
  <script>
