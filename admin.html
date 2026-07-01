@@ -18,7 +18,7 @@
         <button onclick="logout()" class="bg-white/5 hover:bg-red-500/10 border border-white/10 text-xs font-bold py-2 px-4 rounded-xl cursor-pointer">Exit Terminal</button>
     </header>
 
-   <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-8">
+<main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-8">
         <!-- 🖥️ कंसोल हेडर -->
         <div>
             <h1 class="text-2xl font-black text-white uppercase tracking-wide">Master Control Console</h1>
@@ -60,39 +60,38 @@
                     
                     <div class="sm:col-span-2">
                         <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">📋 Questions Array Dataset (Plain Text or JSON Format)</label>
-                        <textarea id="exam-questions-json" rows="5" placeholder='Paste plain text MCQs directly or structured JSON framework here...' class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none focus:border-blue-500/30 transition"></textarea>
+                        <textarea id="exam-questions-json" rows="6" placeholder='Paste plain text MCQs directly or structured JSON framework here...' class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none focus:border-blue-500/30 transition"></textarea>
                     </div>
 
-                    <!-- 🎯 सिंक किया गया डायनामिक सबमिशन बटन ब्लॉक -->
+                    <!-- 🎯 सबमिशन बटन ब्लॉक (Deploy / Update Switches) -->
                     <div class="sm:col-span-2 pt-1">
-                        <!-- नया पेपर बनाने का बटन -->
-                        <button onclick="createNewExamBase()" id="btn-deploy-main" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition transform active:scale-[0.98] cursor-pointer shadow-lg shadow-blue-600/10">
+                        <button onclick="createNewExamBase()" id="btn-deploy-main" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition transform active:scale-[0.98] cursor-pointer shadow-lg">
                             Deploy New Exam Base
                         </button>
                         
-                        <!-- पुराना पेपर अपडेट करने का बटन (शुरुआत में छुपा रहेगा) -->
-                        <button onclick="updateExistingExamBase()" id="btn-update-main" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition transform active:scale-[0.98] cursor-pointer shadow-lg shadow-emerald-600/10 hidden">
+                        <button onclick="updateExistingExamBase()" id="btn-update-main" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition transform active:scale-[0.98] cursor-pointer shadow-lg hidden">
                             Update Existing Exam Base
                         </button>
                     </div>
                 </div>
 
-                <!-- 🚀 एकीकृत परीक्षा प्रबंधन (Manage Block) - अब यह बिल्कुल सही जगह पर है -->
+                <!-- 🚀 1. कैटेगरीज फेच और डिपेंडेंट सब्जेक्ट ड्रॉपडाउन मैनेजमेंट ब्लॉक -->
                 <div class="border-t border-white/5 pt-4 mt-2 space-y-3">
                     <h4 class="text-[11px] font-mono font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                         <span>⚙️</span> Manage & Edit Active Exams
                     </h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-                        <div class="sm:col-span-2">
-                            <label class="block text-[9px] font-mono text-slate-500 uppercase tracking-wider mb-1">Select Exam File</label>
-                            <select id="admin-exams-fetch-selector" class="w-full bg-slate-900 border border-white/10 p-2.5 rounded-xl text-xs text-white outline-none focus:border-purple-500/30 transition cursor-pointer font-medium">
-                                <option value="">-- Choose Exam Block --</option>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-500 uppercase tracking-wider mb-1">Step 1: Select Category</label>
+                            <select id="admin-category-fetch-selector" onchange="fetchExamsByCategory(this.value)" class="w-full bg-slate-900 border border-white/10 p-2.5 rounded-xl text-xs text-white outline-none focus:border-purple-500/30 transition cursor-pointer font-medium">
+                                <option value="">-- Choose Category First --</option>
                             </select>
                         </div>
                         <div>
-                            <button onclick="fetchExamDataToEditor()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-[11px] uppercase tracking-wider transition cursor-pointer shadow-md shadow-purple-600/10 flex items-center justify-center gap-1.5">
-                                <span>⚡</span> Fetch Data
-                            </button>
+                            <label class="block text-[9px] font-mono text-slate-500 uppercase tracking-wider mb-1">Step 2: Select Subject (Auto-Loads into Box)</label>
+                            <select id="admin-exams-fetch-selector" onchange="fetchExamDataToEditor(this.value)" class="w-full bg-slate-900 border border-white/10 p-2.5 rounded-xl text-xs text-white outline-none focus:border-purple-500/30 transition cursor-pointer font-medium" disabled>
+                                <option value="">-- Select Category First --</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -100,10 +99,10 @@
             </div> <!-- सेक्शन 2 क्लोज -->
         </div> <!-- मुख्य ग्रिड क्लोज -->
 
-        <!-- अदृश्य इनपुट ट्रैकर (Hidden Exam ID) -->
+        <!-- हिडन इनपुट ट्रैकर (Hidden Exam ID) -->
         <input type="hidden" id="current-editing-exam-id" value="">
 
-        <!-- 🟩 सेक्शन 3: मैनुअल मैपिंग (लिंक एग्जाम टू कैटेगरी) -->
+        <!-- 🟩 सेक्शन 3: मैनुअल मैपिंग -->
         <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 relative overflow-hidden shadow-xl">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-teal-500 to-emerald-500"></div>
             <h3 class="text-xs font-mono font-black text-teal-400 uppercase tracking-widest">3. Manual Mapping: Assign Existing Exam into Multiple Categories</h3>
@@ -111,19 +110,17 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                 <div>
                     <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">👈 Select Existing Exam Subject</label>
-                    <select id="map-exam-subject-select" class="w-full border border-white/10 p-3 text-xs rounded-xl bg-slate-900 text-white font-bold outline-none focus:border-teal-500/30 transition cursor-pointer">
+                    <select id="map-exam-subject-select" class="w-full border border-white/10 p-3 text-xs rounded-xl bg-slate-900 text-white font-bold outline-none">
                         <option value="">Loading available papers...</option>
                     </select>
                 </div>
-
                 <div>
                     <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">👉 Choose Category to Assign Into</label>
-                    <select id="map-target-category-select" class="w-full border border-white/10 p-3 text-xs rounded-xl bg-slate-900 text-white font-bold outline-none focus:border-teal-500/30 transition cursor-pointer">
+                    <select id="map-target-category-select" class="w-full border border-white/10 p-3 text-xs rounded-xl bg-slate-900 text-white font-bold outline-none">
                         <option value="">Loading active categories...</option>
                     </select>
                 </div>
-
-                <button onclick="mapExamToCategoryRoutine()" class="md:col-span-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-black py-3 px-4 rounded-xl text-xs tracking-widest uppercase shadow-lg transition transform active:scale-[0.99] cursor-pointer">
+                <button onclick="mapExamToCategoryRoutine()" class="md:col-span-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-black py-3 px-4 rounded-xl text-xs tracking-widest uppercase shadow-lg transition cursor-pointer">
                     Execute Matrix Binding (Link Exam to Category)
                 </button>
             </div>
@@ -132,19 +129,15 @@
         <!-- 🟪 सेक्शन 4: लाइव डेटाबेस लॉग रिपोजिटरी क्लस्टर (टेबल व्यू) -->
         <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 shadow-xl relative">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
-            
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-3 gap-3">
-                <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">
-                    Database Log Repository Cluster
-                </h3>
+                <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">Database Log Repository Cluster</h3>
                 <div class="flex items-center space-x-2">
                     <label class="text-[10px] font-mono text-slate-500 uppercase shrink-0">Filter table view:</label>
-                    <select id="admin-view-category-filter" onchange="fetchExamsOnAdminSide()" class="border border-white/10 p-2 text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none font-bold cursor-pointer">
+                    <select id="admin-view-category-filter" onchange="fetchExamsOnAdminSide()" class="border border-white/10 p-2 text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none font-bold">
                         <option value="ALL">-- Show All Categories --</option>
                     </select>
                 </div>
             </div>
-
             <div class="overflow-x-auto w-full">
                 <table class="w-full text-left text-xs">
                     <thead>
@@ -161,7 +154,7 @@
                 </table>
             </div>
         </div>
-    </main>   
+    </main>
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
 
     <script>
