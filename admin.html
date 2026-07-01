@@ -58,8 +58,41 @@
                     <button onclick="createNewExamBase()" class="sm:col-span-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition cursor-pointer">
                         Deploy New Exam Base
                     </button>
+                    
                 </div>
             </div>
+            <!-- छिपी हुई इनपुट फील्ड - करंट एग्जाम ID ट्रैक करने के लिए -->
+<input type="hidden" id="current-editing-exam-id" value="">
+
+<div class="flex flex-wrap gap-4 pt-4">
+    <!-- नया पेपर डिप्लॉय करने का बटन -->
+    <button onclick="deployExamBase()" id="btn-deploy-main" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 rounded-xl text-xs uppercase tracking-widest shadow-lg transition cursor-pointer">
+        Deploy New Exam Base
+    </button>
+    
+    <!-- 🚀 नया बटन: पुराने पेपर को अपडेट करने के लिए (शुरुआत में छुपा रहेगा या डिसेबल रहेगा) -->
+    <button onclick="updateExistingExamBase()" id="btn-update-main" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs uppercase tracking-widest shadow-lg transition cursor-pointer hidden">
+        Update Existing Exam Base
+    </button>
+</div>
+
+<!-- 🚀 नया सेक्शन: पहले से मौजूद पेपर्स को लोड करने के लिए ड्रापडाउन और बटन -->
+<div class="bg-slate-900/40 border border-white/5 p-5 rounded-2xl mt-6 space-y-4">
+    <h4 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">⚙️ Manage & Edit Active Exams</h4>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+            <label class="text-[9px] font-mono text-slate-400 uppercase tracking-wider">Select Exam to Edit</label>
+            <select id="admin-exams-fetch-selector" class="w-full bg-slate-950 border border-white/10 px-3 py-2.5 rounded-xl text-xs text-white outline-none focus:border-blue-500/50 transition mt-1">
+                <option value="">-- Choose Exam Block --</option>
+            </select>
+        </div>
+        <div class="flex items-end">
+            <button onclick="fetchExamDataToEditor()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer shadow-md">
+                ⚡ Fetch & Load into Editor
+            </button>
+        </div>
+    </div>
+</div>
         </div>
 
         <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 relative overflow-hidden shadow-xl">
@@ -285,6 +318,9 @@ async function mapExamToCategoryRoutine() {
                 syncMasterDashboardControls();
             } catch(e) { alert(e.message); }
         }
+
+                    
+                
                 // 🚀 इंटेलिजेंट ऑटो-पार्सर इंजन (सादे टेक्स्ट को सुंदर MCQs में बदलने के लिए)
 function autoFormatRawTextToJSON(rawText) {
     // टेक्स्ट को लाइनों में विभाजित करें
