@@ -10,14 +10,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
-        /* 🎨 DYNAMIC BACKGROUND GRADIENT ANIMATION KEYFRAMES */
         @keyframes gradientShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
         .animate-gradient {
-            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #311042, #020617);
+            background: linear-gradient(-45deg, #090d16, #0f172a, #1e1b4b, #020617);
             background-size: 400% 400%;
             animation: gradientShift 15s ease infinite;
         }
@@ -25,7 +24,8 @@
 </head>
 <body class="animate-gradient font-sans min-h-screen flex flex-col justify-between text-slate-200 overflow-x-hidden">
 
-    <header class="w-full bg-slate-950/40 backdrop-blur-md border-b border-white/5 py-4 px-4 sm:px-6 flex items-center justify-between shadow-lg shrink-0">
+    <!-- 🖥️ प्रीमियम नेविगेशन टर्मिनल (Header) -->
+    <header class="w-full bg-slate-950/60 backdrop-blur-md border-b border-white/5 py-4 px-4 sm:px-8 flex items-center justify-between shadow-lg sticky top-0 z-50 shrink-0">
         <div class="flex items-center space-x-3">
             <div class="bg-white/95 p-1 rounded-xl shadow-inner shadow-black/20 shrink-0">
                 <img src="logo.png" alt="Logo" class="h-7 sm:h-8 w-auto object-contain">
@@ -35,39 +35,201 @@
                 <span class="text-[8px] sm:text-[9px] font-mono font-bold text-slate-500 tracking-wider mt-0.5 uppercase">Computer Science Dept</span>
             </div>
         </div>
-        <div class="bg-emerald-500/10 border border-emerald-500/20 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full flex items-center space-x-1.5 sm:space-x-2 shadow-sm shadow-emerald-500/5">
-            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-400 rounded-full animate-ping"></span>
-            <span class="text-[8px] sm:text-[10px] font-mono font-black text-emerald-400 tracking-wider uppercase">SECURE NODE ACTIVE</span>
+
+        <!-- 🔒 राइट कॉर्नर ऑथेंटिकेशन कंट्रोल्स -->
+        <div class="flex items-center space-x-4">
+            <button onclick="openDynamicAuthModal()" class="text-xs font-bold font-mono tracking-wider text-slate-400 hover:text-white uppercase transition">Sign In</button>
+            <button onclick="openDynamicAuthModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-black px-4 py-2 rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-blue-600/20">Register</button>
         </div>
     </header>
 
-    <main class="flex-1 flex items-center justify-center p-4 sm:p-6 w-full max-w-md mx-auto">
-        <div class="bg-slate-900/60 backdrop-blur-xl w-full p-6 sm:p-8 rounded-3xl shadow-2xl border border-white/10 space-y-6 relative overflow-hidden">
-            
-            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600"></div>
-
-            <div class="space-y-2 text-center">
-                <h2 class="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-blue-400 uppercase tracking-wide">
-                    ONLINE EXAM PORTAL
-                </h2>
-                <p class="text-[11px] sm:text-xs text-slate-400 font-medium leading-relaxed">
-                    Sign in using your student corporate identity or email configurations.
+    <!-- 🌌 मुख्य आकर्षक वेलकम एवं डैशबोर्ड इंटरफेस -->
+    <div class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-12">
+        
+        <!-- 🎯 हीरो सेक्शन -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center pt-4">
+            <div class="lg:col-span-2 space-y-6">
+                <span class="bg-blue-500/10 border border-blue-500/20 px-3 py-1.5 rounded-full inline-flex items-center space-x-2">
+                    <span class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping"></span>
+                    <span class="text-[9px] font-mono font-black text-blue-400 tracking-widest uppercase">Premium Dynamic Testing Console Active</span>
+                </span>
+                <h1 class="text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-blue-400 tracking-wide uppercase leading-tight">
+                    Practice like it's exam day, every day.
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-400 font-medium leading-relaxed max-w-xl">
+                    Access highly structured full-length mocks, previous-year question banks, and real-time matrix analytics built specifically for Central & Rajasthan State Government Level Exams.
                 </p>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="openDynamicAuthModal()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black py-3.5 px-6 rounded-xl text-xs uppercase tracking-widest shadow-lg shadow-indigo-600/20 transition">
+                        Start a Free Mock Test
+                    </button>
+                    <a href="#exams-hub" class="border border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 font-black py-3.5 px-6 rounded-xl text-xs uppercase tracking-widest transition flex items-center justify-center">
+                        Browse Exam Models
+                    </a>
+                </div>
             </div>
 
+            <!-- लाइव रिपोजिटरी बोर्ड -->
+            <div class="bg-slate-900/60 border border-white/5 p-5 rounded-2xl space-y-4 shadow-xl backdrop-blur-sm">
+                <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                    <span class="text-[10px] font-mono font-black text-slate-500 uppercase tracking-widest">Live Repositories</span>
+                    <span class="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1.5">
+                        <span class="w-1 h-1 bg-emerald-400 rounded-full animate-pulse"></span>Syncing Live
+                    </span>
+                </div>
+                <div class="space-y-2.5">
+                    <div class="flex justify-between items-center text-[11px] font-mono bg-slate-950/40 p-2.5 rounded-xl border border-white/5">
+                        <span class="text-slate-200 font-bold tracking-wide">GATE CSE · CORE PIPELINE</span>
+                        <span class="text-emerald-400 font-black text-[10px]">OPEN</span>
+                    </div>
+                    <div class="flex justify-between items-center text-[11px] font-mono bg-slate-950/40 p-2.5 rounded-xl border border-white/5">
+                        <span class="text-slate-200 font-bold tracking-wide">NTA UGC NET · PAPER 1</span>
+                        <span class="text-emerald-400 font-black text-[10px]">OPEN</span>
+                    </div>
+                    <div class="flex justify-between items-center text-[11px] font-mono bg-slate-950/40 p-2.5 rounded-xl border border-white/5">
+                        <span class="text-slate-200 font-bold tracking-wide">RAS PATWARI · FULL MOCK</span>
+                        <span class="text-amber-400 font-black text-[10px]">SOON</span>
+                    </div>
+                    <div class="flex justify-between items-center text-[11px] font-mono bg-slate-950/40 p-2.5 rounded-xl border border-white/5">
+                        <span class="text-slate-200 font-bold tracking-wide">REET LEVEL 2 · QUANT</span>
+                        <span class="text-amber-400 font-black text-[10px]">SOON</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 📊 स्टेट्स ट्रर्स्ट स्ट्रिप -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-950/20 border border-white/5 p-6 rounded-2xl text-center backdrop-blur-sm shadow-inner">
+            <div><div class="text-xl sm:text-2xl font-black text-white">3.5L+</div><div class="text-[10px] font-mono text-slate-500 uppercase tracking-wider mt-1">Aspirants Registered</div></div>
+            <div><div class="text-xl sm:text-2xl font-black text-blue-400">42,800+</div><div class="text-[10px] font-mono text-slate-500 uppercase tracking-wider mt-1">Mocks Conducted</div></div>
+            <div><div class="text-xl sm:text-2xl font-black text-indigo-400">12+</div><div class="text-[10px] font-mono text-slate-500 uppercase tracking-wider mt-1">Syllabus Domains</div></div>
+            <div><div class="text-xl sm:text-2xl font-black text-emerald-400">4.8/5</div><div class="text-[10px] font-mono text-slate-500 uppercase tracking-wider mt-1">Student Rating</div></div>
+        </div>
+
+        <!-- 🎯 परीक्षा चयन हब (Network Graphic Image Grid) -->
+        <section class="space-y-6 pt-4" id="exams-hub">
+            <div class="text-center space-y-2">
+                <h2 class="text-xl sm:text-2xl font-black uppercase tracking-wide text-white">Targeted Government Exam Streams</h2>
+                <p class="text-xs text-slate-400 max-w-md mx-auto">Every dynamic segment is backed by real-time syllabus compliance and comprehensive secure question banks.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- कार्ड 1: GATE -->
+                <div onclick="triggerGatedAuth(event)" class="bg-slate-900/40 border border-white/5 rounded-2xl overflow-hidden shadow-xl hover:border-blue-500/30 transition transform hover:-translate-y-1 cursor-pointer flex flex-col group">
+                    <div class="w-full h-40 bg-slate-950 relative overflow-hidden shrink-0">
+                        <span class="absolute top-3 left-3 bg-slate-900/90 text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded border border-white/10 z-10 tracking-widest uppercase">IIT GATE</span>
+                        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80" alt="GATE" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-300">
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-100 uppercase tracking-wide">GATE CSE Master Base</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Core engineering fundamentals, advanced algorithm suites & network architecture solutions.</p>
+                        </div>
+                        <span class="text-xs font-bold text-blue-400 flex items-center group-hover:text-blue-300 transition">Access Test Pipeline &rarr;</span>
+                    </div>
+                </div>
+
+                <!-- कार्ड 2: UGC NET -->
+                <div onclick="triggerGatedAuth(event)" class="bg-slate-900/40 border border-white/5 rounded-2xl overflow-hidden shadow-xl hover:border-blue-500/30 transition transform hover:-translate-y-1 cursor-pointer flex flex-col group">
+                    <div class="w-full h-40 bg-slate-950 relative overflow-hidden shrink-0">
+                        <span class="absolute top-3 left-3 bg-slate-900/90 text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded border border-white/10 z-10 tracking-widest uppercase">NTA UGC</span>
+                        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=600&q=80" alt="UGC NET" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-300">
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-100 uppercase tracking-wide">NTA UGC NET Paper I & II</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Teaching and research aptitudes, computer science modules & mathematical logic data sets.</p>
+                        </div>
+                        <span class="text-xs font-bold text-blue-400 flex items-center group-hover:text-blue-300 transition">Access Test Pipeline &rarr;</span>
+                    </div>
+                </div>
+
+                <!-- कार्ड 3: RAS Patwari -->
+                <div onclick="triggerGatedAuth(event)" class="bg-slate-900/40 border border-white/5 rounded-2xl overflow-hidden shadow-xl hover:border-blue-500/30 transition transform hover:-translate-y-1 cursor-pointer flex flex-col group">
+                    <div class="w-full h-40 bg-slate-950 relative overflow-hidden shrink-0">
+                        <span class="absolute top-3 left-3 bg-slate-900/90 text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded border border-white/10 z-10 tracking-widest uppercase">RSMSSB</span>
+                        <img src="https://images.unsplash.com/photo-1423568056953-db7eed65b7cf?auto=format&fit=crop&w=600&q=80" alt="Patwari" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-300">
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-100 uppercase tracking-wide">RAS Patwari Framework</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Complete Rajasthan general knowledge, analytical mental ability and general language metrics.</p>
+                        </div>
+                        <span class="text-xs font-bold text-blue-400 flex items-center group-hover:text-blue-300 transition">Access Test Pipeline &rarr;</span>
+                    </div>
+                </div>
+
+                <!-- कार्ड 4: REET -->
+                <div onclick="triggerGatedAuth(event)" class="bg-slate-900/40 border border-white/5 rounded-2xl overflow-hidden shadow-xl hover:border-blue-500/30 transition transform hover:-translate-y-1 cursor-pointer flex flex-col group">
+                    <div class="w-full h-40 bg-slate-950 relative overflow-hidden shrink-0">
+                        <span class="absolute top-3 left-3 bg-slate-900/90 text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded border border-white/10 z-10 tracking-widest uppercase">BSER REET</span>
+                        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80" alt="REET" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-300">
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-100 uppercase tracking-wide">REET Level 1 & 2 Arena</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Child development methodology, pedagogy criteria, and localized subject proficiencies.</p>
+                        </div>
+                        <span class="text-xs font-bold text-blue-400 flex items-center group-hover:text-blue-300 transition">Access Test Pipeline &rarr;</span>
+                    </div>
+                </div>
+
+                <!-- कार्ड 5: Computer Instructor -->
+                <div onclick="triggerGatedAuth(event)" class="bg-slate-900/40 border border-white/5 rounded-2xl overflow-hidden shadow-xl hover:border-blue-500/30 transition transform hover:-translate-y-1 cursor-pointer flex flex-col group">
+                    <div class="w-full h-40 bg-slate-950 relative overflow-hidden shrink-0">
+                        <span class="absolute top-3 left-3 bg-slate-900/90 text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded border border-white/10 z-10 tracking-widest uppercase">RSSB INSTRUCTOR</span>
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" alt="Instructor" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-300">
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-100 uppercase tracking-wide">Computer Instructor Console</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Web technology matrices, OOPs, DBMS frameworks, data structures & high-tier coding logic.</p>
+                        </div>
+                        <span class="text-xs font-bold text-blue-400 flex items-center group-hover:text-blue-300 transition">Access Test Pipeline &rarr;</span>
+                    </div>
+                </div>
+
+                <!-- कार्ड 6: SSC CGL -->
+                <div onclick="triggerGatedAuth(event)" class="bg-slate-900/40 border border-white/5 rounded-2xl overflow-hidden shadow-xl hover:border-blue-500/30 transition transform hover:-translate-y-1 cursor-pointer flex flex-col group">
+                    <div class="w-full h-40 bg-slate-950 relative overflow-hidden shrink-0">
+                        <span class="absolute top-3 left-3 bg-slate-900/90 text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded border border-white/10 z-10 tracking-widest uppercase">SSC CGL</span>
+                        <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80" alt="SSC CGL" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-300">
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-100 uppercase tracking-wide">SSC CGL Core Matrices</h3>
+                            <p class="text-[11px] text-slate-400 mt-1">Quantitative analytical mathematics, general reasoning matrices and comprehensive English logs.</p>
+                        </div>
+                        <span class="text-xs font-bold text-blue-400 flex items-center group-hover:text-blue-300 transition">Access Test Pipeline &rarr;</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 🔒 ऑथेंटिकेशन गेटवे पॉपअप (Secure Gated Modal Window) -->
+    <div id="dynamic-auth-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4 z-50 transition duration-300">
+        <div class="bg-slate-900/90 border border-white/10 w-full max-w-md p-6 sm:p-8 rounded-3xl shadow-2xl relative space-y-5 overflow-hidden">
+            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600"></div>
+            
+            <!-- क्लोज बटन -->
+            <button onclick="closeDynamicAuthModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white transition text-lg font-bold">&times;</button>
+
+            <div class="space-y-1 text-center">
+                <h2 class="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-blue-400 uppercase tracking-wide">ONLINE EXAM PORTAL</h2>
+                <p class="text-[11px] sm:text-xs text-slate-400 font-medium">Sign in using your student identity node to initialize examinations.</p>
+            </div>
+
+            <!-- आपका ओरिजिनल अनअफेक्टेड फॉर्म स्ट्रक्चर -->
             <div class="space-y-4 pt-1">
                 <div>
-                    <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1.5">
-                        Email Address
-                    </label>
+                    <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1.5">Email Address</label>
                     <input type="email" id="user-email" placeholder="student@gmail.com" autocomplete="off" class="w-full border border-white/10 p-3 text-sm rounded-xl font-semibold bg-slate-950/50 text-white outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition shadow-inner">
                 </div>
 
                 <div>
                     <div class="flex justify-between items-center mb-1.5">
-                        <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider">
-                            Password
-                        </label>
+                        <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider">Password</label>
                         <a href="forgot-password.html" class="text-[10px] font-bold text-blue-400 hover:text-blue-300 hover:underline transition">Forgot?</a>
                     </div>
                     <input type="password" id="user-password" placeholder="••••••••" class="w-full border border-white/10 p-3 text-sm rounded-xl font-semibold bg-slate-950/50 text-white outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 transition shadow-inner">
@@ -84,6 +246,7 @@
                 <div class="flex-grow border-t border-white/5"></div>
             </div>
 
+            <!-- आपका मूल गूगल बटन ब्लॉक -->
             <div class="space-y-3">
                 <div class="flex justify-center transition hover:scale-[1.01] w-full max-w-full overflow-hidden">
                     <div id="google-auth-element-root" class="w-full flex justify-center"></div>
@@ -91,25 +254,56 @@
             </div>
 
             <div class="text-center pt-2 border-t border-white/5">
-                <a href="admin-login.html" class="text-[10px] font-mono text-slate-500 hover:text-blue-400 tracking-widest uppercase transition font-bold">
-                    &rarr; Admin Terminal Access
-                </a>
+                <a href="admin-login.html" class="text-[10px] font-mono text-slate-500 hover:text-blue-400 tracking-widest uppercase transition font-bold">&rarr; Admin Terminal Access</a>
             </div>
-
-            <p class="text-[9px] font-mono text-center text-slate-600 font-bold uppercase tracking-wider">
-                Real-time multi-user student verification cluster.
-            </p>
         </div>
-    </main>
+    </div>
 
-    <footer class="w-full text-center py-3 border-t border-white/5 bg-slate-950/20 text-[9px] sm:text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">
+    <!-- 📋 फुटर -->
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[9px] sm:text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">
         &copy; Computer Science Management System Terminal
     </footer>
 
+    <!-- 🧠 सुरक्षित क्रेडेंशियल एवं इंटरसेप्टर जावास्क्रिप्ट स्क्रिप्ट (Unchanged Variables & Logic) -->
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 🎯 1. पॉपअप कंट्रोलर लॉजिक्स
+        function openDynamicAuthModal() {
+            const modal = document.getElementById('dynamic-auth-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // गूगल बटन की चौड़ाई सिंक करें
+            const containerWidth = document.getElementById("google-auth-element-root").offsetWidth || 320;
+            const buttonWidth = Math.min(containerWidth, 320);
+            google.accounts.id.renderButton(
+                document.getElementById("google-auth-element-root"),
+                { theme: "filled_blue", size: "large", type: "standard", text: "continue_with", width: buttonWidth.toString(), shape: "pill" }
+            );
+        }
+
+        function closeDynamicAuthModal() {
+            const modal = document.getElementById('dynamic-auth-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // 🎯 2. सुरक्षित गेटेड ऑथेंटिकेशन इंटरसेप्टर
+        function triggerGatedAuth(event) {
+            event.preventDefault();
+            const activeSessionUser = localStorage.getItem('userEmail');
+            
+            if (activeSessionUser) {
+                // यदि यूजर लॉग इन है, तो वह डैशबोर्ड पर सीधे जा सकता है
+                window.location.href = "dashboard.html";
+            } else {
+                // लॉग इन न होने पर तुरंत सुंदर पॉपअप एक्टिवेट करें
+                openDynamicAuthModal();
+            }
+        }
 
         window.onload = function () {
             localStorage.clear();
@@ -120,22 +314,6 @@
                 callback: handleGoogleAuthCallbackResponse,
                 auto_select: false
             });
-
-            // Auto render mobile responsive widths configuration button structure matrix
-            const containerWidth = document.getElementById("google-auth-element-root").offsetWidth || 320;
-            const buttonWidth = Math.min(containerWidth, 320);
-
-            google.accounts.id.renderButton(
-                document.getElementById("google-auth-element-root"),
-                { 
-                    theme: "filled_blue", 
-                    size: "large", 
-                    type: "standard", 
-                    text: "continue_with", 
-                    width: buttonWidth.toString(),
-                    shape: "pill"
-                }
-            );
         };
 
         // 🛡️ GOOGLE SECURE INTEGRATION METADATA RESOLVER CALLBACK
