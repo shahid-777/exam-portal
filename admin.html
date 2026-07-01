@@ -157,7 +157,7 @@
     </main>
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
 
-    <script>
+ <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -170,7 +170,7 @@
             syncMasterDashboardControls();
         };
 
-        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS
+        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS (Updated to Sync Category Selector)
         async function syncMasterDashboardControls() {
             try {
                 // 1. Fetch Categories
@@ -178,17 +178,24 @@
                 if(catErr) throw catErr;
                 globalCategoriesArray = categories || [];
                 
-                // Populating Mapping Target Category Select & Bottom Table Filter
+                // Populating Mapping Target Category, Bottom Table Filter, AND New Manage Selector
                 const mapCatSelect = document.getElementById('map-target-category-select');
                 const filterSelect = document.getElementById('admin-view-category-filter');
+                const adminCatFetchSelector = document.getElementById('admin-category-fetch-selector');
                 
                 mapCatSelect.innerHTML = `<option value="">-- Choose Target Category Domain --</option>`;
                 filterSelect.innerHTML = `<option value="ALL">-- Show All Categories (Global View) --</option>`;
+                if(adminCatFetchSelector) {
+                    adminCatFetchSelector.innerHTML = `<option value="">-- Choose Category First --</option>`;
+                }
 
                 globalCategoriesArray.forEach(c => {
                     const html = `<option value="${c.id}">${c.category_name.toUpperCase()}</option>`;
                     mapCatSelect.innerHTML += html;
                     filterSelect.innerHTML += html;
+                    if(adminCatFetchSelector) {
+                        adminCatFetchSelector.innerHTML += html;
+                    }
                 });
 
                 // 2. Fetch Exams for Left Mapping Selector
@@ -207,6 +214,140 @@
                 fetchExamsOnAdminSide();
 
             } catch(e) { console.error("Initialization Sync Crash:", e); }
+        }
+
+        // 🎯 1. नया फ़ंक्शन: कैटेगरी सिलेक्ट करते ही केवल उसके संबंधित एग्जाम्स लोड करना (Point 1 फिक्स)
+        async function fetchExamsByCategory(categoryId) {
+            const examSelector = document.getElementById('admin-exams-fetch-selector');
+            examSelector.innerHTML = '<option value="">-- Choose Subject Block --</option>';
+            
+            if (!categoryId) {
+                examSelector.disabled = true;
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('exams')
+                    .select('id, subject')
+                    .eq('category_id', categoryId)
+                    .order('subject', { ascending: true });
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    data.forEach(exam => {
+                        examSelector.innerHTML += `<option value="${exam.id}">${exam.subject.toUpperCase()}</option>`;
+                    });
+                    examSelector.disabled = false;
+                } else {
+                    examSelector.innerHTML = '<option value="">No subjects found in this category</option>';
+                    examSelector.disabled = true;
+                }
+            } catch (err) {
+                console.error("Failed to filter exams by category:", err);
+            }
+        }
+
+        // 🎯 2. नया फ़ंक्शन: सब्जेक्ट चुनते ही बिना किसी बटन के सीधे टेक्स्ट एरिया में MCQs लोड करना (Point 2 फिक्स)
+        async function fetchExamDataToEditor(examId) {
+            if (!examId) return;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('exams')
+                    .select('*')
+                    .eq('id', examId)
+                    .maybeSingle();
+
+                if (error || !data) throw new Error("Data retrieval crashed.");
+
+                // इनपुट फ़ील्ड्स में वैल्यू सेट करें
+                document.getElementById('exam-subject-input').value = data.subject;
+                document.getElementById('exam-duration-input').value = data.duration_minutes;
+                document.getElementById('current-editing-exam-id').value = data.id;
+
+                // JSON डेटा को प्लेन टेक्स्ट फ़ॉर्मेट में कनवर्ट करना
+                let questionsArray = data.questions_json;
+                if (typeof questionsArray === 'string') {
+                    questionsArray = JSON.parse(questionsArray);
+                }
+
+                let plainTextResult = "";
+
+                if (questionsArray && Array.isArray(questionsArray)) {
+                    questionsArray.forEach((q, idx) => {
+                        plainTextResult += `Q${idx + 1}. ${q.question || q.title || q.text}\n`;
+                        
+                        let rawOpts = q.options || q.choices || q.options_json || [];
+                        if (typeof rawOpts === 'string') {
+                            try { rawOpts = JSON.parse(rawOpts); } catch(e) { rawOpts = rawOpts.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
+                        }
+
+                        if (Array.isArray(rawOpts)) {
+                            rawOpts.forEach((opt, optIdx) => {
+                                const optChar = String.fromCharCode(65 + optIdx); // A, B, C, D
+                                plainTextResult += `${optChar}) ${opt}\n`;
+                            });
+                        }
+                        
+                        const ansChar = String.fromCharCode(65 + (parseInt(q.correct) || 0));
+                        plainTextResult += `Answer: ${ansChar}\n\n`;
+                    });
+                }
+
+                // 🚀 आपके टेक्स्ट एरिया 'exam-questions-json' में वैल्यू इंजेक्ट करना
+                document.getElementById('exam-questions-json').value = plainTextResult.trim();
+                
+                // बटन्स टॉगल करना
+                document.getElementById('btn-deploy-main').classList.add('hidden');
+                document.getElementById('btn-update-main').classList.remove('hidden');
+
+            } catch (err) {
+                alert(`Parsing Error: ${err.message}`);
+            }
+        }
+
+        // 🎯 3. नया फ़ंक्शन: एडिट किए गए डेटा को सुरक्षित रूप से अपडेट (Sync) करने के लिए
+        async function updateExistingExamBase() {
+            const examId = document.getElementById('current-editing-exam-id').value;
+            const subjectName = document.getElementById('exam-subject-input').value.trim();
+            const durationLimit = document.getElementById('exam-duration-input').value.trim();
+            const rawTextData = document.getElementById('exam-questions-json').value.trim();
+
+            if (!examId || !subjectName || !rawTextData) {
+                alert("Critical Error: Missing operational vectors or raw dataset.");
+                return;
+            }
+
+            const formattedJsonPayload = autoFormatRawTextToJSON(rawTextData);
+
+            try {
+                const { error } = await supabaseClient
+                    .from('exams')
+                    .update({
+                        subject: subjectName,
+                        duration_minutes: parseInt(durationLimit) || 60,
+                        questions_json: formattedJsonPayload
+                    })
+                    .eq('id', examId);
+
+                if (error) throw error;
+                
+                alert("🎉 Master Control Console: Exam Metrics Synced Successfully!");
+                
+                // रीसेट फॉर्म
+                document.getElementById('exam-questions-json').value = "";
+                document.getElementById('exam-subject-input').value = "";
+                document.getElementById('current-editing-exam-id').value = "";
+                document.getElementById('btn-update-main').classList.add('hidden');
+                document.getElementById('btn-deploy-main').classList.remove('hidden');
+                
+                syncMasterDashboardControls();
+
+            } catch (err) {
+                alert(`Update Exception: ${err.message}`);
+            }
         }
 
         // 🔄 LIVE REPOSITORY GRID LOADER
@@ -249,32 +390,31 @@
             } catch(err) { tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Sync Error: ${err.message}</td></tr>`; }
         }
 
-        // 🎯 CRITICAL TOOL 3: ASSIGN / MAP EXAM TO MULTIPLE CATEGORIES (NEW FUNCTION)
-       // 🎯 FIXED CORES: UPDATE MATRIX RUNTIME INSTEAD OF DUPLICATING PRIMARY KEYS
-async function mapExamToCategoryRoutine() {
-    const encodedSub = document.getElementById('map-exam-subject-select').value;
-    const catId = document.getElementById('map-target-category-select').value;
+        // 🎯 CRITICAL TOOL 3: ASSIGN / MAP EXAM TO MULTIPLE CATEGORIES
+        async function mapExamToCategoryRoutine() {
+            const encodedSub = document.getElementById('map-exam-subject-select').value;
+            const catId = document.getElementById('map-target-category-select').value;
 
-    if(!encodedSub || !catId) { alert("Please fetch a subject paper and select a target category node."); return; }
+            if(!encodedSub || !catId) { alert("Please fetch a subject paper and select a target category node."); return; }
 
-    const targetSubjectName = decodeURIComponent(encodedSub);
+            const targetSubjectName = decodeURIComponent(encodedSub);
 
-    try {
-        // 🔄 DUPLICATE VIOLATION FIX: Insert karne ki jagah hum existing row ko UPDATE karenge
-        const { error } = await supabaseClient
-            .from('exams')
-            .update({ category_id: parseInt(catId) }) // Target category map assign kar di
-            .eq('subject', targetSubjectName);
+            try {
+                const { error } = await supabaseClient
+                    .from('exams')
+                    .update({ category_id: parseInt(catId) })
+                    .eq('subject', targetSubjectName);
 
-        if(error) throw error;
+                if(error) throw error;
 
-        alert(`Success: [ ${targetSubjectName} ] is now mapped to your selected category node!`);
-        syncMasterDashboardControls(); // Reload whole dashboard screens instantly
+                alert(`Success: [ ${targetSubjectName} ] is now mapped to your selected category node!`);
+                syncMasterDashboardControls();
 
-    } catch(e) { 
-        alert("Mapping script failure: " + e.message); 
-    }
-}
+            } catch(e) { 
+                alert("Mapping script failure: " + e.message); 
+            }
+        }
+
         // TOOL 2 ACTION: INITIAL DEPLOY EXAM NODE
         async function createNewExamBase() {
             const sub = document.getElementById('exam-subject-input').value.trim();
@@ -285,7 +425,15 @@ async function mapExamToCategoryRoutine() {
 
             let parsedQuestions = [];
             if(jsonText !== "") {
-                try { parsedQuestions = JSON.parse(jsonText); } catch(err) { alert("JSON parsing error! Review syntax blocks."); return; }
+                try { 
+                    // पहले यह चेक करें कि डेटा साधारण टेक्स्ट है या सीधे JSON एरे डाला गया है
+                    parsedQuestions = (jsonText.startsWith('[') && jsonText.endsWith(']')) 
+                        ? JSON.parse(jsonText) 
+                        : autoFormatRawTextToJSON(jsonText); 
+                } catch(err) { 
+                    alert("JSON parsing error! Review syntax blocks."); 
+                    return; 
+                }
             }
 
             try {
@@ -295,7 +443,7 @@ async function mapExamToCategoryRoutine() {
                         subject: sub, 
                         duration_minutes: parseInt(dur) || 60, 
                         questions_json: parsedQuestions,
-                        category_id: null // Created as unmapped master base entry initially
+                        category_id: null 
                     });
 
                 if(error) throw error;
@@ -321,29 +469,58 @@ async function mapExamToCategoryRoutine() {
             } catch(e) { alert(e.message); }
         }
 
-                    
-                
-                // 🚀 इंटेलिजेंट ऑटो-पार्सर इंजन (सादे टेक्स्ट को सुंदर MCQs में बदलने के लिए)
-function autoFormatRawTextToJSON(rawText) {
-    // टेक्स्ट को लाइनों में विभाजित करें
-    const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-    const questionsList = [];
-    
-    let currentQuestion = null;
-    let currentOptions = [];
-    let currentCorrect = 0;
+        // 🚀 इंटेलिजेंट ऑटो-पार्सर इंजन (सादे टेक्स्ट को सुंदर MCQs में बदलने के लिए)
+        function autoFormatRawTextToJSON(rawText) {
+            const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            const questionsList = [];
+            
+            let currentQuestion = null;
+            let currentOptions = [];
+            let currentCorrect = 0;
 
-    // विभिन्न फॉर्मेट्स को पकड़ने के लिए रेगुलर एक्सप्रेशंस (Regex)
-    const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
-    const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
-    const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
+            const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
+            const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
+            const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
 
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
 
-        // 1. यदि लाइन एक नया प्रश्न है
-        if (questionRegex.test(line)) {
-            // यदि पुराना प्रश्न प्रोसेस हो चुका है, तो उसे पुश करें
+                if (questionRegex.test(line)) {
+                    if (currentQuestion) {
+                        questionsList.push({
+                            question: currentQuestion,
+                            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
+                            correct: currentCorrect
+                        });
+                    }
+                    currentQuestion = line.replace(questionRegex, '').trim();
+                    currentOptions = [];
+                    currentCorrect = 0;
+                } 
+                else if (answerRegex.test(line)) {
+                    const match = line.match(answerRegex);
+                    const ansChar = match[2].toUpperCase();
+                    if (['A', 'B', 'C', 'D'].includes(ansChar)) {
+                        currentCorrect = ansChar.charCodeAt(0) - 65;
+                    } else {
+                        currentCorrect = (parseInt(ansChar) - 1) || 0;
+                    }
+                } 
+                else if (optionRegex.test(line)) {
+                    const optionText = line.replace(optionRegex, '').trim();
+                    currentOptions.push(optionText);
+                } 
+                else {
+                    if (currentQuestion && currentOptions.length === 0) {
+                        currentQuestion += "\n" + line;
+                    } else if (currentOptions.length > 0) {
+                        currentOptions[currentOptions.length - 1] += " " + line;
+                    } else {
+                        currentQuestion = line;
+                    }
+                }
+            }
+
             if (currentQuestion) {
                 questionsList.push({
                     question: currentQuestion,
@@ -351,90 +528,10 @@ function autoFormatRawTextToJSON(rawText) {
                     correct: currentCorrect
                 });
             }
-            // नए प्रश्न को इनिशियलाइज़ करें (Q. 1 या 1. को हटाकर सिर्फ टेक्स्ट रखें)
-            currentQuestion = line.replace(questionRegex, '').trim();
-            currentOptions = [];
-            currentCorrect = 0;
-        } 
-        // 2. यदि लाइन एक उत्तर कुंजी (Answer Key) है
-        else if (answerRegex.test(line)) {
-            const match = line.match(answerRegex);
-            const ansChar = match[2].toUpperCase();
-            // A,B,C,D को 0,1,2,3 इंडेक्स में बदलें
-            if (['A', 'B', 'C', 'D'].includes(ansChar)) {
-                currentCorrect = ansChar.charCodeAt(0) - 65;
-            } else {
-                currentCorrect = (parseInt(ansChar) - 1) || 0;
-            }
-        } 
-        // 3. यदि लाइन एक विकल्प (Option) है
-        else if (optionRegex.test(line)) {
-            const optionText = line.replace(optionRegex, '').trim();
-            currentOptions.push(optionText);
-        } 
-        // 4. यदि यह प्रोग्रामिंग कोड, डायग्राम टेक्स्ट या प्रश्न का ही बढ़ा हुआ भाग है
-        else {
-            if (currentQuestion && currentOptions.length === 0) {
-                // यह प्रश्न का ही कोड ब्लॉक या निरंतर भाग है (जैसे C Code snippet)
-                currentQuestion += "\n" + line;
-            } else if (currentOptions.length > 0) {
-                // यह आखिरी विकल्प का बढ़ा हुआ भाग है
-                currentOptions[currentOptions.length - 1] += " " + line;
-            } else {
-                // अगर बिना किसी हेडर के पहला टेक्स्ट है, तो इसे पहला प्रश्न मान लें
-                currentQuestion = line;
-            }
+
+            return questionsList;
         }
-    }
 
-    // अंतिम प्रश्न को पुश करें
-    if (currentQuestion) {
-        questionsList.push({
-            question: currentQuestion,
-            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
-            correct: currentCorrect
-        });
-    }
-
-    return questionsList;
-}
-
-// 🎯 Supabase में डेटा डिप्लॉय करने वाला फंक्शन
-async function deployExamBase() {
-    const subjectName = document.getElementById('exam-subject-input').value.trim();
-    const durationLimit = document.getElementById('exam-duration-input').value.trim();
-    const categoryId = document.getElementById('exam-category-select').value;
-    const rawTextData = document.getElementById('questions-textarea').value.trim();
-
-    if (!subjectName || !rawTextData) {
-        alert("Please fulfill subject title and questions matrix blocks.");
-        return;
-    }
-
-    // 🚀 ऑटो-फॉर्मेटर इंजन को कॉल करें
-    const formattedJsonPayload = autoFormatRawTextToJSON(rawTextData);
-
-    try {
-        const { data, error } = await supabaseClient
-            .from('exams')
-            .insert([{
-                subject: subjectName,
-                duration_minutes: parseInt(durationLimit) || 60,
-                category_id: parseInt(categoryId),
-                questions_json: formattedJsonPayload // ऑटो-फॉर्मेटेड JSON ऑब्जेक्ट सीधे पास करें
-            }])
-            .select();
-
-        if (error) throw error;
-        
-        alert("🎉 Master Control Console: New Exam Structure Deployed Successfully!");
-        document.getElementById('questions-textarea').value = ""; // क्लियर इनपुट
-        
-    } catch (err) {
-        console.error("Deployment crashed:", err);
-        alert(`Parsing Exception: ${err.message}`);
-    }
-}
         // INLINE ACTION: TIME CONTROLLER
         async function updateExamTimingDirect(encodedSubject) {
             const decodedSub = decodeURIComponent(encodedSubject);
@@ -448,6 +545,5 @@ async function deployExamBase() {
         }
 
         function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
-    </script>
-</body>
+</script></body>
 </html>
