@@ -252,7 +252,10 @@
                 });
 
                 if (error) throw error;
-
+                    if (data && data.session) {
+                            // मैन्युअल की (Key) लिखने के बजाय सुपबेस के इस इन-बिल्ट फंक्शन को इस्तेमाल करें
+                            await supabaseClient.auth.setSession(data.session);
+                        }
                 // 🚀 फिक्स: सफल लॉगिन के बाद टोकन को मैन्युअली लोकल स्टोरेज में सिंक करें
                 if (data && data.session) {
                     localStorage.setItem('sb-lelvinusfxniqrmfufql-auth-token', JSON.stringify(data.session));
@@ -304,7 +307,10 @@
                     });
 
                     if (error) throw error;
-
+                if (data && data.session) {
+                                // मैन्युअल की (Key) लिखने के बजाय सुपबेस के इस इन-बिल्ट फंक्शन को इस्तेमाल करें
+                                await supabaseClient.auth.setSession(data.session);
+                            }
                     // 🚀 फिक्स: सफल ईमेल लॉगिन के बाद टोकन को लोकल स्टोरेज में बाध्यकारी रूप से सेट करें
                     if (data && data.session) {
                         localStorage.setItem('sb-lelvinusfxniqrmfufql-auth-token', JSON.stringify(data.session));
