@@ -24,14 +24,14 @@
     </style>
     <script>
         // 🛡️ एंटी-कॉपी और एंटी-इंस्पेक्ट लेयर
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('selectstart', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) || (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.key === 'c')) {
-                e.preventDefault();
-                return false;
-            }
-        });
+        // document.addEventListener('contextmenu', e => e.preventDefault());
+        // document.addEventListener('selectstart', e => e.preventDefault());
+        // document.addEventListener('keydown', e => {
+        //     if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) || (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.key === 'c')) {
+        //         e.preventDefault();
+        //         return false;
+        //     }
+        // });
     </script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased selection:bg-amber-500 selection:text-slate-950" oncopy="return false" oncut="return false" onpaste="return false" oncontextmenu="return false">
