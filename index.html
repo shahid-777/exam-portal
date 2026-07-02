@@ -6,7 +6,6 @@
     <meta name="google" content="notranslate">
     <link rel="icon" type="image/png" href="logo.png">
     <title>Online Exam Portal - Welcome Terminal</title>
-    <!-- Tailwind CSS & Engine Scriptings -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -23,21 +22,9 @@
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     </style>
-    <script>
-        // 🛡️ एंटी-कॉपी और एंटी-इंस्पेक्ट लेयर
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('selectstart', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) || (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.key === 'c')) {
-                e.preventDefault();
-                return false;
-            }
-        });
-    </script>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased selection:bg-amber-500 selection:text-slate-950" oncopy="return false" oncut="return false" onpaste="return false" oncontextmenu="return false">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- 🖥️ प्रीमियम नेविगेशन हेडर -->
     <header class="w-full bg-slate-950/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3.5 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
@@ -57,12 +44,11 @@
             </div>
             <div class="flex items-center space-x-3 sm:space-x-4">
                 <button onclick="openGatedAuthModal('signin')" class="text-xs sm:text-sm font-bold text-slate-300 hover:text-white transition px-2 py-1">Sign In</button>
-                <button onclick="openGatedAuthModal('signup')" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black px-4 sm:px-5 py-2 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-amber-500/10 transition transform active:scale-95 cursor-pointer">Register</button>
+                <button onclick="openGatedAuthModal('signup')" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black px-4 sm:px-5 py-2 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-amber-500/10 transition transform active:scale-[0.95] cursor-pointer">Register</button>
             </div>
         </div>
     </header>
 
-    <!-- 🌌 हीरो विज़ुअल कंसोल -->
     <section class="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900/40 py-12 sm:py-20 px-4 sm:px-6 lg:px-8 border-b border-white/5 overflow-hidden">
         <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:16px_16px]"></div>
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
@@ -92,7 +78,60 @@
         </div>
     </section>
 
-    <!-- 🔒 ऑथेंटिकेशन गेटवे मॉड्यूल -->
+    <div class="bg-slate-950/40 border-b border-white/5 py-6 sm:py-8 px-4 sm:px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div><div class="font-serif font-bold text-xl sm:text-2xl text-amber-400">⚡ Live Engine</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Real-time Exam Timer</div></div>
+            <div><div class="font-serif font-bold text-xl sm:text-2xl text-blue-400">🎯 100% Aligned</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Latest Syllabus Matrix</div></div>
+            <div><div class="font-serif font-bold text-xl sm:text-2xl text-purple-400">📉 Negative Mark</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Standard Scoring System</div></div>
+            <div><div class="font-serif font-bold text-xl sm:text-2xl text-emerald-400">🛡️ Secure Auth</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Verified Student Nodes</div></div>
+        </div>
+    </div>
+
+    <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12" id="exams-hub">
+        <div class="max-w-2xl mx-auto text-center space-y-2"><span class="font-mono text-[10px] text-amber-500 uppercase tracking-widest font-bold">Comprehensive Repository Matrix</span><h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Targeted Examination Streams</h2><p class="text-slate-400 text-xs sm:text-sm font-medium">Select a core structure down below to unlock specific verified question models and diagnostics.</p></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal('signin')">
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">IIT GATE Base</span><img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80" alt="GATE" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">GATE CS & IT Matrix</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Core Engineering Algorithms, Architecture Theory & Data Structure Subsets.</p></div>
+                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                </div>
+            </div>
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal('signin')">
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">NTA Network</span><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=600&q=80" alt="UGC NET" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">UGC NET Paper I & II</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Research Methodologies, General Aptitude Vectors, and Computing Diagnostics.</p></div>
+                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                </div>
+            </div>
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal('signin')">
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">RSMSSB State</span><img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?q=80&w=600&auto=format&fit=crop" alt="Patwari" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">RAS Patwari Compilations</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Complete Rajasthan Cultural History, Mental Aptitude & Language Parameters.</p></div>
+                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                </div>
+            </div>
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal('signin')">
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">BSER Portal</span><img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80" alt="REET" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">REET Level 1 & 2 Framework</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Child Psychology, Teaching Pedagogies, and Subject Competency Repositories.</p></div>
+                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                </div>
+            </div>            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal('signin')">
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">RSSB Professional</span><img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" alt="Instructor" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">Computer Instructor Base</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Object Oriented paradigms, DBMS Structuring, Web-Architectures & Technical Coding.</p></div>
+                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                </div>
+            </div>            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal('signin')">
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">SSC Central</span><img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80" alt="SSC" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">SSC CGL Core Modules</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Quantitative Aptitude, Logical Reasoning Matrices & Institutional Comprehension.</p></div>
+                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                </div>
+            </div>        </div>
+    </section>
+
     <div id="gated-auth-modal" class="modal-blur-overlay flex items-center justify-center p-4 z-50">
         <div class="bg-slate-900/90 border border-white/10 w-full max-w-md p-6 sm:p-8 rounded-3xl shadow-2xl space-y-4 relative overflow-hidden">
             <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400"></div>
@@ -104,7 +143,6 @@
             </div>
             
             <div class="space-y-3 pt-1">
-                <!-- ऑथेंटिकेशन मोड ट्रैकर ट्रे -->
                 <input type="hidden" id="auth-current-mode" value="signin">
 
                 <div>
@@ -132,18 +170,38 @@
                     <div id="google-auth-element-root" class="w-full flex justify-center"></div>
                 </div>
             </div>
-           
         </div>
     </div>
 
-    <!-- फुटर -->
+    <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 border border-white/5 text-center py-12 px-4 rounded-3xl space-y-4 shadow-xl relative overflow-hidden">
+            <h2 class="font-serif font-bold text-xl sm:text-3xl text-white">Your next attempt boundary starts here.</h2>
+            <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto">Link your account profile node to instantly initialize highly scalable, simulated mock examination conditions.</p>
+            <button onclick="openGatedAuthModal('signup')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3 rounded-xl text-xs uppercase tracking-widest transition shadow-lg shadow-amber-500/10 cursor-pointer">
+                Establish Free Profile
+            </button>
+        </div>
+    </section>
+
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[9px] sm:text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">&copy; Computer Science Management System Terminal</footer>
 
-    <!-- 🧠 🛡️ 100% सिक्योर सुप्रीम ऑथेंटिकेशन इंजन -->
     <script>
         const _u = "https://lelvinusfxniqrmfufql.supabase.co";
         const _k = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
-        const supabaseClient = supabase.createClient(_u, _k);
+        
+        // 🚀 ऑफिशियल स्टोरेज बाइंडिंग के साथ क्लाइंट इनिशियलाइजेशन
+        const supabaseClient = supabase.createClient(_u, _k, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true,
+                storage: window.localStorage
+            }
+        });
+
+        function isUserAuthenticated() {
+            return !!localStorage.getItem('userEmail');
+        }
 
         function openGatedAuthModal(mode = 'signin') {
             const modal = document.getElementById('gated-auth-modal');
@@ -185,48 +243,7 @@
             );
         };
 
-        // 📧 ईमेल-पासवर्ड हैंडलर (रजिस्ट्रेशन विद ईमेल वेरिफिकेशन लिंक + लॉगिन)
-        async function executeSecureAuthActionRoutine() {
-            const email = document.getElementById('user-email').value.trim();
-            const password = document.getElementById('user-password').value;
-            const mode = document.getElementById('auth-current-mode').value;
-
-            if (!email || !password) { alert("Please fill all required input fields."); return; }
-
-            try {
-                if (mode === 'signup') {
-                    // 🚀 सुपबेस ऑथ इंजन: यह ईमेल पर वेरिफिकेशन लिंक भेजेगा
-                    const { data, error } = await supabaseClient.auth.signUp({
-                        email: email,
-                        password: password,
-                        options: {
-                            emailRedirectTo: 'https://www.exam-portal-cse.online/dashboard.html'
-                        }
-                    });
-
-                    if (error) throw error;
-                    alert("📧 Verification Link Sent! Please open your email inbox and click the link to activate your exam account.");
-                    closeGatedAuthModal();
-                } else {
-                    // 🚀 लॉगिन प्रक्रिया
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({
-                        email: email,
-                        password: password
-                    });
-
-                    if (error) throw error;
-
-                    // सेशन डेटा मैनेज करें
-                    localStorage.setItem('userEmail', data.user.email);
-                    localStorage.setItem('sessionLoginTime', Date.now().toString());
-                    window.location.replace("dashboard.html");
-                }
-            } catch (err) {
-                alert("Auth Action Fault: " + err.message);
-            }
-        }
-
-        // 🛡️ गूगल सिक्योर ऑथेंटिकेशन (यह स्वतः वेरिफाइड होता है)
+        // 🛡️ गूगल सिक्योर ऑथेंटिकेशन + लाइव फ्रंटएंड डेटाबेस सिंक
         async function handleGoogleAuthCallbackResponse(response) {
             try {
                 const { data, error } = await supabaseClient.auth.signInWithIdToken({
@@ -236,11 +253,84 @@
 
                 if (error) throw error;
 
-                localStorage.setItem('userEmail', data.user.email);
+                // 🚀 ऑफिशियल तरीके से टोकन को ब्राउज़र में लाइव बाइंड करें
+                if (data && data.session) {
+                    await supabaseClient.auth.setSession(data.session);
+                }
+
+                const googleEmail = data.user.email.toLowerCase();
+                const currentTimestamp = new Date().toISOString();
+
+                // 🚀 फ्रंटएंड डेटा ट्रांसफर मैकेनिज्म (Upsert)
+                await supabaseClient
+                    .from('portal_users')
+                    .upsert({
+                        email: googleEmail,
+                        name: data.user.user_metadata?.full_name || googleEmail.split('@')[0],
+                        role: googleEmail === 'examportalcse@gmail.com' ? 'admin' : 'student',
+                        last_login: currentTimestamp
+                    }, { onConflict: 'email' });
+
+                localStorage.setItem('userEmail', googleEmail);
                 localStorage.setItem('sessionLoginTime', Date.now().toString());
                 window.location.replace("dashboard.html");
             } catch (err) {
                 alert("Identity verification session mapping exception: " + err.message);
+            }
+        }
+
+        // 📧 ईमेल-पासवर्ड ऑथेंटिकेशन + लाइव फ्रंटएंड डेटाबेस सिंक
+        async function executeSecureAuthActionRoutine() {
+            const email = document.getElementById('user-email').value.trim().toLowerCase();
+            const password = document.getElementById('user-password').value;
+            const mode = document.getElementById('auth-current-mode').value;
+
+            if (!email || !password) { alert("Please fill all required input fields."); return; }
+
+            try {
+                if (mode === 'signup') {
+                    // सिम्पलीफाइड रजिस्ट्रेशन कॉल (बैकएंड बाधाओं से पूरी तरह मुक्त)
+                    const { error } = await supabaseClient.auth.signUp({
+                        email: email,
+                        password: password
+                    });
+
+                    if (error) throw error;
+                    
+                    alert("📧 Verification Link Sent! Please check your email inbox to activate your account.");
+                    closeGatedAuthModal();
+                } else {
+                    // लॉगिन कॉल
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (error) throw error;
+
+                    // 🚀 ऑफिशियल तरीके से फ्रेश टोकन सिंक करें
+                    if (data && data.session) {
+                        await supabaseClient.auth.setSession(data.session);
+                    }
+
+                    const currentTimestamp = new Date().toISOString();
+
+                    // 🚀 लॉगिन टाइम और क्रेडेंशियल को फ्रंटएंड से 'portal_users' में अपसर्ट करें
+                    await supabaseClient
+                        .from('portal_users')
+                        .upsert({
+                            email: email,
+                            name: email.split('@')[0],
+                            role: email === 'examportalcse@gmail.com' ? 'admin' : 'student',
+                            last_login: currentTimestamp
+                        }, { onConflict: 'email' });
+
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('sessionLoginTime', Date.now().toString());
+                    window.location.replace("dashboard.html");
+                }
+            } catch (err) {
+                alert("Auth Action Fault: " + (err.message || JSON.stringify(err)));
             }
         }
     </script>
