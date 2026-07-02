@@ -229,16 +229,27 @@
             }
         }
 
-        async function handleEmailPasswordAuthentication() {
-            const inputEmail = document.getElementById('user-email').value.trim().toLowerCase();
+       async function handleEmailPasswordAuthentication() {
+            // इनपुट से वैल्यू लें
+            let inputEmail = document.getElementById('user-email').value.trim();
             const inputPassword = document.getElementById('user-password').value;
 
             if (!inputEmail || !inputPassword) { alert("Fields supplied mismatch criteria."); return; }
+            
+            // 🚀 सुरक्षा फिक्स: अगर यूजर ने पूरा ईमेल डाला है (जैसे test@gmail.com), 
+            // लेकिन डेटाबेस में सिर्फ 'test' सेव है, तो यह सिर्फ नाम को अलग कर लेगा।
+            if (inputEmail.includes('@')) {
+                inputEmail = inputEmail.split('@')[0];
+            }
+            
+            const searchKey = inputEmail.toLowerCase();
+
             try {
+                // डेटाबेस से रिकॉर्ड फ़ेच करें
                 const { data, error } = await supabaseClient
                     .from('portal_users')
                     .select('email, password, name')
-                    .eq('email', inputEmail)
+                    .eq('email', searchKey)
                     .maybeSingle();
 
                 if (error || !data || data.password !== inputPassword) {
@@ -248,12 +259,18 @@
 
                 const currentTimestamp = new Date().toISOString();
                 
-                // 🚀 फिक्स: ईमेल-पासवर्ड मैच होने के बाद सुपबेस डेटाबेस में टाइमिंग सिंक करना
-                await supabaseClient.from('portal_users')
+                // 🚀 लाइव टाइमस्टैम्प अपडेट मैकेनिज्म (सटीक रो मैचिंग के साथ)
+                const { error: updateErr } = await supabaseClient
+                    .from('portal_users')
                     .update({ last_login: currentTimestamp })
-                    .eq('email', inputEmail);
+                    .eq('email', searchKey);
 
-                localStorage.setItem('userEmail', inputEmail);
+                if (updateErr) {
+                    console.error("Database timestamp sync failed:", updateErr);
+                }
+
+                // ब्राउज़र सेशन सेटिंग्स
+                localStorage.setItem('userEmail', searchKey);
                 localStorage.setItem('userName', data.name);
                 localStorage.setItem('sessionLoginTime', Date.now().toString());
 
