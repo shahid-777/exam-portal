@@ -235,7 +235,7 @@
         };
 
         // 🛡️ गूगल सिक्योर ऑथेंटिकेशन + लाइव डेटाबेेस टाइमस्टैम्प अपडेट
-        async function handleGoogleAuthCallbackResponse(response) {
+       async function handleGoogleAuthCallbackResponse(response) {
             try {
                 const { data, error } = await supabaseClient.auth.signInWithIdToken({
                     provider: 'google',
@@ -247,13 +247,11 @@
                 const googleEmail = data.user.email.toLowerCase();
                 const currentTimestamp = new Date().toISOString();
 
-                // 🚀 फिक्स: टेबल (portal_users) के आर्किटेक्चर के अनुसार पूर्ण ईमेल आईडी मैचिंग द्वारा 'last_login' सिंक
-                const { error: syncErr } = await supabaseClient
+                // लॉगिन टाइम को आपकी कस्टम टेबल में सिंक करना
+                await supabaseClient
                     .from('portal_users')
                     .update({ last_login: currentTimestamp })
                     .eq('email', googleEmail);
-
-                if (syncErr) console.error("Google login DB update sync fault:", syncErr.message);
 
                 localStorage.setItem('userEmail', googleEmail);
                 localStorage.setItem('sessionLoginTime', Date.now().toString());
@@ -264,7 +262,7 @@
         }
 
         // 📧 ईमेल-पासवर्ड ऑथेंटिकेशन + लाइव डेटाबेस टाइमस्टैम्प अपडेट
-        async function executeSecureAuthActionRoutine() {
+       async function executeSecureAuthActionRoutine() {
             const email = document.getElementById('user-email').value.trim().toLowerCase();
             const password = document.getElementById('user-password').value;
             const mode = document.getElementById('auth-current-mode').value;
@@ -273,7 +271,7 @@
 
             try {
                 if (mode === 'signup') {
-                    // 1. सुपबेस सुरक्षा ऑथेंटिकेशन (यह ईमेल वेरिफिकेशन ट्रिगर करेगा)
+                    // सुपबेस ऑथ साइनअप - यह बैकएंड पर ट्रिगर चलाएगा
                     const { error } = await supabaseClient.auth.signUp({
                         email: email,
                         password: password,
@@ -284,14 +282,6 @@
 
                     if (error) throw error;
                     
-                    // 2. आपकी 'portal_users' टेबल के अनुसार बिल्कुल सही इन्सर्ट पेलोड (पूरा ईमेल जाएगा)
-                    await supabaseClient.from('portal_users').insert({
-                        email: email, 
-                        name: email.split('@')[0].toUpperCase(), 
-                        password: password,
-                        role: 'student'
-                    });
-
                     alert("📧 Verification Link Sent! Please check your email inbox to activate your account.");
                     closeGatedAuthModal();
                 } else {
@@ -305,13 +295,11 @@
 
                     const currentTimestamp = new Date().toISOString();
 
-                    // 🚀 लाइव टाइमस्टैम्प सिंक (पूरे ईमेल मैचिंग के साथ)
-                    const { error: syncErr } = await supabaseClient
+                    // लॉगिन टाइम को आपकी कस्टम टेबल में सिंक करना
+                    await supabaseClient
                         .from('portal_users')
                         .update({ last_login: currentTimestamp })
                         .eq('email', email);
-
-                    if (syncErr) console.error("Email login DB update sync fault:", syncErr.message);
 
                     localStorage.setItem('userEmail', email);
                     localStorage.setItem('sessionLoginTime', Date.now().toString());
