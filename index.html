@@ -290,37 +290,31 @@
         };
 
         // 🛡️ गूगल सिक्योर ऑथेंटिकेशन + लाइव डेटाबेस टाइमस्टैम्प अपडेट
-        async function handleGoogleAuthCallbackResponse(response) {
-            try {
-                const { data, error } = await supabaseClient.auth.signInWithIdToken({
-                    provider: 'google',
-                    token: response.credential
-                });
+      async function handleGoogleAuthCallbackResponse(response) {
+    try {
+        const { data, error } = await supabaseClient.auth.signInWithIdToken({
+            provider: 'google',
+            token: response.credential
+        });
 
-                if (error) throw error;
+        if (error) throw error;
 
-                let googleEmail = data.user.email.toLowerCase();
-                // डेटाबेस फ़ॉर्मेट (यूज़रनेम केवल) के लिए साफ़ करें
-                if (googleEmail.includes('@')) {
-                    googleEmail = googleEmail.split('@')[0];
-                }
+        const googleEmail = data.user.email.toLowerCase();
+        const currentTimestamp = new Date().toISOString();
 
-                const currentTimestamp = new Date().toISOString();
+        // 🚀 पूरे ईमेल आईडी के आधार पर 'portal_users' टेबल में last_login टाइम सिंक
+        await supabaseClient
+            .from('portal_users')
+            .update({ last_login: currentTimestamp })
+            .eq('email', googleEmail);
 
-                // गूगल लॉगिन होने पर 'portal_users' टेबल में last_login टाइम सिंक करना
-                await supabaseClient
-                    .from('portal_users')
-                    .update({ last_login: currentTimestamp })
-                    .eq('email', googleEmail);
-
-                localStorage.setItem('userEmail', googleEmail);
-                localStorage.setItem('sessionLoginTime', Date.now().toString());
-                window.location.replace("dashboard.html");
-            } catch (err) {
-                alert("Identity verification session mapping exception: " + err.message);
-            }
-        }
-
+        localStorage.setItem('userEmail', googleEmail);
+        localStorage.setItem('sessionLoginTime', Date.now().toString());
+        window.location.replace("dashboard.html");
+    } catch (err) {
+        alert("Identity verification session mapping exception: " + err.message);
+    }
+}
         // 📧 ईमेल-पासवर्ड ऑथेंटिकेशन + लाइव डेटाबेस टाइमस्टैम्प अपडेट
       async function executeSecureAuthActionRoutine() {
     const email = document.getElementById('user-email').value.trim().toLowerCase();
