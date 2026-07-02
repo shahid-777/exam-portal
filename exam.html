@@ -435,67 +435,66 @@
         }
 
         async function terminateAssessmentProcess() {
-            clearInterval(networkTimerInterval);
-            
-            let totalQuestions = globalLoadedQuestions.length;
-            let correctAnswers = 0;
-            let wrongAnswers = 0;
-            let unattempted = 0;
-        
-            globalLoadedQuestions.forEach((q, index) => {
-                const selectedOpt = userResponses[index];
-                if (selectedOpt !== undefined) {
-                    if (parseInt(selectedOpt) === parseInt(q.correct)) {
-                        correctAnswers++;
-                    } else {
-                        wrongAnswers++;
-                    }
-                } else {
-                    unattempted++;
-                }
-            });
-        
-            const studentEmail = localStorage.getItem('userEmail') || 'anonymous@portal.com';
-            const studentName = studentEmail.split('@')[0].toUpperCase(); 
-            const currentSubject = document.getElementById('live-subject-title').innerText;
-            
-            // 🚀 बदलाव 4: नया फ़ॉर्मूला लागू - कुल सही अंकों में से गलत जवाबों की पेनल्टी काटी जाएगी
-            // (प्रत्येक सही प्रश्न का 1 अंक, और प्रत्येक गलत पर सेट की गई वैल्यू जैसे 0.25 या 0.33 घटेगी)
-            let calculatedScore = correctAnswers - (wrongAnswers * globalNegativeMarking); 
-        
-            try {
-                const { data, error } = await supabaseClient
-                    .from('results')
-                    .insert([{
-                        email: studentEmail.toLowerCase(),
-                        name: studentName,                       
-                        subject: currentSubject,
-                        score: parseFloat(calculatedScore) || 0,   // 🚀 float वैल्यू सपोर्ट करने के लिए parseFloat किया गया है
-                        total_questions: totalQuestions,
-                        correct_answers: correctAnswers,
-                        wrong_answers: wrongAnswers,
-                        unattempted: unattempted,
-                        user_responses_json: JSON.stringify(userResponses), 
-                        questions_snapshot_json: JSON.stringify(globalLoadedQuestions), 
-                        created_at: new Date().toISOString(),
-                        submitted_at: new Date().toISOString()
-                    }])
-                    .select();
-        
-                if (error) throw error;
-                if (!data || data.length === 0) throw new Error("Database integration failure.");
-        
-                alert(`Test Evaluation Compiled Successfully!`);
-                
-                const generatedId = data[0].id;
-                window.location.replace(`result-analysis.html?id=${generatedId}`);
-        
-            } catch (err) {
-                console.error("Detailed Database Error:", err);
-                alert("Result compilation synchronization error. Please check browser console.");
-                window.location.replace("dashboard.html");
+    clearInterval(networkTimerInterval);
+    
+    let totalQuestions = globalLoadedQuestions.length;
+    let correctAnswers = 0;
+    let wrongAnswers = 0;
+    let unattempted = 0;
+
+    globalLoadedQuestions.forEach((q, index) => {
+        const selectedOpt = userResponses[index];
+        if (selectedOpt !== undefined) {
+            if (parseInt(selectedOpt) === parseInt(q.correct)) {
+                correctAnswers++;
+            } else {
+                wrongAnswers++;
             }
+        } else {
+            unattempted++;
         }
-</script>
+    });
+
+    const studentEmail = localStorage.getItem('userEmail') || 'anonymous@portal.com';
+    const studentName = studentEmail.split('@')[0].toUpperCase(); 
+    const currentSubject = document.getElementById('live-subject-title').innerText;
+    
+    let calculatedScore = correctAnswers - (wrongAnswers * globalNegativeMarking); 
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('results')
+            .insert([{
+                email: studentEmail.toLowerCase(),
+                name: studentName,                       
+                subject: currentSubject,
+                score: parseFloat(calculatedScore) || 0,   
+                total_questions: totalQuestions,
+                correct_answers: correctAnswers,
+                wrong_answers: wrongAnswers,
+                unattempted: unattempted,
+                user_responses_json: JSON.stringify(userResponses), 
+                questions_snapshot_json: JSON.stringify(globalLoadedQuestions), 
+                created_at: new Date().toISOString(),
+                submitted_at: new Date().toISOString()
+            }])
+            .select();
+
+        if (error) throw error;
+        if (!data || data.length === 0) throw new Error("Database integration failure.");
+
+        alert(`🎉 Test Evaluation Compiled Successfully!`);
+        
+        // 🚀 अल्टीमेट फिक्स: जेनरेटेड रिज़ल्ट ID निकालकर सीधे एनालिसिस पेज पर भेजें
+        const generatedId = data[0].id;
+        window.location.replace(`result-analysis.html?id=${generatedId}`);
+
+    } catch (err) {
+        console.error("Detailed Database Error:", err);
+        alert("Result compilation synchronization error. Please check browser console.");
+        window.location.replace("dashboard.html");
+    }
+}
+        </script>
 </body>
 </html>
