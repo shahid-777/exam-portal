@@ -109,6 +109,7 @@
     </footer>
 
     <script>
+        <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -119,6 +120,9 @@
         
         let userResponses = {}; 
         let markedForReviewSet = new Set();
+        
+        // 🚀 बदलाव 1: नेगेटिव मार्किंग वैल्यू को स्टोर करने के लिए ग्लोबल वेरिएबल
+        let globalNegativeMarking = 0; 
 
         // Mobile View Palette Show/Hide Handler
         function toggleMobilePalette(shouldShow) {
@@ -152,9 +156,10 @@
 
         async function streamTargetExamJson(subjectName) {
             try {
+                // 🚀 बदलाव 2: .select() में 'negative_marking' कॉलम को भी फ़ेच करने के लिए जोड़ा गया है
                 const { data, error } = await supabaseClient
                     .from('exams')
-                    .select('subject, questions_json, duration_minutes')
+                    .select('subject, questions_json, duration_minutes, negative_marking')
                     .eq('subject', subjectName)
                     .limit(1)
                     .maybeSingle();
@@ -162,6 +167,9 @@
                 if (error || !data) throw new Error("Data retrieval interruption.");
 
                 document.getElementById('live-subject-title').innerText = data.subject.toUpperCase();
+                
+                // 🚀 बदलाव 3: डेटाबेस से आई वैल्यू को ग्लोबल वेरिएबल में सुरक्षित सेव करें
+                globalNegativeMarking = parseFloat(data.negative_marking) || 0;
                 
                 globalLoadedQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
                 
@@ -207,137 +215,128 @@
         }
 
         // 🔄 RENDERING PIPELINE WITH BATCH PROCESSING
-                    // 🔄 पूरी तरह से सुधारा गया रेंडरिंग फंक्शन (English और Hindi दोनों के लिए 100% फिक्स)
-// 🔄 अल्टीमेट फिक्स - यह हर हाल में ऑप्शंस को स्क्रीन पर लाएगा
-// 🔄 डेटा पार्सिंग मिसमैच को ठीक करने वाला सुदृढ़ फंक्शन
-async function renderAssessmentLayout() {
-    const container = document.getElementById('questions-pipeline-wrapper');
-    container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing Language Layout Matrices...</div>`;
+        async function renderAssessmentLayout() {
+            const container = document.getElementById('questions-pipeline-wrapper');
+            container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing Language Layout Matrices...</div>`;
 
-    let finalHtml = "";
-    
-    // 🎯 केस 1: ENGLISH (Direct Safe Render with String-to-Array Fix)
-    if (currentSelectedLanguage === "en") {
-        for (let index = 0; index < globalLoadedQuestions.length; index++) {
-            const q = globalLoadedQuestions[index];
-            const questionText = q.question || q.title || q.text || 'Objective Question';
+            let finalHtml = "";
             
-            // 🚀 स्टेप 1: डेटाबेस से आने वाले संभावित पेलोड की प्रॉपर्टीज को चेक करें
-            let rawOptions = q.options || q.choices || q.options_json || [];
+            if (currentSelectedLanguage === "en") {
+                for (let index = 0; index < globalLoadedQuestions.length; index++) {
+                    const q = globalLoadedQuestions[index];
+                    const questionText = q.question || q.title || q.text || 'Objective Question';
+                    
+                    let rawOptions = q.options || q.choices || q.options_json || [];
 
-            // 🚀 स्टेप 2 (मुख्य फिक्स): अगर विकल्प स्ट्रिंग के रूप में बंद हैं, तो उन्हें ऐरे में बदलें
-            if (typeof rawOptions === 'string') {
-                try {
-                    rawOptions = JSON.parse(rawOptions);
-                } catch(e) {
-                    // यदि JSON.parse फेल हो, तो स्ट्रिंग को क्लीन करके एरे बनाने का प्रयास करें
-                    rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim());
-                }
-            }
+                    if (typeof rawOptions === 'string') {
+                        try {
+                            rawOptions = JSON.parse(rawOptions);
+                        } catch(e) {
+                            rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim());
+                        }
+                    }
 
-            let optionsHtml = "";
-            if (rawOptions && Array.isArray(rawOptions) && rawOptions.length > 0) {
-                for (let optIdx = 0; optIdx < rawOptions.length; optIdx++) {
-                    const isChecked = userResponses[index] === optIdx ? "checked" : "";
-                    optionsHtml += `
-                        <label class="flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2">
-                            <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
-                            <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${rawOptions[optIdx]}</span>
-                        </label>
+                    let optionsHtml = "";
+                    if (rawOptions && Array.isArray(rawOptions) && rawOptions.length > 0) {
+                        for (let optIdx = 0; optIdx < rawOptions.length; optIdx++) {
+                            const isChecked = userResponses[index] === optIdx ? "checked" : "";
+                            optionsHtml += `
+                                <label class="flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2">
+                                    <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
+                                    <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${rawOptions[optIdx]}</span>
+                                </label>
+                            `;
+                        }
+                    } else {
+                        optionsHtml = `<p class="text-[10px] text-slate-600 font-mono pl-2">⚠️ No valid options array found in data payload.</p>`;
+                    }
+
+                    finalHtml += `
+                        <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="flex items-start space-x-3 min-w-0">
+                                    <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md shrink-0">Q. ${index + 1}</span>
+                                    <h4 class="text-xs sm:text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${questionText}</h4>
+                                </div>
+                                <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-red-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition shrink-0">
+                                    ${markedForReviewSet.has(index) ? '🔴 Marked' : 'Mark Review'}
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 gap-1 pt-1">
+                                ${optionsHtml}
+                            </div>
+                        </div>
                     `;
                 }
-            } else {
-                optionsHtml = `<p class="text-[10px] text-slate-600 font-mono pl-2">⚠️ No valid options array found in data payload.</p>`;
-            }
+            } 
+            else if (currentSelectedLanguage === "hi") {
+                let translatedArrayPool = await translateBulkQuestions(globalLoadedQuestions, "hi");
+                let textPointerIndex = 0;
 
-            finalHtml += `
-                <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
-                    <div class="flex items-start justify-between gap-4">
-                        <div class="flex items-start space-x-3 min-w-0">
-                            <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md shrink-0">Q. ${index + 1}</span>
-                            <h4 class="text-xs sm:text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${questionText}</h4>
-                        </div>
-                        <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-red-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition shrink-0">
-                            ${markedForReviewSet.has(index) ? '🔴 Marked' : 'Mark Review'}
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 gap-1 pt-1">
-                        ${optionsHtml}
-                    </div>
-                </div>
-            `;
-        }
-    } 
-    // 🎯 केस 2: HINDI (With Translation Pool)
-    else if (currentSelectedLanguage === "hi") {
-        let translatedArrayPool = await translateBulkQuestions(globalLoadedQuestions, "hi");
-        let textPointerIndex = 0;
+                for (let index = 0; index < globalLoadedQuestions.length; index++) {
+                    const q = globalLoadedQuestions[index];
+                    const rawQuestionText = q.question || q.title || q.text || 'Objective Question';
+                    
+                    let rawOptions = q.options || q.choices || q.options_json || [];
+                    if (typeof rawOptions === 'string') {
+                        try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
+                    }
 
-        for (let index = 0; index < globalLoadedQuestions.length; index++) {
-            const q = globalLoadedQuestions[index];
-            const rawQuestionText = q.question || q.title || q.text || 'Objective Question';
-            
-            let rawOptions = q.options || q.choices || q.options_json || [];
-            if (typeof rawOptions === 'string') {
-                try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
-            }
-
-            let translatedTitle = (translatedArrayPool && translatedArrayPool[textPointerIndex]) ? translatedArrayPool[textPointerIndex] : rawQuestionText;
-            textPointerIndex++;
-
-            let optionsHtml = "";
-            if (rawOptions && Array.isArray(rawOptions) && rawOptions.length > 0) {
-                for (let optIdx = 0; optIdx < rawOptions.length; optIdx++) {
-                    const rawOptText = rawOptions[optIdx];
-                    let translatedOpt = (translatedArrayPool && translatedArrayPool[textPointerIndex]) ? translatedArrayPool[textPointerIndex] : rawOptText;
+                    let translatedTitle = (translatedArrayPool && translatedArrayPool[textPointerIndex]) ? translatedArrayPool[textPointerIndex] : rawQuestionText;
                     textPointerIndex++;
 
-                    const isChecked = userResponses[index] === optIdx ? "checked" : "";
+                    let optionsHtml = "";
+                    if (rawOptions && Array.isArray(rawOptions) && rawOptions.length > 0) {
+                        for (let optIdx = 0; optIdx < rawOptions.length; optIdx++) {
+                            const rawOptText = rawOptions[optIdx];
+                            let translatedOpt = (translatedArrayPool && translatedArrayPool[textPointerIndex]) ? translatedArrayPool[textPointerIndex] : rawOptText;
+                            textPointerIndex++;
 
-                    optionsHtml += `
-                        <label class="flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2">
-                            <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
-                            <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${translatedOpt}</span>
-                        </label>
+                            const isChecked = userResponses[index] === optIdx ? "checked" : "";
+
+                            optionsHtml += `
+                                <label class="flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2">
+                                    <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
+                                    <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${translatedOpt}</span>
+                                </label>
+                            `;
+                        }
+                    } else {
+                        optionsHtml = `<p class="text-[10px] text-slate-600 font-mono pl-2">⚠️ No valid options array found in data payload.</p>`;
+                    }
+
+                    finalHtml += `
+                        <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="flex items-start space-x-3 min-w-0">
+                                    <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md shrink-0">Q. ${index + 1}</span>
+                                    <h4 class="text-xs sm:text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${translatedTitle}</h4>
+                                </div>
+                                <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-red-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition shrink-0">
+                                    ${markedForReviewSet.has(index) ? '🔴 Marked' : 'Mark Review'}
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 gap-1 pt-1">
+                                ${optionsHtml}
+                            </div>
+                        </div>
                     `;
                 }
-            } else {
-                optionsHtml = `<p class="text-[10px] text-slate-600 font-mono pl-2">⚠️ No valid options array found in data payload.</p>`;
             }
 
-            finalHtml += `
-                <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
-                    <div class="flex items-start justify-between gap-4">
-                        <div class="flex items-start space-x-3 min-w-0">
-                            <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md shrink-0">Q. ${index + 1}</span>
-                            <h4 class="text-xs sm:text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${translatedTitle}</h4>
-                        </div>
-                        <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-red-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition shrink-0">
-                            ${markedForReviewSet.has(index) ? '🔴 Marked' : 'Mark Review'}
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 gap-1 pt-1">
-                        ${optionsHtml}
-                    </div>
-                </div>
-            `;
-        }
-    }
+            container.innerHTML = finalHtml;
 
-    container.innerHTML = finalHtml;
-
-    // पैलेट कलर्स सिंक करना
-    globalLoadedQuestions.forEach((_, index) => {
-        const pBtn = document.getElementById(`palette-btn-${index}`);
-        if (markedForReviewSet.has(index)) {
-            const mBtn = document.getElementById(`mark-btn-${index}`);
-            if(mBtn) mBtn.classList.add("border-red-500/50", "text-red-400", "bg-red-500/10");
-            if(pBtn) pBtn.className = "bg-red-600 text-white font-mono text-xs font-black py-2 rounded-lg transition text-center cursor-pointer";
-        } else if (userResponses[index] !== undefined) {
-            if(pBtn) pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
-        }
-    });
-}       
+            globalLoadedQuestions.forEach((_, index) => {
+                const pBtn = document.getElementById(`palette-btn-${index}`);
+                if (markedForReviewSet.has(index)) {
+                    const mBtn = document.getElementById(`mark-btn-${index}`);
+                    if(mBtn) mBtn.classList.add("border-red-500/50", "text-red-400", "bg-red-500/10");
+                    if(pBtn) pBtn.className = "bg-red-600 text-white font-mono text-xs font-black py-2 rounded-lg transition text-center cursor-pointer";
+                } else if (userResponses[index] !== undefined) {
+                    if(pBtn) pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+                }
+            });
+        }        
         
         function switchAssessmentLanguage(selectedLang) {
             currentSelectedLanguage = selectedLang;
@@ -357,7 +356,6 @@ async function renderAssessmentLayout() {
         }
 
         function scrollToQuestion(qIdx) {
-            // Auto close drawer menu panel on mobile screens after picking target card
             if (window.innerWidth < 1024) {
                 toggleMobilePalette(false);
             }
@@ -382,7 +380,6 @@ async function renderAssessmentLayout() {
             }
         }
 
-        // Toggles State Matrix
         function toggleMarkForReview(qIdx) {
             const mBtn = document.getElementById(`mark-btn-${qIdx}`);
             const pBtn = document.getElementById(`palette-btn-${qIdx}`);
@@ -437,7 +434,7 @@ async function renderAssessmentLayout() {
             }, 1000);
         }
 
-                     async function terminateAssessmentProcess() {
+        async function terminateAssessmentProcess() {
             clearInterval(networkTimerInterval);
             
             let totalQuestions = globalLoadedQuestions.length;
@@ -459,22 +456,21 @@ async function renderAssessmentLayout() {
             });
         
             const studentEmail = localStorage.getItem('userEmail') || 'anonymous@portal.com';
-            // ईमेल से नाम निकालने का एक सुरक्षित तरीका (जैसे: shahid@gmail.com से "shahid")
             const studentName = studentEmail.split('@')[0].toUpperCase(); 
             const currentSubject = document.getElementById('live-subject-title').innerText;
             
-            // आपके स्कीमा के अनुसार स्कोर की गणना (जितने सही उत्तर, उतना स्कोर)
-            let calculatedScore = correctAnswers; 
+            // 🚀 बदलाव 4: नया फ़ॉर्मूला लागू - कुल सही अंकों में से गलत जवाबों की पेनल्टी काटी जाएगी
+            // (प्रत्येक सही प्रश्न का 1 अंक, और प्रत्येक गलत पर सेट की गई वैल्यू जैसे 0.25 या 0.33 घटेगी)
+            let calculatedScore = correctAnswers - (wrongAnswers * globalNegativeMarking); 
         
             try {
-                // 🚀 आपके SQL स्कीमा के बिल्कुल अनुकूल डेटा पैकेट
                 const { data, error } = await supabaseClient
                     .from('results')
                     .insert([{
                         email: studentEmail.toLowerCase(),
-                        name: studentName,                       // 🎯 स्कीमा के अनुसार आवश्यक
+                        name: studentName,                       
                         subject: currentSubject,
-                        score: parseInt(calculatedScore) || 0,   // 🎯 स्कीमा में 'NOT NULL' है, इसलिए भेजना ज़रूरी है
+                        score: parseFloat(calculatedScore) || 0,   // 🚀 float वैल्यू सपोर्ट करने के लिए parseFloat किया गया है
                         total_questions: totalQuestions,
                         correct_answers: correctAnswers,
                         wrong_answers: wrongAnswers,
@@ -491,7 +487,6 @@ async function renderAssessmentLayout() {
         
                 alert(`Test Evaluation Compiled Successfully!`);
                 
-                // सुरक्षित रूप से जनरेटेड ID को रिज़ल्ट एनालिसिस पेज पर भेजना
                 const generatedId = data[0].id;
                 window.location.replace(`result-analysis.html?id=${generatedId}`);
         
@@ -501,6 +496,6 @@ async function renderAssessmentLayout() {
                 window.location.replace("dashboard.html");
             }
         }
-    </script>
+</script>
 </body>
 </html>
