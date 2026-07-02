@@ -44,7 +44,7 @@
             </div>
             <div class="flex items-center space-x-3 sm:space-x-4">
                 <button onclick="openGatedAuthModal('signin')" class="text-xs sm:text-sm font-bold text-slate-300 hover:text-white transition px-2 py-1">Sign In</button>
-                <button onclick="openGatedAuthModal('signup')" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black px-4 sm:px-5 py-2 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-amber-500/10 transition transform active:scale-95 cursor-pointer">Register</button>
+                <button onclick="openGatedAuthModal('signup')" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black px-4 sm:px-5 py-2 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-amber-500/10 transition transform active:scale-[0.95] cursor-pointer">Register</button>
             </div>
         </div>
     </header>
@@ -188,7 +188,16 @@
     <script>
         const _u = "https://lelvinusfxniqrmfufql.supabase.co";
         const _k = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
-        const supabaseClient = supabase.createClient(_u, _k);
+        
+        // 🚀 टोकन परसिस्टेंस और स्टोरेज बाइंडिंग के साथ क्लाइंट इनिशियलाइजेशन
+        const supabaseClient = supabase.createClient(_u, _k, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true,
+                storage: window.localStorage
+            }
+        });
 
         function isUserAuthenticated() {
             return !!localStorage.getItem('userEmail');
@@ -234,8 +243,8 @@
             );
         };
 
-        // 🛡️ गूगल सिक्योर ऑथेंटिकेशन + लाइव डेटाबेेस टाइमस्टैम्प अपडेट
-       async function handleGoogleAuthCallbackResponse(response) {
+        // 🛡️ गूगल सिक्योर ऑथेंटिकेशन + लाइव डेटाबेस टाइमस्टैम्प अपडेट
+        async function handleGoogleAuthCallbackResponse(response) {
             try {
                 const { data, error } = await supabaseClient.auth.signInWithIdToken({
                     provider: 'google',
@@ -243,6 +252,11 @@
                 });
 
                 if (error) throw error;
+
+                // 🚀 फिक्स: सफल लॉगिन के बाद टोकन को मैन्युअली लोकल स्टोरेज में सिंक करें
+                if (data && data.session) {
+                    localStorage.setItem('sb-lelvinusfxniqrmfufql-auth-token', JSON.stringify(data.session));
+                }
 
                 const googleEmail = data.user.email.toLowerCase();
                 const currentTimestamp = new Date().toISOString();
@@ -262,7 +276,7 @@
         }
 
         // 📧 ईमेल-पासवर्ड ऑथेंटिकेशन + लाइव डेटाबेस टाइमस्टैम्प अपडेट
-       async function executeSecureAuthActionRoutine() {
+        async function executeSecureAuthActionRoutine() {
             const email = document.getElementById('user-email').value.trim().toLowerCase();
             const password = document.getElementById('user-password').value;
             const mode = document.getElementById('auth-current-mode').value;
@@ -271,7 +285,6 @@
 
             try {
                 if (mode === 'signup') {
-                    // सुपबेस ऑथ साइनअप - यह बैकएंड पर ट्रिगर चलाएगा
                     const { error } = await supabaseClient.auth.signUp({
                         email: email,
                         password: password,
@@ -285,13 +298,17 @@
                     alert("📧 Verification Link Sent! Please check your email inbox to activate your account.");
                     closeGatedAuthModal();
                 } else {
-                    // सुपबेस ऑथ लॉगिन
                     const { data, error } = await supabaseClient.auth.signInWithPassword({
                         email: email,
                         password: password
                     });
 
                     if (error) throw error;
+
+                    // 🚀 फिक्स: सफल ईमेल लॉगिन के बाद टोकन को लोकल स्टोरेज में बाध्यकारी रूप से सेट करें
+                    if (data && data.session) {
+                        localStorage.setItem('sb-lelvinusfxniqrmfufql-auth-token', JSON.stringify(data.session));
+                    }
 
                     const currentTimestamp = new Date().toISOString();
 
