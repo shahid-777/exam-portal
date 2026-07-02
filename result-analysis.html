@@ -75,11 +75,10 @@
                 window.location.replace("dashboard.html");
                 return;
             }
-            // 🎯 अब यह सही फंक्शन को कॉल करेगा
             fetchAndRenderAnalysis(resultId);
         };
 
-async function fetchAndRenderAnalysis(id) {
+        async function fetchAndRenderAnalysis(id) {
             try {
                 console.log("Fetching result for ID:", id);
                 
@@ -91,14 +90,14 @@ async function fetchAndRenderAnalysis(id) {
 
                 if (fetchError || !currentResult) throw new Error("Result not found in database.");
 
-                // 🚀 फिक्स 1: डेटाबेस से आने वाले फ्लोट स्कोर को 2 दशमलव स्थानों (जैसे 3.67) तक सुरक्षित दिखाना
+                // 🚀 फिक्स 1: डेटाबेस से आने वाले फ्लोट स्कोर को सुरक्षित पार्स और फ़ॉर्मेट करना (e.g., 3.67 या 14)
                 const finalNetScore = parseFloat(currentResult.score);
                 const displayScore = Number.isInteger(finalNetScore) ? finalNetScore : finalNetScore.toFixed(2);
 
                 // शीर्ष मैट्रिक्स कार्ड्स में डेटा इंजेक्ट करना
                 document.getElementById('analysis-subject').innerText = currentResult.subject.toUpperCase();
                 
-                // 🚀 फिक्स 2: यूआई में वास्तविक नेगेटिव-मार्क्ड स्कोर रेंडर करना
+                // 🚀 फिक्स 2: यहाँ 'correct_answers' की जगह 'displayScore' का प्रयोग किया गया है ताकि वास्तविक नेगेटिव मार्क्स दिखें
                 document.getElementById('metric-score').innerText = `${displayScore} / ${currentResult.total_questions}`;
                 
                 document.getElementById('metric-correct').innerText = currentResult.correct_answers;
@@ -126,7 +125,8 @@ async function fetchAndRenderAnalysis(id) {
                 if(document.getElementById('display-rank')) document.getElementById('display-rank').innerText = "Error";
             }
         }
-        // 🎯 रैंक कैलकुलेट करने का बिल्कुल सटीक तरीका
+
+        // रैंक कैलकुलेट करने का बिल्कुल सटीक तरीका
         async function calculateRank(subjectName, currentStudentScore) {
             const rankDisplay = document.getElementById('display-rank');
             if (!rankDisplay) return;
@@ -165,7 +165,12 @@ async function fetchAndRenderAnalysis(id) {
                 const userChoice = responses[qIdx];
                 const systemCorrectKey = parseInt(q.correct);
                 const questionText = q.title || q.question || 'Objective Question';
-                const options = q.options || [];
+                
+                // 🚀 फिक्स 3: सुरक्षा कवच - अगर विकल्प स्ट्रिंगिफाइड हैं तो उन्हें ऐरे में पार्स करें ताकि रेंडरर क्रैश न हो
+                let options = q.options || q.choices || q.options_json || [];
+                if (typeof options === 'string') {
+                    try { options = JSON.parse(options); } catch(e) { options = options.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
+                }
 
                 let questionStatusBadge = "";
                 let cardBorderClass = "border-white/5 bg-slate-900/10";
@@ -181,24 +186,26 @@ async function fetchAndRenderAnalysis(id) {
                 }
 
                 let optionsHtml = "";
-                options.forEach((opt, optIdx) => {
-                    let optStyleClass = "bg-slate-900/20 border-white/5 text-slate-400";
-                    let iconBadge = "";
+                if (options && Array.isArray(options)) {
+                    options.forEach((opt, optIdx) => {
+                        let optStyleClass = "bg-slate-900/20 border-white/5 text-slate-400";
+                        let iconBadge = "";
 
-                    if (optIdx === systemCorrectKey) {
-                        optStyleClass = "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 font-bold";
-                        iconBadge = `<span class="text-[10px] text-emerald-400 font-mono font-black uppercase tracking-wider">[Correct Key]</span>`;
-                    } else if (userChoice !== undefined && optIdx === parseInt(userChoice)) {
-                        optStyleClass = "bg-red-500/10 border-red-500/30 text-red-300 font-medium line-through";
-                        iconBadge = `<span class="text-[10px] text-red-400 font-mono font-black uppercase tracking-wider">[Your Choice]</span>`;
-                    }
+                        if (optIdx === systemCorrectKey) {
+                            optStyleClass = "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 font-bold";
+                            iconBadge = `<span class="text-[10px] text-emerald-400 font-mono font-black uppercase tracking-wider">[Correct Key]</span>`;
+                        } else if (userChoice !== undefined && optIdx === parseInt(userChoice)) {
+                            optStyleClass = "bg-red-500/10 border-red-500/30 text-red-300 font-medium line-through";
+                            iconBadge = `<span class="text-[10px] text-red-400 font-mono font-black uppercase tracking-wider">[Your Choice]</span>`;
+                        }
 
-                    optionsHtml += `
-                        <div class="border ${optStyleClass} p-3 rounded-xl text-xs flex items-center justify-between">
-                            <span>${opt}</span>
-                            ${iconBadge}
-                        </div>`;
-                });
+                        optionsHtml += `
+                            <div class="border ${optStyleClass} p-3 rounded-xl text-xs flex items-center justify-between">
+                                <span>${opt}</span>
+                                ${iconBadge}
+                            </div>`;
+                    });
+                }
 
                 htmlContent += `
                     <div class="border ${cardBorderClass} p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl">
