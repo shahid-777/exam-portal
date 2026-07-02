@@ -58,7 +58,6 @@
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         
-        // 🚀 ऑफिशियल स्टोरेज परसिस्टेंस कॉन्फ़िगरेशन के साथ क्लाइंट इनिशियलाइजेशन
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
             auth: {
                 persistSession: true,
@@ -69,88 +68,91 @@
         });
 
         async function handleAdminLogin() {
-    const email = document.getElementById('admin-email').value.trim().toLowerCase();
-    const password = document.getElementById('admin-password').value;
-    const loginBtn = document.getElementById('auth-btn');
+            const email = document.getElementById('admin-email').value.trim().toLowerCase();
+            const password = document.getElementById('admin-password').value;
+            const loginBtn = document.getElementById('auth-btn');
 
-    if (!email || !password) { 
-        alert("Please enter administrative credentials."); 
-        return; 
-    }
+            if (!email || !password) { 
+                alert("Please enter administrative credentials."); 
+                return; 
+            }
 
-    try {
-        if (loginBtn) {
-            loginBtn.innerText = "AUTHENTICATING Privileges...";
-            loginBtn.disabled = true;
-        }
-
-        // 1. पुराने किसी भी अमान्य सेशन को साफ़ करें
-        await supabaseClient.auth.signOut();
-        localStorage.clear();
-
-        // 2. सुपबेस ऑथेंटिकेशन कोर इंजन से साइन-इन करें
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: email,
-            password: password
-        });
-
-        if (error) throw error;
-
-        // 3. ऑफिशियल तरीके से फ्रेश टोकन को ब्राउज़र सेशन के साथ लाइव बाइंड करें
-        if (data && data.session) {
-            await supabaseClient.auth.setSession(data.session);
-        }
-
-        // 4. हार्डकोडेड एडमिन गेटवे वेरिफिकेशन
-        const MASTER_ADMIN = "examportalcse@gmail.com";
-        if (email !== MASTER_ADMIN) {
-            await supabaseClient.auth.signOut();
-            alert("Access Denied: Administrative signature mismatch.");
-            return;
-        }
-
-        // 🚀 5. रेस कंडीशन फिक्स: ब्राउज़र को टोकन पूरी तरह रजिस्टर करने के लिए 600ms का समय दें
-        setTimeout(async () => {
             try {
-                const currentTimestamp = new Date().toISOString();
-
-                // अब क्युरी बिना किसी RLS बाधा के सीधे डेटाबेस को हिट करेगी
-                const { error: dbError } = await supabaseClient
-                    .from('portal_users')
-                    .upsert({
-                        email: email,
-                        name: "Admin CSE",
-                        role: "admin",
-                        last_login: currentTimestamp
-                    }, { onConflict: 'email' });
-
-                if (dbError) {
-                    console.error("Database connection bypass alert:", dbError.message);
+                if (loginBtn) {
+                    loginBtn.innerText = "AUTHENTICATING Privileges...";
+                    loginBtn.disabled = true;
                 }
 
-                // 6. टोकन और रोल्स सेट करें और रीडायरेक्ट करें
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userRole', 'admin');
-                window.location.replace("admin.html");
+                // 1. पुराना सेशन क्लियर करें
+                await supabaseClient.auth.signOut();
+                localStorage.clear();
 
-            } catch (dbEx) {
-                console.error("Table mapping interception:", dbEx);
-                // अगर डेटाबेस एंट्री में कोई दिक्कत आए, तो भी एडमिन को पैनल में जाने दें
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userRole', 'admin');
-                window.location.replace("admin.html");
+                // 2. सुपबेस ऑथ से लॉगिन करें
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                // 3. सेशन बाइंड करें
+                if (data && data.session) {
+                    await supabaseClient.auth.setSession(data.session);
+                }
+
+                // 🚀 रेस कंडीशन से बचने के लिए 500ms का छोटा डिले देकर सीधे डेटा फ़ेच करें
+                setTimeout(async () => {
+                    try {
+                        // 4. सीधे portal_users टेबल से इस ईमेल का डेटा FETCH करें
+                        const { data: userRecord, error: dbError } = await supabaseClient
+                            .from('portal_users')
+                            .select('role')
+                            .eq('email', email)
+                            .maybeSingle(); // सिंगल रिकॉर्ड फ़ेच करने के लिए
+
+                        if (dbError) throw dbError;
+
+                        // 5. चेक करें कि क्या टेबल में इस यूज़र का रोल वाकई 'admin' है
+                        if (!userRecord || userRecord.role !== 'admin') {
+                            await supabaseClient.auth.signOut();
+                            localStorage.clear();
+                            alert("Access Denied: You do not possess administrative signature privileges in portal_users table.");
+                            if (loginBtn) {
+                                loginBtn.innerText = "Authorize Session";
+                                loginBtn.disabled = false;
+                            }
+                            return;
+                        }
+
+                        // 6. यदि रोल 'admin' है, तो last_login टाइमस्टैम्प अपडेट करें
+                        const currentTimestamp = new Date().toISOString();
+                        await supabaseClient
+                            .from('portal_users')
+                            .update({ last_login: currentTimestamp })
+                            .eq('email', email);
+
+                        // 7. लोकल स्टोरेज सेट करें और एडमिन पैनल पर भेजें
+                        localStorage.setItem('userEmail', email);
+                        localStorage.setItem('userRole', 'admin');
+                        window.location.replace("admin.html");
+
+                    } catch (dbEx) {
+                        alert("Database Fetch Interruption: " + dbEx.message);
+                        if (loginBtn) {
+                            loginBtn.innerText = "Authorize Session";
+                            loginBtn.disabled = false;
+                        }
+                    }
+                }, 500);
+
+            } catch (err) {
+                alert("Gateway Authentication Fault: " + (err.message || JSON.stringify(err)));
+                if (loginBtn) {
+                    loginBtn.innerText = "Authorize Session";
+                    loginBtn.disabled = false;
+                }
             }
-        }, 600);
-
-    } catch (err) {
-        alert("Gateway Authentication Fault: " + (err.message || JSON.stringify(err)));
-        if (loginBtn) {
-            loginBtn.innerText = "Authorize Session";
-            loginBtn.disabled = false;
         }
-    }
-}
-
     </script>
 </body>
 </html>
