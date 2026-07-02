@@ -65,73 +65,56 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function handleAdminLogin() {
-            const emailInput = document.getElementById('admin-email').value.trim().toLowerCase();
-            const passwordInput = document.getElementById('admin-password').value;
-            const authBtn = document.getElementById('auth-btn');
+    const email = document.getElementById('admin-email').value.trim().toLowerCase();
+    const password = document.getElementById('admin-password').value;
+    const loginBtn = document.getElementById('main-auth-submit-btn') || document.querySelector('button');
 
-            if(!emailInput || !passwordInput) { alert("Credentials validation mismatch."); return; }
+    if (!email || !password) { 
+        alert("Please enter administrative credentials."); 
+        return; 
+    }
 
-            // Loading state toggle
-            authBtn.innerText = "AUTHENTICATING NODE...";
-            authBtn.disabled = true;
+    try {
+        if (loginBtn) loginBtn.innerText = "AUTHENTICATING Privileges...";
 
-            // 🛠️ CASE-INSENSITIVE HARDCODED STRING FALLBACK MATRIX
-            const OFFICIAL_ADMIN_EMAIL_1 = "examportalcse@gmail.com";
-            const OFFICIAL_ADMIN_EMAIL_2 = "examportacse@gmail.com"; // Backup without 'l' to prevent lockout
+        // 1. पुराने किसी भी खराब रिफ्रेश टोकन सेशन को साफ़ करें
+        await supabaseClient.auth.signOut();
+        localStorage.clear();
 
-            if(emailInput !== OFFICIAL_ADMIN_EMAIL_1 && emailInput !== OFFICIAL_ADMIN_EMAIL_2) {
-                alert("Access Denied: Authorized credentials match but lack root terminal access rights.");
-                authBtn.innerText = "Authorize Session";
-                authBtn.disabled = false;
-                return;
-            }
+        // 2. सीधे सुपबेस ऑथेंटिकेशन कोर इंजन से साइन-इन करें
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
 
-            try {
-                // Safeguard against strict object matching crash
-                const { data, error } = await supabaseClient
-                    .from('portal_users')
-                    .select('email, password, name')
-                    .or(`email.eq.${OFFICIAL_ADMIN_EMAIL_1},email.eq.${OFFICIAL_ADMIN_EMAIL_2}`);
+        if (error) throw error;
 
-                if (error || !data || data.length === 0) {
-                    alert("Authentication Error: Invalid administrative signature key.");
-                    authBtn.innerText = "Authorize Session";
-                    authBtn.disabled = false;
-                    return;
-                }
-
-                // Check for valid password matching records dynamically
-                let accessGranted = false;
-                let activeAdminRecord = null;
-
-                for(let record of data) {
-                    if(record.password === passwordInput) {
-                        accessGranted = true;
-                        activeAdminRecord = record;
-                        break;
-                    }
-                }
-
-                if (!accessGranted) {
-                    alert("Authentication Error: Security key phrase does not match core records.");
-                    authBtn.innerText = "Authorize Session";
-                    authBtn.disabled = false;
-                    return;
-                }
-
-                // Inject secure session cache matrix context values 
-                localStorage.setItem('adminEmail', activeAdminRecord.email.toLowerCase());
-                localStorage.setItem('adminSessionTime', Date.now().toString());
-                
-                window.location.replace("admin.html");
-
-            } catch (err) {
-                alert("Core connectivity pipeline interruption.");
-            } finally {
-                authBtn.innerText = "Authorize Session";
-                authBtn.disabled = false;
-            }
+        // 3. फ्रेश टोकन को ब्राउज़र के लोकल स्टोरेज में इंजेक्ट करें
+        if (data && data.session) {
+            localStorage.setItem('sb-lelvinusfxniqrmfufql-auth-token', JSON.stringify(data.session));
         }
+
+        // 4. हार्डकोडेड एडमिन गेटवे वेरिफिकेशन
+        const MASTER_ADMIN = "examportalcse@gmail.com";
+        if (email !== MASTER_ADMIN) {
+            await supabaseClient.auth.signOut();
+            alert("Access Denied: Administrative signature mismatch.");
+            return;
+        }
+
+        // 5. टोकन और रोल्स सेट करें
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userRole', 'admin');
+        
+        // सुरक्षित रूट पर रीडायरेक्ट करें
+        window.location.replace("admin.html");
+
+    } catch (err) {
+        alert("Gateway Authentication Fault: " + err.message);
+    } finally {
+        if (loginBtn) loginBtn.innerText = "SIGN IN TO TERMINAL";
+    }
+}
     </script>
 </body>
 </html>
