@@ -459,7 +459,8 @@
     const studentName = studentEmail.split('@')[0].toUpperCase(); 
     const currentSubject = document.getElementById('live-subject-title').innerText;
     
-    let calculatedScore = correctAnswers - (wrongAnswers * globalNegativeMarking); 
+   // Math.round() दशमलव वैल्यू को निकटतम पूर्णांक (जैसे 12.334 को 12) में बदल देगा
+let calculatedScore = Math.round(correctAnswers - (wrongAnswers * globalNegativeMarking));
 
     try {
         const { data, error } = await supabaseClient
