@@ -79,7 +79,7 @@
             fetchAndRenderAnalysis(resultId);
         };
 
-       async function fetchAndRenderAnalysis(id) {
+async function fetchAndRenderAnalysis(id) {
             try {
                 console.log("Fetching result for ID:", id);
                 
@@ -126,21 +126,6 @@
                 if(document.getElementById('display-rank')) document.getElementById('display-rank').innerText = "Error";
             }
         }
-        
-        // JSON डेटा को सुरक्षित रूप से पार्स करना
-                const userResponses = typeof currentResult.user_responses_json === 'string' ? JSON.parse(currentResult.user_responses_json) : currentResult.user_responses_json;
-                const questionsSnapshot = typeof currentResult.questions_snapshot_json === 'string' ? JSON.parse(currentResult.questions_snapshot_json) : currentResult.questions_snapshot_json;
-                
-                // पाइपलाइन रेंडरर को कॉल करना
-                renderDetailedAnalysisPipeline(questionsSnapshot, userResponses);
-
-            } catch (err) {
-                console.error("Main fetch error:", err);
-                document.getElementById('analysis-pipeline-cards').innerHTML = `<div class="text-center font-mono text-xs text-red-400">Error rendering scoreboard nodes matrix loop.</div>`;
-                if(document.getElementById('display-rank')) document.getElementById('display-rank').innerText = "Error";
-            }
-        }
-
         // 🎯 रैंक कैलकुलेट करने का बिल्कुल सटीक तरीका
         async function calculateRank(subjectName, currentStudentScore) {
             const rankDisplay = document.getElementById('display-rank');
