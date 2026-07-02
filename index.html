@@ -229,27 +229,16 @@
             }
         }
 
-      async function handleEmailPasswordAuthentication() {
-            // इनपुट से वैल्यू लें
-            let inputEmail = document.getElementById('user-email').value.trim();
+    async function handleEmailPasswordAuthentication() {
+            const inputEmail = document.getElementById('user-email').value.trim();
             const inputPassword = document.getElementById('user-password').value;
 
             if (!inputEmail || !inputPassword) { alert("Fields supplied mismatch criteria."); return; }
-            
-            // 🚀 सुरक्षा फिक्स: अगर यूजर ने पूरा ईमेल डाला है (जैसे test@gmail.com), 
-            // लेकिन डेटाबेस में सिर्फ 'test' सेव है, तो यह सिर्फ नाम को अलग कर लेगा।
-            if (inputEmail.includes('@')) {
-                inputEmail = inputEmail.split('@')[0];
-            }
-            
-            const searchKey = inputEmail.toLowerCase();
-
             try {
-                // डेटाबेस से रिकॉर्ड फ़ेच करें
                 const { data, error } = await supabaseClient
                     .from('portal_users')
                     .select('email, password, name')
-                    .eq('email', searchKey)
+                    .eq('email', inputEmail.toLowerCase())
                     .maybeSingle();
 
                 if (error || !data || data.password !== inputPassword) {
@@ -257,20 +246,9 @@
                     return;
                 }
 
-                const currentTimestamp = new Date().toISOString();
-                
-                // 🚀 लाइव टाइमस्टैम्प अपडेट मैकेनिज्म (सटीक रो मैचिंग के साथ)
-                const { error: updateErr } = await supabaseClient
-                    .from('portal_users')
-                    .update({ last_login: currentTimestamp })
-                    .eq('email', searchKey);
-
-                if (updateErr) {
-                    console.error("Database timestamp sync failed:", updateErr);
-                }
-
-                // ब्राउज़र सेशन सेटिंग्स
-                localStorage.setItem('userEmail', searchKey);
+                // 🚀 सुरक्षा अपडेट: एडमिन रीडायरेक्शन यहाँ से पूरी तरह हटा दिया गया है। 
+                // एडमिन अब सीधे 'admin-login.html' के ज़रिए ही प्रवेश कर सकते हैं।
+                localStorage.setItem('userEmail', data.email.toLowerCase());
                 localStorage.setItem('userName', data.name);
                 localStorage.setItem('sessionLoginTime', Date.now().toString());
 
@@ -279,6 +257,7 @@
                 alert("Core database synchronization interface interruption.");
             }
         }
+
     </script>
 </body>
 </html>
