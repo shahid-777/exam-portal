@@ -135,10 +135,10 @@
 
                 if (allScores && allScores.length > 0) {
                     const sortedScores = allScores
-                        .map(r => parseInt(r.score) || 0)
+                        .map(r => parseFloat(r.score) || 0)
                         .sort((a, b) => b - a);
 
-                    const rank = sortedScores.indexOf(parseInt(currentStudentScore) || 0) + 1;
+                    const rank = sortedScores.indexOf(parseFloat(currentStudentScore) || 0) + 1;
                     const totalStudents = sortedScores.length;
 
                     rankDisplay.innerText = `${rank} / ${totalStudents}`;
