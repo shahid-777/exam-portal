@@ -322,69 +322,64 @@
         }
 
         // 📧 ईमेल-पासवर्ड ऑथेंटिकेशन + लाइव डेटाबेस टाइमस्टैम्प अपडेट
-        async function executeSecureAuthActionRoutine() {
-            let email = document.getElementById('user-email').value.trim().toLowerCase();
-            const password = document.getElementById('user-password').value;
-            const mode = document.getElementById('auth-current-mode').value;
+      async function executeSecureAuthActionRoutine() {
+    const email = document.getElementById('user-email').value.trim().toLowerCase();
+    const password = document.getElementById('user-password').value;
+    const mode = document.getElementById('auth-current-mode').value;
 
-            if (!email || !password) { alert("Please fill all required input fields."); return; }
+    if (!email || !password) { alert("Please fill all required input fields."); return; }
 
-            // डेटाबेस फ़ॉर्मेट के लिए यूज़रनेम निकालें (जैसे abc123)
-            let usernameKey = email;
-            if (usernameKey.includes('@')) {
-                usernameKey = usernameKey.split('@')[0];
-            }
-
-            try {
-                if (mode === 'signup') {
-                    // सुपबेस सुरक्षित साइनअप
-                    const { error } = await supabaseClient.auth.signUp({
-                        email: usernameKey + "@gmail.com", // सुपबेस ऑथ के लिए ईमेल फ़ॉर्मेट ज़रूरी है
-                        password: password,
-                        options: {
-                            emailRedirectTo: 'https://www.exam-portal-cse.online/dashboard.html'
-                        }
-                    });
-
-                    if (error) throw error;
-                    
-                    // कस्टम टेबल 'portal_users' में यूज़र का बेस रिकॉर्ड इन्सर्ट करना
-                    await supabaseClient.from('portal_users').insert({
-                        email: usernameKey,
-                        name: usernameKey.toUpperCase(),
-                        password: password,
-                        role: 'student'
-                    });
-
-                    alert("📧 Verification Link Sent! Please check your email inbox to activate your account.");
-                    closeGatedAuthModal();
-                } else {
-                    // सुपबेस सुरक्षित लॉगिन
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({
-                        email: usernameKey + "@gmail.com",
-                        password: password
-                    });
-
-                    if (error) throw error;
-
-                    const currentTimestamp = new Date().toISOString();
-
-                    // ईमेल लॉगिन सफल होते ही 'portal_users' टेबल में लाइव टाइमस्टैम्प अपडेट करना
-                    const { error: syncErr } = await supabaseClient
-                        .from('portal_users')
-                        .update({ last_login: currentTimestamp })
-                        .eq('email', usernameKey);
-
-                    if (syncErr) console.error("Database sync anomaly:", syncErr.message);
-
-                    localStorage.setItem('userEmail', usernameKey);
-                    localStorage.setItem('sessionLoginTime', Date.now().toString());
-                    window.location.replace("dashboard.html");
+    try {
+        if (mode === 'signup') {
+            // 1. सुपबेस सुरक्षा ऑथेंटिकेशन (यह ईमेल वेरिफिकेशन ट्रिगर करेगा)
+            const { error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    emailRedirectTo: 'https://www.exam-portal-cse.online/dashboard.html'
                 }
-            } catch (err) {
-                alert("Auth Action Fault: " + err.message);
-            }
+            });
+
+            if (error) throw error;
+            
+            // 2. आपकी 'portal_users' टेबल के अनुसार बिल्कुल सही इन्सर्ट पेलोड (पूरा ईमेल जाएगा)
+            await supabaseClient.from('portal_users').insert({
+                email: email, // 🚀 अब डेटाबेस में पूरा 'student@gmail.com' स्टोर होगा
+                name: email.split('@')[0].toUpperCase(), // नाम के लिए ईमेल का पहला भाग
+                password: password,
+                role: 'student'
+            });
+
+            alert("📧 Verification Link Sent! Please check your email inbox to activate your account.");
+            closeGatedAuthModal();
+        } else {
+            // सुपबेस ऑथ लॉगिन
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) throw error;
+
+            const currentTimestamp = new Date().toISOString();
+
+            // 🚀 लाइव टाइमस्टैम्प सिंक (पूरे ईमेल मैचिंग के साथ)
+            const { error: syncErr } = await supabaseClient
+                .from('portal_users')
+                .update({ last_login: currentTimestamp })
+                .eq('email', email);
+
+            if (syncErr) console.error("Database sync anomaly:", syncErr.message);
+
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('sessionLoginTime', Date.now().toString());
+            window.location.replace("dashboard.html");
         }
+    } catch (err) {
+        alert("Auth Action Fault: " + err.message);
+    }
+}
+    
     </script>
 </body>
 </html>
