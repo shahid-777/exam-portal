@@ -460,7 +460,10 @@
     const currentSubject = document.getElementById('live-subject-title').innerText;
     
    // Math.round() दशमलव वैल्यू को निकटतम पूर्णांक (जैसे 12.334 को 12) में बदल देगा
-let calculatedScore = Math.round(correctAnswers - (wrongAnswers * globalNegativeMarking));
+let calculatedScore = correctAnswers - (wrongAnswers * globalNegativeMarking); 
+    
+    // .toFixed(2) का उपयोग करके दशमलव के बाद केवल 2 अंक सुरक्षित करें
+    calculatedScore = parseFloat(calculatedScore.toFixed(2));
 
     try {
         const { data, error } = await supabaseClient
@@ -469,7 +472,8 @@ let calculatedScore = Math.round(correctAnswers - (wrongAnswers * globalNegative
                 email: studentEmail.toLowerCase(),
                 name: studentName,                       
                 subject: currentSubject,
-                score: parseFloat(calculatedScore) || 0,   
+                // 🚀 फिक्स 2: यहाँ parseInt बिल्कुल न करें, सीधे float वैल्यू भेजें
+                score: calculatedScore,   
                 total_questions: totalQuestions,
                 correct_answers: correctAnswers,
                 wrong_answers: wrongAnswers,
@@ -482,20 +486,16 @@ let calculatedScore = Math.round(correctAnswers - (wrongAnswers * globalNegative
             .select();
 
         if (error) throw error;
-        if (!data || data.length === 0) throw new Error("Database integration failure.");
-
-        alert(`🎉 Test Evaluation Compiled Successfully!`);
         
-        // 🚀 अल्टीमेट फिक्स: जेनरेटेड रिज़ल्ट ID निकालकर सीधे एनालिसिस पेज पर भेजें
+        alert(`🎉 Test Evaluation Compiled Successfully!`);
         const generatedId = data[0].id;
         window.location.replace(`result-analysis.html?id=${generatedId}`);
 
     } catch (err) {
         console.error("Detailed Database Error:", err);
-        alert("Result compilation synchronization error. Please check browser console.");
         window.location.replace("dashboard.html");
     }
-}
+            
         </script>
 </body>
 </html>
