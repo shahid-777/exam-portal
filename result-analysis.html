@@ -79,7 +79,7 @@
             fetchAndRenderAnalysis(resultId);
         };
 
-        async function fetchAndRenderAnalysis(id) {
+       async function fetchAndRenderAnalysis(id) {
             try {
                 console.log("Fetching result for ID:", id);
                 
@@ -91,14 +91,21 @@
 
                 if (fetchError || !currentResult) throw new Error("Result not found in database.");
 
-                // शीर्ष कार्ड और मुख्य मैट्रिक्स में डेटा भरना
+                // 🚀 फिक्स 1: डेटाबेस से आने वाले फ्लोट स्कोर को 2 दशमलव स्थानों (जैसे 3.67) तक सुरक्षित दिखाना
+                const finalNetScore = parseFloat(currentResult.score);
+                const displayScore = Number.isInteger(finalNetScore) ? finalNetScore : finalNetScore.toFixed(2);
+
+                // शीर्ष मैट्रिक्स कार्ड्स में डेटा इंजेक्ट करना
                 document.getElementById('analysis-subject').innerText = currentResult.subject.toUpperCase();
-                document.getElementById('metric-score').innerText = `${currentResult.correct_answers} / ${currentResult.total_questions}`;
+                
+                // 🚀 फिक्स 2: यूआई में वास्तविक नेगेटिव-मार्क्ड स्कोर रेंडर करना
+                document.getElementById('metric-score').innerText = `${displayScore} / ${currentResult.total_questions}`;
+                
                 document.getElementById('metric-correct').innerText = currentResult.correct_answers;
                 document.getElementById('metric-wrong').innerText = currentResult.wrong_answers;
                 document.getElementById('metric-skipped').innerText = currentResult.unattempted || 0;
 
-                // 🎯 रैंक कैलकुलेशन ब्लॉक को कॉल करना (Safe Execution)
+                // रैंक कैलकुलेशन ब्लॉक को कॉल करना (Safe Execution)
                 try {
                     await calculateRank(currentResult.subject, currentResult.score);
                 } catch (rankErr) {
@@ -107,6 +114,20 @@
                 }
 
                 // JSON डेटा को सुरक्षित रूप से पार्स करना
+                const userResponses = typeof currentResult.user_responses_json === 'string' ? JSON.parse(currentResult.user_responses_json) : currentResult.user_responses_json;
+                const questionsSnapshot = typeof currentResult.questions_snapshot_json === 'string' ? JSON.parse(currentResult.questions_snapshot_json) : currentResult.questions_snapshot_json;
+                
+                // पाइपलाइन रेंडरर को कॉल करना
+                renderDetailedAnalysisPipeline(questionsSnapshot, userResponses);
+
+            } catch (err) {
+                console.error("Main fetch error:", err);
+                document.getElementById('analysis-pipeline-cards').innerHTML = `<div class="text-center font-mono text-xs text-red-400">Error rendering scoreboard nodes matrix loop.</div>`;
+                if(document.getElementById('display-rank')) document.getElementById('display-rank').innerText = "Error";
+            }
+        }
+        
+        // JSON डेटा को सुरक्षित रूप से पार्स करना
                 const userResponses = typeof currentResult.user_responses_json === 'string' ? JSON.parse(currentResult.user_responses_json) : currentResult.user_responses_json;
                 const questionsSnapshot = typeof currentResult.questions_snapshot_json === 'string' ? JSON.parse(currentResult.questions_snapshot_json) : currentResult.questions_snapshot_json;
                 
