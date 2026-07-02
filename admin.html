@@ -1,634 +1,234 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
     <link rel="icon" type="image/png" href="logo.png">
-    <title>Admin Control Terminal — Panel</title>
+    <title>Exam Portal Admin - User Info Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'IBM Plex Sans', sans-serif; }
+        .font-serif { font-family: 'Fraunces', serif; }
+        .font-mono { font-family: 'IBM Plex Mono', monospace; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    </style>
 </head>
-<body class="bg-slate-900 font-sans min-h-screen text-slate-200 flex flex-col justify-between">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased">
 
-    <header class="w-full bg-slate-950/60 border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50">
-        <div class="flex items-center space-x-3">
-            <img src="logo.png" alt="Logo" class="h-8 bg-white/95 p-1 rounded-xl" onerror="this.style.display='none'">
-            <span class="text-sm font-black tracking-widest text-red-400 uppercase">ROOT CENTRAL MONITOR</span>
-        </div>
-        <button onclick="logout()" class="bg-white/5 hover:bg-red-500/10 border border-white/10 text-xs font-bold py-2 px-4 rounded-xl cursor-pointer">Exit Terminal</button>
-    </header>
-
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-8">
-        <div>
-            <h1 class="text-2xl font-black text-white uppercase tracking-wide">Master Control Console</h1>
-            <p class="text-xs text-slate-400 font-mono mt-1">Deploy new structures or map existing exams into multiple dynamic categories.</p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden h-fit shadow-xl">
-                <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-500 to-orange-500"></div>
-                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">1. Create Category Manually</h3>
-                <div class="space-y-3 pt-2">
-                    <div>
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Category Domain Name</label>
-                        <input type="text" id="new-cat-name" placeholder="e.g. Patwari, REET, SSC, Gate" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none focus:border-orange-500/30 transition">
-                    </div>
-                    <button onclick="createNewCategory()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-2.5 px-4 rounded-xl text-[11px] tracking-wider uppercase transition transform active:scale-[0.98] cursor-pointer">
-                        Deploy Category
-                    </button>
-                </div>
+    <div class="relative h-48 w-full bg-slate-900 border-b border-white/5 overflow-hidden shrink-0">
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:16px_16px] z-10"></div>
+        <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80" alt="Server Operations" class="w-full h-full object-cover object-center absolute inset-0 filter blur-[2px] opacity-40">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10"></div>
+        
+        <div class="absolute bottom-6 left-6 right-6 z-20 max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div class="space-y-1">
+                <a href="admin.html" class="text-[10px] font-mono font-bold text-blue-400 hover:text-blue-300 uppercase tracking-widest flex items-center gap-1 mb-2">&larr; Back to Admin Terminal</a>
+                <h1 class="text-2xl sm:text-3xl font-black tracking-wide font-serif text-white uppercase">User Cluster Operations</h1>
+                <p class="text-xs text-slate-400 font-medium">Perform advanced database CRUD controls, sort structural index metrics, and overwrite student authorizations.</p>
             </div>
+            <div class="bg-slate-900/80 backdrop-blur border border-white/10 px-4 py-2 rounded-xl flex items-center space-x-3 shadow-lg">
+                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span>
+                <span class="text-[10px] font-mono font-black text-slate-300 uppercase tracking-wider">Verified Nodes: <span id="user-count" class="text-amber-400">0</span></span>
+            </div>
+        </div>
+    </div>
 
-            <div class="lg:col-span-2 bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl">
-                <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-blue-500 to-indigo-500"></div>
-                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">2. Create Exam & Inject Questions Matrix</h3>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    <div>
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Exam / Subject Title Name</label>
-                        <input type="text" id="exam-subject-input" placeholder="e.g. Computer Architecture" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none focus:border-blue-500/30 transition">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">⏱️ Allocation Time Limit (Minutes)</label>
-                        <input type="number" id="exam-duration-input" value="60" min="1" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none focus:border-blue-500/30 transition">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">📉 Negative Marking Schema</label>
-                        <select id="exam-negative-input" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-slate-300 outline-none focus:border-blue-500/30 transition cursor-pointer font-bold">
-                            <option value="0">No Negative Marking (0.00)</option>
-                            <option value="0.25">1/4 Penalty (0.25)</option>
-                            <option value="0.333">1/3 Penalty (0.33)</option>
-                            <option value="0.50">1/2 Penalty (0.50)</option>
-                            <option value="1.00">Full Penalty (1.00)</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">📂 Assign to Category (Optional)</label>
-                        <select id="exam-direct-category-input" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-slate-300 outline-none focus:border-blue-500/30 transition cursor-pointer font-bold">
-                            <option value="NONE">-- Standalone Subject (No Category) --</option>
-                        </select>
-                    </div>
-
-                    <div class="sm:col-span-2">
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">📋 Questions Array Dataset (Plain Text or JSON Format)</label>
-                        <textarea id="exam-questions-json" rows="6" placeholder='Paste plain text MCQs directly or structured JSON framework here...' class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none focus:border-blue-500/30 transition"></textarea>
-                    </div>
-
-                    <div class="sm:col-span-2 pt-1">
-                        <button onclick="createNewExamBase()" id="btn-deploy-main" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition transform active:scale-[0.98] cursor-pointer shadow-lg">
-                            Deploy New Exam Base
-                        </button>
-                        
-                        <button onclick="updateExistingExamBase()" id="btn-update-main" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition transform active:scale-[0.98] cursor-pointer shadow-lg hidden">
-                            Update Existing Exam Base
-                        </button>
-                    </div>
-                </div>
-
-                <div class="border-t border-white/5 pt-4 mt-2 space-y-3">
-                    <h4 class="text-[11px] font-mono font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                        <span>⚙️</span> Manage & Edit Active Exams
-                    </h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-[9px] font-mono text-slate-500 uppercase tracking-wider mb-1">Step 1: Categories Box</label>
-                            <select id="admin-category-fetch-selector" onchange="fetchExamsByCategory(this.value)" class="w-full bg-slate-900 border border-white/10 p-2.5 rounded-xl text-xs text-white outline-none focus:border-purple-500/30 transition cursor-pointer font-medium uppercase">
-                                <option value="">-- Choose Category --</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[9px] font-mono text-slate-500 uppercase tracking-wider mb-1">Step 2: Subjects Box (Auto-Loads into Box 3)</label>
-                            <select id="admin-exams-fetch-selector" onchange="fetchExamDataToEditor(this.value)" class="w-full bg-slate-900 border border-white/10 p-2.5 rounded-xl text-xs text-white outline-none focus:border-purple-500/30 transition cursor-pointer font-medium uppercase" disabled>
-                                <option value="">-- Select Subject --</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-            </div> </div> <input type="hidden" id="current-editing-exam-id" value="">
-
-        <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 relative overflow-hidden shadow-xl">
-            <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-teal-500 to-emerald-500"></div>
-            <h3 class="text-xs font-mono font-black text-teal-400 uppercase tracking-widest">3. Manual Mapping: Assign Existing Exam into Multiple Categories (Append-Mode Matrix)</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                <div>
-                    <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">👈 Select Existing Exam Subject</label>
-                    <select id="map-exam-subject-select" class="w-full border border-white/10 p-3 text-xs rounded-xl bg-slate-900 text-white font-bold outline-none">
-                        <option value="">Loading available papers...</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">👉 Choose Category to Assign Into</label>
-                    <select id="map-target-category-select" class="w-full border border-white/10 p-3 text-xs rounded-xl bg-slate-900 text-white font-bold outline-none">
-                        <option value="">Loading active categories...</option>
-                    </select>
-                </div>
-                <button onclick="mapExamToCategoryRoutine()" class="md:col-span-2 w-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-black py-3 px-4 rounded-xl text-xs tracking-widest uppercase shadow-lg transition cursor-pointer">
-                    Execute Matrix Binding (Link Exam to Category without Overwriting)
-                </button>
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 bg-slate-900/60 p-4 border border-white/5 rounded-2xl backdrop-blur-md">
+            <div class="md:col-span-6">
+                <label class="block text-[9px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Search Profile Filter</label>
+                <input type="text" id="admin-search-box" oninput="filterUserClusterGrid()" placeholder="Filter records by complete email identifier or name structure..." class="w-full bg-slate-950 border border-white/10 px-4 py-2.5 text-xs rounded-xl font-medium outline-none focus:border-blue-500/50 text-white transition shadow-inner">
+            </div>
+            <div class="md:col-span-3">
+                <label class="block text-[9px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Sort Target Node</label>
+                <select id="sort-column" onchange="fetchAdminUserCluster()" class="w-full bg-slate-950 border border-white/10 px-4 py-2.5 text-xs rounded-xl font-mono text-slate-300 outline-none focus:border-blue-500/50 transition">
+                    <option value="email">Email Identity</option>
+                    <option value="name">Display Name</option>
+                    <option value="role">System Role</option>
+                    <option value="last_login" selected>Last Login Event</option>
+                </select>
+            </div>
+            <div class="md:col-span-3">
+                <label class="block text-[9px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Sorting Vector Order</label>
+                <select id="sort-direction" onchange="fetchAdminUserCluster()" class="w-full bg-slate-950 border border-white/10 px-4 py-2.5 text-xs rounded-xl font-mono text-slate-300 outline-none focus:border-blue-500/50 transition">
+                    <option value="asc">Ascending (A-Z / Oldest)</option>
+                    <option value="desc" selected>Descending (Z-A / Newest)</option>
+                </select>
             </div>
         </div>
 
-        <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 shadow-xl relative">
-            <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-3 gap-3">
-                <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">Database Log Repository Cluster</h3>
-                <div class="flex items-center space-x-2">
-                    <label class="text-[10px] font-mono text-slate-500 uppercase shrink-0">Filter table view:</label>
-                    <select id="admin-view-category-filter" onchange="fetchExamsOnAdminSide()" class="border border-white/10 p-2 text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none font-bold">
-                        <option value="ALL">-- Show All Categories --</option>
-                    </select>
-                </div>
-            </div>
-            <div class="overflow-x-auto w-full">
-                <table class="w-full text-left text-xs">
+        <div class="bg-slate-900/20 border border-white/5 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs font-medium">
                     <thead>
-                        <tr class="border-b border-white/5 text-slate-400 font-mono uppercase tracking-wider text-[10px]">
-                            <th class="py-3 px-4">Subject Name</th>
-                            <th class="py-3 px-4">Category Association</th>
-                            <th class="py-3 px-4">Time Constraint Boundary</th>
-                            <th class="py-3 px-4 text-center">Runtime Parameters</th>
+                        <tr class="bg-slate-950/80 border-b border-white/5 font-mono text-slate-400 uppercase tracking-wider">
+                            <th class="p-4">Student Identity / Email</th>
+                            <th class="p-4">Display Name Object</th>
+                            <th class="p-4">Sync Password (Plain)</th>
+                            <th class="p-4">Authorization Role</th>
+                            <th class="p-4">Last Login Time-Stamp</th>
+                            <th class="p-4 text-center">Data Layer Action</th>
                         </tr>
                     </thead>
-                    <tbody id="admin-exams-tbody" class="divide-y divide-white/5 font-medium text-slate-300">
-                        <tr><td colspan="4" class="text-center py-4 font-mono text-slate-500 animate-pulse">Syncing logs...</td></tr>
+                    <tbody id="admin-user-table-body" class="divide-y divide-white/5">
+                        <tr>
+                            <td colspan="6" class="p-8 text-center text-slate-500 font-mono">Initializing safe database transmission routing pipeline...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-    </main> 
-    
-    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
+    </main>
 
-  <script>
-        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/60 text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest shrink-0">
+        &copy; JECRC University — Computer Science Management System Terminal Network
+    </footer>
 
-        let globalCategoriesArray = [];
+    <script>
+        const _u = "https://lelvinusfxniqrmfufql.supabase.co";
+        const _k = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        const supabaseClient = supabase.createClient(_u, _k);
 
-        window.onload = function() {
-            const adminActive = localStorage.getItem('adminEmail');
-            if(!adminActive) { window.location.replace("admin-login.html"); return; }
-            syncMasterDashboardControls();
-        };
+        let masterUserCacheStore = [];
 
-        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS (Categories Box Sync)
-        async function syncMasterDashboardControls() {
-            try {
-                const { data: categories, error: catErr } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
-                if(catErr) throw catErr;
-                globalCategoriesArray = categories || [];
-                
-                const mapCatSelect = document.getElementById('map-target-category-select');
-                const filterSelect = document.getElementById('admin-view-category-filter');
-                const adminCatFetchSelector = document.getElementById('admin-category-fetch-selector');
-                const directCatInput = document.getElementById('exam-direct-category-input');
-                
-                mapCatSelect.innerHTML = `<option value="">-- Choose Target Category Domain --</option>`;
-                filterSelect.innerHTML = `<option value="ALL">-- Show All Categories (Global View) --</option>`;
-                if(adminCatFetchSelector) {
-                    adminCatFetchSelector.innerHTML = `<option value="">-- Choose Category --</option>`;
-                }
-                if(directCatInput) {
-                    directCatInput.innerHTML = `<option value="NONE">-- Standalone Subject (No Category) --</option>`;
-                }
-
-                globalCategoriesArray.forEach(c => {
-                    const html = `<option value="${c.id}">${c.category_name.toUpperCase()}</option>`;
-                    mapCatSelect.innerHTML += html;
-                    filterSelect.innerHTML += html;
-                    if(adminCatFetchSelector) {
-                        adminCatFetchSelector.innerHTML += html;
-                    }
-                    if(directCatInput) {
-                        directCatInput.innerHTML += html;
-                    }
-                });
-
-                // Fetch Exams for Left Mapping Selector
-                const { data: exams, error: exErr } = await supabaseClient.from('exams').select('subject').order('subject', {ascending: true});
-                if(exErr) throw exErr;
-
-                const mapExamSelect = document.getElementById('map-exam-subject-select');
-                mapExamSelect.innerHTML = `<option value="">-- Select Existing Subject Paper --</option>`;
-                
-                let uniqueSubjects = [...new Set(exams.map(e => e.subject))];
-                uniqueSubjects.forEach(sub => {
-                    mapExamSelect.innerHTML += `<option value="${encodeURIComponent(sub)}">${sub.toUpperCase()}</option>`;
-                });
-
-                fetchExamsOnAdminSide();
-
-            } catch(e) { console.error("Initialization Sync Crash:", e); }
-        }
-
-        // 🎯 बॉक्स 1 फंक्शन: कैटेगरीज बॉक्स से वैल्यू सिलेक्ट होते ही सब्जेक्ट्स बॉक्स (बॉक्स 2) को लोड करना
-        async function fetchExamsByCategory(categoryId) {
-            const examSelector = document.getElementById('admin-exams-fetch-selector');
-            const textareaBox = document.getElementById('exam-questions-json');
-            
-            examSelector.innerHTML = '<option value="">-- Select Subject --</option>';
-            if(textareaBox) textareaBox.value = ""; 
-            
-            const negInput = document.getElementById('exam-negative-input');
-            if (negInput) negInput.value = "0"; 
-
-            document.getElementById('btn-update-main').classList.add('hidden'); 
-            document.getElementById('btn-deploy-main').classList.remove('hidden');
-
-            if (!categoryId) {
-                examSelector.disabled = true;
-                return;
-            }
+        // 🔄 1. READ & SORT LAYER: डेटा फ़ेच, एसेंडिंग और डिसेंडिंग सॉर्टिंग पैरामीटर्स
+        async function fetchAdminUserCluster() {
+            const tableBody = document.getElementById('admin-user-table-body');
+            const sortBy = document.getElementById('sort-column').value;
+            const sortDir = document.getElementById('sort-direction').value;
+            const isAscending = (sortDir === 'asc');
 
             try {
                 const { data, error } = await supabaseClient
-                    .from('exams')
-                    .select('subject') 
-                    .eq('category_id', parseInt(categoryId))
-                    .order('subject', { ascending: true });
+                    .from('portal_users')
+                    .select('*')
+                    .order(sortBy, { ascending: isAscending });
 
                 if (error) throw error;
 
-                if (data && data.length > 0) {
-                    data.forEach(exam => {
-                        examSelector.innerHTML += `<option value="${encodeURIComponent(exam.subject)}">${exam.subject.toUpperCase()}</option>`;
-                    });
-                    examSelector.disabled = false; 
-                } else {
-                    examSelector.innerHTML = '<option value="">No active subjects found</option>';
-                    examSelector.disabled = true;
-                }
+                masterUserCacheStore = data || [];
+                document.getElementById('user-count').innerText = masterUserCacheStore.length;
+                renderUserGridTemplate(masterUserCacheStore);
+
             } catch (err) {
-                console.error("Failed to filter exams by category:", err);
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-400 font-mono">Data Pipeline Exception: ${err.message}</td></tr>`;
             }
         }
 
-        // 🎯 बॉक्स 2 फंक्शन: विषय चुनते ही स्वतः सारे MCQs प्लेन टेक्स्ट में कनवर्ट करना (100% क्रैश-प्रूफ वर्शन)
-        async function fetchExamDataToEditor(encodedSubject) {
-            const textareaBox = document.getElementById('exam-questions-json');
-            if (!encodedSubject) {
-                if(textareaBox) textareaBox.value = "";
-                const btnUpdate = document.getElementById('btn-update-main');
-                if(btnUpdate) btnUpdate.classList.add('hidden');
+        // 🎨 2. UI TEMPLATE ENGINE: डायनेमिक टेबल रो जनरेटर लेआउट
+        function renderUserGridTemplate(records) {
+            const tableBody = document.getElementById('admin-user-table-body');
+            if (records.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500 font-mono">No matching student profile logs identified inside system cluster.</td></tr>`;
                 return;
             }
 
-            const decodedSubjectName = decodeURIComponent(encodedSubject);
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from('exams')
-                    .select('*')
-                    .eq('subject', decodedSubjectName)
-                    .limit(1)
-                    .maybeSingle();
-
-                if (error || !data) throw new Error("Database stream connectivity disrupted.");
-
-                const subjectInput = document.getElementById('exam-subject-input');
-                const durationInput = document.getElementById('exam-duration-input');
-                const trackingIdInput = document.getElementById('current-editing-exam-id');
-                const negativeInput = document.getElementById('exam-negative-input');
-
-                if(subjectInput) subjectInput.value = data.subject || "";
-                if(durationInput) durationInput.value = data.duration_minutes || 60;
-                if(trackingIdInput) trackingIdInput.value = data.subject || "";
+            tableBody.innerHTML = records.map(user => {
+                const formattedTime = user.last_login ? new Date(user.last_login).toLocaleString('en-IN') : 'NOT RECORDED YET';
+                // ईमेल स्ट्रिंग्स को सुरक्षित हैश आईडी में बदलने के लिए
+                const rowHash = btoa(user.email).replace(/=/g, '');
                 
-                if(negativeInput) {
-                    negativeInput.value = (data.negative_marking !== undefined && data.negative_marking !== null) 
-                        ? data.negative_marking 
-                        : "0";
-                }
-
-                let questionsArray = data.questions_json;
-                if (typeof questionsArray === 'string') {
-                    try { questionsArray = JSON.parse(questionsArray); } catch(jsonErr) {}
-                }
-
-                let plainTextResult = "";
-                if (questionsArray && Array.isArray(questionsArray)) {
-                    questionsArray.forEach((q, idx) => {
-                        plainTextResult += `Q${idx + 1}. ${q.question || q.title || q.text || 'Objective Question'}\n`;
-                        
-                        let rawOpts = q.options || q.choices || q.options_json || [];
-                        if (typeof rawOpts === 'string') {
-                            try { rawOpts = JSON.parse(rawOpts); } catch(e) { rawOpts = rawOpts.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
-                        }
-
-                        if (Array.isArray(rawOpts)) {
-                            rawOpts.forEach((opt, optIdx) => {
-                                const optChar = String.fromCharCode(65 + optIdx); 
-                                plainTextResult += `${optChar}) ${opt}\n`;
-                            });
-                        }
-                        
-                        const ansChar = String.fromCharCode(65 + (parseInt(q.correct) || 0));
-                        plainTextResult += `Answer: ${ansChar}\n\n`;
-                    });
-                }
-
-                if(textareaBox) textareaBox.value = plainTextResult.trim();
-                
-                const btnDeploy = document.getElementById('btn-deploy-main');
-                const btnUpdate = document.getElementById('btn-update-main');
-                if(btnDeploy) btnDeploy.classList.add('hidden');
-                if(btnUpdate) btnUpdate.classList.remove('hidden');
-
-            } catch (err) {
-                alert(`Parsing Error Handled: ${err.message}`);
-            }
+                return `
+                    <tr class="hover:bg-white/[0.01] transition" id="row-${rowHash}">
+                        <td class="p-4 font-bold text-white tracking-wide">${user.email}</td>
+                        <td class="p-4">
+                            <input type="text" id="name-${rowHash}" value="${user.name || ''}" class="bg-slate-950/80 border border-white/10 px-2.5 py-1.5 rounded-xl text-slate-200 font-semibold outline-none focus:border-blue-500/50 w-full max-w-[160px] transition">
+                        </td>
+                        <td class="p-4">
+                            <input type="text" id="pass-${rowHash}" value="${user.password || ''}" class="bg-slate-950/80 border border-white/10 px-2.5 py-1.5 rounded-xl text-slate-200 font-mono outline-none focus:border-blue-500/50 w-full max-w-[160px] transition">
+                        </td>
+                        <td class="p-4">
+                            <select id="role-${rowHash}" class="bg-slate-950 border border-white/10 px-2 py-1.5 rounded-xl text-slate-300 font-medium outline-none focus:border-blue-500/50 transition">
+                                <option value="student" ${user.role === 'student' ? 'selected' : ''}>student</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>admin</option>
+                            </select>
+                        </td>
+                        <td class="p-4 font-mono text-slate-400 text-[11px] tracking-tight">${formattedTime}</td>
+                        <td class="p-4 text-center space-x-2">
+                            <button onclick="commitRowModification('${user.email}')" class="bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 font-black px-3 py-1.5 rounded-xl transition text-[11px] uppercase tracking-wider">
+                                Save
+                            </button>
+                            <button onclick="purgeUserRecordNode('${user.email}')" class="bg-red-500/10 border border-red-500/20 hover:bg-red-500 hover:text-white text-red-400 font-black px-3 py-1.5 rounded-xl transition text-[11px] uppercase tracking-wider">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        // 🎯 अपडेट फंक्शन: परिवर्तित प्लेन टेक्स्ट को वापस JSON बनाकर डेटाबेस में सिंक करना
-        async function updateExistingExamBase() {
-            const trackingSubjectId = document.getElementById('current-editing-exam-id').value;
-            const subjectName = document.getElementById('exam-subject-input').value;
-            const durationLimit = document.getElementById('exam-duration-input').value;
-            const negativeMarking = document.getElementById('exam-negative-input').value; 
-            const rawTextData = document.getElementById('exam-questions-json').value.trim();
-
-            if (!trackingSubjectId || !subjectName || !rawTextData) {
-                alert("Operation aborted: Workspace terminal console contains null pointers.");
-                return;
-            }
-
-            const formattedJsonPayload = autoFormatRawTextToJSON(rawTextData);
+        // 💾 3. UPDATE ACTION ENGINE: रीयल-टाइम डेटाबेस सिंक्रोनाइज़ेशन ओवरराइट
+        async function commitRowModification(email) {
+            const rowHash = btoa(email).replace(/=/g, '');
+            const updatedName = document.getElementById(`name-${rowHash}`).value.trim();
+            const updatedPass = document.getElementById(`pass-${rowHash}`).value;
+            const updatedRole = document.getElementById(`role-${rowHash}`).value;
 
             try {
                 const { error } = await supabaseClient
-                    .from('exams')
+                    .from('portal_users')
                     .update({
-                        duration_minutes: parseInt(durationLimit) || 60,
-                        negative_marking: parseFloat(negativeMarking) || 0, 
-                        questions_json: formattedJsonPayload
+                        name: updatedName,
+                        password: updatedPass,
+                        role: updatedRole
                     })
-                    .eq('subject', trackingSubjectId);
+                    .eq('email', email);
+
+                if (error) throw error;
+                alert(`✓ System parameters synchronized successfully for: ${email}`);
+            } catch (err) {
+                alert(`Update Refused: ${err.message}`);
+            }
+        }
+
+        // 🗑️ 4. DELETE ACTION ENGINE: स्थायी रूप से यूज़र रो को हटाना
+        async function purgeUserRecordNode(email) {
+            if (!confirm(`CRITICAL WARNING: Are you completely certain you want to permanently delete user instance: ${email}? This cannot be undone.`)) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('portal_users')
+                    .delete()
+                    .eq('email', email);
 
                 if (error) throw error;
                 
-                alert(`🎉 Success: Exam dataset for [ ${subjectName.toUpperCase()} ] updated!`);
+                // रीयल-टाइम में बिना पेज रीलोड किए रो को डिलीट करना
+                const rowHash = btoa(email).replace(/=/g, '');
+                document.getElementById(`row-${rowHash}`).remove();
                 
-                document.getElementById('exam-questions-json').value = "";
-                document.getElementById('exam-subject-input').value = "";
-                document.getElementById('exam-duration-input').value = "60";
-                document.getElementById('current-editing-exam-id').value = "";
-                document.getElementById('exam-negative-input').value = "0";
-                
-                document.getElementById('btn-update-main').classList.add('hidden');
-                document.getElementById('btn-deploy-main').classList.remove('hidden');
-                document.getElementById('admin-exams-fetch-selector').disabled = true;
-                document.getElementById('admin-category-fetch-selector').value = "";
-                
-                syncMasterDashboardControls();
-
+                // कुल संख्या अपडेट करें
+                masterUserCacheStore = masterUserCacheStore.filter(u => u.email !== email);
+                document.getElementById('user-count').innerText = masterUserCacheStore.length;
             } catch (err) {
-                alert(`Update Core Error: ${err.message}`);
+                alert(`Purge Pipeline Refused: ${err.message}`);
             }
         }
 
-        // 🔄 LIVE REPOSITORY GRID LOADER 
-        async function fetchExamsOnAdminSide() {
-            const tbody = document.getElementById('admin-exams-tbody');
-            const targetFilterValue = document.getElementById('admin-view-category-filter').value;
-            
-            try {
-                let query = supabaseClient.from('exams').select('*');
-                if(targetFilterValue !== "ALL") {
-                    query = query.eq('category_id', parseInt(targetFilterValue));
-                }
-
-                const { data: exams, error } = await query.order('subject', { ascending: true });
-                if(error) throw error;
-
-                if(!exams || exams.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 font-mono text-slate-500 uppercase">No records found matching context view.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = "";
-                exams.forEach(ex => {
-                    const matched = globalCategoriesArray.find(c => c.id == ex.category_id);
-                    const nameTag = matched ? matched.category_name.toUpperCase() : "🔴 UNMAPPED STANDALONE BASE";
-
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-white/5 transition">
-                            <td class="py-3.5 px-4 font-bold text-slate-200 uppercase tracking-wide">${ex.subject}</td>
-                            <td class="py-3.5 px-4 font-bold text-teal-400 text-[11px] uppercase">${nameTag}</td>
-                            <td class="py-3.5 px-4">
-                                <div class="flex items-center space-x-2">
-                                    <input type="number" id="inline-time-${encodeURIComponent(ex.subject)}" value="${ex.duration_minutes || 60}" min="1" class="w-16 border border-white/10 bg-slate-900 text-blue-400 font-mono text-xs font-bold text-center px-1 py-1 rounded-lg outline-none">
-                                    <button onclick="updateExamTimingDirect('${encodeURIComponent(ex.subject)}')" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition font-mono text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-wider">Save Time</button>
-                                </div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center font-mono text-emerald-400 uppercase text-[10px] tracking-wider">● Matrix Active</td>
-                        </tr>`;
-                });
-            } catch(err) { tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Sync Error: ${err.message}</td></tr>`; }
-        }
-
-        // 🎯 CRITICAL ADVANCED MULTI-MAPPING CONTROLLER (Duplicates Row safely for new categories)
-        async function mapExamToCategoryRoutine() {
-            const encodedSub = document.getElementById('map-exam-subject-select').value;
-            const catId = document.getElementById('map-target-category-select').value;
-
-            if(!encodedSub || !catId) { alert("Please fetch a subject paper and select a target category node."); return; }
-
-            const targetSubjectName = decodeURIComponent(encodedSub);
-
-            try {
-                // 🚀 स्टेप 1: मूल परीक्षा नोड को फ़ेच करें
-                const { data: originalExam, error: fetchErr } = await supabaseClient
-                    .from('exams')
-                    .select('*')
-                    .eq('subject', targetSubjectName)
-                    .limit(1)
-                    .maybeSingle();
-
-                if (fetchErr || !originalExam) throw new Error("Original source exam vector not resolved.");
-
-                // 🚀 स्टेप 2: पहले चेक करें कि यह सब्जेक्ट इस कैटेगरी में पहले से तो नहीं है!
-                const { data: checkDuplicate } = await supabaseClient
-                    .from('exams')
-                    .select('subject')
-                    .eq('subject', targetSubjectName)
-                    .eq('category_id', parseInt(catId))
-                    .maybeSingle();
-
-                if (checkDuplicate) {
-                    alert("📢 Link Interrupted: This subject is already active inside the targeted category.");
-                    return;
-                }
-
-                // 🚀 स्टेप 3: BigInt स्कीमा सुरक्षा - एक नई अनोखी ID स्वतः जेनरेट करें (Math.random फिक्स)
-                const uniqueAutogenId = Math.floor(Date.now() + Math.random() * 1000);
-
-                // 🚀 स्टेप 4: डेटाबेस में बिना पुराना लिंक तोड़े, एक नया क्लीन डुप्लीकेट रिकॉर्ड इंजेक्ट करें
-                const { error: insertErr } = await supabaseClient
-                    .from('exams')
-                    .insert({
-                        id: uniqueAutogenId,
-                        subject: originalExam.subject,
-                        duration_minutes: originalExam.duration_minutes || 60,
-                        negative_marking: originalExam.negative_marking || 0,
-                        questions_json: originalExam.questions_json,
-                        category_id: parseInt(catId) 
-                    });
-
-                if(insertErr) throw insertErr;
-
-                alert(`🎉 Matrix Binding Complete: [ ${targetSubjectName.toUpperCase()} ] is now linked with the new category without leaving the old one!`);
-                syncMasterDashboardControls();
-
-            } catch(e) { alert("Mapping script failure: " + e.message); }
-        }
-
-        // TOOL 2 ACTION: INITIAL DEPLOY EXAM NODE (100% BigInt & Autogen ID Protected)
-        async function createNewExamBase() {
-            const sub = document.getElementById('exam-subject-input').value.trim();
-            const dur = document.getElementById('exam-duration-input').value.trim();
-            const neg = document.getElementById('exam-negative-input').value; 
-            const jsonText = document.getElementById('exam-questions-json').value.trim();
-            
-            const directCatInput = document.getElementById('exam-direct-category-input');
-            let chosenCategoryId = null;
-
-            if (directCatInput && directCatInput.value !== "NONE" && directCatInput.value !== "") {
-                chosenCategoryId = parseInt(directCatInput.value); 
+        // 🔍 5. LIVE READ FILTER ENGINE: इंस्टेंट की-स्ट्रोक ग्रिड सर्च
+        function filterUserClusterGrid() {
+            const term = document.getElementById('admin-search-box').value.trim().toLowerCase();
+            if (!term) {
+                renderUserGridTemplate(masterUserCacheStore);
+                return;
             }
 
-            if(!sub) { alert("Please input a valid subject description title."); return; }
-
-            let parsedQuestions = [];
-            if(jsonText !== "") {
-                try { 
-                    parsedQuestions = (jsonText.startsWith('[') && jsonText.endsWith(']')) 
-                        ? JSON.parse(jsonText) 
-                        : autoFormatRawTextToJSON(jsonText); 
-                } catch(err) { alert("JSON parsing error! Review syntax blocks."); return; }
-            }
-
-            try {
-                // 🚀 फिक्स: समय के आधार पर एक अनोखी और बड़ी संख्या स्वतः जेनरेट करके भेजें ताकि Constraint एरर न आए
-                const uniqueId = Math.floor(Date.now() + Math.random() * 1000);
-
-                const { error } = await supabaseClient
-                    .from('exams')
-                    .insert({ 
-                        id: uniqueId,
-                        subject: sub, 
-                        duration_minutes: parseInt(dur) || 60, 
-                        negative_marking: parseFloat(neg) || 0, 
-                        questions_json: parsedQuestions,
-                        category_id: chosenCategoryId 
-                    });
-
-                if(error) throw error;
-                alert(`🎉 Success: Master base entry [ ${sub.toUpperCase()} ] deployed successfully!`);
-                
-                document.getElementById('exam-subject-input').value = "";
-                document.getElementById('exam-questions-json').value = "";
-                document.getElementById('exam-negative-input').value = "0"; 
-                if(directCatInput) directCatInput.value = "NONE";
-                
-                syncMasterDashboardControls();
-
-            } catch(e) { alert("Insertion fail: " + e.message); }
+            const filtered = masterUserCacheStore.filter(u => 
+                (u.email && u.email.toLowerCase().includes(term)) || 
+                (u.name && u.name.toLowerCase().includes(term))
+            );
+            renderUserGridTemplate(filtered);
         }
 
-        // TOOL 1 ACTION: MANUALLY CREATE CATEGORY
-        async function createNewCategory() {
-            const name = document.getElementById('new-cat-name').value.trim();
-            if(!name) return;
-            try {
-                const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name });
-                if(error) throw error;
-                alert(`Category established!`);
-                document.getElementById('new-cat-name').value = "";
-                syncMasterDashboardControls();
-            } catch(e) { alert(e.message); }
-        }
-
-        // 🚀 इंटेलिजेंट ऑटो-पार्सर इंजन
-        function autoFormatRawTextToJSON(rawText) {
-            const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-            const questionsList = [];
-            
-            let currentQuestion = null;
-            let currentOptions = [];
-            let currentCorrect = 0;
-
-            const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
-            const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
-            const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-
-                if (questionRegex.test(line)) {
-                    if (currentQuestion) {
-                        questionsList.push({
-                            question: currentQuestion,
-                            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
-                            correct: currentCorrect
-                        });
-                    }
-                    currentQuestion = line.replace(questionRegex, '').trim();
-                    currentOptions = [];
-                    currentCorrect = 0;
-                } 
-                else if (answerRegex.test(line)) {
-                    const match = line.match(answerRegex);
-                    const ansChar = match[2].toUpperCase();
-                    if (['A', 'B', 'C', 'D'].includes(ansChar)) {
-                        currentCorrect = ansChar.charCodeAt(0) - 65;
-                    } else {
-                        currentCorrect = (parseInt(ansChar) - 1) || 0;
-                    }
-                } 
-                else if (optionRegex.test(line)) {
-                    const optionText = line.replace(optionRegex, '').trim();
-                    currentOptions.push(optionText);
-                } 
-                else {
-                    if (currentQuestion && currentOptions.length === 0) {
-                        currentQuestion += "\n" + line;
-                    } else if (currentOptions.length > 0) {
-                        currentOptions[currentOptions.length - 1] += " " + line;
-                    } else {
-                        currentQuestion = line;
-                    }
-                }
-            }
-
-            if (currentQuestion) {
-                questionsList.push({
-                    question: currentQuestion,
-                    options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
-                    correct: currentCorrect
-                });
-            }
-
-            return questionsList;
-        }
-
-        // INLINE ACTION: TIME CONTROLLER
-        async function updateExamTimingDirect(encodedSubject) {
-            const decodedSub = decodeURIComponent(encodedSubject);
-            const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
-            try {
-                const { error } = await supabaseClient.from('exams').update({ duration_minutes: parseInt(inputVal) }).eq('subject', decodedSub);
-                if(error) throw error;
-                alert(`Time limit synchronization complete.`);
-                fetchExamsOnAdminSide();
-            } catch(e) { alert(e.message); }
-        }
-
-        function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
-</script>
+        // ऑटो-स्टार्ट ऑन विंडो इनिशियलाइज़ेशन
+        window.onload = fetchAdminUserCluster;
+    </script>
 </body>
 </html>
