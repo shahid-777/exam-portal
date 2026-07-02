@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Portal Admin - User Info Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'IBM Plex Sans', sans-serif; }
+        .font-serif { font-family: 'Fraunces', serif; }
+        .font-mono { font-family: 'IBM Plex Mono', monospace; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased">
+
+    <!-- 🌌 प्रीमियम हीरो विज़ुअल हेडर बैनर -->
+    <div class="relative h-48 w-full bg-slate-900 border-b border-white/5 overflow-hidden shrink-0">
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:16px_16px] z-10"></div>
+        <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80" alt="Server Operations" class="w-full h-full object-cover object-center absolute inset-0 filter blur-[2px] opacity-40">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10"></div>
+        
+        <div class="absolute bottom-6 left-6 right-6 z-20 max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div class="space-y-1">
+                <a href="admin.html" class="text-[10px] font-mono font-bold text-blue-400 hover:text-blue-300 uppercase tracking-widest flex items-center gap-1 mb-2">&larr; Back to Admin Terminal</a>
+                <h1 class="text-2xl sm:text-3xl font-black tracking-wide font-serif text-white uppercase">User Cluster Operations</h1>
+                <p class="text-xs text-slate-400 font-medium">Perform advanced database CRUD controls, sort structural index metrics, and overwrite student authorizations.</p>
+            </div>
+            <div class="bg-slate-900/80 backdrop-blur border border-white/10 px-4 py-2 rounded-xl flex items-center space-x-3 shadow-lg">
+                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span>
+                <span class="text-[10px] font-mono font-black text-slate-300 uppercase tracking-wider">Verified Nodes: <span id="user-count" class="text-amber-400">0</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🎛️ कंट्रोल फ़िल्टर और सॉर्टिंग पैनल Workspace -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 bg-slate-900/60 p-4 border border-white/5 rounded-2xl backdrop-blur-md">
+            <div class="md:col-span-6">
+                <label class="block text-[9px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Search Profile Filter</label>
+                <input type="text" id="admin-search-box" oninput="filterUserClusterGrid()" placeholder="Filter records by complete email identifier or name structure..." class="w-full bg-slate-950 border border-white/10 px-4 py-2.5 text-xs rounded-xl font-medium outline-none focus:border-blue-500/50 text-white transition shadow-inner">
+            </div>
+            <div class="md:col-span-3">
+                <label class="block text-[9px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Sort Target Node</label>
+                <select id="sort-column" onchange="fetchAdminUserCluster()" class="w-full bg-slate-950 border border-white/10 px-4 py-2.5 text-xs rounded-xl font-mono text-slate-300 outline-none focus:border-blue-500/50 transition">
+                    <option value="email">Email Identity</option>
+                    <option value="name">Display Name</option>
+                    <option value="role">System Role</option>
+                    <option value="last_login" selected>Last Login Event</option>
+                </select>
+            </div>
+            <div class="md:col-span-3">
+                <label class="block text-[9px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Sorting Vector Order</label>
+                <select id="sort-direction" onchange="fetchAdminUserCluster()" class="w-full bg-slate-950 border border-white/10 px-4 py-2.5 text-xs rounded-xl font-mono text-slate-300 outline-none focus:border-blue-500/50 transition">
+                    <option value="asc">Ascending (A-Z / Oldest)</option>
+                    <option value="desc" selected>Descending (Z-A / Newest)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 📊 डायनेमिक क्रड डेटा टेबल विज़ुअल -->
+        <div class="bg-slate-900/20 border border-white/5 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs font-medium">
+                    <thead>
+                        <tr class="bg-slate-950/80 border-b border-white/5 font-mono text-slate-400 uppercase tracking-wider">
+                            <th class="p-4">Student Identity / Email</th>
+                            <th class="p-4">Display Name Object</th>
+                            <th class="p-4">Sync Password (Plain)</th>
+                            <th class="p-4">Authorization Role</th>
+                            <th class="p-4">Last Login Time-Stamp</th>
+                            <th class="p-4 text-center">Data Layer Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-user-table-body" class="divide-y divide-white/5">
+                        <tr>
+                            <td colspan="6" class="p-8 text-center text-slate-500 font-mono">Initializing safe database transmission routing pipeline...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- 📋 सिस्टम पाद लेआउट -->
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/60 text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest shrink-0">
+        &copy; JECRC University — Computer Science Management System Terminal Network
+    </footer>
+
+    <!-- 🧠 🔒 सिक्योर डेटाबेस क्रड कोर जावास्क्रिप्ट इंजन -->
+    <script>
+        const _u = "https://lelvinusfxniqrmfufql.supabase.co";
+        const _k = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        const supabaseClient = supabase.createClient(_u, _k);
+
+        let masterUserCacheStore = [];
+
+        // 🔄 1. READ & SORT LAYER: डेटा फ़ेच, एसेंडिंग और डिसेंडिंग सॉर्टिंग पैरामीटर्स
+        async function fetchAdminUserCluster() {
+            const tableBody = document.getElementById('admin-user-table-body');
+            const sortBy = document.getElementById('sort-column').value;
+            const sortDir = document.getElementById('sort-direction').value;
+            const isAscending = (sortDir === 'asc');
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('portal_users')
+                    .select('*')
+                    .order(sortBy, { ascending: isAscending });
+
+                if (error) throw error;
+
+                masterUserCacheStore = data || [];
+                document.getElementById('user-count').innerText = masterUserCacheStore.length;
+                renderUserGridTemplate(masterUserCacheStore);
+
+            } catch (err) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-400 font-mono">Data Pipeline Exception: ${err.message}</td></tr>`;
+            }
+        }
+
+        // 🎨 2. UI TEMPLATE ENGINE: डायनेमिक टेबल रो जनरेटर लेआउट
+        function renderUserGridTemplate(records) {
+            const tableBody = document.getElementById('admin-user-table-body');
+            if (records.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500 font-mono">No matching student profile logs identified inside system cluster.</td></tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = records.map(user => {
+                const formattedTime = user.last_login ? new Date(user.last_login).toLocaleString('en-IN') : 'NOT RECORDED YET';
+                // ईमेल स्ट्रिंग्स को सुरक्षित हैश आईडी में बदलने के लिए
+                const rowHash = btoa(user.email).replace(/=/g, '');
+                
+                return `
+                    <tr class="hover:bg-white/[0.01] transition" id="row-${rowHash}">
+                        <td class="p-4 font-bold text-white tracking-wide">${user.email}</td>
+                        <td class="p-4">
+                            <input type="text" id="name-${rowHash}" value="${user.name || ''}" class="bg-slate-950/80 border border-white/10 px-2.5 py-1.5 rounded-xl text-slate-200 font-semibold outline-none focus:border-blue-500/50 w-full max-w-[160px] transition">
+                        </td>
+                        <td class="p-4">
+                            <input type="text" id="pass-${rowHash}" value="${user.password || ''}" class="bg-slate-950/80 border border-white/10 px-2.5 py-1.5 rounded-xl text-slate-200 font-mono outline-none focus:border-blue-500/50 w-full max-w-[160px] transition">
+                        </td>
+                        <td class="p-4">
+                            <select id="role-${rowHash}" class="bg-slate-950 border border-white/10 px-2 py-1.5 rounded-xl text-slate-300 font-medium outline-none focus:border-blue-500/50 transition">
+                                <option value="student" ${user.role === 'student' ? 'selected' : ''}>student</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>admin</option>
+                            </select>
+                        </td>
+                        <td class="p-4 font-mono text-slate-400 text-[11px] tracking-tight">${formattedTime}</td>
+                        <td class="p-4 text-center space-x-2">
+                            <!-- 🚀 UPDATE BUTTON -->
+                            <button onclick="commitRowModification('${user.email}')" class="bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 font-black px-3 py-1.5 rounded-xl transition text-[11px] uppercase tracking-wider">
+                                Save
+                            </button>
+                            <!-- 🚀 DELETE BUTTON -->
+                            <button onclick="purgeUserRecordNode('${user.email}')" class="bg-red-500/10 border border-red-500/20 hover:bg-red-500 hover:text-white text-red-400 font-black px-3 py-1.5 rounded-xl transition text-[11px] uppercase tracking-wider">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 💾 3. UPDATE ACTION ENGINE: रीयल-टाइम डेटाबेस सिंक्रोनाइज़ेशन ओवरराइट
+        async function commitRowModification(email) {
+            const rowHash = btoa(email).replace(/=/g, '');
+            const updatedName = document.getElementById(`name-${rowHash}`).value.trim();
+            const updatedPass = document.getElementById(`pass-${rowHash}`).value;
+            const updatedRole = document.getElementById(`role-${rowHash}`).value;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('portal_users')
+                    .update({
+                        name: updatedName,
+                        password: updatedPass,
+                        role: updatedRole
+                    })
+                    .eq('email', email);
+
+                if (error) throw error;
+                alert(`✓ System parameters synchronized successfully for: ${email}`);
+            } catch (err) {
+                alert(`Update Refused: ${err.message}`);
+            }
+        }
+
+        // 🗑️ 4. DELETE ACTION ENGINE: स्थायी रूप से यूज़र रो को हटाना
+        async function purgeUserRecordNode(email) {
+            if (!confirm(`CRITICAL WARNING: Are you completely certain you want to permanently delete user instance: ${email}? This cannot be undone.`)) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('portal_users')
+                    .delete()
+                    .eq('email', email);
+
+                if (error) throw error;
+                
+                // रीयल-टाइम में बिना पेज रीलोड किए रो को डिलीट करना
+                const rowHash = btoa(email).replace(/=/g, '');
+                document.getElementById(`row-${rowHash}`).remove();
+                
+                // कुल संख्या अपडेट करें
+                masterUserCacheStore = masterUserCacheStore.filter(u => u.email !== email);
+                document.getElementById('user-count').innerText = masterUserCacheStore.length;
+            } catch (err) {
+                alert(`Purge Pipeline Refused: ${err.message}`);
+            }
+        }
+
+        // 🔍 5. LIVE READ FILTER ENGINE: इंस्टेंट की-स्ट्रोक ग्रिड सर्च
+        function filterUserClusterGrid() {
+            const term = document.getElementById('admin-search-box').value.trim().toLowerCase();
+            if (!term) {
+                renderUserGridTemplate(masterUserCacheStore);
+                return;
+            }
+
+            const filtered = masterUserCacheStore.filter(u => 
+                (u.email && u.email.toLowerCase().includes(term)) || 
+                (u.name && u.name.toLowerCase().includes(term))
+            );
+            renderUserGridTemplate(filtered);
+        }
+
+        // ऑटो-स्टार्ट ऑन विंडो इनिशियलाइज़ेशन
+        window.onload = fetchAdminUserCluster;
+    </script>
+</body>
+</html>
