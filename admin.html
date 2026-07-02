@@ -228,41 +228,48 @@
         }
 
         // 🎯 बॉक्स 1 फंक्शन: कैटेगरीज बॉक्स से वैल्यू सिलेक्ट होते ही सब्जेक्ट्स बॉक्स (बॉक्स 2) को लोड करना
-        async function fetchExamsByCategory(categoryId) {
-            const examSelector = document.getElementById('admin-exams-fetch-selector');
-            const textareaBox = document.getElementById('exam-questions-json');
-            
-            examSelector.innerHTML = '<option value="">-- Select Subject --</option>';
-            textareaBox.value = ""; // कार्यक्षेत्र साफ़ करें
-            document.getElementById('btn-update-main').classList.add('hidden'); // अपडेट बटन छुपाएं
+       async function fetchExamsByCategory(categoryId) {
+    const examSelector = document.getElementById('admin-exams-fetch-selector');
+    const textareaBox = document.getElementById('exam-questions-json');
+    
+    examSelector.innerHTML = '<option value="">-- Select Subject --</option>';
+    textareaBox.value = ""; // कार्यक्षेत्र साफ़ करें
+    
+    // 🚀 अपडेट 1: नया चयन होने पर नेगेटिव मार्किंग ड्रॉपडाउन को भी डिफ़ॉल्ट (0) पर रीसेट करें
+    const negInput = document.getElementById('exam-negative-input');
+    if (negInput) negInput.value = "0"; 
 
-            if (!categoryId) {
-                examSelector.disabled = true;
-                return;
-            }
+    document.getElementById('btn-update-main').classList.add('hidden'); // अपडेट बटन छुपाएं
 
-            try {
-                const { data, error } = await supabaseClient
-                    .from('exams')
-                    .select('id, subject')
-                    .eq('category_id', parseInt(categoryId))
-                    .order('subject', { ascending: true });
+    if (!categoryId) {
+        examSelector.disabled = true;
+        return;
+    }
 
-                if (error) throw error;
+    try {
+        // 🚀 अपडेट 2: डेटाबेस एरर फिक्स (चूंकि 'id' कॉलम नहीं है, इसलिए केवल 'subject' फ़ेच करें)
+        const { data, error } = await supabaseClient
+            .from('exams')
+            .select('subject') // 'id, subject' की जगह केवल 'subject' रखा गया है
+            .eq('category_id', parseInt(categoryId))
+            .order('subject', { ascending: true });
 
-                if (data && data.length > 0) {
-                    data.forEach(exam => {
-                        examSelector.innerHTML += `<option value="${exam.id}">${exam.subject.toUpperCase()}</option>`;
-                    });
-                    examSelector.disabled = false; // सब्जेक्ट बॉक्स अनलॉक करें
-                } else {
-                    examSelector.innerHTML = '<option value="">No active subjects found</option>';
-                    examSelector.disabled = true;
-                }
-            } catch (err) {
-                console.error("Failed to filter exams by category:", err);
-            }
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+            data.forEach(exam => {
+                // 🚀 अपडेट 3: वैल्यू में 'exam.id' की जगह 'encodeURIComponent(exam.subject)' पास करें
+                examSelector.innerHTML += `<option value="${encodeURIComponent(exam.subject)}">${exam.subject.toUpperCase()}</option>`;
+            });
+            examSelector.disabled = false; // सब्जेक्ट बॉक्स अनलॉक करें
+        } else {
+            examSelector.innerHTML = '<option value="">No active subjects found</option>';
+            examSelector.disabled = true;
         }
+    } catch (err) {
+        console.error("Failed to filter exams by category:", err);
+    }
+}
 
         // 🎯 बॉक्स 2 फंक्शन: सब्जेक्ट बॉक्स से विषय सिलेक्ट होते ही बिना किसी बटन के MCQs को प्लेन टेक्स्ट में कनवर्ट करना
         async function fetchExamDataToEditor(examId) {
@@ -270,6 +277,7 @@
             if (!examId) {
                 textareaBox.value = "";
                 document.getElementById('btn-update-main').classList.add('hidden');
+                
                 return;
             }
 
@@ -286,6 +294,8 @@
                 document.getElementById('exam-subject-input').value = data.subject;
                 document.getElementById('exam-duration-input').value = data.duration_minutes || 60;
                 document.getElementById('current-editing-exam-id').value = data.id;
+                // पुराना डेटा लोड करते समय ड्रॉपडाउन को सही वैल्यू पर सेट करें
+                    document.getElementById('exam-negative-input').value = data.negative_marking || "0";
 
                 // JSON ऐरे ऑब्जेक्ट को प्लेन टेक्स्ट कनवर्टर इंजन
                 let questionsArray = data.questions_json;
@@ -328,48 +338,48 @@
         }
 
         // 🎯 अपडेट फंक्शन: परिवर्तित प्लेन टेक्स्ट को वापस JSON बनाकर डेटाबेस में सिंक करना
-        async function updateExistingExamBase() {
-            const examId = document.getElementById('current-editing-exam-id').value;
-            const subjectName = document.getElementById('exam-subject-input').value;
-            const durationLimit = document.getElementById('exam-duration-input').value;
-            const rawTextData = document.getElementById('exam-questions-json').value.trim();
+      async function updateExistingExamBase() {
+    const trackingSubjectId = document.getElementById('current-editing-exam-id').value;
+    const subjectName = document.getElementById('exam-subject-input').value;
+    const durationLimit = document.getElementById('exam-duration-input').value;
+    const negativeMarking = document.getElementById('exam-negative-input').value; // 🚀 वैल्यू कैप्चर करें
+    const rawTextData = document.getElementById('exam-questions-json').value.trim();
 
-            if (!examId || !subjectName || !rawTextData) {
-                alert("Operation aborted: Workspace terminal console contains null pointers.");
-                return;
-            }
+    if (!trackingSubjectId || !subjectName || !rawTextData) {
+        alert("Operation aborted: Workspace terminal console contains null pointers.");
+        return;
+    }
 
-            // ऑटो-पार्सर इंजन को वापस कॉल करके क्लीन JSON एरे जेनरेट करना
-            const formattedJsonPayload = autoFormatRawTextToJSON(rawTextData);
+    const formattedJsonPayload = autoFormatRawTextToJSON(rawTextData);
 
-            try {
-                const { error } = await supabaseClient
-                    .from('exams')
-                    .update({
-                        subject: subjectName,
-                        duration_minutes: parseInt(durationLimit) || 60,
-                        questions_json: formattedJsonPayload
-                    })
-                    .eq('id', examId);
+    try {
+        const { error } = await supabaseClient
+            .from('exams')
+            .update({
+                duration_minutes: parseInt(durationLimit) || 60,
+                negative_marking: parseFloat(negativeMarking) || 0, // 🚀 डेटाबेस में अपडेट करें
+                questions_json: formattedJsonPayload
+            })
+            .eq('subject', trackingSubjectId);
 
-                if (error) throw error;
-                
-                alert(`🎉 Success: Exam dataset for [ ${subjectName.toUpperCase()} ] synchronized successfully!`);
-                
-                // यूआई रीसेट
-                document.getElementById('exam-questions-json').value = "";
-                document.getElementById('current-editing-exam-id').value = "";
-                document.getElementById('btn-update-main').classList.add('hidden');
-                document.getElementById('admin-exams-fetch-selector').disabled = true;
-                document.getElementById('admin-category-fetch-selector').value = "";
-                
-                syncMasterDashboardControls();
+        if (error) throw error;
+        
+        alert(`🎉 Success: Exam dataset for [ ${subjectName.toUpperCase()} ] updated!`);
+        
+        // यूआई रीсет
+        document.getElementById('exam-questions-json').value = "";
+        document.getElementById('current-editing-exam-id').value = "";
+        document.getElementById('exam-negative-input').value = "0";
+        document.getElementById('btn-update-main').classList.add('hidden');
+        document.getElementById('admin-exams-fetch-selector').disabled = true;
+        document.getElementById('admin-category-fetch-selector').value = "";
+        
+        syncMasterDashboardControls();
 
-            } catch (err) {
-                alert(`Update Core Error: ${err.message}`);
-            }
-        }
-
+    } catch (err) {
+        alert(`Update Core Error: ${err.message}`);
+    }
+}
         // 🔄 LIVE REPOSITORY GRID LOADER
         async function fetchExamsOnAdminSide() {
             const tbody = document.getElementById('admin-exams-tbody');
