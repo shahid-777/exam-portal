@@ -145,6 +145,10 @@
         const _k = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(_u, _k);
 
+        function isUserAuthenticated() {
+            return !!localStorage.getItem('userEmail');
+        }
+
         function openGatedAuthModal(mode = 'signin') {
             const modal = document.getElementById('gated-auth-modal');
             const title = document.getElementById('modal-display-title');
@@ -185,48 +189,7 @@
             );
         };
 
-        // 📧 ईमेल-पासवर्ड हैंडलर (रजिस्ट्रेशन विद ईमेल वेरिफिकेशन लिंक + लॉगिन)
-        async function executeSecureAuthActionRoutine() {
-            const email = document.getElementById('user-email').value.trim();
-            const password = document.getElementById('user-password').value;
-            const mode = document.getElementById('auth-current-mode').value;
-
-            if (!email || !password) { alert("Please fill all required input fields."); return; }
-
-            try {
-                if (mode === 'signup') {
-                    // 🚀 सुपबेस ऑथ इंजन: यह ईमेल पर वेरिफिकेशन लिंक भेजेगा
-                    const { data, error } = await supabaseClient.auth.signUp({
-                        email: email,
-                        password: password,
-                        options: {
-                            emailRedirectTo: 'https://www.exam-portal-cse.online/dashboard.html'
-                        }
-                    });
-
-                    if (error) throw error;
-                    alert("📧 Verification Link Sent! Please open your email inbox and click the link to activate your exam account.");
-                    closeGatedAuthModal();
-                } else {
-                    // 🚀 लॉगिन प्रक्रिया
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({
-                        email: email,
-                        password: password
-                    });
-
-                    if (error) throw error;
-
-                    // सेशन डेटा मैनेज करें
-                    localStorage.setItem('userEmail', data.user.email);
-                    localStorage.setItem('sessionLoginTime', Date.now().toString());
-                    window.location.replace("dashboard.html");
-                }
-            } catch (err) {
-                alert("Auth Action Fault: " + err.message);
-            }
-        }
-
-        // 🛡️ गूगल सिक्योर ऑथेंटिकेशन (यह स्वतः वेरिफाइड होता है)
+        // 🛡️ गूगल सिक्योर ऑथेंटिकेशन + लाइव डेटाबेस टाइमस्टैम्प अपडेट
         async function handleGoogleAuthCallbackResponse(response) {
             try {
                 const { data, error } = await supabaseClient.auth.signInWithIdToken({
@@ -236,11 +199,90 @@
 
                 if (error) throw error;
 
-                localStorage.setItem('userEmail', data.user.email);
+                let googleEmail = data.user.email.toLowerCase();
+                // डेटाबेस फ़ॉर्मेट (यूज़रनेम केवल) के लिए साफ़ करें
+                if (googleEmail.includes('@')) {
+                    googleEmail = googleEmail.split('@')[0];
+                }
+
+                const currentTimestamp = new Date().toISOString();
+
+                // 🚀 फिक्स: गूगल लॉगिन होने पर 'portal_users' टेबल में last_login टाइम सिंक करना
+                await supabaseClient
+                    .from('portal_users')
+                    .update({ last_login: currentTimestamp })
+                    .eq('email', googleEmail);
+
+                localStorage.setItem('userEmail', googleEmail);
                 localStorage.setItem('sessionLoginTime', Date.now().toString());
                 window.location.replace("dashboard.html");
             } catch (err) {
                 alert("Identity verification session mapping exception: " + err.message);
+            }
+        }
+
+        // 📧 ईमेल-पासवर्ड ऑथेंटिकेशन + लाइव डेटाबेस टाइमस्टैम्प अपडेट
+        async function executeSecureAuthActionRoutine() {
+            let email = document.getElementById('user-email').value.trim().toLowerCase();
+            const password = document.getElementById('user-password').value;
+            const mode = document.getElementById('auth-current-mode').value;
+
+            if (!email || !password) { alert("Please fill all required input fields."); return; }
+
+            // डेटाबेस फ़ॉर्मेट के लिए यूज़रनेम निकालें (जैसे abc123)
+            let usernameKey = email;
+            if (usernameKey.includes('@')) {
+                usernameKey = usernameKey.split('@')[0];
+            }
+
+            try {
+                if (mode === 'signup') {
+                    // सुपबेस सुरक्षित साइनअप
+                    const { error } = await supabaseClient.auth.signUp({
+                        email: usernameKey + "@gmail.com", // सुपबेस ऑथ के लिए ईमेल फ़ॉर्मेट ज़रूरी है
+                        password: password,
+                        options: {
+                            emailRedirectTo: 'https://www.exam-portal-cse.online/dashboard.html'
+                        }
+                    });
+
+                    if (error) throw error;
+                    
+                    // कस्टम टेबल 'portal_users' में यूज़र का बेस रिकॉर्ड इन्सर्ट करना
+                    await supabaseClient.from('portal_users').insert({
+                        email: usernameKey,
+                        name: usernameKey.toUpperCase(),
+                        password: password,
+                        role: 'student'
+                    });
+
+                    alert("📧 Verification Link Sent! Please check your email inbox to activate your account.");
+                    closeGatedAuthModal();
+                } else {
+                    // सुपबेस सुरक्षित लॉगिन
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email: usernameKey + "@gmail.com",
+                        password: password
+                    });
+
+                    if (error) throw error;
+
+                    const currentTimestamp = new Date().toISOString();
+
+                    // 🚀 फिक्स: ईमेल लॉगिन सफल होते ही 'portal_users' टेबल में लाइव टाइमस्टैम्प अपडेट करना
+                    const { error: syncErr } = await supabaseClient
+                        .from('portal_users')
+                        .update({ last_login: currentTimestamp })
+                        .eq('email', usernameKey);
+
+                    if (syncErr) console.error("Database sync anomaly:", syncErr.message);
+
+                    localStorage.setItem('userEmail', usernameKey);
+                    localStorage.setItem('sessionLoginTime', Date.now().toString());
+                    window.location.replace("dashboard.html");
+                }
+            } catch (err) {
+                alert("Auth Action Fault: " + err.message);
             }
         }
     </script>
