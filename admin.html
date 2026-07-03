@@ -21,6 +21,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased">
 
+    <!-- TOP HEADER HERO BANNER LAYER -->
     <div class="relative h-48 w-full bg-slate-900 border-b border-white/5 overflow-hidden shrink-0">
         <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:16px_16px] z-10"></div>
         <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80" alt="Server Operations" class="w-full h-full object-cover object-center absolute inset-0 filter blur-[2px] opacity-40">
@@ -39,8 +40,10 @@
         </div>
     </div>
 
+    <!-- MAIN INTERACTIVE MANAGEMENT CONTROLS CORE -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         
+        <!-- SEARCH & SORT CONTROLLER BAR BLOCK -->
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 bg-slate-900/60 p-4 border border-white/5 rounded-2xl backdrop-blur-md">
             <div class="md:col-span-6">
                 <label class="block text-[9px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Search Profile Filter</label>
@@ -64,6 +67,7 @@
             </div>
         </div>
 
+        <!-- LIVE SECURE DATA GRID TABLE COMPONENT CONTAINER -->
         <div class="bg-slate-900/20 border border-white/5 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-sm">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs font-medium">
@@ -88,18 +92,44 @@
     </main>
 
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/60 text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest shrink-0">
-        &copy; JECRC University — Computer Science Management System Terminal Network
+        &copy; Computer Science Management System Terminal Network
     </footer>
 
     <script>
         const _u = "https://lelvinusfxniqrmfufql.supabase.co";
         const _k = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
-        const supabaseClient = supabase.createClient(_u, _k);
+        
+        const supabaseClient = supabase.createClient(_u, _k, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true,
+                storage: window.localStorage
+            }
+        });
 
         let masterUserCacheStore = [];
 
-        // 🔄 1. READ & SORT LAYER: डेटा फ़ेच, एसेंडिंग और डिसेंडिंग सॉर्टिंग पैरामीटर्स
+        // 🛡️ 1. SECURITY ROUTE GUARD SYSTEM: बिना ऑथेंटिकेशन डायरेक्ट एक्सेस ब्लॉक करने के लिए
+        function enforceAdministrativeSessionSecurity() {
+            const loggedInEmail = localStorage.getItem('userEmail');
+            const loggedInRole = localStorage.getItem('userRole');
+            const isCustomAuthValid = localStorage.getItem('adminAuthenticated');
+
+            if (!loggedInEmail || loggedInRole !== 'admin' || isCustomAuthValid !== 'true') {
+                alert("Critical Notice: Administrative privilege validation failed. Re-routing initialization parameter cluster to Gateway.");
+                localStorage.clear();
+                window.location.replace("admin-login.html");
+                return false;
+            }
+            return true;
+        }
+
+        // 🔄 2. READ & SORT LAYER: डेटा फ़ेच और सॉर्टिंग पैरामीटर्स
         async function fetchAdminUserCluster() {
+            // सुरक्षा कवच की जांच पहले करें
+            if (!enforceAdministrativeSessionSecurity()) return;
+
             const tableBody = document.getElementById('admin-user-table-body');
             const sortBy = document.getElementById('sort-column').value;
             const sortDir = document.getElementById('sort-direction').value;
@@ -122,7 +152,7 @@
             }
         }
 
-        // 🎨 2. UI TEMPLATE ENGINE: डायनेमिक टेबल रो जनरेटर लेआउट
+        // 🎨 3. UI TEMPLATE ENGINE: डायनेमिक टेबल रो जनरेटर लेआउट
         function renderUserGridTemplate(records) {
             const tableBody = document.getElementById('admin-user-table-body');
             if (records.length === 0) {
@@ -132,8 +162,9 @@
 
             tableBody.innerHTML = records.map(user => {
                 const formattedTime = user.last_login ? new Date(user.last_login).toLocaleString('en-IN') : 'NOT RECORDED YET';
-                // ईमेल स्ट्रिंग्स को सुरक्षित हैश आईडी में बदलने के लिए
-                const rowHash = btoa(user.email).replace(/=/g, '');
+                
+                // ईमेल स्ट्रिंग्स को HTML ID के अनुकूल और सुरक्षित बनाने के लिए
+                const rowHash = btoa(user.email).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
                 
                 return `
                     <tr class="hover:bg-white/[0.01] transition" id="row-${rowHash}">
@@ -164,9 +195,9 @@
             }).join('');
         }
 
-        // 💾 3. UPDATE ACTION ENGINE: रीयल-टाइम डेटाबेस सिंक्रोनाइज़ेशन ओवरराइट
+        // 💾 4. UPDATE ACTION ENGINE: रीयल-टाइम डेटाबेस सिंक्रोनाइज़ेशन ओवरराइट
         async function commitRowModification(email) {
-            const rowHash = btoa(email).replace(/=/g, '');
+            const rowHash = btoa(email).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
             const updatedName = document.getElementById(`name-${rowHash}`).value.trim();
             const updatedPass = document.getElementById(`pass-${rowHash}`).value;
             const updatedRole = document.getElementById(`role-${rowHash}`).value;
@@ -183,12 +214,20 @@
 
                 if (error) throw error;
                 alert(`✓ System parameters synchronized successfully for: ${email}`);
+                
+                // लोकल कैश डेटा अपडेट करें
+                const cachedUser = masterUserCacheStore.find(u => u.email === email);
+                if (cachedUser) {
+                    cachedUser.name = updatedName;
+                    cachedUser.password = updatedPass;
+                    cachedUser.role = updatedRole;
+                }
             } catch (err) {
                 alert(`Update Refused: ${err.message}`);
             }
         }
 
-        // 🗑️ 4. DELETE ACTION ENGINE: स्थायी रूप से यूज़र रो को हटाना
+        // 🗑️ 5. DELETE ACTION ENGINE: स्थायी रूप से यूज़र रो को हटाना
         async function purgeUserRecordNode(email) {
             if (!confirm(`CRITICAL WARNING: Are you completely certain you want to permanently delete user instance: ${email}? This cannot be undone.`)) return;
 
@@ -200,11 +239,12 @@
 
                 if (error) throw error;
                 
-                // रीयल-टाइम में बिना पेज रीलोड किए रो को डिलीट करना
-                const rowHash = btoa(email).replace(/=/g, '');
-                document.getElementById(`row-${rowHash}`).remove();
+                // बिना पेज रीलोड किए रो को फ्रंटएंड से डिलीट करना
+                const rowHash = btoa(email).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+                const rowElement = document.getElementById(`row-${rowHash}`);
+                if (rowElement) rowElement.remove();
                 
-                // कुल संख्या अपडेट करें
+                // संख्या अपडेट
                 masterUserCacheStore = masterUserCacheStore.filter(u => u.email !== email);
                 document.getElementById('user-count').innerText = masterUserCacheStore.length;
             } catch (err) {
@@ -212,7 +252,7 @@
             }
         }
 
-        // 🔍 5. LIVE READ FILTER ENGINE: इंस्टेंट की-स्ट्रोक ग्रिड सर्च
+        // 🔍 6. LIVE READ FILTER ENGINE: इंस्टेंट की-स्ट्रोक ग्रिड सर्च
         function filterUserClusterGrid() {
             const term = document.getElementById('admin-search-box').value.trim().toLowerCase();
             if (!term) {
