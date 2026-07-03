@@ -83,47 +83,36 @@
             loginBtn.disabled = true;
         }
 
-        // 1. ब्राउज़र का पुराना बचा हुआ सेशन साफ़ करें
         localStorage.clear();
 
-        // 2. 🚀 सीधा पोर्टल यूजर्स टेबल को हिट करें और ईमेल, पासवर्ड, रोल तीनों एक साथ मँगाएँ
-        const { data: userRecord, error: dbError } = await supabaseClient
-            .from('portal_users')
-            .select('email, password, role, name')
-            .eq('email', email)
-            .maybeSingle();
+        // 🚀 सुरक्षित बैकएंड RPC फंक्शन को कॉल करें (यह बाहरी यूज़र्स को डेटा लीक नहीं होने देता)
+        const { data: userRecord, error: rpcError } = await supabaseClient
+            .rpc('verify_admin_credentials', {
+                p_email: email,
+                p_password: password
+            });
 
-        if (dbError) throw dbError;
+        if (rpcError) throw rpcError;
 
-        // 3. 🛡️ टेबल-बेस्ड पासवर्ड और रोल का मिलान
-        if (!userRecord) {
-            alert("Access Denied: Administrative email not registered.");
+        // rpc() हमेशा एक ऐरे (Array) रिटर्न करता है, इसलिए पहला इंडेक्स चेक करें
+        const adminUser = userRecord && userRecord[0];
+
+        // 🛡️ वैलिडेशन चेक
+        if (!adminUser) {
+            alert("Access Denied: Invalid Administrative email or password Mismatch.");
             return;
         }
 
-        if (userRecord.password !== password) {
-            alert("Access Denied: Master Password Mismatch.");
-            return;
-        }
-
-        if (userRecord.role !== 'admin') {
+        if (adminUser.role !== 'admin') {
             alert("Access Denied: You do not possess administrative role status.");
             return;
         }
 
-        // 4. अगर सब सही है, तो डेटाबेस में last_login टाइमस्टैम्प अपडेट करें
-        const currentTimestamp = new Date().toISOString();
-        await supabaseClient
-            .from('portal_users')
-            .update({ last_login: currentTimestamp })
-            .eq('email', email);
-
-        // 5. लोकल स्टोरेज में एडमिन की फ्रेश स्टेट इंजेक्ट करें (ताकि admin.html इसे पहचान सके)
+        // लॉगिन सफल होने पर केवल ऑथेंटिकेटेड स्टेट सेट करें
         localStorage.setItem('userEmail', email);
         localStorage.setItem('userRole', 'admin');
         localStorage.setItem('adminAuthenticated', 'true');
         
-        // 6. सुरक्षित रूट पर रीडायरेक्ट करें
         window.location.replace("admin.html");
 
     } catch (err) {
@@ -135,7 +124,6 @@
         }
     }
 }
-
     </script>
 </body>
 </html>
