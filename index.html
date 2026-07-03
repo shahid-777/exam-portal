@@ -104,7 +104,6 @@
             </div>
             
             <div class="space-y-3 pt-1">
-                <!-- ऑथेंटिकेशन मोड ट्रैकर ट्रे -->
                 <input type="hidden" id="auth-current-mode" value="signin">
 
                 <!-- 🚀 न्यू फ़ील्ड: नाम केवल रजिस्ट्रेशन के समय दिखेगा -->
@@ -138,7 +137,6 @@
                     <div id="google-auth-element-root" class="w-full flex justify-center"></div>
                 </div>
             </div>
-           
         </div>
     </div>
 
@@ -168,13 +166,13 @@
                 desc.textContent = "Create your instant portal testing node for examinations.";
                 btn.textContent = "CREATE SECURE ACCOUNT";
                 forgotLink.classList.add('hidden');
-                nameGroup.classList.remove('hidden'); // नाम बॉक्स दिखाएं
+                nameGroup.classList.remove('hidden');
             } else {
                 title.textContent = "ONLINE EXAM PORTAL";
                 desc.textContent = "Sign in using your verified student email configurations.";
                 btn.textContent = "SIGN IN";
                 forgotLink.classList.remove('hidden');
-                nameGroup.classList.add('hidden'); // नाम बॉक्स छिपाएं
+                nameGroup.classList.add('hidden');
             }
         }
 
@@ -227,9 +225,9 @@
                         .from('portal_users')
                         .insert([{
                             email: email,
-                            password: password, // टेबल-बेस्ड लॉगिन पासवर्ड
+                            password: password,
                             name: fullName,
-                            role: 'student', // डिफ़ॉल्ट रोल छात्र रहेगा
+                            role: 'student',
                             last_login: new Date().toISOString()
                         }]);
 
@@ -237,7 +235,6 @@
                     
                     alert("✓ Account node deployed successfully! Proceeding to authorize your session.");
                     
-                    // सफल रजिस्ट्रेशन के बाद सीधे सेशन सेट करके डैशबोर्ड पर भेजें
                     localStorage.setItem('userEmail', email);
                     localStorage.setItem('userRole', 'student');
                     window.location.replace("dashboard.html");
@@ -254,7 +251,6 @@
 
                     const studentUser = userRecord && userRecord[0];
 
-                    // यदि रोल स्टूडेंट नहीं है या क्रेडेंशियल गलत हैं
                     if (!studentUser) {
                         alert("Access Denied: Invalid student credentials or administrative profile cross-match refusal.");
                         return;
@@ -267,7 +263,6 @@
                         .update({ last_login: currentTimestamp })
                         .eq('email', email);
 
-                    // लोकल स्टोरेज स्टेट्स लॉक करें
                     localStorage.setItem('userEmail', email);
                     localStorage.setItem('userRole', 'student');
                     window.location.replace("dashboard.html");
@@ -289,7 +284,6 @@
 
                 if (error) throw error;
 
-                // गूगल लॉगिन होने के बाद भी portal_users टेबल में रिकॉर्ड वेरिफाई/इंसर्ट करें (ताकि सिंक बना रहे)
                 const userEmail = data.user.email.toLowerCase();
                 const userName = data.user.user_metadata.full_name || "Aspirant Node";
 
@@ -300,7 +294,6 @@
                     .maybeSingle();
 
                 if (!dbUser) {
-                    // यदि पहली बार गूगल से आ रहा है तो टेबल में प्रविष्टि करें
                     await supabaseClient
                         .from('portal_users')
                         .insert([{
@@ -311,7 +304,6 @@
                             last_login: new Date().toISOString()
                         }]);
                 } else {
-                    // यदि पहले से है तो टाइमस्टैम्प अपडेट करें
                     await supabaseClient
                         .from('portal_users')
                         .update({ last_login: new Date().toISOString() })
