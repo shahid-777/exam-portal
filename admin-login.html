@@ -67,7 +67,7 @@
             }
         });
 
-       async function handleAdminLogin() {
+   async function handleAdminLogin() {
     const email = document.getElementById('admin-email').value.trim().toLowerCase();
     const password = document.getElementById('admin-password').value;
     const loginBtn = document.getElementById('auth-btn');
@@ -85,7 +85,7 @@
 
         localStorage.clear();
 
-        // 🚀 केवल एडमिन प्रिविलेज के लिए सिक्योर RPC कॉल
+        // 🚀 1. सुरक्षित RPC फ़ंक्शन कॉल
         const { data: userRecord, error: rpcError } = await supabaseClient
             .rpc('verify_admin_credentials', {
                 p_email: email,
@@ -96,17 +96,25 @@
 
         const adminUser = userRecord && userRecord[0];
 
-        // 🛡️ डेटाबेस से केवल तभी रिकॉर्ड आएगा जब पासवर्ड सही होगा और रोल 'admin' होगा
-        if (!adminUser) {
+        // 🛡️ 2. रोल और क्रेडेंशियल का दोहरा सत्यापन
+        if (!adminUser || adminUser.role !== 'admin') {
             alert("Access Denied: Administrative credential verification failed.");
             return;
         }
 
-        // लोकल स्टोरेज में केवल वैलिड एडमिन स्टेट सेट करें
+        // 🔄 3. लॉगिन सफल! अब टेबल में एडमिन का 'last_login' अपडेट करें
+        const currentTimestamp = new Date().toISOString();
+        await supabaseClient
+            .from('portal_users')
+            .update({ last_login: currentTimestamp })
+            .eq('email', email);
+
+        // 💾 4. लोकल स्टोरेज स्टेट्स सेट करें
         localStorage.setItem('userEmail', email);
         localStorage.setItem('userRole', 'admin');
         localStorage.setItem('adminAuthenticated', 'true');
         
+        // 🚀 5. एडमिन कंसोल पर रीडायरेक्ट करें
         window.location.replace("admin.html");
 
     } catch (err) {
@@ -118,6 +126,7 @@
         }
     }
 }
+        
     </script>
 </body>
 </html>
