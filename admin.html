@@ -26,53 +26,36 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden h-fit shadow-xl">
-                <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-500 to-orange-500"></div>
-                <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">1. Create Category Manually</h3>
-                <div class="space-y-3 pt-2">
-                    <div>
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Category Domain Name</label>
-                        <input type="text" id="new-cat-name" placeholder="e.g. Patwari, REET, SSC, Gate" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none focus:border-orange-500/30 transition">
+            <div class="space-y-6">
+                <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden h-fit shadow-xl">
+                    <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-500 to-orange-500"></div>
+                    <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">1. Create Category Manually</h3>
+                    <div class="space-y-3 pt-2">
+                        <div>
+                            <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Category Domain Name</label>
+                            <input type="text" id="new-cat-name" placeholder="e.g. Patwari, REET, SSC, Gate" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none focus:border-orange-500/30 transition">
+                        </div>
+                        <button onclick="createNewCategory()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-2.5 px-4 rounded-xl text-[11px] tracking-wider uppercase transition transform active:scale-[0.98] cursor-pointer">
+                            Deploy Category
+                        </button>
                     </div>
-                    <button onclick="createNewCategory()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-2.5 px-4 rounded-xl text-[11px] tracking-wider uppercase transition transform active:scale-[0.98] cursor-pointer">
-                        Deploy Category
+                </div>
+
+                <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden h-fit shadow-xl">
+                    <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
+                    <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">⚡ User Access Management</h3>
+                    <p class="text-[11px] text-slate-400 font-sans leading-relaxed">portal_users टेबल क्लस्टर से छात्रों की लाइव लॉगिन टेलीमेट्री और एक्टिव सेशन की सूची एक्सट्रेक्ट करें।</p>
+                    
+                    <button onclick="openUsersActivityModal()" class="w-full flex items-center justify-between border border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10 text-purple-300 font-bold py-3.5 px-4 rounded-xl text-xs tracking-wide transition group cursor-pointer shadow-md">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="text-sm">📊</span>
+                            <span class="uppercase font-mono text-[11px]">Fetch Users Info Matrix</span>
+                        </div>
+                        <span class="text-slate-500 group-hover:text-purple-400 transition transform group-hover:translate-x-1 font-bold">→</span>
                     </button>
                 </div>
             </div>
             
-                
-   <div class="space-y-6">
-             
-
-            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden h-fit shadow-xl">
-                <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
-                <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">⚡ User Access Management</h3>
-                <p class="text-[11px] text-slate-400 font-sans leading-relaxed">Supabase Authentication engine database cluster se active users matrix telemetry extract karein.</p>
-                
-                <button onclick="openUsersActivityModal()" class="w-full flex items-center justify-between border border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10 text-purple-300 font-bold py-3 px-4 rounded-xl text-xs tracking-wide transition group cursor-pointer shadow-md">
-                    <div class="flex items-center space-x-2.5">
-                        <span class="text-sm">📊</span>
-                        <span class="uppercase font-mono text-[11px]">Fetch Users Info Matrix</span>
-                    </div>
-                    <span class="text-slate-500 group-hover:text-purple-400 transition transform group-hover:translate-x-1 font-bold">→</span>
-                </button>
-            </div>
-</div>
-
-    <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden h-fit shadow-xl">
-        <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
-        <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">⚡ User Access Management</h3>
-        <p class="text-[11px] text-slate-400 font-sans leading-relaxed">Supabase Authentication engine database cluster se active users matrix telemetry extract karein.</p>
-        
-        <button onclick="openUsersActivityModal()" class="w-full flex items-center justify-between border border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10 text-purple-300 font-bold py-3 px-4 rounded-xl text-xs tracking-wide transition group cursor-pointer shadow-md">
-            <div class="flex items-center space-x-2.5">
-                <span class="text-sm">📊</span>
-                <span class="uppercase font-mono text-[11px]">Fetch Users Info Matrix</span>
-            </div>
-            <span class="text-slate-500 group-hover:text-purple-400 transition transform group-hover:translate-x-1 font-bold">→</span>
-        </button>
-    </div>
-</div>
             <div class="lg:col-span-2 bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden shadow-xl">
                 <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-blue-500 to-indigo-500"></div>
                 <h3 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">2. Create Exam & Inject Questions Matrix</h3>
@@ -139,8 +122,10 @@
                         </div>
                     </div>
                 </div>
+            </div> 
+        </div> 
 
-            </div> </div> <input type="hidden" id="current-editing-exam-id" value="">
+        <input type="hidden" id="current-editing-exam-id" value="">
 
         <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 relative overflow-hidden shadow-xl">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-teal-500 to-emerald-500"></div>
@@ -168,7 +153,7 @@
         <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 shadow-xl relative">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-3 gap-3">
-                <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">Database Log Repository Cluster</h3>
+                <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">Database Exam Log Repository Cluster</h3>
                 <div class="flex items-center space-x-2">
                     <label class="text-[10px] font-mono text-slate-500 uppercase shrink-0">Filter table view:</label>
                     <select id="admin-view-category-filter" onchange="fetchExamsOnAdminSide()" class="border border-white/10 p-2 text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none font-bold">
@@ -194,22 +179,54 @@
         </div>
     </main> 
     
+    <div id="users-info-modal-wrapper" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-white/10 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            
+            <div class="bg-slate-950/60 border-b border-white/5 p-4 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="h-2.5 w-2.5 rounded-full bg-purple-500 animate-pulse"></div>
+                    <h2 class="text-sm font-black text-white font-mono uppercase tracking-widest">User Authenticated Database Clusters</h2>
+                </div>
+                <button onclick="closeUsersActivityModal()" class="text-xs text-slate-400 hover:text-white bg-white/5 border border-white/10 hover:bg-red-500/20 py-1.5 px-3 rounded-xl transition cursor-pointer uppercase font-mono tracking-tighter">Close Terminal [ESC]</button>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-1 w-full">
+                <div class="overflow-x-auto border border-white/5 rounded-xl bg-slate-950/20">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="bg-slate-950/50 border-b border-white/5 text-slate-400 font-mono uppercase tracking-wider text-[10px]">
+                                <th class="py-3 px-4">Full Username</th>
+                                <th class="py-3 px-4">Registered Email Address</th>
+                                <th class="py-3 px-4">Latest Login Time Matrix</th>
+                                <th class="py-3 px-4 text-center">Security Role Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-auth-tbody" class="divide-y divide-white/5 font-medium text-slate-300 font-mono text-[11px]">
+                            <tr>
+                                <td colspan="4" class="text-center py-8 text-slate-500 animate-pulse uppercase tracking-widest">Querying live data records stream...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
 
-  <script>
-       const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
+    <script>
+        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let globalCategoriesArray = [];
 
-        // 🛡️ [AUTHENTICATION GATEWAY SYNC]: इसे पूरी तरह अपडेट करें
+        // 🛡️ [AUTHENTICATION GATEWAY SYNC]
         window.onload = function() {
             const userEmail = localStorage.getItem('userEmail');
             const userRole = localStorage.getItem('userRole');
             const adminAuthenticated = localStorage.getItem('adminAuthenticated');
 
-            // यदि क्रेडेंशियल मौजूद नहीं हैं या ईमेल ऑफिशियल एडमिन का नहीं है
             if (!userEmail || userRole !== 'admin' || adminAuthenticated !== 'true' || userEmail !== 'examportalcse@gmail.com') { 
                 console.log("Unauthorized terminal interception. Redirecting to access gate...");
                 localStorage.clear();
@@ -217,11 +234,10 @@
                 return; 
             }
             
-            // यदि सब सही है, तो डैशबोर्ड सिंक करें
             syncMasterDashboardControls();
         };
       
-      // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS (Categories Box Sync)
+        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS (Categories Box Sync)
         async function syncMasterDashboardControls() {
             try {
                 const { data: categories, error: catErr } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
@@ -254,7 +270,6 @@
                     }
                 });
 
-                // Fetch Exams for Left Mapping Selector
                 const { data: exams, error: exErr } = await supabaseClient.from('exams').select('subject').order('subject', {ascending: true});
                 if(exErr) throw exErr;
 
@@ -271,7 +286,75 @@
             } catch(e) { console.error("Initialization Sync Crash:", e); }
         }
 
-        // 🎯 बॉक्स 1 फंक्शन: कैटेगरीज बॉक्स से वैल्यू सिलेक्ट होते ही सब्जेक्ट्स बॉक्स (बॉक्स 2) को लोड करना
+        // 🎯 USER INFO DYNAMIC OVERLAY ENGINE FUNCTIONS
+        function openUsersActivityModal() {
+            document.getElementById('users-info-modal-wrapper').classList.remove('hidden');
+            streamActiveUsersProfileDataset();
+        }
+
+        function closeUsersActivityModal() {
+            document.getElementById('users-info-modal-wrapper').classList.add('hidden');
+        }
+
+        // 📊 QUERY LIVE USER DATA FROM 'portal_users'
+        async function streamActiveUsersProfileDataset() {
+            const tbody = document.getElementById('users-auth-tbody');
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 font-mono text-purple-400 animate-pulse uppercase tracking-wider">Handshaking with database clusters...</td></tr>`;
+
+            try {
+                // 'portal_users' टेबल से सीधे डेटा फेच करें
+                const { data: userProfiles, error: syncErr } = await supabaseClient
+                    .from('portal_users') 
+                    .select('*')
+                    .order('last_login', { ascending: false });
+
+                if(syncErr) throw syncErr;
+
+                if(!userProfiles || userProfiles.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-amber-500 uppercase tracking-widest">No active user nodes detected.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = "";
+                userProfiles.forEach((profile) => {
+                    const name = profile.name || "Aspirant Node";
+                    const email = profile.email || "N/A Corridor";
+                    
+                    let lastLoginTime = "NO LOGIN RECORDED";
+                    if(profile.last_login) {
+                        lastLoginTime = new Date(profile.last_login).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+                    }
+                    
+                    const role = profile.role || "student";
+                    const roleBadgeStyle = role === 'admin' 
+                        ? 'text-red-400 bg-red-500/10 border border-red-500/20' 
+                        : 'text-teal-400 bg-teal-500/10 border border-teal-500/20';
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/5 transition duration-150">
+                            <td class="py-3 px-4 font-bold text-white uppercase tracking-wide">${name}</td>
+                            <td class="py-3 px-4 text-slate-300 font-sans lowercase select-all">${email}</td>
+                            <td class="py-3 px-4 text-blue-400 font-bold">${lastLoginTime}</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="px-2.5 py-1 rounded-lg font-black uppercase text-[9px] tracking-widest ${roleBadgeStyle}">
+                                    ${role}
+                                </span>
+                            </td>
+                        </tr>`;
+                });
+
+            } catch(e) { 
+                console.error("User Data Sync Exception:", e);
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-500 font-bold uppercase tracking-widest">Streaming Interrupted: ${e.message}</td></tr>`; 
+            }
+        }
+
+        // Close Modal via Escape Key
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') { closeUsersActivityModal(); }
+        });
+
+        // 🎯 बॉक्स 1 फंक्शन
         async function fetchExamsByCategory(categoryId) {
             const examSelector = document.getElementById('admin-exams-fetch-selector');
             const textareaBox = document.getElementById('exam-questions-json');
@@ -313,7 +396,7 @@
             }
         }
 
-        // 🎯 बॉक्स 2 फंक्शन: विषय चुनते ही स्वतः सारे MCQs प्लेन टेक्स्ट में कनवर्ट करना (100% क्रैश-प्रूफ वर्शन)
+        // 🎯 बॉक्स 2 फंक्शन
         async function fetchExamDataToEditor(encodedSubject) {
             const textareaBox = document.getElementById('exam-questions-json');
             if (!encodedSubject) {
@@ -389,7 +472,7 @@
             }
         }
 
-        // 🎯 अपडेट फंक्शन: परिवर्तित प्लेन टेक्स्ट को वापस JSON बनाकर डेटाबेस में सिंक करना
+        // 🎯 अपडेट फंक्शन
         async function updateExistingExamBase() {
             const trackingSubjectId = document.getElementById('current-editing-exam-id').value;
             const subjectName = document.getElementById('exam-subject-input').value;
@@ -476,7 +559,7 @@
             } catch(err) { tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Sync Error: ${err.message}</td></tr>`; }
         }
 
-        // 🎯 CRITICAL ADVANCED MULTI-MAPPING CONTROLLER (Duplicates Row safely for new categories)
+        // 🎯 CRITICAL ADVANCED MULTI-MAPPING CONTROLLER
         async function mapExamToCategoryRoutine() {
             const encodedSub = document.getElementById('map-exam-subject-select').value;
             const catId = document.getElementById('map-target-category-select').value;
@@ -486,7 +569,6 @@
             const targetSubjectName = decodeURIComponent(encodedSub);
 
             try {
-                // 🚀 स्टेप 1: मूल परीक्षा नोड को फ़ेच करें
                 const { data: originalExam, error: fetchErr } = await supabaseClient
                     .from('exams')
                     .select('*')
@@ -496,7 +578,6 @@
 
                 if (fetchErr || !originalExam) throw new Error("Original source exam vector not resolved.");
 
-                // 🚀 स्टेप 2: पहले चेक करें कि यह सब्जेक्ट इस कैटेगरी में पहले से तो नहीं है!
                 const { data: checkDuplicate } = await supabaseClient
                     .from('exams')
                     .select('subject')
@@ -509,10 +590,8 @@
                     return;
                 }
 
-                // 🚀 स्टेप 3: BigInt स्कीमा सुरक्षा - एक नई अनोखी ID स्वतः जेनरेट करें (Math.random फिक्स)
                 const uniqueAutogenId = Math.floor(Date.now() + Math.random() * 1000);
 
-                // 🚀 स्टेप 4: डेटाबेस में बिना पुराना लिंक तोड़े, एक नया क्लीन डुप्लीकेट रिकॉर्ड इंजेक्ट करें
                 const { error: insertErr } = await supabaseClient
                     .from('exams')
                     .insert({
@@ -532,7 +611,7 @@
             } catch(e) { alert("Mapping script failure: " + e.message); }
         }
 
-        // TOOL 2 ACTION: INITIAL DEPLOY EXAM NODE (100% BigInt & Autogen ID Protected)
+        // TOOL 2 ACTION: INITIAL DEPLOY EXAM NODE
         async function createNewExamBase() {
             const sub = document.getElementById('exam-subject-input').value.trim();
             const dur = document.getElementById('exam-duration-input').value.trim();
@@ -558,7 +637,6 @@
             }
 
             try {
-                // 🚀 फिक्स: समय के आधार पर एक अनोखी और बड़ी संख्या स्वतः जेनरेट करके भेजें ताकि Constraint एरर न आए
                 const uniqueId = Math.floor(Date.now() + Math.random() * 1000);
 
                 const { error } = await supabaseClient
@@ -674,6 +752,6 @@
         }
 
         function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
-</script>
+    </script>
 </body>
 </html>
