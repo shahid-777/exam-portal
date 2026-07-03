@@ -106,7 +106,7 @@
             <div class="space-y-3 pt-1">
                 <input type="hidden" id="auth-current-mode" value="signin">
 
-                <!-- 🚀 न्यू फ़ील्ड: नाम केवल रजिस्ट्रेशन के समय दिखेगा -->
+                <!-- नाम इनपुट समूह (केवल साइन अप के दौरान दिखाई देगा) -->
                 <div id="name-input-group" class="hidden">
                     <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Display Full Name</label>
                     <input type="text" id="user-name" placeholder="Enter your full name" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-950/50 text-white outline-none focus:border-amber-500/50 transition">
@@ -143,7 +143,7 @@
     <!-- फुटर -->
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[9px] sm:text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">&copy; Computer Science Management System Terminal</footer>
 
-    <!-- 🧠 🛡️ 100% सिक्योर सुप्रीम ऑथेंटिकेशन इंजन -->
+    <!-- 🧠 🛡️ सुप्रीम ऑथेंटिकेशन इंजन स्क्रिप्ट्स -->
     <script>
         const _u = "https://lelvinusfxniqrmfufql.supabase.co";
         const _k = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
@@ -192,7 +192,7 @@
             );
         };
 
-        // 📧 ईमेल-पासवर्ड हैंडलर (कस्टम टेबल-बेस्ड लॉगिन और डायरेक्ट रजिस्ट्रेशन)
+        // 📧 ईमेल-पासवर्ड निष्पादन रूटीन
         async function executeSecureAuthActionRoutine() {
             const email = document.getElementById('user-email').value.trim().toLowerCase();
             const password = document.getElementById('user-password').value;
@@ -202,13 +202,16 @@
             if (!email || !password) { alert("Please fill all required input fields."); return; }
 
             try {
-                if (submitBtn) submitBtn.disabled = true;
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerText = "PROCESSING CORRIDOR...";
+                }
 
                 if (mode === 'signup') {
                     const fullName = document.getElementById('user-name').value.trim();
                     if (!fullName) { alert("Please enter your name for documentation setup."); return; }
 
-                    // 🚀 1. पहले चेक करें कि क्या ईमेल पहले से रजिस्टर्ड है
+                    // 1. रिडंडेंसी जांचें
                     const { data: existingUser } = await supabaseClient
                         .from('portal_users')
                         .select('email')
@@ -220,7 +223,7 @@
                         return;
                     }
 
-                    // 🚀 2. डायरेक्ट portal_users टेबल में नया स्टूडेंट इनिशियलाइज़ करें
+                    // 2. नया रिकॉर्ड जोड़ें
                     const { error: insertError } = await supabaseClient
                         .from('portal_users')
                         .insert([{
@@ -240,7 +243,7 @@
                     window.location.replace("dashboard.html");
 
                 } else {
-                    // 🚀 3. स्टूडेंट लॉगिन फ्लो (सुरक्षित बैकएंड RPC कॉल)
+                    // 3. सुरक्षित RPC लॉगिन कॉल
                     const { data: userRecord, error: rpcError } = await supabaseClient
                         .rpc('verify_student_credentials', {
                             p_email: email,
@@ -256,7 +259,7 @@
                         return;
                     }
 
-                    // 🚀 4. डेटाबेस में last_login टाइमस्टैम्प सिंक करें
+                    // 4. लॉगिन टाइमस्टैम्प अपडेट करें
                     const currentTimestamp = new Date().toISOString();
                     await supabaseClient
                         .from('portal_users')
@@ -270,11 +273,14 @@
             } catch (err) {
                 alert("Auth Engine Failure: " + (err.message || JSON.stringify(err)));
             } finally {
-                if (submitBtn) submitBtn.disabled = false;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = mode === 'signup' ? "CREATE SECURE ACCOUNT" : "SIGN IN";
+                }
             }
         }
 
-        // 🛡️ गूगल सिक्योर ऑथेंटिकेशन (यह स्वतः वेरिफाइड होता है)
+        // 🛡️ गूगल तृतीय-पक्ष आईडी प्रदाता रिस्पॉन्स
         async function handleGoogleAuthCallbackResponse(response) {
             try {
                 const { data, error } = await supabaseClient.auth.signInWithIdToken({
