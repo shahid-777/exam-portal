@@ -156,7 +156,7 @@
                     </div>
                     <input type="password" id="user-password" placeholder="••••••••" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-950/50 text-white outline-none focus:border-amber-500/50 transition">
                 </div>
-                <button onclick="executeSecureAuthActionRoutine()" id="main-auth-submit-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 px-4 rounded-xl shadow-md uppercase text-xs tracking-wider transition transform active:scale-[0.99] mt-2 cursor-pointer">
+                <button onclick="executeDatabaseDirectAuth()" id="main-auth-submit-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 px-4 rounded-xl shadow-md uppercase text-xs tracking-wider transition transform active:scale-[0.99] mt-2 cursor-pointer">
                     SIGN IN
                 </button>
             </div>
@@ -280,7 +280,7 @@
         }
 
         // 📧 ईमेल-पासवर्ड ऑथेंटिकेशन + लाइव फ्रंटएंड डेटाबेस सिंक
-        async function executeSecureAuthActionRoutine() {
+        async function executeDatabaseDirectAuth() {
             const email = document.getElementById('user-email').value.trim().toLowerCase();
             const password = document.getElementById('user-password').value;
             const mode = document.getElementById('auth-current-mode').value;
