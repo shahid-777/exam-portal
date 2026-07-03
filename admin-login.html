@@ -64,74 +64,69 @@
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function handleAdminLogin() {
-            const emailInput = document.getElementById('admin-email').value.trim().toLowerCase();
-            const passwordInput = document.getElementById('admin-password').value;
-            const authBtn = document.getElementById('auth-btn');
+       async function handleAdminLogin() {
+    const email = document.getElementById('admin-email').value.trim().toLowerCase();
+    const password = document.getElementById('admin-password').value;
+    const loginBtn = document.getElementById('auth-btn');
 
-            if(!emailInput || !passwordInput) { alert("Credentials validation mismatch."); return; }
+    if (!email || !password) { 
+        alert("Please enter administrative credentials."); 
+        return; 
+    }
 
-            // Loading state toggle
-            authBtn.innerText = "AUTHENTICATING NODE...";
-            authBtn.disabled = true;
-
-            // 🛠️ CASE-INSENSITIVE HARDCODED STRING FALLBACK MATRIX
-            const OFFICIAL_ADMIN_EMAIL_1 = "examportalcse@gmail.com";
-            const OFFICIAL_ADMIN_EMAIL_2 = "examportacse@gmail.com"; // Backup without 'l' to prevent lockout
-
-            if(emailInput !== OFFICIAL_ADMIN_EMAIL_1 && emailInput !== OFFICIAL_ADMIN_EMAIL_2) {
-                alert("Access Denied: Authorized credentials match but lack root terminal access rights.");
-                authBtn.innerText = "Authorize Session";
-                authBtn.disabled = false;
-                return;
-            }
-
-            try {
-                // Safeguard against strict object matching crash
-                const { data, error } = await supabaseClient
-                    .from('portal_users')
-                    .select('email, password, name')
-                    .or(`email.eq.${OFFICIAL_ADMIN_EMAIL_1},email.eq.${OFFICIAL_ADMIN_EMAIL_2}`);
-
-                if (error || !data || data.length === 0) {
-                    alert("Authentication Error: Invalid administrative signature key.");
-                    authBtn.innerText = "Authorize Session";
-                    authBtn.disabled = false;
-                    return;
-                }
-
-                // Check for valid password matching records dynamically
-                let accessGranted = false;
-                let activeAdminRecord = null;
-
-                for(let record of data) {
-                    if(record.password === passwordInput) {
-                        accessGranted = true;
-                        activeAdminRecord = record;
-                        break;
-                    }
-                }
-
-                if (!accessGranted) {
-                    alert("Authentication Error: Security key phrase does not match core records.");
-                    authBtn.innerText = "Authorize Session";
-                    authBtn.disabled = false;
-                    return;
-                }
-
-                // Inject secure session cache matrix context values 
-                localStorage.setItem('adminEmail', activeAdminRecord.email.toLowerCase());
-                localStorage.setItem('adminSessionTime', Date.now().toString());
-                
-                window.location.replace("admin.html");
-
-            } catch (err) {
-                alert("Core connectivity pipeline interruption.");
-            } finally {
-                authBtn.innerText = "Authorize Session";
-                authBtn.disabled = false;
-            }
+    try {
+        if (loginBtn) {
+            loginBtn.innerText = "AUTHENTICATING Privileges...";
+            loginBtn.disabled = true;
         }
+
+        localStorage.clear();
+
+        // 🚀 सिक्योर RPC कॉल
+        const { data: userRecord, error: rpcError } = await supabaseClient
+            .rpc('verify_admin_credentials', {
+                p_email: email,
+                p_password: password
+            });
+
+        // 🔍 डायग्नोस्टिक अलर्ट: अगर सुपबेस बैकएंड मना कर रहा है, तो असली कारण यहाँ दिखेगा
+        if (rpcError) {
+            console.error("RPC Execution Fault:", rpcError);
+            alert(`Database Refusal Code: ${rpcError.code}\nMessage: ${rpcError.message}\nHint: ${rpcError.hint}`);
+            return;
+        }
+
+        const adminUser = userRecord && userRecord[0];
+
+        if (!adminUser) {
+            alert("Access Denied: Administrative credential verification failed (Email/Password mismatch or Role is not admin).");
+            return;
+        }
+
+        // 🔄 टाइमस्टैम्प अपडेट करें
+        const currentTimestamp = new Date().toISOString();
+        await supabaseClient
+            .from('portal_users')
+            .update({ last_login: currentTimestamp })
+            .eq('email', email);
+
+        // लोकल स्टोरेज स्टेट्स सेट करें
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userRole', 'admin');
+        localStorage.setItem('adminAuthenticated', 'true');
+        
+        window.location.replace("admin.html");
+
+    } catch (err) {
+        console.error("Fatal Interception:", err);
+        alert("Fatal Interception Error: " + err.message);
+    } finally {
+        if (loginBtn) {
+            loginBtn.innerText = "Authorize Session";
+            loginBtn.disabled = false;
+        }
+    }
+}
     </script>
 </body>
 </html>
