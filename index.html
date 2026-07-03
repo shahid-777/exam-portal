@@ -6,7 +6,6 @@
     <meta name="google" content="notranslate">
     <link rel="icon" type="image/png" href="logo.png">
     <title>Online Exam Portal - Welcome Terminal</title>
-    <!-- Tailwind CSS & Engine Scriptings -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -17,7 +16,7 @@
         body { font-family: 'IBM Plex Sans', sans-serif; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
         .font-serif { font-family: 'Fraunces', serif; }
         .font-mono { font-family: 'IBM Plex Mono', monospace; }
-        .modal-blur-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .modal-blur-overlay { position: fixed; inset: 0; background: rgba(8, 13, 28, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .modal-blur-overlay.active { opacity: 1; pointer-events: auto; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
@@ -37,7 +36,6 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased selection:bg-amber-500 selection:text-slate-950" oncopy="return false" oncut="return false" onpaste="return false" oncontextmenu="return false">
 
-    <!-- 🖥️ प्रीमियम नेविगेशन हेडर -->
     <header class="w-full bg-slate-950/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3.5 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
@@ -62,7 +60,6 @@
         </div>
     </header>
 
-    <!-- 🌌 हीरो विज़ुअल कंसोल -->
     <section class="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900/40 py-12 sm:py-20 px-4 sm:px-6 lg:px-8 border-b border-white/5 overflow-hidden">
         <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:16px_16px]"></div>
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
@@ -92,9 +89,8 @@
         </div>
     </section>
 
-    <!-- 🔒 ऑथेंटिकेशन गेटवे मॉड्यूल -->
-    <div id="gated-auth-modal" class="modal-blur-overlay flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-900/90 border border-white/10 w-full max-w-md p-6 sm:p-8 rounded-3xl shadow-2xl space-y-4 relative overflow-hidden">
+    <div id="gated-auth-modal" onclick="handleOutsideModalClick(event)" class="modal-blur-overlay flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900/95 border border-white/10 w-full max-w-md p-6 sm:p-8 rounded-3xl shadow-2xl space-y-5 relative overflow-hidden transition-all duration-300 transform scale-95 active:scale-100">
             <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400"></div>
             <button onclick="closeGatedAuthModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white font-mono font-bold text-lg cursor-pointer transition">&times;</button>
             
@@ -103,30 +99,35 @@
                 <p id="modal-display-desc" class="text-[11px] text-slate-400 font-medium leading-relaxed">Sign in or create a verified aspirant profile node.</p>
             </div>
             
-            <div class="space-y-3 pt-1">
+            <div class="space-y-3.5 pt-1">
                 <input type="hidden" id="auth-current-mode" value="signin">
 
-                <!-- नाम इनपुट समूह (केवल साइन अप के दौरान दिखाई देगा) -->
-                <div id="name-input-group" class="hidden">
+                <div id="name-input-group" class="hidden space-y-1">
                     <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Display Full Name</label>
-                    <input type="text" id="user-name" placeholder="Enter your full name" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-950/50 text-white outline-none focus:border-amber-500/50 transition">
+                    <input type="text" id="user-name" placeholder="Enter your full name" class="w-full border border-white/10 p-3 text-xs rounded-xl font-semibold bg-slate-950/60 text-white outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/10 transition shadow-inner">
                 </div>
 
-                <div>
+                <div class="space-y-1">
                     <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider mb-1">Email Address</label>
-                    <input type="email" id="user-email" placeholder="example@gmail.com" autocomplete="on" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-950/50 text-white outline-none focus:border-amber-500/50 transition">
+                    <input type="email" id="user-email" placeholder="example@gmail.com" autocomplete="on" class="w-full border border-white/10 p-3 text-xs rounded-xl font-semibold bg-slate-950/60 text-white outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/10 transition shadow-inner">
                 </div>
-                <div>
+                <div class="space-y-1">
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-[10px] font-mono font-black text-slate-400 uppercase tracking-wider">Password</label>
-                        <a id="forgot-password-link" href="forgot-password.html" class="text-[10px] font-bold text-amber-400 hover:underline transition">Forgot?</a>
+                        <a id="forgot-password-link" href="forgot-password.html" class="text-[10px] font-bold text-amber-400 hover:underline transition">Forgot Master Password?</a>
                     </div>
-                    <input type="password" id="user-password" placeholder="••••••••" class="w-full border border-white/10 p-2.5 text-xs rounded-xl font-semibold bg-slate-950/50 text-white outline-none focus:border-amber-500/50 transition">
+                    <input type="password" id="user-password" placeholder="••••••••" class="w-full border border-white/10 p-3 text-xs rounded-xl font-semibold bg-slate-950/60 text-white outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/10 transition shadow-inner">
                 </div>
-                <button onclick="executeSecureAuthActionRoutine()" id="main-auth-submit-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 px-4 rounded-xl shadow-md uppercase text-xs tracking-wider transition transform active:scale-[0.99] mt-2 cursor-pointer">
+                <button onclick="executeSecureAuthActionRoutine()" id="main-auth-submit-btn" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black py-3.5 px-4 rounded-xl shadow-md uppercase text-xs tracking-wider transition transform active:scale-[0.99] mt-2 cursor-pointer">
                     SIGN IN
                 </button>
             </div>
+
+            <div class="text-center text-[11px] font-medium text-slate-400 pt-1">
+                <span id="switch-mode-text">Don't have an account? </span>
+                <button onclick="toggleModalMode()" id="switch-mode-btn" class="text-amber-400 hover:underline font-bold transition">Register Now</button>
+            </div>
+
             <div class="relative flex py-1 items-center">
                 <div class="flex-grow border-t border-white/5"></div>
                 <span class="flex-shrink mx-4 text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">OR</span>
@@ -140,10 +141,8 @@
         </div>
     </div>
 
-    <!-- फुटर -->
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[9px] sm:text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">&copy; Computer Science Management System Terminal</footer>
 
-    <!-- 🧠 🛡️ सुप्रीम ऑथेंटिकेशन इंजन स्क्रिप्ट्स -->
     <script>
         const _u = "https://lelvinusfxniqrmfufql.supabase.co";
         const _k = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
@@ -157,6 +156,8 @@
             const forgotLink = document.getElementById('forgot-password-link');
             const modeTracker = document.getElementById('auth-current-mode');
             const nameGroup = document.getElementById('name-input-group');
+            const switchText = document.getElementById('switch-mode-text');
+            const switchBtn = document.getElementById('switch-mode-btn');
             
             modeTracker.value = mode;
             modal.classList.add('active');
@@ -167,12 +168,29 @@
                 btn.textContent = "CREATE SECURE ACCOUNT";
                 forgotLink.classList.add('hidden');
                 nameGroup.classList.remove('hidden');
+                switchText.textContent = "Already have an account? ";
+                switchBtn.textContent = "Sign In";
             } else {
                 title.textContent = "ONLINE EXAM PORTAL";
                 desc.textContent = "Sign in using your verified student email configurations.";
                 btn.textContent = "SIGN IN";
                 forgotLink.classList.remove('hidden');
                 nameGroup.classList.add('hidden');
+                switchText.textContent = "Don't have an account? ";
+                switchBtn.textContent = "Register Now";
+            }
+        }
+
+        // मोडल के अंदर ही मोड टॉगल करने के लिए फंक्शन
+        function toggleModalMode() {
+            const currentMode = document.getElementById('auth-current-mode').value;
+            openGatedAuthModal(currentMode === 'signin' ? 'signup' : 'signin');
+        }
+
+        // मोडल के बाहर क्लिक करने पर बंद होने का मैकेनिज्म
+        function handleOutsideModalClick(event) {
+            if (event.target.id === 'gated-auth-modal') {
+                closeGatedAuthModal();
             }
         }
 
