@@ -67,7 +67,7 @@
             }
         });
 
-        async function handleAdminLogin() {
+       async function handleAdminLogin() {
     const email = document.getElementById('admin-email').value.trim().toLowerCase();
     const password = document.getElementById('admin-password').value;
     const loginBtn = document.getElementById('auth-btn');
@@ -85,7 +85,7 @@
 
         localStorage.clear();
 
-        // 🚀 सुरक्षित बैकएंड RPC फंक्शन को कॉल करें (यह बाहरी यूज़र्स को डेटा लीक नहीं होने देता)
+        // 🚀 केवल एडमिन प्रिविलेज के लिए सिक्योर RPC कॉल
         const { data: userRecord, error: rpcError } = await supabaseClient
             .rpc('verify_admin_credentials', {
                 p_email: email,
@@ -94,21 +94,15 @@
 
         if (rpcError) throw rpcError;
 
-        // rpc() हमेशा एक ऐरे (Array) रिटर्न करता है, इसलिए पहला इंडेक्स चेक करें
         const adminUser = userRecord && userRecord[0];
 
-        // 🛡️ वैलिडेशन चेक
+        // 🛡️ डेटाबेस से केवल तभी रिकॉर्ड आएगा जब पासवर्ड सही होगा और रोल 'admin' होगा
         if (!adminUser) {
-            alert("Access Denied: Invalid Administrative email or password Mismatch.");
+            alert("Access Denied: Administrative credential verification failed.");
             return;
         }
 
-        if (adminUser.role !== 'admin') {
-            alert("Access Denied: You do not possess administrative role status.");
-            return;
-        }
-
-        // लॉगिन सफल होने पर केवल ऑथेंटिकेटेड स्टेट सेट करें
+        // लोकल स्टोरेज में केवल वैलिड एडमिन स्टेट सेट करें
         localStorage.setItem('userEmail', email);
         localStorage.setItem('userRole', 'admin');
         localStorage.setItem('adminAuthenticated', 'true');
