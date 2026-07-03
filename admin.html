@@ -164,19 +164,31 @@
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
 
   <script>
-        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
+       const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let globalCategoriesArray = [];
 
+        // 🛡️ [AUTHENTICATION GATEWAY SYNC]: इसे पूरी तरह अपडेट करें
         window.onload = function() {
-            const adminActive = localStorage.getItem('adminEmail');
-            if(!adminActive) { window.location.replace("admin-login.html"); return; }
+            const userEmail = localStorage.getItem('userEmail');
+            const userRole = localStorage.getItem('userRole');
+            const adminAuthenticated = localStorage.getItem('adminAuthenticated');
+
+            // यदि क्रेडेंशियल मौजूद नहीं हैं या ईमेल ऑफिशियल एडमिन का नहीं है
+            if (!userEmail || userRole !== 'admin' || adminAuthenticated !== 'true' || userEmail !== 'examportalcse@gmail.com') { 
+                console.log("Unauthorized terminal interception. Redirecting to access gate...");
+                localStorage.clear();
+                window.location.replace("admin-login.html"); 
+                return; 
+            }
+            
+            // यदि सब सही है, तो डैशबोर्ड सिंक करें
             syncMasterDashboardControls();
         };
-
-        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS (Categories Box Sync)
+      
+      // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS (Categories Box Sync)
         async function syncMasterDashboardControls() {
             try {
                 const { data: categories, error: catErr } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
