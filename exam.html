@@ -196,34 +196,33 @@ async function translateBulkQuestions(questions, targetLang) {
     if (hindiTranslationsCachePool) return hindiTranslationsCachePool; 
 
     try {
-        let allTextSegments = [];
+        let textSegments = [];
         const separator = " ||| "; 
 
         // 1. सभी स्ट्रिंग्स को क्रमबद्ध एरे में इकट्ठा करें
         questions.forEach(q => {
             const qText = q.question || q.title || q.text || 'Objective Question';
-            textSegmentsBufferPush(textSegments, qText);
+            textSegmentsPush(textSegments, qText);
             
             let rawOptions = q.options || q.choices || q.options_json || [];
             if (typeof rawOptions === 'string') {
                 try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
             }
-            (rawOptions || []).forEach(opt => textSegments.push(opt));
+            (rawOptions || []).forEach(opt => textSegmentsPush(textSegments, opt));
         });
 
         // Helper function for tracking safe text array push
         function textSegmentsPush(arr, txt) {
-            // C/C++ के स्पेशल कैरेक्टर्स जैसे #, &, -> को सेफ स्ट्रिंग में बदलें ताकि URL ब्रेक न हो
             let safeTxt = txt.replace(/#/g, ' No. ').replace(/&/g, ' and ').replace(/->/g, ' arrow ');
             arr.push(safeTxt);
         }
 
-        // 🚀 2. BATCH PROCESSING: डेटा को 20-20 स्ट्रिंग्स के छोटे पैकेट्स में बांटें (URL Size Safe)
+        // 2. BATCH PROCESSING: 20-20 स्ट्रिंग्स के छोटे पैकेट्स
         const chunkSize = 20; 
         let finalTranslatedPool = [];
 
-        for (let i = 0; i < allTextSegments.length; i += chunkSize) {
-            const chunk = allTextSegments.slice(i, i + chunkSize);
+        for (let i = 0; i < textSegments.length; i += chunkSize) {
+            const chunk = textSegments.slice(i, i + chunkSize);
             const chunkPayloadText = chunk.join(separator);
             
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(chunkPayloadText)}`;
@@ -237,7 +236,6 @@ async function translateBulkQuestions(questions, targetLang) {
                 translatedChunkString = json[0].map(item => item[0]).join('');
             }
 
-            // इस बैच के अनुवादों को अलग करके मेन पूल में जोड़ें
             const translatedChunkArray = translatedChunkString.split(separator).map(s => s.trim());
             finalTranslatedPool = finalTranslatedPool.concat(translatedChunkArray);
         }
@@ -249,10 +247,9 @@ async function translateBulkQuestions(questions, targetLang) {
 
     } catch (e) {
         console.error("Batch processing fallback network guard activated:", e);
-        return null; // एरर आने पर इंग्लिश फ़ॉलबैक ट्रिगर होगा
+        return null; 
     }
 }
-
 // 🔄 RENDERING PIPELINE WITH AUTOMATIC BATCH AND LANGUAGE FALLBACK
 async function renderAssessmentLayout() {
     const container = document.getElementById('questions-pipeline-wrapper');
