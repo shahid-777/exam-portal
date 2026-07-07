@@ -227,7 +227,6 @@
 
     <div id="admin-review-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-2 sm:p-4 hidden">
         <div class="bg-slate-900 border border-white/10 w-full max-w-4xl h-[90vh] sm:h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-            
             <div class="bg-slate-950/80 border-b border-white/5 p-4 flex items-center justify-between shrink-0">
                 <div class="flex items-center space-x-3">
                     <div class="h-2.5 w-2.5 rounded-full bg-red-500 animate-pulse"></div>
@@ -238,12 +237,8 @@
                 </div>
                 <button onclick="closeAdminReviewModal()" class="text-[10px] font-mono font-black text-slate-400 hover:text-white bg-white/5 hover:bg-red-500/20 border border-white/10 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider">Close Panel [ESC]</button>
             </div>
-
-            <div id="admin-modal-stats-summary" class="bg-slate-950/30 border-b border-white/5 px-6 py-3 grid grid-cols-2 sm:grid-cols-4 gap-4 shrink-0 text-center font-mono text-[10px]">
-                </div>
-
-            <div id="admin-modal-body" class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-8 bg-slate-950/10">
-                </div>
+            <div id="admin-modal-stats-summary" class="bg-slate-950/30 border-b border-white/5 px-6 py-3 grid grid-cols-2 sm:grid-cols-4 gap-4 shrink-0 text-center font-mono text-[10px]"></div>
+            <div id="admin-modal-body" class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-8 bg-slate-950/10"></div>
         </div>
     </div>
 
@@ -276,7 +271,7 @@
         </div>
     </div>
     
-    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; Exam Portal for Mock Tests</footer>
 
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
@@ -299,6 +294,69 @@
             }
             
             syncMasterDashboardControls();
+        };
+
+        // 🚀 GLOBAL SCOPE TEXT PARSER ENGINES (FOR ABSOLUTE ACCESSIBILITY RESOLUTION)
+        window.autoFormatRawTextToJSON = function(rawText) {
+            const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            const questionsList = [];
+            
+            let currentQuestion = null;
+            let currentOptions = [];
+            let currentCorrect = 0;
+
+            const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
+            const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
+            const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+
+                if (questionRegex.test(line)) {
+                    if (currentQuestion) {
+                        questionsList.push({
+                            question: currentQuestion,
+                            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
+                            correct: currentCorrect
+                        });
+                    }
+                    currentQuestion = line.replace(questionRegex, '').trim();
+                    currentOptions = [];
+                    currentCorrect = 0;
+                } 
+                else if (answerRegex.test(line)) {
+                    const match = line.match(answerRegex);
+                    const ansChar = match[2].toUpperCase();
+                    if (['A', 'B', 'C', 'D'].includes(ansChar)) {
+                        currentCorrect = ansChar.charCodeAt(0) - 65;
+                    } else {
+                        currentCorrect = (parseInt(ansChar) - 1) || 0;
+                    }
+                } 
+                else if (optionRegex.test(line)) {
+                    const optionText = line.replace(optionRegex, '').trim();
+                    currentOptions.push(optionText);
+                } 
+                else {
+                    if (currentQuestion && currentOptions.length === 0) {
+                        currentQuestion += "\n" + line;
+                    } else if (currentOptions.length > 0) {
+                        currentOptions[currentOptions.length - 1] += " " + line;
+                    } else {
+                        currentQuestion = line;
+                    }
+                }
+            }
+
+            if (currentQuestion) {
+                questionsList.push({
+                    question: currentQuestion,
+                    options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
+                    correct: currentCorrect
+                });
+            }
+
+            return questionsList;
         };
       
         // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS
@@ -338,12 +396,12 @@
                 });
 
                 fetchExamsOnAdminSide();
-                fetchGlobalStudentResults(); // बैकग्राउंड में पाइपलाइन सिंक रेडी रखें
+                fetchGlobalStudentResults(); // बैकग्राउंड सिंक
 
             } catch(e) { console.error("Initialization Sync Crash:", e); }
         }
 
-        // 🚀 Dynamic View State Workspace Switching Controls
+        // 🚀 Dynamic Workspace Navigation
         function switchToResultsLedgerView() {
             document.getElementById('admin-main-workspace').classList.add('hidden');
             document.getElementById('admin-results-ledger-workspace').classList.remove('hidden');
@@ -391,7 +449,6 @@
                     const correctQs = res.correct_answers || 0;
                     const wrongQs = res.wrong_answers || 0;
 
-                    // 🎯 [REFERENCE LINK ENHANCEMENT]: ईमेल और विषय को ही 100% सेफ हाइपरलिंक में ढाला गया है
                     tbody.innerHTML += `
                         <tr class="hover:bg-white/5 transition font-mono text-[11px] border-b border-white/5">
                             <td class="py-3.5 px-4 font-sans">
@@ -407,7 +464,7 @@
                             <td class="py-3.5 px-4 text-slate-500">${dateStr}</td>
                             <td class="py-3.5 px-4 text-center">
                                 <span class="text-amber-400 font-black text-xs">${score} Mks</span>
-                                <span class="text-[9px] text-slate-500 block mt-0.5">(${correctQs}🟢 / ${wrongQs}🔴 / ${totalQs}⚪)</span>
+                                <span class="text-[9px] text-slate-500 block mt-0.5">(+${correctQs} / -${wrongQs} / ${totalQs})</span>
                             </td>
                             <td class="py-3.5 px-4 text-center text-slate-500 font-bold text-[10px] uppercase tracking-wider">
                                 Click Reference Link ↗
@@ -420,7 +477,6 @@
             }
         }
 
-        // 🎯 AUDIT MATRIX DEDUCTION REVIEW POPUP ENGINE (100% CRASH SAFE FROM TOUPPERCASE ANOMALIES)
         function auditStudentAnswerSheet(cacheIndex) {
             const attempt = window.adminGlobalResultsCache && window.adminGlobalResultsCache[cacheIndex];
             if (!attempt) return;
@@ -543,10 +599,6 @@
         function closeAdminReviewModal() {
             document.getElementById('admin-review-modal').classList.add('hidden');
         }
-
-        window.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') { closeAdminReviewModal(); }
-        });
 
         // 🎯 USER LOGIN ACTIVITY TERMINAL CONTROLS
         function openUsersActivityModal() {
@@ -697,12 +749,12 @@
                         plainTextResult += `Q${idx + 1}. ${q.question || q.title || q.text || 'Objective Question'}\n`;
                         
                         let rawOpts = q.options || q.choices || q.options_json || [];
-                        if (typeof rawOpts === 'string') {
-                            try { rawOpts = JSON.parse(rawOpts); } catch(e) { rawOpts = rawOpts.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
+                        if (typeof rawOptions === 'string') {
+                            try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
                         }
 
-                        if (Array.isArray(rawOpts)) {
-                            rawOpts.forEach((opt, optIdx) => {
+                        if (Array.isArray(rawOptions)) {
+                            rawOptions.forEach((opt, optIdx) => {
                                 const optChar = String.fromCharCode(65 + optIdx); 
                                 plainTextResult += `${optChar}) ${opt}\n`;
                             });
@@ -725,7 +777,7 @@
             }
         }
 
-        // 🎯 अपडेट फंक्शन
+        // 🎯 अपडेट फंक्शन (Fully Linked with global boundary handler)
         async function updateExistingExamBase() {
             const trackingSubjectId = document.getElementById('current-editing-exam-id').value;
             const subjectName = document.getElementById('exam-subject-input').value;
@@ -738,7 +790,8 @@
                 return;
             }
 
-            const formattedJsonPayload = autoFormatRawTextToJSON(rawTextData);
+            // 🚀 फिक्स: स्कोप और नेमस्पेस सुरक्षा के तहत विंडो ऑब्जेक्ट को कॉल करना सुनिश्चित करें
+            const formattedJsonPayload = window.autoFormatRawTextToJSON(rawTextData);
 
             try {
                 const { error } = await supabaseClient
@@ -885,7 +938,7 @@
                 try { 
                     parsedQuestions = (jsonText.startsWith('[') && jsonText.endsWith(']')) 
                         ? JSON.parse(jsonText) 
-                        : autoFormatRawTextToJSON(jsonText); 
+                        : window.autoFormatRawTextToJSON(jsonText); 
                 } catch(err) { alert("JSON parsing error! Review syntax blocks."); return; }
             }
 
@@ -915,6 +968,33 @@
 
             } catch(e) { alert("Insertion fail: " + e.message); }
         }
+
+        // TOOL 1 ACTION: MANUALLY CREATE CATEGORY
+        async function createNewCategory() {
+            const name = document.getElementById('new-cat-name').value.trim();
+            if(!name) return;
+            try {
+                const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name });
+                if(error) throw error;
+                alert(`Category established!`);
+                document.getElementById('new-cat-name').value = "";
+                syncMasterDashboardControls();
+            } catch(e) { alert(e.message); }
+        }
+
+        // INLINE ACTION: TIME CONTROLLER
+        async function updateExamTimingDirect(encodedSubject) {
+            const decodedSub = decodeURIComponent(encodedSubject);
+            const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
+            try {
+                const { error } = await supabaseClient.from('exams').update({ duration_minutes: parseInt(inputVal) }).eq('subject', decodedSub);
+                if(error) throw error;
+                alert(`Time limit synchronization complete.`);
+                fetchExamsOnAdminSide();
+            } catch(e) { alert(e.message); }
+        }
+
+        function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
     </script>
 </body>
 </html>
