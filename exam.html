@@ -187,17 +187,22 @@
 
         // 🚀 BULK TRANSLATION MATRIX ENGINE
        // 🚀 UPGRADED BULK TRANSLATION SYSTEM WITH CORS SAFEGUARD & FALLBACK
+// =========================================================================
+// 🌍 🚀 PREMIUM ADVANCED CHUNKED TRANSLATION ENGINE (CORS & LENGTH PROTECTION)
+// =========================================================================
+
 async function translateBulkQuestions(questions, targetLang) {
     if (!questions || questions.length === 0 || targetLang === "en") return null;
     if (hindiTranslationsCachePool) return hindiTranslationsCachePool; 
 
     try {
-        let textSegments = [];
+        let allTextSegments = [];
         const separator = " ||| "; 
 
+        // 1. सभी स्ट्रिंग्स को क्रमबद्ध एरे में इकट्ठा करें
         questions.forEach(q => {
             const qText = q.question || q.title || q.text || 'Objective Question';
-            textSegments.push(qText);
+            textSegmentsBufferPush(textSegments, qText);
             
             let rawOptions = q.options || q.choices || q.options_json || [];
             if (typeof rawOptions === 'string') {
@@ -206,38 +211,49 @@ async function translateBulkQuestions(questions, targetLang) {
             (rawOptions || []).forEach(opt => textSegments.push(opt));
         });
 
-        const fullPayloadText = textSegments.join(separator);
-        
-        // 🎯 गूगल ट्रांसलेशन का सुरक्षित gtx एंडपॉइंट पैरामीटर्स के साथ
-        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(fullPayloadText)}`;
-        
-        const res = await fetch(url, {
-            method: "GET",
-            headers: { "Accept": "application/json" }
-        });
-
-        if (!res.ok) throw new Error("Google translation cluster rejected the stream payload.");
-        
-        const json = await res.json();
-        
-        // गूगल के टुकड़ों में टूटे हुए रिस्पॉन्स को सुरक्षित कम्बाइन करें
-        let translatedCombinedString = "";
-        if (json && json[0]) {
-            translatedCombinedString = json[0].map(item => item[0]).join('');
+        // Helper function for tracking safe text array push
+        function textSegmentsPush(arr, txt) {
+            // C/C++ के स्पेशल कैरेक्टर्स जैसे #, &, -> को सेफ स्ट्रिंग में बदलें ताकि URL ब्रेक न हो
+            let safeTxt = txt.replace(/#/g, ' No. ').replace(/&/g, ' and ').replace(/->/g, ' arrow ');
+            arr.push(safeTxt);
         }
-        
-        if (!translatedCombinedString) return null;
 
-        hindiTranslationsCachePool = translatedCombinedString.split(separator).map(s => s.trim());
+        // 🚀 2. BATCH PROCESSING: डेटा को 20-20 स्ट्रिंग्स के छोटे पैकेट्स में बांटें (URL Size Safe)
+        const chunkSize = 20; 
+        let finalTranslatedPool = [];
+
+        for (let i = 0; i < allTextSegments.length; i += chunkSize) {
+            const chunk = allTextSegments.slice(i, i + chunkSize);
+            const chunkPayloadText = chunk.join(separator);
+            
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(chunkPayloadText)}`;
+            
+            const res = await fetch(url, { method: "GET" });
+            if (!res.ok) throw new Error("Batch payload rejected.");
+            
+            const json = await res.json();
+            let translatedChunkString = "";
+            if (json && json[0]) {
+                translatedChunkString = json[0].map(item => item[0]).join('');
+            }
+
+            // इस बैच के अनुवादों को अलग करके मेन पूल में जोड़ें
+            const translatedChunkArray = translatedChunkString.split(separator).map(s => s.trim());
+            finalTranslatedPool = finalTranslatedPool.concat(translatedChunkArray);
+        }
+
+        if (finalTranslatedPool.length === 0) return null;
+
+        hindiTranslationsCachePool = finalTranslatedPool;
         return hindiTranslationsCachePool;
 
     } catch (e) {
-        console.error("Bulk translation api node drop handled successfully:", e);
-        return null; // एरर आने पर चुपचाप null भेजें ताकि फॉलबैक एक्टिव हो सके
+        console.error("Batch processing fallback network guard activated:", e);
+        return null; // एरर आने पर इंग्लिश फ़ॉलबैक ट्रिगर होगा
     }
 }
-        // 🔄 COMPLEX LAYOUT COMPILER ENGINE
-       // 🔄 RENDERING PIPELINE WITH AUTOMATIC CORS NETWORK FALLBACK
+
+// 🔄 RENDERING PIPELINE WITH AUTOMATIC BATCH AND LANGUAGE FALLBACK
 async function renderAssessmentLayout() {
     const container = document.getElementById('questions-pipeline-wrapper');
     if (!container) return;
@@ -246,20 +262,18 @@ async function renderAssessmentLayout() {
 
     let finalHtml = "";
     
-    // 🚀 अगर हिंदी चुनी गई है, तो पहले अनुवाद का प्रयास करें
     if (currentSelectedLanguage === "hi") {
-        container.innerHTML = `<div class="text-center font-mono text-xs text-orange-400 py-12 animate-pulse uppercase">Translating Question Matrix via Google Engine...</div>`;
+        container.innerHTML = `<div class="text-center font-mono text-xs text-orange-400 py-12 animate-pulse uppercase">Translating Question Batch Grid via Google Engine...</div>`;
         
         let translatedArrayPool = await translateBulkQuestions(globalLoadedQuestions, "hi");
         
-        // 🛡️ [CORS NETWORK GUARD]: अगर गूगल ने ब्लॉक किया या एरर आया, तो स्वतः इंग्लिश पर री-रूट करें
+        // 🛡️ [CORS/400 NETWORK GUARD]: अगर अभी भी कोई दिक्कत हो, तो सुरक्षित रूप से इंग्लिश पर वापस लाएं
         if (!translatedArrayPool) {
-            alert("📢 Translation Node Temporarily Busy. Reverting test stream safely to English layout corridor.");
+            alert("📢 Network congestion detected. Reverting test stream safely to English layout corridor.");
             currentSelectedLanguage = "en";
             const selector = document.getElementById('global-lang-selector');
             if (selector) selector.value = "en";
         } else {
-            // अनुवाद सफल होने पर हिंदी रेंडर करें
             let textPointerIndex = 0;
             for (let index = 0; index < globalLoadedQuestions.length; index++) {
                 const q = globalLoadedQuestions[index];
@@ -306,7 +320,6 @@ async function renderAssessmentLayout() {
         }
     }
 
-    // 🚀 डिफ़ॉल्ट या फॉलबैक इंग्लिश रेंडरिंग ब्लॉक
     if (currentSelectedLanguage === "en") {
         for (let index = 0; index < globalLoadedQuestions.length; index++) {
             const q = globalLoadedQuestions[index];
@@ -347,7 +360,7 @@ async function renderAssessmentLayout() {
 
     container.innerHTML = finalHtml;
 
-    // पैलेट और बटन्स के कलर्स को दोबारा री-पेंट करें
+    // पैलेट कलर्स को री-पेंट करना
     globalLoadedQuestions.forEach((_, index) => {
         const pBtn = document.getElementById(`palette-btn-${index}`);
         const mBtn = document.getElementById(`mark-btn-${index}`);
@@ -364,7 +377,7 @@ async function renderAssessmentLayout() {
             if(pBtn) pBtn.className = "bg-slate-800 border border-white/10 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
         }
     });
-} 
+}
         function switchAssessmentLanguage(selectedLang) {
             currentSelectedLanguage = selectedLang;
             renderAssessmentLayout(); 
