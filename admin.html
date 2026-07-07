@@ -18,7 +18,7 @@
         <button onclick="logout()" class="bg-white/5 hover:bg-red-500/10 border border-white/10 text-xs font-bold py-2 px-4 rounded-xl cursor-pointer">Exit Terminal</button>
     </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-8">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-8" id="admin-main-workspace">
         <div>
             <h1 class="text-2xl font-black text-white uppercase tracking-wide">Master Control Console</h1>
             <p class="text-xs text-slate-400 font-mono mt-1">Deploy new structures or map existing exams into multiple dynamic categories.</p>
@@ -52,6 +52,20 @@
                             <span class="uppercase font-mono text-[11px]">Fetch Users Info Matrix</span>
                         </div>
                         <span class="text-slate-500 group-hover:text-purple-400 transition transform group-hover:translate-x-1 font-bold">→</span>
+                    </button>
+                </div>
+
+                <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-5 space-y-4 relative overflow-hidden h-fit shadow-xl">
+                    <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-amber-500 to-orange-500"></div>
+                    <h3 class="text-xs font-mono font-black text-amber-400 uppercase tracking-widest">🏆 Examination Results Center</h3>
+                    <p class="text-[11px] text-slate-400 font-sans leading-relaxed">सभी छात्रों के टेस्टबुक स्टाइल विस्तृत परिणाम, आंसर-शीट और स्कोरकार्ड्स का पूरा लेजर एक अलग विशेष पन्ने पर खोलें।</p>
+                    
+                    <button onclick="switchToResultsLedgerView()" class="w-full flex items-center justify-between border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 text-amber-300 font-bold py-3.5 px-4 rounded-xl text-xs tracking-wide transition group cursor-pointer shadow-md">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="text-sm">📝</span>
+                            <span class="uppercase font-mono text-[11px]">Open Users Results Page</span>
+                        </div>
+                        <span class="text-slate-500 group-hover:text-amber-400 transition transform group-hover:translate-x-1 font-bold">↗</span>
                     </button>
                 </div>
             </div>
@@ -153,34 +167,65 @@
         <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 shadow-xl relative">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-3 gap-3">
-                <div>
-                    <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">Aspirants Exam Results & Diagnostics Cluster</h3>
-                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">Track live student submissions, scores, and audit detailed testbook-style answer sheets.</p>
+                <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">Database Exam Log Repository Cluster</h3>
+                <div class="flex items-center space-x-2">
+                    <label class="text-[10px] font-mono text-slate-500 uppercase shrink-0">Filter table view:</label>
+                    <select id="admin-view-category-filter" onchange="fetchExamsOnAdminSide()" class="border border-white/10 p-2 text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none font-bold">
+                        <option value="ALL">-- Show All Categories --</option>
+                    </select>
                 </div>
-                <button onclick="fetchGlobalStudentResults()" class="bg-purple-600/20 text-purple-400 border border-purple-500/30 hover:bg-purple-600 hover:text-white transition font-mono text-[10px] font-black px-3 py-2 rounded-xl uppercase tracking-wider cursor-pointer">
-                    🔄 Refresh Results Stream
-                </button>
             </div>
             <div class="overflow-x-auto w-full">
                 <table class="w-full text-left text-xs">
                     <thead>
                         <tr class="border-b border-white/5 text-slate-400 font-mono uppercase tracking-wider text-[10px]">
-                            <th class="py-3 px-4">Student Email</th>
-                            <th class="py-3 px-4">Subject Paper</th>
-                            <th class="py-3 px-4">Date & Time</th>
-                            <th class="py-3 px-4 text-center">Score Metrics</th>
-                            <th class="py-3 px-4 text-center">Detailed Diagnostics</th>
+                            <th class="py-3 px-4">Subject Name</th>
+                            <th class="py-3 px-4">Category Association</th>
+                            <th class="py-3 px-4">Time Constraint Boundary</th>
+                            <th class="py-3 px-4 text-center">Runtime Parameters</th>
                         </tr>
                     </thead>
-                    <tbody id="admin-results-tbody" class="divide-y divide-white/5 font-medium text-slate-300">
-                        <tr><td colspan="5" class="text-center py-4 font-mono text-slate-500 animate-pulse uppercase">Connecting to results data pipelines...</td></tr>
+                    <tbody id="admin-exams-tbody" class="divide-y divide-white/5 font-medium text-slate-300">
+                        <tr><td colspan="4" class="text-center py-4 font-mono text-slate-500 animate-pulse">Syncing logs...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </main> 
 
-    <div id="admin-review-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-4 hidden">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-6 hidden" id="admin-results-ledger-workspace">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-4 gap-4">
+            <div>
+                <button onclick="switchToMainConsoleWorkspace()" class="text-xs font-mono font-bold text-blue-400 hover:text-blue-300 transition mb-1.5 block">&larr; Return to Master Console</button>
+                <h1 class="text-xl font-black text-white uppercase tracking-wide font-mono">Aspirants Exam Results Ledger</h1>
+                <p class="text-[11px] text-slate-400 font-sans mt-0.5">Click any Student Email or Subject Link reference node down below to invoke high-fidelity Testbook diagnostics review.</p>
+            </div>
+            <button onclick="fetchGlobalStudentResults()" class="bg-purple-600/20 text-purple-400 border border-purple-500/30 hover:bg-purple-600 hover:text-white transition font-mono text-[10px] font-black px-4 py-2.5 rounded-xl uppercase tracking-wider cursor-pointer shadow-md self-end sm:self-center">
+                🔄 Refresh Results Stream
+            </button>
+        </div>
+
+        <div class="bg-slate-950/60 border border-white/10 rounded-2xl p-6 shadow-2xl">
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="border-b border-white/5 text-slate-400 font-mono uppercase tracking-wider text-[10px] bg-slate-900/40">
+                            <th class="py-3.5 px-4">Student Email Identifier Link</th>
+                            <th class="py-3.5 px-4">Subject Evaluation Paper</th>
+                            <th class="py-3.5 px-4">Submission Date & Time</th>
+                            <th class="py-3.5 px-4 text-center">Score Metrics Matrix</th>
+                            <th class="py-3.5 px-4 text-center">Diagnostics Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-results-tbody" class="divide-y divide-white/5 font-medium text-slate-300">
+                        <tr><td colspan="5" class="text-center py-8 font-mono text-slate-500 animate-pulse uppercase">Initiating results data pipelines...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div id="admin-review-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-2 sm:p-4 hidden">
         <div class="bg-slate-900 border border-white/10 w-full max-w-4xl h-[90vh] sm:h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
             
             <div class="bg-slate-950/80 border-b border-white/5 p-4 flex items-center justify-between shrink-0">
@@ -211,7 +256,6 @@
                 </div>
                 <button onclick="closeUsersActivityModal()" class="text-xs text-slate-400 hover:text-white bg-white/5 border border-white/10 hover:bg-red-500/20 py-1.5 px-3 rounded-xl transition cursor-pointer uppercase font-mono tracking-tighter">Close Terminal [ESC]</button>
             </div>
-
             <div class="p-6 overflow-y-auto flex-1 w-full">
                 <div class="overflow-x-auto border border-white/5 rounded-xl bg-slate-950/20">
                     <table class="w-full text-left text-xs">
@@ -224,9 +268,7 @@
                             </tr>
                         </thead>
                         <tbody id="users-auth-tbody" class="divide-y divide-white/5 font-medium text-slate-300 font-mono text-[11px]">
-                            <tr>
-                                <td colspan="4" class="text-center py-8 text-slate-500 animate-pulse uppercase tracking-widest">Querying live data records stream...</td>
-                            </tr>
+                            <tr><td colspan="4" class="text-center py-8 text-slate-500 animate-pulse uppercase tracking-widest">Querying live data records stream...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -234,7 +276,7 @@
         </div>
     </div>
     
-    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; Exam Portal Online</footer>
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
 
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
@@ -259,7 +301,7 @@
             syncMasterDashboardControls();
         };
       
-        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS & RESULT ENGINE
+        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS
         async function syncMasterDashboardControls() {
             try {
                 const { data: categories, error: catErr } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
@@ -273,23 +315,15 @@
                 
                 mapCatSelect.innerHTML = `<option value="">-- Choose Target Category Domain --</option>`;
                 filterSelect.innerHTML = `<option value="ALL">-- Show All Categories (Global View) --</option>`;
-                if(adminCatFetchSelector) {
-                    adminCatFetchSelector.innerHTML = `<option value="">-- Choose Category --</option>`;
-                }
-                if(directCatInput) {
-                    directCatInput.innerHTML = `<option value="NONE">-- Standalone Subject (No Category) --</option>`;
-                }
+                if(adminCatFetchSelector) adminCatFetchSelector.innerHTML = `<option value="">-- Choose Category --</option>`;
+                if(directCatInput) directCatInput.innerHTML = `<option value="NONE">-- Standalone Subject (No Category) --</option>`;
 
                 globalCategoriesArray.forEach(c => {
                     const html = `<option value="${c.id}">${c.category_name.toUpperCase()}</option>`;
                     mapCatSelect.innerHTML += html;
                     filterSelect.innerHTML += html;
-                    if(adminCatFetchSelector) {
-                        adminCatFetchSelector.innerHTML += html;
-                    }
-                    if(directCatInput) {
-                        directCatInput.innerHTML += html;
-                    }
+                    if(adminCatFetchSelector) adminCatFetchSelector.innerHTML += html;
+                    if(directCatInput) directCatInput.innerHTML += html;
                 });
 
                 const { data: exams, error: exErr } = await supabaseClient.from('exams').select('subject').order('subject', {ascending: true});
@@ -304,18 +338,30 @@
                 });
 
                 fetchExamsOnAdminSide();
-                fetchGlobalStudentResults(); // छात्रों के लाइव रिजल्ट स्ट्रीम करें
+                fetchGlobalStudentResults(); // बैकग्राउंड में पाइपलाइन सिंक रेडी रखें
 
             } catch(e) { console.error("Initialization Sync Crash:", e); }
         }
 
+        // 🚀 Dynamic View State Workspace Switching Controls
+        function switchToResultsLedgerView() {
+            document.getElementById('admin-main-workspace').classList.add('hidden');
+            document.getElementById('admin-results-ledger-workspace').classList.remove('hidden');
+            fetchGlobalStudentResults();
+        }
+
+        function switchToMainConsoleWorkspace() {
+            document.getElementById('admin-results-ledger-workspace').classList.add('hidden');
+            document.getElementById('admin-main-workspace').classList.remove('hidden');
+        }
+
         // =========================================================================
-        // 📊 🏆 ADMIN AUDIT CONTROLLER LAYER (SYNCED WITH 'public.results' SCHEMA)
+        // 📊 🏆 LIVE STUDENT RESULTS REFERENCE LINK PROCESSING ENGINE
         // =========================================================================
         async function fetchGlobalStudentResults() {
             const tbody = document.getElementById('admin-results-tbody');
             if (!tbody) return;
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 font-mono text-purple-400 animate-pulse uppercase">Streaming records database pipeline...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 font-mono text-purple-400 animate-pulse uppercase">Syncing server result cluster streams...</td></tr>`;
 
             try {
                 const { data: globalResults, error } = await supabaseClient
@@ -326,7 +372,7 @@
                 if (error) throw error;
 
                 if (!globalResults || globalResults.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 font-mono text-slate-500 uppercase">No student result modules logged yet.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 font-mono text-slate-500 uppercase">No active student scores logged.</td></tr>`;
                     return;
                 }
 
@@ -334,8 +380,8 @@
                 window.adminGlobalResultsCache = globalResults; 
 
                 globalResults.forEach((res, index) => {
-                    const studentEmail = res.email || "Unknown Student Node";
-                    const subjectName = res.subject || "Standalone Evaluation Paper";
+                    const studentEmail = res.email || "unknown_aspirant@gmail.com";
+                    const subjectName = res.subject || "Objective Evaluation Node";
                     const dateStr = res.submitted_at 
                         ? new Date(res.submitted_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: 'numeric', minute: '2-digit' })
                         : "N/A Corridor";
@@ -345,28 +391,36 @@
                     const correctQs = res.correct_answers || 0;
                     const wrongQs = res.wrong_answers || 0;
 
+                    // 🎯 [REFERENCE LINK ENHANCEMENT]: ईमेल और विषय को ही 100% सेफ हाइपरलिंक में ढाला गया है
                     tbody.innerHTML += `
-                        <tr class="hover:bg-white/5 transition font-mono text-[11px]">
-                            <td class="py-3 px-4 font-sans font-semibold text-slate-300 select-all lowercase">${studentEmail}</td>
-                            <td class="py-3 px-4 font-bold text-white uppercase tracking-wide">${subjectName}</td>
-                            <td class="py-3 px-4 text-slate-500">${dateStr}</td>
-                            <td class="py-3 px-4 text-center">
-                                <span class="text-amber-400 font-black text-xs">${score} Mks</span>
-                                <span class="text-[9px] text-slate-500 block">(${correctQs}🟢 / ${wrongQs}🔴 / ${totalQs}⚪)</span>
+                        <tr class="hover:bg-white/5 transition font-mono text-[11px] border-b border-white/5">
+                            <td class="py-3.5 px-4 font-sans">
+                                <span onclick="auditStudentAnswerSheet(${index})" class="text-blue-400 hover:text-blue-300 underline underline-offset-4 font-semibold cursor-pointer select-all lowercase transition">
+                                    ${studentEmail}
+                                </span>
                             </td>
-                            <td class="py-3 px-4 text-center">
-                                <button onclick="auditStudentAnswerSheet(${index})" class="bg-purple-600/10 hover:bg-purple-600 border border-purple-500/30 text-purple-400 hover:text-white transition text-[9px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-wider cursor-pointer">
-                                    Audit Sheet &rarr;
-                                </button>
+                            <td class="py-3.5 px-4">
+                                <span onclick="auditStudentAnswerSheet(${index})" class="text-blue-400 hover:text-blue-300 underline underline-offset-4 font-bold uppercase tracking-wide cursor-pointer transition">
+                                    ${subjectName}
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-4 text-slate-500">${dateStr}</td>
+                            <td class="py-3.5 px-4 text-center">
+                                <span class="text-amber-400 font-black text-xs">${score} Mks</span>
+                                <span class="text-[9px] text-slate-500 block mt-0.5">(${correctQs}🟢 / ${wrongQs}🔴 / ${totalQs}⚪)</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-center text-slate-500 font-bold text-[10px] uppercase tracking-wider">
+                                Click Reference Link ↗
                             </td>
                         </tr>`;
                 });
             } catch(err) {
-                console.error("Global results sync crash:", err);
+                console.error("Global results fetch exception:", err);
                 tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-400 font-mono">Sync Error: ${err.message}</td></tr>`;
             }
         }
 
+        // 🎯 AUDIT MATRIX DEDUCTION REVIEW POPUP ENGINE (100% CRASH SAFE FROM TOUPPERCASE ANOMALIES)
         function auditStudentAnswerSheet(cacheIndex) {
             const attempt = window.adminGlobalResultsCache && window.adminGlobalResultsCache[cacheIndex];
             if (!attempt) return;
@@ -392,6 +446,7 @@
             `;
 
             const reviewBody = document.getElementById('admin-modal-body');
+            if (!reviewBody) return;
             reviewBody.innerHTML = "";
 
             let questionsArray = attempt.questions_snapshot_json;
@@ -472,11 +527,11 @@
                         <div class="bg-slate-950/60 border border-white/5 rounded-xl p-4 mt-3 space-y-2 font-sans">
                             <div class="flex items-center space-x-2 text-amber-400 font-mono text-[10px] font-black uppercase tracking-widest">
                                 <span>💡</span>
-                                <span>Official Solutions & Deduction Framework</span>
+                                <span>Official Solutions & Solution Breakdown</span>
                             </div>
                             <p class="text-xs text-slate-300 leading-relaxed font-medium">
                                 The correct matching evaluation node responds to choice <strong class="text-emerald-400 font-mono text-xs font-black bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">${correctChar}</strong>. 
-                                Competent academic structures verify that Option ${correctChar} satisfies the evaluation data optimally.
+                                Competent academic structures verify that Option ${correctChar} satisfies the evaluation context rules optimally under <strong>${subjectNameUpper}</strong> framework.
                             </p>
                         </div>
                     </div>`;
@@ -493,7 +548,7 @@
             if (event.key === 'Escape') { closeAdminReviewModal(); }
         });
 
-        // 🎯 USER INFO DYNAMIC OVERLAY ENGINE FUNCTIONS
+        // 🎯 USER LOGIN ACTIVITY TERMINAL CONTROLS
         function openUsersActivityModal() {
             document.getElementById('users-info-modal-wrapper').classList.remove('hidden');
             streamActiveUsersProfileDataset();
@@ -503,7 +558,6 @@
             document.getElementById('users-info-modal-wrapper').classList.add('hidden');
         }
 
-        // 📊 QUERY LIVE USER DATA FROM 'portal_users'
         async function streamActiveUsersProfileDataset() {
             const tbody = document.getElementById('users-auth-tbody');
             tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 font-mono text-purple-400 animate-pulse uppercase tracking-wider">Handshaking with database clusters...</td></tr>`;
@@ -548,14 +602,12 @@
                             </td>
                         </tr>`;
                 });
-
             } catch(e) { 
-                console.error("User Data Sync Exception:", e);
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-500 font-bold uppercase tracking-widest">Streaming Interrupted: ${e.message}</td></tr>`; 
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-500 font-bold uppercase tracking-widest">Streaming Interrupted.</td></tr>`; 
             }
         }
 
-        // 🎯 बॉक्स 1 फंक्शन
+        // 🎯 बॉक्स 1 फंक्शन: फ़िल्टर सिंक
         async function fetchExamsByCategory(categoryId) {
             const examSelector = document.getElementById('admin-exams-fetch-selector');
             const textareaBox = document.getElementById('exam-questions-json');
@@ -597,7 +649,7 @@
             }
         }
 
-        // 🎯 बॉक्स 2 फंक्शन
+        // 🎯 बॉक्स 2 फंक्शन: एडिटर सिंक
         async function fetchExamDataToEditor(encodedSubject) {
             const textareaBox = document.getElementById('exam-questions-json');
             if (!encodedSubject) {
@@ -863,8 +915,6 @@
 
             } catch(e) { alert("Insertion fail: " + e.message); }
         }
-
-        function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
     </script>
 </body>
 </html>
