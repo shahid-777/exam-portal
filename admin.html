@@ -153,35 +153,57 @@
         <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 shadow-xl relative">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-3 gap-3">
-                <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">Database Exam Log Repository Cluster</h3>
-                <div class="flex items-center space-x-2">
-                    <label class="text-[10px] font-mono text-slate-500 uppercase shrink-0">Filter table view:</label>
-                    <select id="admin-view-category-filter" onchange="fetchExamsOnAdminSide()" class="border border-white/10 p-2 text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none font-bold">
-                        <option value="ALL">-- Show All Categories --</option>
-                    </select>
+                <div>
+                    <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">Aspirants Exam Results & Diagnostics Cluster</h3>
+                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">Track live student submissions, scores, and audit detailed testbook-style answer sheets.</p>
                 </div>
+                <button onclick="fetchGlobalStudentResults()" class="bg-purple-600/20 text-purple-400 border border-purple-500/30 hover:bg-purple-600 hover:text-white transition font-mono text-[10px] font-black px-3 py-2 rounded-xl uppercase tracking-wider cursor-pointer">
+                    🔄 Refresh Results Stream
+                </button>
             </div>
             <div class="overflow-x-auto w-full">
                 <table class="w-full text-left text-xs">
                     <thead>
                         <tr class="border-b border-white/5 text-slate-400 font-mono uppercase tracking-wider text-[10px]">
-                            <th class="py-3 px-4">Subject Name</th>
-                            <th class="py-3 px-4">Category Association</th>
-                            <th class="py-3 px-4">Time Constraint Boundary</th>
-                            <th class="py-3 px-4 text-center">Runtime Parameters</th>
+                            <th class="py-3 px-4">Student Email</th>
+                            <th class="py-3 px-4">Subject Paper</th>
+                            <th class="py-3 px-4">Date & Time</th>
+                            <th class="py-3 px-4 text-center">Score Metrics</th>
+                            <th class="py-3 px-4 text-center">Detailed Diagnostics</th>
                         </tr>
                     </thead>
-                    <tbody id="admin-exams-tbody" class="divide-y divide-white/5 font-medium text-slate-300">
-                        <tr><td colspan="4" class="text-center py-4 font-mono text-slate-500 animate-pulse">Syncing logs...</td></tr>
+                    <tbody id="admin-results-tbody" class="divide-y divide-white/5 font-medium text-slate-300">
+                        <tr><td colspan="5" class="text-center py-4 font-mono text-slate-500 animate-pulse uppercase">Connecting to results data pipelines...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </main> 
-    
+
+    <div id="admin-review-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-white/10 w-full max-w-4xl h-[90vh] sm:h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+            
+            <div class="bg-slate-950/80 border-b border-white/5 p-4 flex items-center justify-between shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="h-2.5 w-2.5 rounded-full bg-red-500 animate-pulse"></div>
+                    <div>
+                        <h2 id="admin-modal-title" class="text-xs sm:text-sm font-black text-white font-mono uppercase tracking-widest">STUDENT ANSWER SHEET DIAGNOSTICS</h2>
+                        <p id="admin-modal-subtitle" class="text-[9px] text-slate-500 font-mono uppercase tracking-wider mt-0.5">Admin Deductive Audit Mode</p>
+                    </div>
+                </div>
+                <button onclick="closeAdminReviewModal()" class="text-[10px] font-mono font-black text-slate-400 hover:text-white bg-white/5 hover:bg-red-500/20 border border-white/10 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider">Close Panel [ESC]</button>
+            </div>
+
+            <div id="admin-modal-stats-summary" class="bg-slate-950/30 border-b border-white/5 px-6 py-3 grid grid-cols-2 sm:grid-cols-4 gap-4 shrink-0 text-center font-mono text-[10px]">
+                </div>
+
+            <div id="admin-modal-body" class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-8 bg-slate-950/10">
+                </div>
+        </div>
+    </div>
+
     <div id="users-info-modal-wrapper" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-white/10 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-            
             <div class="bg-slate-950/60 border-b border-white/5 p-4 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="h-2.5 w-2.5 rounded-full bg-purple-500 animate-pulse"></div>
@@ -212,7 +234,7 @@
         </div>
     </div>
     
-    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy;Exam Portal for Mock Tests</footer>
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
 
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
@@ -237,7 +259,7 @@
             syncMasterDashboardControls();
         };
       
-        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS (Categories Box Sync)
+        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS & RESULT ENGINE
         async function syncMasterDashboardControls() {
             try {
                 const { data: categories, error: catErr } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
@@ -282,9 +304,194 @@
                 });
 
                 fetchExamsOnAdminSide();
+                fetchGlobalStudentResults(); // छात्रों के लाइव रिजल्ट स्ट्रीम करें
 
             } catch(e) { console.error("Initialization Sync Crash:", e); }
         }
+
+        // =========================================================================
+        // 📊 🏆 ADMIN AUDIT CONTROLLER LAYER (SYNCED WITH 'public.results' SCHEMA)
+        // =========================================================================
+        async function fetchGlobalStudentResults() {
+            const tbody = document.getElementById('admin-results-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 font-mono text-purple-400 animate-pulse uppercase">Streaming records database pipeline...</td></tr>`;
+
+            try {
+                const { data: globalResults, error } = await supabaseClient
+                    .from('results')
+                    .select('*')
+                    .order('submitted_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!globalResults || globalResults.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 font-mono text-slate-500 uppercase">No student result modules logged yet.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = "";
+                window.adminGlobalResultsCache = globalResults; 
+
+                globalResults.forEach((res, index) => {
+                    const studentEmail = res.email || "Unknown Student Node";
+                    const subjectName = res.subject || "Standalone Evaluation Paper";
+                    const dateStr = res.submitted_at 
+                        ? new Date(res.submitted_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: 'numeric', minute: '2-digit' })
+                        : "N/A Corridor";
+                    
+                    const score = res.score !== undefined ? res.score : 0;
+                    const totalQs = res.total_questions || 0;
+                    const correctQs = res.correct_answers || 0;
+                    const wrongQs = res.wrong_answers || 0;
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/5 transition font-mono text-[11px]">
+                            <td class="py-3 px-4 font-sans font-semibold text-slate-300 select-all lowercase">${studentEmail}</td>
+                            <td class="py-3 px-4 font-bold text-white uppercase tracking-wide">${subjectName}</td>
+                            <td class="py-3 px-4 text-slate-500">${dateStr}</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="text-amber-400 font-black text-xs">${score} Mks</span>
+                                <span class="text-[9px] text-slate-500 block">(${correctQs}🟢 / ${wrongQs}🔴 / ${totalQs}⚪)</span>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button onclick="auditStudentAnswerSheet(${index})" class="bg-purple-600/10 hover:bg-purple-600 border border-purple-500/30 text-purple-400 hover:text-white transition text-[9px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-wider cursor-pointer">
+                                    Audit Sheet &rarr;
+                                </button>
+                            </td>
+                        </tr>`;
+                });
+            } catch(err) {
+                console.error("Global results sync crash:", err);
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-400 font-mono">Sync Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        function auditStudentAnswerSheet(cacheIndex) {
+            const attempt = window.adminGlobalResultsCache && window.adminGlobalResultsCache[cacheIndex];
+            if (!attempt) return;
+
+            const studentEmail = attempt.email || "Aspirant Corridor";
+            const subjectName = attempt.subject ? String(attempt.subject) : "EXAMINATION MOCK NODE";
+            const subjectNameUpper = subjectName.toUpperCase();
+            
+            document.getElementById('admin-modal-title').innerText = `${subjectNameUpper} — DETAILED SHEET AUDIT`;
+            document.getElementById('admin-modal-subtitle').innerText = `Auditing Logs for: ${studentEmail.toLowerCase()}`;
+            
+            const totalQ = attempt.total_questions || 0;
+            const correctQ = attempt.correct_answers || 0;
+            const accuracy = totalQ > 0 ? ((correctQ / totalQ) * 100).toFixed(1) : 0;
+            const finalScore = attempt.score !== undefined ? attempt.score : 0;
+            const wrongAnswersCount = attempt.wrong_answers !== undefined ? attempt.wrong_answers : 0;
+            
+            document.getElementById('admin-modal-stats-summary').innerHTML = `
+                <div class="border-r border-white/5"><div class="text-slate-200 font-black text-xs">${accuracy}%</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Student Accuracy</div></div>
+                <div class="border-r border-white/5"><div class="text-emerald-400 font-black text-xs">${correctQ} / ${totalQ}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Correct Answers</div></div>
+                <div class="border-r border-white/5"><div class="text-red-400 font-black text-xs">${wrongAnswersCount}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Wrong Selection</div></div>
+                <div><div class="text-blue-400 font-black text-xs">${finalScore} Mks</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Net Score Obtained</div></div>
+            `;
+
+            const reviewBody = document.getElementById('admin-modal-body');
+            reviewBody.innerHTML = "";
+
+            let questionsArray = attempt.questions_snapshot_json;
+            if (typeof questionsArray === 'string') { try { questionsArray = JSON.parse(questionsArray); } catch(e){} }
+
+            let responsesArray = attempt.user_responses_json;
+            if (typeof responsesArray === 'string') { try { responsesArray = JSON.parse(responsesArray); } catch(e){} }
+
+            if (!questionsArray || !Array.isArray(questionsArray)) {
+                reviewBody.innerHTML = `<div class="text-center py-8 text-red-400 font-mono text-xs uppercase">Snapshots dataset format is missing or corrupted.</div>`;
+                document.getElementById('admin-review-modal').classList.remove('hidden');
+                return;
+            }
+
+            questionsArray.forEach((q, idx) => {
+                const studentSelectedIdx = (responsesArray && responsesArray[idx] !== undefined) ? parseInt(responsesArray[idx]) : -1;
+                const correctIdx = q.correct !== undefined ? parseInt(q.correct) : 0;
+
+                const isCorrect = studentSelectedIdx === correctIdx;
+                const isSkipped = studentSelectedIdx === null || studentSelectedIdx === undefined || studentSelectedIdx === -1;
+                
+                let borderStyle = 'border-red-500/20 bg-red-500/[0.01]';
+                let statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-red-500/10 text-red-400 border border-red-500/20 rounded-md uppercase tracking-widest font-mono">𐄂 INCORRECT</span>';
+                
+                if (isCorrect) {
+                    borderStyle = 'border-emerald-500/20 bg-emerald-500/[0.01]';
+                    statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-md uppercase tracking-widest font-mono">✓ CORRECT</span>';
+                } else if (isSkipped) {
+                    borderStyle = 'border-slate-700/40 bg-slate-800/[0.02]';
+                    statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-slate-800 border border-white/10 text-slate-400 rounded-md uppercase tracking-widest font-mono">⚠️ SKIPPED</span>';
+                }
+
+                let optionsHtml = "";
+                const rawOptions = q.options || ["Option A", "Option B", "Option C", "Option D"];
+                
+                rawOptions.forEach((opt, optIdx) => {
+                    const optChar = String.fromCharCode(65 + optIdx);
+                    let optStyle = "bg-slate-900 border-white/5 text-slate-300";
+                    let indicatorIcon = "";
+                    let optionCharStyle = "bg-white/5 border border-white/10 text-slate-400 font-bold";
+                    
+                    if (optIdx === correctIdx) {
+                        optStyle = "bg-emerald-950/40 border-emerald-500/40 text-emerald-400 font-bold ring-1 ring-emerald-500/10";
+                        optionCharStyle = "bg-emerald-500 text-slate-950 font-black";
+                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-emerald-400 ml-auto uppercase tracking-wider">Correct Option</span>`;
+                    } else if (optIdx === studentSelectedIdx && !isCorrect) {
+                        optStyle = "bg-red-950/40 border-red-500/40 text-red-400 font-bold ring-1 ring-red-500/10";
+                        optionCharStyle = "bg-red-500 text-white font-black";
+                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-red-400 ml-auto uppercase tracking-wider">Student Choice</span>`;
+                    }
+
+                    optionsHtml += `
+                        <div class="border p-3 rounded-xl text-xs flex items-center gap-3 transition-all ${optStyle}">
+                            <span class="font-mono px-2 py-0.5 rounded text-[10px] ${optionCharStyle}">${optChar}</span>
+                            <span class="font-sans font-medium">${opt}</span>
+                            ${indicatorIcon}
+                        </div>`;
+                });
+
+                const correctChar = String.fromCharCode(65 + correctIdx);
+                const questionText = q.question || q.title || q.text || "Objective Assessment Query Node";
+                
+                reviewBody.innerHTML += `
+                    <div class="border rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl transition relative ${borderStyle}">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-2.5">
+                            <div class="text-[9px] font-mono text-slate-500 uppercase tracking-wider font-bold">
+                                <span>Question Unit Stack Node #${idx + 1}</span>
+                            </div>
+                            <div class="ml-auto sm:ml-0">${statusBadge}</div>
+                        </div>
+                        <h4 class="text-sm font-bold text-white font-sans leading-relaxed">
+                            <span class="font-mono text-slate-500 bg-white/5 px-2 py-0.5 rounded text-[11px] mr-1">Q${idx + 1}</span> 
+                            ${questionText}
+                        </h4>
+                        <div class="grid grid-cols-1 gap-2.5 pt-1">
+                            ${optionsHtml}
+                        </div>
+                        <div class="bg-slate-950/60 border border-white/5 rounded-xl p-4 mt-3 space-y-2 font-sans">
+                            <div class="flex items-center space-x-2 text-amber-400 font-mono text-[10px] font-black uppercase tracking-widest">
+                                <span>💡</span>
+                                <span>Official Solutions & Deduction Framework</span>
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed font-medium">
+                                The correct matching evaluation node responds to choice <strong class="text-emerald-400 font-mono text-xs font-black bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">${correctChar}</strong>. 
+                                Competent academic structures verify that Option ${correctChar} satisfies the evaluation data optimally.
+                            </p>
+                        </div>
+                    </div>`;
+            });
+
+            document.getElementById('admin-review-modal').classList.remove('hidden');
+        }
+
+        function closeAdminReviewModal() {
+            document.getElementById('admin-review-modal').classList.add('hidden');
+        }
+
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') { closeAdminReviewModal(); }
+        });
 
         // 🎯 USER INFO DYNAMIC OVERLAY ENGINE FUNCTIONS
         function openUsersActivityModal() {
@@ -302,7 +509,6 @@
             tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 font-mono text-purple-400 animate-pulse uppercase tracking-wider">Handshaking with database clusters...</td></tr>`;
 
             try {
-                // 'portal_users' टेबल से सीधे डेटा फेच करें
                 const { data: userProfiles, error: syncErr } = await supabaseClient
                     .from('portal_users') 
                     .select('*')
@@ -348,11 +554,6 @@
                 tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-500 font-bold uppercase tracking-widest">Streaming Interrupted: ${e.message}</td></tr>`; 
             }
         }
-
-        // Close Modal via Escape Key
-        window.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') { closeUsersActivityModal(); }
-        });
 
         // 🎯 बॉक्स 1 फंक्शन
         async function fetchExamsByCategory(categoryId) {
@@ -661,94 +862,6 @@
                 syncMasterDashboardControls();
 
             } catch(e) { alert("Insertion fail: " + e.message); }
-        }
-
-        // TOOL 1 ACTION: MANUALLY CREATE CATEGORY
-        async function createNewCategory() {
-            const name = document.getElementById('new-cat-name').value.trim();
-            if(!name) return;
-            try {
-                const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name });
-                if(error) throw error;
-                alert(`Category established!`);
-                document.getElementById('new-cat-name').value = "";
-                syncMasterDashboardControls();
-            } catch(e) { alert(e.message); }
-        }
-
-        // 🚀 इंटेलिजेंट ऑटो-पार्सर इंजन
-        function autoFormatRawTextToJSON(rawText) {
-            const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-            const questionsList = [];
-            
-            let currentQuestion = null;
-            let currentOptions = [];
-            let currentCorrect = 0;
-
-            const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
-            const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
-            const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-
-                if (questionRegex.test(line)) {
-                    if (currentQuestion) {
-                        questionsList.push({
-                            question: currentQuestion,
-                            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
-                            correct: currentCorrect
-                        });
-                    }
-                    currentQuestion = line.replace(questionRegex, '').trim();
-                    currentOptions = [];
-                    currentCorrect = 0;
-                } 
-                else if (answerRegex.test(line)) {
-                    const match = line.match(answerRegex);
-                    const ansChar = match[2].toUpperCase();
-                    if (['A', 'B', 'C', 'D'].includes(ansChar)) {
-                        currentCorrect = ansChar.charCodeAt(0) - 65;
-                    } else {
-                        currentCorrect = (parseInt(ansChar) - 1) || 0;
-                    }
-                } 
-                else if (optionRegex.test(line)) {
-                    const optionText = line.replace(optionRegex, '').trim();
-                    currentOptions.push(optionText);
-                } 
-                else {
-                    if (currentQuestion && currentOptions.length === 0) {
-                        currentQuestion += "\n" + line;
-                    } else if (currentOptions.length > 0) {
-                        currentOptions[currentOptions.length - 1] += " " + line;
-                    } else {
-                        currentQuestion = line;
-                    }
-                }
-            }
-
-            if (currentQuestion) {
-                questionsList.push({
-                    question: currentQuestion,
-                    options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
-                    correct: currentCorrect
-                });
-            }
-
-            return questionsList;
-        }
-
-        // INLINE ACTION: TIME CONTROLLER
-        async function updateExamTimingDirect(encodedSubject) {
-            const decodedSub = decodeURIComponent(encodedSubject);
-            const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
-            try {
-                const { error } = await supabaseClient.from('exams').update({ duration_minutes: parseInt(inputVal) }).eq('subject', decodedSub);
-                if(error) throw error;
-                alert(`Time limit synchronization complete.`);
-                fetchExamsOnAdminSide();
-            } catch(e) { alert(e.message); }
         }
 
         function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
