@@ -280,23 +280,7 @@
 
         let globalCategoriesArray = [];
 
-        // 🛡️ [AUTHENTICATION GATEWAY SYNC]
-        window.onload = function() {
-            const userEmail = localStorage.getItem('userEmail');
-            const userRole = localStorage.getItem('userRole');
-            const adminAuthenticated = localStorage.getItem('adminAuthenticated');
-
-            if (!userEmail || userRole !== 'admin' || adminAuthenticated !== 'true' || userEmail !== 'examportalcse@gmail.com') { 
-                console.log("Unauthorized terminal interception. Redirecting to access gate...");
-                localStorage.clear();
-                window.location.replace("admin-login.html"); 
-                return; 
-            }
-            
-            syncMasterDashboardControls();
-        };
-
-        // 🚀 GLOBAL SCOPE TEXT PARSER ENGINES (FOR ABSOLUTE ACCESSIBILITY RESOLUTION)
+        // 🛡️ [INTELLIGENT PARSER CORE ENGINE bound to global object context]
         window.autoFormatRawTextToJSON = function(rawText) {
             const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
             const questionsList = [];
@@ -358,6 +342,22 @@
 
             return questionsList;
         };
+
+        // 🛡️ [AUTHENTICATION GATEWAY SYNC]
+        window.onload = function() {
+            const userEmail = localStorage.getItem('userEmail');
+            const userRole = localStorage.getItem('userRole');
+            const adminAuthenticated = localStorage.getItem('adminAuthenticated');
+
+            if (!userEmail || userRole !== 'admin' || adminAuthenticated !== 'true' || userEmail !== 'examportalcse@gmail.com') { 
+                console.log("Unauthorized terminal interception. Redirecting to access gate...");
+                localStorage.clear();
+                window.location.replace("admin-login.html"); 
+                return; 
+            }
+            
+            syncMasterDashboardControls();
+        };
       
         // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS
         async function syncMasterDashboardControls() {
@@ -396,22 +396,24 @@
                 });
 
                 fetchExamsOnAdminSide();
-                fetchGlobalStudentResults(); // बैकग्राउंड सिंक
+                fetchGlobalStudentResults(); // बैकग्राउंड पाइपलाइन सिंक
 
             } catch(e) { console.error("Initialization Sync Crash:", e); }
         }
 
-        // 🚀 Dynamic Workspace Navigation
+        // 🚀 Dynamic Workspace Navigation Elements
         function switchToResultsLedgerView() {
             document.getElementById('admin-main-workspace').classList.add('hidden');
             document.getElementById('admin-results-ledger-workspace').classList.remove('hidden');
             fetchGlobalStudentResults();
         }
 
-        function switchToMainConsoleWorkspace() {
+        document.switchToMainConsoleWorkspace = function() {
             document.getElementById('admin-results-ledger-workspace').classList.add('hidden');
             document.getElementById('admin-main-workspace').classList.remove('hidden');
-        }
+        };
+        // Global scope alias wrapper compatibility link mapping
+        window.switchToMainConsoleWorkspace = document.switchToMainConsoleWorkspace;
 
         // =========================================================================
         // 📊 🏆 LIVE STUDENT RESULTS REFERENCE LINK PROCESSING ENGINE
@@ -600,7 +602,7 @@
             document.getElementById('admin-review-modal').classList.add('hidden');
         }
 
-        // 🎯 USER LOGIN ACTIVITY TERMINAL CONTROLS
+        // 🎯 USER INFO TERMINAL MODAL LOGIC
         function openUsersActivityModal() {
             document.getElementById('users-info-modal-wrapper').classList.remove('hidden');
             streamActiveUsersProfileDataset();
@@ -659,7 +661,7 @@
             }
         }
 
-        // 🎯 बॉक्स 1 फंक्शन: फ़िल्टर सिंक
+        // 🎯 बॉक्स 1 फंक्शन
         async function fetchExamsByCategory(categoryId) {
             const examSelector = document.getElementById('admin-exams-fetch-selector');
             const textareaBox = document.getElementById('exam-questions-json');
@@ -701,7 +703,7 @@
             }
         }
 
-        // 🎯 बॉक्स 2 फंक्शन: एडिटर सिंक
+        // 🎯 बॉक्स 2 फंक्शन (VARIABLE NAME SYNCHRONIZED COMPATIBILITY FIX)
         async function fetchExamDataToEditor(encodedSubject) {
             const textareaBox = document.getElementById('exam-questions-json');
             if (!encodedSubject) {
@@ -748,7 +750,8 @@
                     questionsArray.forEach((q, idx) => {
                         plainTextResult += `Q${idx + 1}. ${q.question || q.title || q.text || 'Objective Question'}\n`;
                         
-                        let rawOpts = q.options || q.choices || q.options_json || [];
+                        // 🚀 [FIXED SYNC]: वेरिएबल नाम का संरेखण 'rawOptions' पर लॉक किया गया
+                        let rawOptions = q.options || q.choices || q.options_json || [];
                         if (typeof rawOptions === 'string') {
                             try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
                         }
@@ -777,7 +780,7 @@
             }
         }
 
-        // 🎯 अपडेट फंक्शन (Fully Linked with global boundary handler)
+        // 🎯 अपडेट फंक्शन (Fully Linked with window object scope safety)
         async function updateExistingExamBase() {
             const trackingSubjectId = document.getElementById('current-editing-exam-id').value;
             const subjectName = document.getElementById('exam-subject-input').value;
@@ -790,7 +793,7 @@
                 return;
             }
 
-            // 🚀 फिक्स: स्कोप और नेमस्पेस सुरक्षा के तहत विंडो ऑब्जेक्ट को कॉल करना सुनिश्चित करें
+            // 🚀 स्कोप और नेमस्पेस सुरक्षा के तहत विंडो ऑब्जेक्ट को कॉल करना सुनिश्चित करें
             const formattedJsonPayload = window.autoFormatRawTextToJSON(rawTextData);
 
             try {
@@ -967,31 +970,6 @@
                 syncMasterDashboardControls();
 
             } catch(e) { alert("Insertion fail: " + e.message); }
-        }
-
-        // TOOL 1 ACTION: MANUALLY CREATE CATEGORY
-        async function createNewCategory() {
-            const name = document.getElementById('new-cat-name').value.trim();
-            if(!name) return;
-            try {
-                const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name });
-                if(error) throw error;
-                alert(`Category established!`);
-                document.getElementById('new-cat-name').value = "";
-                syncMasterDashboardControls();
-            } catch(e) { alert(e.message); }
-        }
-
-        // INLINE ACTION: TIME CONTROLLER
-        async function updateExamTimingDirect(encodedSubject) {
-            const decodedSub = decodeURIComponent(encodedSubject);
-            const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
-            try {
-                const { error } = await supabaseClient.from('exams').update({ duration_minutes: parseInt(inputVal) }).eq('subject', decodedSub);
-                if(error) throw error;
-                alert(`Time limit synchronization complete.`);
-                fetchExamsOnAdminSide();
-            } catch(e) { alert(e.message); }
         }
 
         function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
