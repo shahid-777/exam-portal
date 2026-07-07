@@ -343,11 +343,15 @@ async function fetchStudentPastExamHistory() {
 }
 
 // B. CORE REVIEW MATRIX ENGINE: PARSES QUESTIONS SNAPSHOT WITH USER RESPONSES (TESTBOOK STYLED)
+// 🎯 टेस्टबुक स्टाइल एनालिसिस इंजन (पूरी तरह से क्रैश-प्रूफ वर्शन)
 function viewDetailedExamAnalysis(cacheIndex) {
     const attempt = window.globalAttemptsCache && window.globalAttemptsCache[cacheIndex];
     if (!attempt) return;
 
-    const subjectName = attempt.subject || "EXAM";
+    // 🚀 [SAFE FALLBACK FIX]: यदि विषय (subject) NULL या undefined है, तो डिफ़ॉल्ट नाम सेट करें
+    const subjectName = attempt.subject ? String(attempt.subject) : "EXAMINATION MOCK NODE";
+    
+    // अब .toUpperCase() बिना किसी एरर के सुरक्षित रूप से चलेगा
     document.getElementById('modal-review-title').innerText = `${subjectName.toUpperCase()} — SHEET DIAGNOSTICS`;
     
     const totalQ = attempt.total_questions || 0;
@@ -357,17 +361,20 @@ function viewDetailedExamAnalysis(cacheIndex) {
     
     // टॉप स्टैट्स बार रेंडर करें
     const statsSummary = document.getElementById('modal-review-stats-summary');
-    statsSummary.innerHTML = `
-        <div class="border-r border-white/5"><div class="text-slate-200 font-black text-xs">${accuracy}%</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Your Accuracy</div></div>
-        <div class="border-r border-white/5"><div class="text-emerald-400 font-black text-xs">${correctQ} / ${totalQ}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Correct Breakdown</div></div>
-        <div class="border-r border-white/5"><div class="text-red-400 font-black text-xs">${attempt.wrong_answers || 0}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Wrong Selection</div></div>
-        <div><div class="text-blue-400 font-black text-xs">${finalScore} Mks</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Net Score Matrix</div></div>
-    `;
+    if (statsSummary) {
+        statsSummary.innerHTML = `
+            <div class="border-r border-white/5"><div class="text-slate-200 font-black text-xs">${accuracy}%</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Your Accuracy</div></div>
+            <div class="border-r border-white/5"><div class="text-emerald-400 font-black text-xs">${correctQ} / ${totalQ}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Correct Breakdown</div></div>
+            <div class="border-r border-white/5"><div class="text-red-400 font-black text-xs">${attempt.wrong_answers || 0}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Wrong Selection</div></div>
+            <div><div class="text-blue-400 font-black text-xs">${finalScore} Mks</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Net Score Matrix</div></div>
+        `;
+    }
 
     const reviewBody = document.getElementById('modal-review-body');
+    if (!reviewBody) return;
     reviewBody.innerHTML = "";
 
-    // 🚀 [JSON PARSING MATRIX]: आपके questions_snapshot_json और user_responses_json को लोड करना
+    // 🚀 [JSON PARSING MATRIX]
     let questionsArray = attempt.questions_snapshot_json;
     if (typeof questionsArray === 'string') { try { questionsArray = JSON.parse(questionsArray); } catch(e){} }
 
@@ -379,6 +386,7 @@ function viewDetailedExamAnalysis(cacheIndex) {
         return;
     }
 
+    // ... (बाकी का पूरा ओल्ड लूप कोड इसके नीचे वैसा ही रहेगा)
     questionsArray.forEach((q, idx) => {
         // आपके रिस्पॉन्स स्कीमा के हिसाब से छात्र द्वारा चुना हुआ ऑप्शन इंडेक्स ढूंढें
         // मान लेते हैं कि responsesArray में हर प्रश्न का चुना हुआ इंडेक्स स्टोर है, या डिफ़ॉल्ट रूप से q.selected मैप्ड है
