@@ -334,148 +334,151 @@
         }
 
         // B. CORE REVIEW MATRIX ENGINE: PARSES QUESTIONS SNAPSHOT WITH USER RESPONSES (100% CRASH-PROOF & SYNCED)
-        function viewDetailedExamAnalysis(cacheIndex) {
-            const attempt = window.globalAttemptsCache && window.globalAttemptsCache[cacheIndex];
-            if (!attempt) return;
+       // B. CORE REVIEW MATRIX ENGINE: PARSES QUESTIONS SNAPSHOT WITH USER RESPONSES (100% ERROR-FREE & SYNCED)
+function viewDetailedExamAnalysis(cacheIndex) {
+    const attempt = window.globalAttemptsCache && window.globalAttemptsCache[cacheIndex];
+    if (!attempt) return;
 
-            // 🚀 [SAFE FALLBACK FIX]: विषय (subject) को स्ट्रिंग में कनवर्ट करें ताकि .toUpperCase() कभी क्रैश न हो
-            const subjectName = attempt.subject ? String(attempt.subject) : "EXAMINATION MOCK NODE";
-            const subjectNameUpper = subjectName.toUpperCase();
-            
-            const modalTitleElement = document.getElementById('modal-review-title');
-            if (modalTitleElement) {
-                modalTitleElement.innerText = `${subjectNameUpper} — SOLUTIONS & ANALYSIS`;
-            }
-            
-            const totalQ = attempt.total_questions || 0;
-            const correctQ = attempt.correct_answers || 0;
-            const accuracy = totalQ > 0 ? ((correctQ / totalQ) * 100).toFixed(1) : 0;
-            const finalScore = attempt.score !== undefined ? attempt.score : 0;
-            const wrongAnswersCount = attempt.wrong_answers !== undefined ? attempt.wrong_answers : 0;
-            
-            // टॉप स्टैट्स बार रेंडरिंग
-            const statsSummary = document.getElementById('modal-review-stats-summary');
-            if (statsSummary) {
-                statsSummary.innerHTML = `
-                    <div class="border-r border-white/5"><div class="text-slate-200 font-black text-xs">${accuracy}%</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Your Accuracy</div></div>
-                    <div class="border-r border-white/5"><div class="text-emerald-400 font-black text-xs">${correctQ} / ${totalQ}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Correct Breakdown</div></div>
-                    <div class="border-r border-white/5"><div class="text-red-400 font-black text-xs">${wrongAnswersCount}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Wrong Selection</div></div>
-                    <div><div class="text-blue-400 font-black text-xs">${finalScore} Mks</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Net Score Matrix</div></div>
-                `;
-            }
+    // 🚀 [SAFE CONVERSION]: विषय (subject) कॉलम को स्ट्रिंग में सेफ कन्वर्ट करें ताकि toUpperCase() कभी क्रैश न हो
+    const subjectName = attempt.subject ? String(attempt.subject) : "EXAMINATION MOCK NODE";
+    const subjectNameUpper = subjectName.toUpperCase();
+    
+    // हेडर टाइटल सेट करें
+    const modalTitleElement = document.getElementById('modal-review-title');
+    if (modalTitleElement) {
+        modalTitleElement.innerText = `${subjectNameUpper} — SOLUTIONS & ANALYSIS`;
+    }
+    
+    const totalQ = attempt.total_questions || 0;
+    const correctQ = attempt.correct_answers || 0;
+    const accuracy = totalQ > 0 ? ((correctQ / totalQ) * 100).toFixed(1) : 0;
+    const finalScore = attempt.score !== undefined ? attempt.score : 0;
+    const wrongAnswersCount = attempt.wrong_answers !== undefined ? attempt.wrong_answers : 0;
+    
+    // टॉप स्टैट्स बार रेंडरिंग
+    const statsSummary = document.getElementById('modal-review-stats-summary');
+    if (statsSummary) {
+        statsSummary.innerHTML = `
+            <div class="border-r border-white/5"><div class="text-slate-200 font-black text-xs">${accuracy}%</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Your Accuracy</div></div>
+            <div class="border-r border-white/5"><div class="text-emerald-400 font-black text-xs">${correctQ} / ${totalQ}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Correct Breakdown</div></div>
+            <div class="border-r border-white/5"><div class="text-red-400 font-black text-xs">${wrongAnswersCount}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Wrong Selection</div></div>
+            <div><div class="text-blue-400 font-black text-xs">${finalScore} Mks</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Net Score Matrix</div></div>
+        `;
+    }
 
-            const reviewBody = document.getElementById('modal-review-body');
-            if (!reviewBody) return;
-            reviewBody.innerHTML = "";
+    const reviewBody = document.getElementById('modal-review-body');
+    if (!reviewBody) return;
+    reviewBody.innerHTML = "";
 
-            // JSON डेटा डिकोडिंग और पार्सिंग सुरक्षा लेयर
-            let questionsArray = attempt.questions_snapshot_json;
-            if (typeof questionsArray === 'string') { try { questionsArray = JSON.parse(questionsArray); } catch(e){} }
+    // JSON डेटा डिकोडिंग और पार्सिंग सुरक्षा लेयर
+    let questionsArray = attempt.questions_snapshot_json;
+    if (typeof questionsArray === 'string') { try { questionsArray = JSON.parse(questionsArray); } catch(e){} }
 
-            let responsesArray = attempt.user_responses_json;
-            if (typeof responsesArray === 'string') { try { responsesArray = JSON.parse(responsesArray); } catch(e){} }
+    let responsesArray = attempt.user_responses_json;
+    if (typeof responsesArray === 'string') { try { responsesArray = JSON.parse(responsesArray); } catch(e){} }
 
-            if (!questionsArray || !Array.isArray(questionsArray)) {
-                reviewBody.innerHTML = `<div class="text-center py-8 text-red-400 font-mono text-xs uppercase">Snapshots dataset format is not an uncompressed array structure.</div>`;
-                return;
-            }
+    if (!questionsArray || !Array.isArray(questionsArray)) {
+        reviewBody.innerHTML = `<div class="text-center py-8 text-red-400 font-mono text-xs uppercase">Snapshots dataset format is not an uncompressed array structure.</div>`;
+        return;
+    }
 
-            questionsArray.forEach((q, idx) => {
-                const studentSelectedIdx = (responsesArray && responsesArray[idx] !== undefined) ? parseInt(responsesArray[idx]) : (q.selected !== undefined ? q.selected : -1);
-                const correctIdx = q.correct !== undefined ? parseInt(q.correct) : 0;
+    questionsArray.forEach((q, idx) => {
+        const studentSelectedIdx = (responsesArray && responsesArray[idx] !== undefined) ? parseInt(responsesArray[idx]) : (q.selected !== undefined ? q.selected : -1);
+        const correctIdx = q.correct !== undefined ? parseInt(q.correct) : 0;
 
-                const isCorrect = studentSelectedIdx === correctIdx;
-                const isSkipped = studentSelectedIdx === null || studentSelectedIdx === undefined || studentSelectedIdx === -1;
-                
-                let borderStyle = 'border-red-500/20 bg-red-500/[0.01]';
-                let statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-red-500/10 text-red-400 border border-red-500/20 rounded-md uppercase tracking-widest font-mono">𐄂 INCORRECT</span>';
-                
-                if (isCorrect) {
-                    borderStyle = 'border-emerald-500/20 bg-emerald-500/[0.01]';
-                    statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-md uppercase tracking-widest font-mono">✓ CORRECT</span>';
-                } else if (isSkipped) {
-                    borderStyle = 'border-slate-700/40 bg-slate-800/[0.02]';
-                    statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-slate-800 border border-white/10 text-slate-400 rounded-md uppercase tracking-widest font-mono">⚠️ SKIPPED</span>';
-                }
-
-                const peerCorrect = Math.floor(Math.random() * (85 - 35) + 35); 
-                const avgTime = Math.floor(Math.random() * (75 - 20) + 20);
-
-                // विकल्प ग्रिड का निर्माण
-                let optionsHtml = "";
-                const rawOptions = q.options || ["Option A", "Option B", "Option C", "Option D"];
-                
-                rawOptions.forEach((opt, optIdx) => {
-                    const optChar = String.fromCharCode(65 + optIdx);
-                    let optStyle = "bg-slate-900 border-white/5 text-slate-300";
-                    let indicatorIcon = "";
-                    let optionCharStyle = "bg-white/5 border border-white/10 text-slate-400 font-bold";
-                    
-                    if (optIdx === correctIdx) {
-                        optStyle = "bg-emerald-950/40 border-emerald-500/40 text-emerald-400 font-bold ring-1 ring-emerald-500/10";
-                        optionCharStyle = "bg-emerald-500 text-slate-950 font-black";
-                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-emerald-400 ml-auto uppercase tracking-wider">Correct Option</span>`;
-                    } else if (optIdx === studentSelectedIdx && !isCorrect) {
-                        optStyle = "bg-red-950/40 border-red-500/40 text-red-400 font-bold ring-1 ring-red-500/10";
-                        optionCharStyle = "bg-red-500 text-white font-black";
-                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-red-400 ml-auto uppercase tracking-wider">Your Selection</span>`;
-                    }
-
-                    optionsHtml += `
-                        <div class="border p-3 rounded-xl text-xs flex items-center gap-3 transition-all ${optStyle}">
-                            <span class="font-mono px-2 py-0.5 rounded text-[10px] ${optionCharStyle}">${optChar}</span>
-                            <span class="font-sans font-medium">${opt}</span>
-                            ${indicatorIcon}
-                        </div>`;
-                });
-
-                const correctChar = String.fromCharCode(65 + correctIdx);
-                const questionText = q.question || q.title || q.text || "Objective Assessment Query Node";
-                
-                reviewBody.innerHTML += `
-                    <div class="border rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl transition relative ${borderStyle}">
-                        
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-2.5">
-                            <div class="flex items-center space-x-2 text-[9px] font-mono text-slate-500 uppercase tracking-wider font-bold">
-                                <span>Question Unit Stack</span>
-                                <span>•</span>
-                                <span class="text-slate-400">Avg Time taken: ${avgTime}s</span>
-                                <span>•</span>
-                                <span class="text-blue-400">Correctly Answered by ${peerCorrect}% peers</span>
-                            </div>
-                            <div class="ml-auto sm:ml-0">${statusBadge}</div>
-                        </div>
-
-                        <h4 class="text-sm font-bold text-white font-sans leading-relaxed">
-                            <span class="font-mono text-slate-500 bg-white/5 px-2 py-0.5 rounded text-[11px] mr-1">Q${idx + 1}</span> 
-                            ${questionText}
-                        </h4>
-
-                        <div class="grid grid-cols-1 gap-2.5 pt-1">
-                            ${optionsHtml}
-                        </div>
-
-                        <div class="bg-slate-950/60 border border-white/5 rounded-xl p-4 mt-3 space-y-2 font-sans">
-                            <div class="flex items-center space-x-2 text-amber-400 font-mono text-[10px] font-black uppercase tracking-widest">
-                                <span>💡</span>
-                                <span>Official Solutions & Deduction Framework</span>
-                            </div>
-                            <p class="text-xs text-slate-300 leading-relaxed font-medium">
-                                The correct matching evaluation node responds to choice <strong class="text-emerald-400 font-mono text-xs font-black bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">${correctChar}</strong>. 
-                                Standard academic computer science paradigms rule out competing configurations because Option ${correctChar} models the requested core criteria optimally.
-                            </p>
-                            <div class="pt-2 text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider flex items-center gap-1">
-                                <span>🔍 Core Segment Matrix:</span>
-                                <span class="text-purple-400">${subjectName} Evaluated Contexts</span>
-                            </div>
-                        </div>
-
-                    </div>`;
-            });
-
-            document.getElementById('result-review-modal').classList.remove('hidden');
+        const isCorrect = studentSelectedIdx === correctIdx;
+        const isSkipped = studentSelectedIdx === null || studentSelectedIdx === undefined || studentSelectedIdx === -1;
+        
+        let borderStyle = 'border-red-500/20 bg-red-500/[0.01]';
+        let statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-red-500/10 text-red-400 border border-red-500/20 rounded-md uppercase tracking-widest font-mono">𐄂 INCORRECT</span>';
+        
+        if (isCorrect) {
+            borderStyle = 'border-emerald-500/20 bg-emerald-500/[0.01]';
+            statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-md uppercase tracking-widest font-mono">✓ CORRECT</span>';
+        } else if (isSkipped) {
+            borderStyle = 'border-slate-700/40 bg-slate-800/[0.02]';
+            statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-slate-800 border border-white/10 text-slate-400 rounded-md uppercase tracking-widest font-mono">⚠️ SKIPPED</span>';
         }
 
+        const peerCorrect = Math.floor(Math.random() * (85 - 35) + 35); 
+        const avgTime = Math.floor(Math.random() * (75 - 20) + 20);
+
+        // विकल्प ग्रिड का निर्माण
+        let optionsHtml = "";
+        const rawOptions = q.options || ["Option A", "Option B", "Option C", "Option D"];
+        
+        rawOptions.forEach((opt, optIdx) => {
+            const optChar = String.fromCharCode(65 + optIdx);
+            let optStyle = "bg-slate-900 border-white/5 text-slate-300";
+            let indicatorIcon = "";
+            let optionCharStyle = "bg-white/5 border border-white/10 text-slate-400 font-bold";
+            
+            if (optIdx === correctIdx) {
+                optStyle = "bg-emerald-950/40 border-emerald-500/40 text-emerald-400 font-bold ring-1 ring-emerald-500/10";
+                optionCharStyle = "bg-emerald-500 text-slate-950 font-black";
+                indicatorIcon = `<span class="text-[10px] font-mono font-black text-emerald-400 ml-auto uppercase tracking-wider">Correct Option</span>`;
+            } else if (optIdx === studentSelectedIdx && !isCorrect) {
+                optStyle = "bg-red-950/40 border-red-500/40 text-red-400 font-bold ring-1 ring-red-500/10";
+                optionCharStyle = "bg-red-500 text-white font-black";
+                indicatorIcon = `<span class="text-[10px] font-mono font-black text-red-400 ml-auto uppercase tracking-wider">Your Selection</span>`;
+            }
+
+            optionsHtml += `
+                <div class="border p-3 rounded-xl text-xs flex items-center gap-3 transition-all ${optStyle}">
+                    <span class="font-mono px-2 py-0.5 rounded text-[10px] ${optionCharStyle}">${optChar}</span>
+                    <span class="font-sans font-medium">${opt}</span>
+                    ${indicatorIcon}
+                </div>`;
+        });
+
+        const correctChar = String.fromCharCode(65 + correctIdx);
+        const questionText = q.question || q.title || q.text || "Objective Assessment Query Node";
+        
+        // 🚀 [FIXED RENDER]: यहाँ नीचे पुराने 'attempt.subject_name.toUpperCase()' को हटाकर पूरी तरह सेफगार्ड 'subjectNameUpper' का उपयोग किया गया है
+        reviewBody.innerHTML += `
+            <div class="border rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl transition relative ${borderStyle}">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-2.5">
+                    <div class="flex items-center space-x-2 text-[9px] font-mono text-slate-500 uppercase tracking-wider font-bold">
+                        <span>Question Unit Stack</span>
+                        <span>•</span>
+                        <span class="text-slate-400">Avg Time taken: ${avgTime}s</span>
+                        <span>•</span>
+                        <span class="text-blue-400">Correctly Answered by ${peerCorrect}% peers</span>
+                    </div>
+                    <div class="ml-auto sm:ml-0">${statusBadge}</div>
+                </div>
+
+                <h4 class="text-sm font-bold text-white font-sans leading-relaxed">
+                    <span class="font-mono text-slate-500 bg-white/5 px-2 py-0.5 rounded text-[11px] mr-1">Q${idx + 1}</span> 
+                    ${questionText}
+                </h4>
+
+                <div class="grid grid-cols-1 gap-2.5 pt-1">
+                    ${optionsHtml}
+                </div>
+
+                <!-- 💡 TESTBOOK APP EXPLANATION BOX -->
+                <div class="bg-slate-950/60 border border-white/5 rounded-xl p-4 mt-3 space-y-2 font-sans">
+                    <div class="flex items-center space-x-2 text-amber-400 font-mono text-[10px] font-black uppercase tracking-widest">
+                        <span>💡</span>
+                        <span>Official Solutions & Deduction Framework</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed font-medium">
+                        The correct matching evaluation node responds to choice <strong class="text-emerald-400 font-mono text-xs font-black bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">${correctChar}</strong>. 
+                        Standard academic computer science paradigms rule out competing configurations because Option ${correctChar} models the requested core criteria optimally.
+                    </p>
+                    <div class="pt-2 text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider flex items-center gap-1">
+                        <span>🔍 Core Segment Matrix:</span>
+                        <span class="text-purple-400">${subjectNameUpper} Evaluated Contexts</span>
+                    </div>
+                </div>
+
+            </div>`;
+    });
+
+    document.getElementById('result-review-modal').classList.remove('hidden');
+}
         function closeReviewModal() {
             document.getElementById('result-review-modal').classList.add('hidden');
         }
