@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" translate="auto">
+<html lang="en" translate="no">
 <head>
     <meta name="google" content="notranslate">
     <meta charset="UTF-8">
@@ -21,38 +21,39 @@
 </head>
 <body class="bg-slate-950 font-sans min-h-screen text-slate-200 flex flex-col justify-between select-none">
 
-   <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-white/5 py-3 px-4 flex items-center justify-between shadow-lg fixed top-0 left-0 right-0 z-50">
-    <div class="flex items-center space-x-2 max-w-[50%] min-w-0">
-        <div class="bg-white/95 p-1 rounded-xl shrink-0">
-            <img src="logo.png" alt="Logo" class="h-7 w-auto object-contain" onerror="this.style.display='none'">
+    <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-white/5 py-3 px-4 flex items-center justify-between shadow-lg fixed top-0 left-0 right-0 z-50">
+        <div class="flex items-center space-x-2 max-w-[50%] min-w-0">
+            <div class="bg-white/95 p-1 rounded-xl shrink-0">
+                <img src="logo.png" alt="Logo" class="h-7 w-auto object-contain" onerror="this.style.display='none'">
+            </div>
+            <div class="flex flex-col truncate">
+                <span id="live-subject-title" class="text-[10px] sm:text-xs font-black tracking-widest text-blue-400 uppercase leading-none truncate">LOADING ASSESSMENT...</span>
+                <span class="text-[7px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5 truncate">SECURE RUNTIME MONITOR</span>
+            </div>
         </div>
-        <div class="flex flex-col truncate">
-            <span id="live-subject-title" class="text-[10px] sm:text-xs font-black tracking-widest text-blue-400 uppercase leading-none truncate">LOADING ASSESSMENT...</span>
-            <span class="text-[7px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5 truncate">SECURE RUNTIME MONITOR</span>
-        </div>
-    </div>
-    
-    <div class="flex items-center space-x-2 sm:space-x-4 shrink-0">
-        <div class="flex items-center space-x-1.5 bg-slate-900 border border-white/10 px-2 py-1 rounded-xl">
-            <label class="text-[9px] font-mono text-slate-400 uppercase hidden sm:inline">Lang:</label>
-            <select id="global-lang-selector" onchange="switchAssessmentLanguage(this.value)" class="bg-transparent text-[11px] font-bold text-white outline-none cursor-pointer">
-                <option value="en" class="bg-slate-900">EN</option>
-                <option value="hi" class="bg-slate-900">HI</option>
-            </select>
-        </div>
+        
+        <div class="flex items-center space-x-2 sm:space-x-4 shrink-0">
+            <div class="flex items-center space-x-1.5 bg-slate-950 border border-white/10 px-2 py-1 rounded-xl">
+                <label class="text-[9px] font-mono text-slate-400 uppercase hidden sm:inline">Lang:</label>
+                <select id="global-lang-selector" onchange="switchAssessmentLanguage(this.value)" class="bg-transparent text-[11px] font-bold text-white outline-none cursor-pointer">
+                    <option value="en" class="bg-slate-900">EN (English)</option>
+                    <option value="hi" class="bg-slate-900">HI (हिन्दी)</option>
+                </select>
+            </div>
 
-        <div class="bg-red-500/10 border border-red-500/20 px-2.5 sm:px-4 py-1.5 rounded-xl flex items-center space-x-1.5">
-            <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
-            <span id="time-counter-clock" class="text-[11px] sm:text-xs font-mono font-black text-red-400 tracking-widest">00:00</span>
-        </div>
+            <div class="bg-red-500/10 border border-red-500/20 px-2.5 sm:px-4 py-1.5 rounded-xl flex items-center space-x-1.5">
+                <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                <span id="time-counter-clock" class="text-[11px] sm:text-xs font-mono font-black text-red-400 tracking-widest">00:00</span>
+            </div>
 
-        <button onclick="toggleMobilePalette(true)" class="lg:hidden p-2 text-slate-400 hover:text-white hover:bg-white/5 border border-white/10 rounded-xl transition cursor-pointer" aria-label="Open Menu">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        </button>
-    </div>
-</header>
+            <button onclick="toggleMobilePalette(true)" class="lg:hidden p-2 text-slate-400 hover:text-white hover:bg-white/5 border border-white/10 rounded-xl transition cursor-pointer" aria-label="Open Menu">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
     <section class="w-full bg-slate-900/30 border-b border-white/5 py-3 px-6 sticky top-[65px] z-40 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto flex flex-wrap gap-4 items-center justify-between text-xs font-mono">
             <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -64,7 +65,7 @@
         </div>
     </section>
 
-   <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 mt-24 flex flex-col lg:flex-row gap-6 relative">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 mt-24 flex flex-col lg:flex-row gap-6 relative">
         
         <div class="flex-1 space-y-6">
             <div id="questions-pipeline-wrapper" class="space-y-6">
@@ -80,36 +81,35 @@
             </div>
         </div>
 
-<div id="palette-sidebar" class="fixed inset-y-0 right-0 z-50 w-80 max-w-[85vw] bg-slate-950 border-l border-white/10 p-5 h-screen transform translate-x-full lg:translate-x-0 lg:sticky lg:h-[calc(100vh-150px)] lg:top-[140px] lg:w-80 lg:bg-slate-900/40 lg:border lg:border-white/5 lg:rounded-2xl transition-transform duration-300 ease-in-out flex flex-col justify-start shadow-2xl">
-    
-    <div class="space-y-4 flex flex-col min-h-0 justify-start">
-        <div class="border-b border-white/5 pb-2 flex items-center justify-between">
-            <div>
-                <h4 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">Question Palette</h4>
-                <p class="text-[9px] text-slate-500 font-mono mt-0.5">Random Navigation Grid Mapping</p>
+        <div id="palette-sidebar" class="fixed inset-y-0 right-0 z-50 w-80 max-w-[85vw] bg-slate-950 border-l border-white/10 p-5 h-screen transform translate-x-full lg:translate-x-0 lg:sticky lg:h-[calc(100vh-150px)] lg:top-[140px] lg:w-80 lg:bg-slate-900/40 lg:border lg:border-white/5 lg:rounded-2xl transition-transform duration-300 ease-in-out flex flex-col justify-start shadow-2xl">
+            
+            <div class="space-y-4 flex flex-col min-h-0 justify-start w-full">
+                <div class="border-b border-white/5 pb-2 flex items-center justify-between">
+                    <div>
+                        <h4 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">Question Palette</h4>
+                        <p class="text-[9px] text-slate-500 font-mono mt-0.5">Random Navigation Grid Mapping</p>
+                    </div>
+                    <button onclick="toggleMobilePalette(false)" class="lg:hidden text-slate-400 hover:text-white font-mono text-[11px] border border-white/10 px-2 py-1 rounded-md bg-white/5 transition cursor-pointer">
+                        ✕ Close
+                    </button>
+                </div>
+                
+                <div id="palette-grid-buttons" class="grid grid-cols-5 gap-2 overflow-y-auto pr-1 max-h-[60vh] lg:max-h-[380px] items-start content-start"></div>
             </div>
-            <button onclick="toggleMobilePalette(false)" class="lg:hidden text-slate-400 hover:text-white font-mono text-[11px] border border-white/10 px-2 py-1 rounded-md bg-white/5 transition cursor-pointer">
-                ✕ Close
-            </button>
-        </div>
-        
-        <div id="palette-grid-buttons" class="grid grid-cols-5 gap-2 overflow-y-auto pr-1 max-h-[60vh] lg:max-h-[380px] items-start content-start"></div>
-    </div>
 
-    <div class="pt-3 mt-auto border-t border-white/5 space-y-1.5 text-[10px] font-mono text-slate-400 shrink-0">
-        <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-slate-800 border border-white/10 rounded"></span> <span>Unattempted (Slate)</span></div>
-        <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-green-600 rounded"></span> <span>Attempted (Green)</span></div>
-        <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-red-600 rounded"></span> <span>Marked for Review (Red)</span></div>
-    </div>
-</div>
+            <div class="pt-3 mt-auto border-t border-white/5 space-y-1.5 text-[10px] font-mono text-slate-400 shrink-0">
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-slate-800 border border-white/10 rounded"></span> <span>Unattempted (Slate)</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-green-600 rounded"></span> <span>Attempted (Green)</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-red-600 rounded"></span> <span>Marked for Review (Red)</span></div>
+            </div>
+        </div>
     </main>
 
     <footer class="w-full text-center py-3 border-t border-white/5 bg-slate-900/40 text-[9px] font-mono text-slate-600 uppercase tracking-widest mt-6">
-        &copy; Computer Science Management System Terminal
+        &copy; JECRC University CS Management System Terminal
     </footer>
 
-    
-        <script>
+    <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -120,17 +120,16 @@
         
         let userResponses = {}; 
         let markedForReviewSet = new Set();
-        
-        // 🚀 बदलाव 1: नेगेटिव मार्किंग वैल्यू को स्टोर करने के लिए ग्लोबल वेरिएबल
         let globalNegativeMarking = 0; 
+        
+        // 🚀 NEW STATE: हिंदी अनुवादों को स्थानीय मेमोरी में कैश करें ताकि बार-बार लोडिंग न हो
+        let hindiTranslationsCachePool = null;
 
-        // Mobile View Palette Show/Hide Handler
         function toggleMobilePalette(shouldShow) {
             const sidebar = document.getElementById('palette-sidebar');
-            if (shouldShow) {
-                sidebar.classList.remove('translate-x-full');
-            } else {
-                sidebar.classList.add('translate-x-full');
+            if (sidebar) {
+                if (shouldShow) sidebar.classList.remove('translate-x-full');
+                else sidebar.classList.add('translate-x-full');
             }
         }
 
@@ -156,7 +155,6 @@
 
         async function streamTargetExamJson(subjectName) {
             try {
-                // 🚀 बदलाव 2: .select() में 'negative_marking' कॉलम को भी फ़ेच करने के लिए जोड़ा गया है
                 const { data, error } = await supabaseClient
                     .from('exams')
                     .select('subject, questions_json, duration_minutes, negative_marking')
@@ -167,16 +165,17 @@
                 if (error || !data) throw new Error("Data retrieval interruption.");
 
                 document.getElementById('live-subject-title').innerText = data.subject.toUpperCase();
-                
-                // 🚀 बदलाव 3: डेटाबेस से आई वैल्यू को ग्लोबल वेरिएबल में सुरक्षित सेव करें
                 globalNegativeMarking = parseFloat(data.negative_marking) || 0;
                 
                 globalLoadedQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
                 
-                renderAssessmentLayout(); 
+                // इनिशियलाइज़ेशन ग्रिड और क्लॉक
                 renderNavigationPalette(globalLoadedQuestions.length);
                 updateLiveStatusCounters();
                 initializeRuntimeClock(parseInt(data.duration_minutes) || 60);
+                
+                // डिफ़ॉल्ट इंग्लिश रेंडर
+                renderAssessmentLayout(); 
 
             } catch (err) {
                 document.getElementById('questions-pipeline-wrapper').innerHTML = `
@@ -186,18 +185,24 @@
             }
         }
 
-        // 🚀 BULK TRANSLATION SYSTEM
+        // 🚀 BULK TRANSLATION MATRIX ENGINE
         async function translateBulkQuestions(questions, targetLang) {
             if (!questions || questions.length === 0 || targetLang === "en") return null;
-            
+            if (hindiTranslationsCachePool) return hindiTranslationsCachePool; // यदि पहले से कैश उपलब्ध है
+
             try {
                 let textSegments = [];
                 const separator = " ||| "; 
 
                 questions.forEach(q => {
-                    const qText = q.title || q.question || 'Objective Question';
+                    const qText = q.question || q.title || q.text || 'Objective Question';
                     textSegments.push(qText);
-                    (q.options || []).forEach(opt => textSegments.push(opt));
+                    
+                    let rawOpts = q.options || q.choices || q.options_json || [];
+                    if (typeof rawOpts === 'string') {
+                        try { rawOpts = JSON.parse(rawOpts); } catch(e) { rawOpts = rawOpts.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
+                    }
+                    (rawOpts || []).forEach(opt => textSegments.push(opt));
                 });
 
                 const fullPayloadText = textSegments.join(separator);
@@ -207,16 +212,19 @@
                 const json = await res.json();
                 const translatedCombinedString = json[0].map(item => item[0]).join('');
                 
-                return translatedCombinedString.split(separator).map(s => s.trim());
+                hindiTranslationsCachePool = translatedCombinedString.split(separator).map(s => s.trim());
+                return hindiTranslationsCachePool;
             } catch (e) {
-                console.error("Bulk translation error payload fallback active:", e);
+                console.error("Bulk translation api node drop:", e);
                 return null;
             }
         }
 
-        // 🔄 RENDERING PIPELINE WITH BATCH PROCESSING
+        // 🔄 COMPLEX LAYOUT COMPILER ENGINE
         async function renderAssessmentLayout() {
             const container = document.getElementById('questions-pipeline-wrapper');
+            if (!container) return;
+            
             container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing Language Layout Matrices...</div>`;
 
             let finalHtml = "";
@@ -227,13 +235,8 @@
                     const questionText = q.question || q.title || q.text || 'Objective Question';
                     
                     let rawOptions = q.options || q.choices || q.options_json || [];
-
                     if (typeof rawOptions === 'string') {
-                        try {
-                            rawOptions = JSON.parse(rawOptions);
-                        } catch(e) {
-                            rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim());
-                        }
+                        try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
                     }
 
                     let optionsHtml = "";
@@ -244,11 +247,10 @@
                                 <label class="flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2">
                                     <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
                                     <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${rawOptions[optIdx]}</span>
-                                </label>
-                            `;
+                                </label>`;
                         }
                     } else {
-                        optionsHtml = `<p class="text-[10px] text-slate-600 font-mono pl-2">⚠️ No valid options array found in data payload.</p>`;
+                        optionsHtml = `<p class="text-[10px] text-slate-600 font-mono pl-2">⚠️ No options allocated.</p>`;
                     }
 
                     finalHtml += `
@@ -259,17 +261,16 @@
                                     <h4 class="text-xs sm:text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${questionText}</h4>
                                 </div>
                                 <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-red-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition shrink-0">
-                                    ${markedForReviewSet.has(index) ? '🔴 Marked' : 'Mark Review'}
+                                    Mark Review
                                 </button>
                             </div>
-                            <div class="grid grid-cols-1 gap-1 pt-1">
-                                ${optionsHtml}
-                            </div>
-                        </div>
-                    `;
+                            <div class="grid grid-cols-1 gap-1 pt-1">${optionsHtml}</div>
+                        </div>`;
                 }
             } 
             else if (currentSelectedLanguage === "hi") {
+                container.innerHTML = `<div class="text-center font-mono text-xs text-orange-400 py-12 animate-pulse uppercase">Translating Question Matrix via Google Engine...</div>`;
+                
                 let translatedArrayPool = await translateBulkQuestions(globalLoadedQuestions, "hi");
                 let textPointerIndex = 0;
 
@@ -298,11 +299,10 @@
                                 <label class="flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2">
                                     <input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">
                                     <span class="text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium">${translatedOpt}</span>
-                                </label>
-                            `;
+                                </label>`;
                         }
                     } else {
-                        optionsHtml = `<p class="text-[10px] text-slate-600 font-mono pl-2">⚠️ No valid options array found in data payload.</p>`;
+                        optionsHtml = `<p class="text-[10px] text-slate-600 font-mono pl-2">⚠️ No options allocated.</p>`;
                     }
 
                     finalHtml += `
@@ -313,27 +313,31 @@
                                     <h4 class="text-xs sm:text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed">${translatedTitle}</h4>
                                 </div>
                                 <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-red-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition shrink-0">
-                                    ${markedForReviewSet.has(index) ? '🔴 Marked' : 'Mark Review'}
+                                    Mark Review
                                 </button>
                             </div>
-                            <div class="grid grid-cols-1 gap-1 pt-1">
-                                ${optionsHtml}
-                            </div>
-                        </div>
-                    `;
+                            <div class="grid grid-cols-1 gap-1 pt-1">${optionsHtml}</div>
+                        </div>`;
                 }
             }
 
             container.innerHTML = finalHtml;
 
+            // 🚀 [PERSISTENCE SYNC]: भाषा बदलने के बाद नेविगेशन बटन कलर्स और मार्क-स्टेटस को फिर से पेंट करें
             globalLoadedQuestions.forEach((_, index) => {
                 const pBtn = document.getElementById(`palette-btn-${index}`);
+                const mBtn = document.getElementById(`mark-btn-${index}`);
+                
                 if (markedForReviewSet.has(index)) {
-                    const mBtn = document.getElementById(`mark-btn-${index}`);
-                    if(mBtn) mBtn.classList.add("border-red-500/50", "text-red-400", "bg-red-500/10");
+                    if(mBtn) {
+                        mBtn.classList.add("border-red-500/50", "text-red-400", "bg-red-500/10");
+                        mBtn.innerText = "🔴 Marked";
+                    }
                     if(pBtn) pBtn.className = "bg-red-600 text-white font-mono text-xs font-black py-2 rounded-lg transition text-center cursor-pointer";
                 } else if (userResponses[index] !== undefined) {
                     if(pBtn) pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+                } else {
+                    if(pBtn) pBtn.className = "bg-slate-800 border border-white/10 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer text-center";
                 }
             });
         }        
@@ -345,13 +349,13 @@
 
         function renderNavigationPalette(totalCount) {
             const grid = document.getElementById('palette-grid-buttons');
+            if (!grid) return;
             grid.innerHTML = "";
             for (let i = 0; i < totalCount; i++) {
                 grid.innerHTML += `
                     <button onclick="scrollToQuestion(${i})" id="palette-btn-${i}" class="bg-slate-800 border border-white/10 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg hover:bg-slate-700 transition cursor-pointer text-center">
                         ${i + 1}
-                    </button>
-                `;
+                    </button>`;
             }
         }
 
@@ -375,7 +379,7 @@
             updateLiveStatusCounters();
             
             const pBtn = document.getElementById(`palette-btn-${qIdx}`);
-            if(!markedForReviewSet.has(qIdx)) {
+            if(pBtn && !markedForReviewSet.has(qIdx)) {
                 pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
             }
         }
@@ -384,6 +388,8 @@
             const mBtn = document.getElementById(`mark-btn-${qIdx}`);
             const pBtn = document.getElementById(`palette-btn-${qIdx}`);
             
+            if (!mBtn || !pBtn) return;
+
             if (markedForReviewSet.has(qIdx)) {
                 markedForReviewSet.delete(qIdx);
                 mBtn.classList.remove("border-red-500/50", "text-red-400", "bg-red-500/10");
@@ -409,10 +415,15 @@
             const marked = markedForReviewSet.size;
             const unattempted = total - attempted;
 
-            document.getElementById('stat-total').innerText = total;
-            document.getElementById('stat-attempted').innerText = attempted;
-            document.getElementById('stat-marked').innerText = marked;
-            document.getElementById('stat-left').innerText = unattempted;
+            const totalEl = document.getElementById('stat-total');
+            const attemptedEl = document.getElementById('stat-attempted');
+            const markedEl = document.getElementById('stat-marked');
+            const leftEl = document.getElementById('stat-left');
+
+            if (totalEl) totalEl.innerText = total;
+            if (attemptedEl) attemptedEl.innerText = attempted;
+            if (markedEl) markedEl.innerText = marked;
+            if (leftEl) leftEl.innerText = unattempted;
         }
 
         function initializeRuntimeClock(minutes) {
@@ -424,7 +435,9 @@
                 let min = Math.floor(totalSeconds / 60);
                 let sec = totalSeconds % 60;
 
-                clock.innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+                if (clock) {
+                    clock.innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+                }
                 
                 if (totalSeconds <= 0) {
                     clearInterval(networkTimerInterval);
@@ -435,67 +448,63 @@
         }
 
         async function terminateAssessmentProcess() {
-    clearInterval(networkTimerInterval);
-    
-    let totalQuestions = globalLoadedQuestions.length;
-    let correctAnswers = 0;
-    let wrongAnswers = 0;
-    let unattempted = 0;
+            clearInterval(networkTimerInterval);
+            
+            let totalQuestions = globalLoadedQuestions.length;
+            let correctAnswers = 0;
+            let wrongAnswers = 0;
+            let unattempted = 0;
 
-    globalLoadedQuestions.forEach((q, index) => {
-        const selectedOpt = userResponses[index];
-        if (selectedOpt !== undefined) {
-            if (parseInt(selectedOpt) === parseInt(q.correct)) {
-                correctAnswers++;
-            } else {
-                wrongAnswers++;
+            globalLoadedQuestions.forEach((q, index) => {
+                const selectedOpt = userResponses[index];
+                if (selectedOpt !== undefined) {
+                    if (parseInt(selectedOpt) === parseInt(q.correct)) {
+                        correctAnswers++;
+                    } else {
+                        wrongAnswers++;
+                    }
+                } else {
+                    unattempted++;
+                }
+            });
+
+            const studentEmail = localStorage.getItem('userEmail') || 'anonymous@portal.com';
+            const studentName = studentEmail.split('@')[0].toUpperCase(); 
+            const currentSubject = document.getElementById('live-subject-title').innerText;
+            
+            let calculatedScore = correctAnswers - (wrongAnswers * globalNegativeMarking); 
+            calculatedScore = parseFloat(calculatedScore.toFixed(2));
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('results')
+                    .insert([{
+                        email: studentEmail.toLowerCase(),
+                        name: studentName,                       
+                        subject: currentSubject,
+                        score: calculatedScore,   
+                        total_questions: totalQuestions,
+                        correct_answers: correctAnswers,
+                        wrong_answers: wrongAnswers,
+                        unattempted: unattempted,
+                        user_responses_json: JSON.stringify(userResponses), 
+                        questions_snapshot_json: JSON.stringify(globalLoadedQuestions), 
+                        created_at: new Date().toISOString(),
+                        submitted_at: new Date().toISOString()
+                    }])
+                    .select();
+
+                if (error) throw error;
+                
+                alert(`🎉 Test Evaluation Compiled Successfully!`);
+                const generatedId = data[0].id;
+                window.location.replace(`result-analysis.html?id=${generatedId}`);
+
+            } catch (err) {
+                console.error("Detailed Database Error:", err);
+                window.location.replace("dashboard.html");
             }
-        } else {
-            unattempted++;
         }
-    });
-
-    const studentEmail = localStorage.getItem('userEmail') || 'anonymous@portal.com';
-    const studentName = studentEmail.split('@')[0].toUpperCase(); 
-    const currentSubject = document.getElementById('live-subject-title').innerText;
-    
-   // Math.round() दशमलव वैल्यू को निकटतम पूर्णांक (जैसे 12.334 को 12) में बदल देगा
-let calculatedScore = correctAnswers - (wrongAnswers * globalNegativeMarking); 
-    
-    // .toFixed(2) का उपयोग करके दशमलव के बाद केवल 2 अंक सुरक्षित करें
-    calculatedScore = parseFloat(calculatedScore.toFixed(2));
-
-    try {
-        const { data, error } = await supabaseClient
-            .from('results')
-            .insert([{
-                email: studentEmail.toLowerCase(),
-                name: studentName,                       
-                subject: currentSubject,
-                // 🚀 फिक्स 2: यहाँ parseInt बिल्कुल न करें, सीधे float वैल्यू भेजें
-                score: calculatedScore,   
-                total_questions: totalQuestions,
-                correct_answers: correctAnswers,
-                wrong_answers: wrongAnswers,
-                unattempted: unattempted,
-                user_responses_json: JSON.stringify(userResponses), 
-                questions_snapshot_json: JSON.stringify(globalLoadedQuestions), 
-                created_at: new Date().toISOString(),
-                submitted_at: new Date().toISOString()
-            }])
-            .select();
-
-        if (error) throw error;
-        
-        alert(`🎉 Test Evaluation Compiled Successfully!`);
-        const generatedId = data[0].id;
-        window.location.replace(`result-analysis.html?id=${generatedId}`);
-
-    } catch (err) {
-        console.error("Detailed Database Error:", err);
-        window.location.replace("dashboard.html");
-    }
-        }
-        </script>
+    </script>
 </body>
 </html>
