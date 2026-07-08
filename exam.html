@@ -106,7 +106,7 @@
     </main>
 
     <footer class="w-full text-center py-3 border-t border-white/5 bg-slate-900/40 text-[9px] font-mono text-slate-600 uppercase tracking-widest mt-6">
-        &copy; Computer Science Management System Terminal
+        &copy; JECRC University CS Management System Terminal
     </footer>
 
     <script>
@@ -123,6 +123,15 @@
         let globalNegativeMarking = 0; 
         
         let hindiTranslationsCachePool = null;
+
+        // 🚀 COMBO MULTI-STAGE STATE REGISTERS
+        let isComboExamMode = false;
+        let comboMasterConfig = null; 
+        let currentComboStage = 1; 
+        
+        let comboPaper1Responses = {};
+        let comboPaper1Snapshot = [];
+        let comboPaper1NegativeMarking = 0;
 
         function toggleMobilePalette(shouldShow) {
             const sidebar = document.getElementById('palette-sidebar');
@@ -142,15 +151,69 @@
             }
 
             const urlParams = new URLSearchParams(window.location.search);
+            const comboId = urlParams.get('combo_id'); // कंबाइंड टेस्ट ट्रैकर
             const targetSubject = urlParams.get('subject');
 
-            if(!targetSubject) { 
-                window.location.replace("dashboard.html"); 
-                return; 
+            if (comboId) {
+                isComboExamMode = true;
+                currentComboStage = 1; 
+                initializeComboAssessmentPipeline(comboId);
+            } else if (targetSubject) {
+                isComboExamMode = false;
+                streamTargetExamJson(decodeURIComponent(targetSubject));
+            } else {
+                window.location.replace("dashboard.html");
             }
-            
-            streamTargetExamJson(decodeURIComponent(targetSubject));
         };
+
+        // 🔄 COMBO RUNTIME ENGINE FETCH LAYER
+        async function initializeComboAssessmentPipeline(comboId) {
+            try {
+                const { data: combo, error } = await supabaseClient
+                    .from('combo_exams')
+                    .select('*')
+                    .eq('id', parseInt(comboId))
+                    .single();
+
+                if (error || !combo) throw new Error("Combo configuration reference lost.");
+                comboMasterConfig = combo;
+
+                // 🔒 कड़ाई से केवल पेपर-1 पहले स्ट्रीम पर लोड होगा
+                await loadStageQuestionDataset(combo.paper1_subject);
+
+            } catch(e) {
+                alert("Combo Engine Fault: " + e.message);
+                window.location.replace("dashboard.html");
+            }
+        }
+
+        // 🔄 DYNAMIC STAGE APPARATUS STREAMER
+        async function loadStageQuestionDataset(subjectName) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('exams')
+                    .select('subject, questions_json, duration_minutes, negative_marking')
+                    .eq('subject', subjectName)
+                    .limit(1)
+                    .maybeSingle();
+
+                if (error || !data) throw new Error("Stage data retrieval interruption.");
+
+                document.getElementById('live-subject-title').innerText = `[STAGE-${currentComboStage}/2] ` + data.subject.toUpperCase();
+                globalNegativeMarking = parseFloat(data.negative_marking) || 0;
+                
+                globalLoadedQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
+                
+                renderNavigationPalette(globalLoadedQuestions.length);
+                updateLiveStatusCounters();
+                initializeRuntimeClock(parseInt(data.duration_minutes) || 60);
+                
+                renderAssessmentLayout(); 
+
+            } catch (err) {
+                alert("Data Pipeline Failure: " + err.message);
+            }
+        }
 
         async function streamTargetExamJson(subjectName) {
             try {
@@ -189,11 +252,8 @@
 
             try {
                 const container = document.getElementById('questions-pipeline-wrapper');
-                
-                // मूल प्रश्नों के ढांचे की डीप कॉपी तैयार करें
                 let translatedPool = JSON.parse(JSON.stringify(questions));
                 
-                // प्रत्येक प्रश्न को अलग बंडल बनाकर स्वतंत्र अनुवाद ट्रैक पर प्रोसेस करें
                 for (let index = 0; index < translatedPool.length; index++) {
                     if (container && index % 10 === 0) {
                         container.innerHTML = `<div class="text-center font-mono text-xs text-orange-400 py-12 animate-pulse uppercase">Processing Translation Packet Block (${index}/${translatedPool.length})...</div>`;
@@ -207,11 +267,9 @@
                         try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
                     }
 
-                    // सिंटैक्स क्लीनअप सुरक्षा
                     qText = qText.replace(/#/g, ' No. ').replace(/&/g, ' and ').replace(/->/g, ' arrow ');
                     rawOptions = rawOptions.map(opt => opt.replace(/#/g, ' No. ').replace(/&/g, ' and ').replace(/->/g, ' arrow '));
 
-                    // पैकेट बाइंडिंग तकनीक
                     const separator = " [xyz] ";
                     let chunkPayloadText = qText + separator + rawOptions.join(separator);
                     
@@ -226,7 +284,6 @@
                         translatedChunkString = json[0].map(item => item[0]).join('');
                     }
 
-                    // सुरक्षित रिगेक्स आधारित स्प्लिट ऑपरेशन
                     const translatedSegments = translatedChunkString.split(/\[\s*xyz\s*\]/i).map(s => s.trim());
                     
                     if (translatedSegments.length > 0) {
@@ -271,7 +328,6 @@
                 }
             }
 
-            // 1. कार्ड्स का मजबूत डोम स्केलेटन शेल इंजेक्ट करें
             for (let index = 0; index < globalLoadedQuestions.length; index++) {
                 finalHtml += `
                     <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
@@ -290,7 +346,6 @@
 
             container.innerHTML = finalHtml;
 
-            // 🚀 2. सुरक्षित रिफ्लेक्शन लेयर: सीधे ऑब्जेक्ट ब्लॉक से वैल्यू लेकर innerText में भरें (HTML Tags सुरक्षित रहेंगे)
             globalLoadedQuestions.forEach((q, index) => {
                 const card = document.getElementById(`question-card-${index}`);
                 if (!card) return;
@@ -303,7 +358,6 @@
 
                 const finalQuestionText = targetDataSource.question || targetDataSource.title || targetDataSource.text || 'Objective Question';
                 
-                // 🎯 [SAFEGUARD-1]: innerText से प्रश्न भरें ताकि HTML टैग्स स्क्रीन पर प्रिंट हों
                 if (qTitleNode) qTitleNode.innerText = finalQuestionText;
 
                 const optionsContainer = card.querySelector('.options-container-node');
@@ -323,7 +377,6 @@
                         
                         label.innerHTML = `<input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">`;
                         
-                        // 🎯 [SAFEGUARD-2]: .innerText के साथ स्पैन रेंडर करना ताकि ऑप्शंस का HTML गायब न हो
                         const optSpan = document.createElement('span');
                         optSpan.className = "text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium";
                         optSpan.innerText = opt; 
@@ -334,7 +387,6 @@
                 }
             });
 
-            // पैलेट सिंक
             globalLoadedQuestions.forEach((_, index) => {
                 const pBtn = document.getElementById(`palette-btn-${index}`);
                 const mBtn = document.getElementById(`mark-btn-${index}`);
@@ -458,33 +510,69 @@
             }, 1000);
         }
 
+        // 🛑 MULTI-STAGE INTEGRATED SUBMISSION GATEWAY (COMBO COMPATIBLE)
         async function terminateAssessmentProcess() {
             clearInterval(networkTimerInterval);
             
-            let totalQuestions = globalLoadedQuestions.length;
-            let correctAnswers = 0;
-            let wrongAnswers = 0;
-            let unattempted = 0;
+            // 🎯 [STAGE-1 INTERRUPTION CORRIDOR]: यदि पेपर-1 सबमिट हुआ है, तो प्रोग्रेस सिंक करें और तत्काल पेपर-2 लोड करें
+            if (isComboExamMode && currentComboStage === 1) {
+                comboPaper1Responses = JSON.parse(JSON.stringify(userResponses));
+                comboPaper1Snapshot = JSON.parse(JSON.stringify(globalLoadedQuestions));
+                comboPaper1NegativeMarking = globalNegativeMarking;
 
+                alert(`📝 STAGE-1 (Paper-1) Locked Successfully!\nInitializing STAGE-2 (Paper-2) Terminal Matrix Instantly. You cannot return to Paper-1.`);
+                
+                currentComboStage = 2;
+                userResponses = {}; 
+                markedForReviewSet.clear();
+                hindiTranslationsCachePool = null; 
+
+                await loadStageQuestionDataset(comboMasterConfig.paper2_subject);
+                return;
+            }
+
+            // =========================================================================
+            // 🏁 FINAL DISPATCH: कॉम्बो स्टेज-2 या सिंगल पेपर का संयुक्त स्कोर इवैल्यूएशन
+            // =========================================================================
+            let p1Correct = 0, p1Wrong = 0;
+            let p2Correct = 0, p2Wrong = 0;
+
+            // पेपर-2 (या सामान्य एकल परीक्षा) का मिलान
             globalLoadedQuestions.forEach((q, index) => {
                 const selectedOpt = userResponses[index];
                 if (selectedOpt !== undefined) {
-                    if (parseInt(selectedOpt) === parseInt(q.correct)) {
-                        correctAnswers++;
-                    } else {
-                        wrongAnswers++;
-                    }
-                } else {
-                    unattempted++;
+                    if (parseInt(selectedOpt) === parseInt(q.correct)) p2Correct++;
+                    else p2Wrong++;
                 }
             });
 
+            // यदि कंबाइंड कॉम्बो परीक्षा मोड एक्टिव था, तो बैकअप पेपर-1 का मिलान करें
+            if (isComboExamMode) {
+                comboPaper1Snapshot.forEach((q, index) => {
+                    const selectedOpt = comboPaper1Responses[index];
+                    if (selectedOpt !== undefined) {
+                        if (parseInt(selectedOpt) === parseInt(q.correct)) p1Correct++;
+                        else p1Wrong++;
+                    }
+                });
+            }
+
+            // संयुक्त मार्क्स फ़ॉर्मूला
+            let p1NetScore = p1Correct - (p1Wrong * comboPaper1NegativeMarking);
+            let p2NetScore = p2Correct - (p2Wrong * globalNegativeMarking);
+            let finalCombinedScore = isComboExamMode ? (p1NetScore + p2NetScore) : p2NetScore;
+            finalCombinedScore = parseFloat(finalCombinedScore.toFixed(2));
+
+            let totalQuestionsCount = isComboExamMode ? (comboPaper1Snapshot.length + globalLoadedQuestions.length) : globalLoadedQuestions.length;
+            let totalMaxMarks = totalQuestionsCount; 
+
+            // एडमिन कट-ऑफ बैरियर कैलकुलेटर
+            let targetCutoffPct = isComboExamMode ? parseFloat(comboMasterConfig.required_cutoff_percentage) : 40.0;
+            let cutOffPassingMarks = (totalMaxMarks * targetCutoffPct) / 100;
+
             const studentEmail = localStorage.getItem('userEmail') || 'anonymous@portal.com';
             const studentName = studentEmail.split('@')[0].toUpperCase(); 
-            const currentSubject = document.getElementById('live-subject-title').innerText;
-            
-            let calculatedScore = correctAnswers - (wrongAnswers * globalNegativeMarking); 
-            calculatedScore = parseFloat(calculatedScore.toFixed(2));
+            const currentSubject = isComboExamMode ? `COMBO: ${comboMasterConfig.combo_title}` : document.getElementById('live-subject-title').innerText;
 
             try {
                 const { data, error } = await supabaseClient
@@ -493,13 +581,13 @@
                         email: studentEmail.toLowerCase(),
                         name: studentName,                       
                         subject: currentSubject,
-                        score: calculatedScore,   
-                        total_questions: totalQuestions,
-                        correct_answers: correctAnswers,
-                        wrong_answers: wrongAnswers,
-                        unattempted: unattempted,
-                        user_responses_json: JSON.stringify(userResponses), 
-                        questions_snapshot_json: JSON.stringify(globalLoadedQuestions), 
+                        score: finalCombinedScore,   
+                        total_questions: totalQuestionsCount,
+                        correct_answers: (p1Correct + p2Correct),
+                        wrong_answers: (p1Wrong + p2Wrong),
+                        unattempted: totalQuestionsCount - ((p1Correct + p2Correct) + (p1Wrong + p2Wrong)),
+                        user_responses_json: JSON.stringify(isComboExamMode ? { paper1: comboPaper1Responses, paper2: userResponses } : userResponses), 
+                        questions_snapshot_json: JSON.stringify(isComboExamMode ? { paper1: comboPaper1Snapshot, paper2: globalLoadedQuestions } : globalLoadedQuestions), 
                         created_at: new Date().toISOString(),
                         submitted_at: new Date().toISOString()
                     }])
@@ -507,7 +595,13 @@
 
                 if (error) throw error;
                 
-                alert(`🎉 Test Evaluation Compiled Successfully!`);
+                // कट-ऑफ उत्तीर्णता संदेशों का कंडीशनल ट्रिगर
+                if (finalCombinedScore >= cutOffPassingMarks) {
+                    alert(`🎉 CONGRATULATIONS!\nYou have cleared the Exam.\nTotal Score: ${finalCombinedScore} / ${totalMaxMarks} Marks.\nRequired Cutoff was: ${targetCutoffPct}% (${cutOffPassingMarks} Mks).`);
+                } else {
+                    alert(`📢 Test Evaluation Compiled Successfully.\nTotal Score: ${finalCombinedScore} / ${totalMaxMarks} Marks.\nRequired Cutoff was: ${targetCutoffPct}% (${cutOffPassingMarks} Mks).\nStatus: Keep Practicing to clear Cutoff!`);
+                }
+
                 const generatedId = data[0].id;
                 window.location.replace(`result-analysis.html?id=${generatedId}`);
 
