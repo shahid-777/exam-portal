@@ -301,68 +301,59 @@
         let globalCategoriesArray = [];
 
         // 🚀 GLOBAL MATRIX PARSER ENGINE (HTML TAG ENCODING PROTECTED)
-        window.autoFormatRawTextToJSON = function(rawText) {
-            const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-            const questionsList = [];
-            
-            let currentQuestion = null;
-            let currentOptions = [];
-            let currentCorrect = 0;
+      // 🚀 GLOBAL MATRIX PARSER ENGINE: DATA INTERPRETATION & HTML TAG PROTECTED
+window.autoFormatRawTextToJSON = function(rawText) {
+    const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    const questionsList = [];
+    
+    let currentQuestion = null;
+    let currentOptions = [];
+    let currentCorrect = 0;
+    
+    // 🎯 DI सेफगार्ड ट्रैकर: निर्देशों और तालिकाओं को स्टोर करने के लिए वेरिएबल्स
+    let currentInstructionBlock = "";
+    let activeTableDataAccumulator = "";
+    let insideTableZone = false;
 
-            const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
-            const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
-            const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
+    // रेगुलर एक्सप्रेशंस
+    const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
+    const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
+    const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
+    const instructionRegex = /^(निर्देश|Instruction|Direction|Read the following)/i;
 
-            // 🎯 [HTML ENCODING SAFEGUARD]: < और > कैरेक्टर्स को HTML Entities में बदलने का सुरक्षित फ़ंक्शन
-            function escapeHtmlTags(text) {
-                if (!text) return "";
-                return text
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;");
-            }
+    // 🎯 HTML entities में बदलने का सुरक्षित फ़ंक्शन
+    function escapeHtmlTags(text) {
+        if (!text) return "";
+        return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
 
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
 
-                if (questionRegex.test(line)) {
-                    if (currentQuestion) {
-                        questionsList.push({
-                            question: currentQuestion,
-                            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
-                            correct: currentCorrect
-                        });
-                    }
-                    // प्रश्न के मुख्य टेक्स्ट से HTML टैग्स को एस्केप करें
-                    currentQuestion = escapeHtmlTags(line.replace(questionRegex, '').trim());
-                    currentOptions = [];
-                    currentCorrect = 0;
-                } 
-                else if (answerRegex.test(line)) {
-                    const match = line.match(answerRegex);
-                    const ansChar = match[2].toUpperCase();
-                    if (['A', 'B', 'C', 'D'].includes(ansChar)) {
-                        currentCorrect = ansChar.charCodeAt(0) - 65;
-                    } else {
-                        currentCorrect = (parseInt(ansChar) - 1) || 0;
-                    }
-                } 
-                else if (optionRegex.test(line)) {
-                    // 🎯 फिक्स: यहाँ ऑप्शन टेक्स्ट के अंदर आने वाले < और > को एस्केप किया गया है
-                    const optionText = escapeHtmlTags(line.replace(optionRegex, '').trim());
-                    currentOptions.push(optionText);
-                } 
-                else {
-                    // यदि बहु-पंक्ति (Multi-line) प्रश्न या विकल्प हैं, तो उन्हें भी सुरक्षित करें
-                    const safeLine = escapeHtmlTags(line);
-                    if (currentQuestion && currentOptions.length === 0) {
-                        currentQuestion += "\n" + safeLine;
-                    } else if (currentOptions.length > 0) {
-                        currentOptions[currentOptions.length - 1] += " " + safeLine;
-                    } else {
-                        currentQuestion = safeLine;
-                    }
-                }
-            }
+        // 1. निर्देश (Instructions) ब्लॉक का पता लगाना
+        if (instructionRegex.test(line)) {
+            currentInstructionBlock = "<b>" + escapeHtmlTags(line) + "</b>";
+            insideTableZone = false;
+            activeTableDataAccumulator = "";
+            continue;
+        }
+
+        // 2. डेटा इंटरप्रिटेशन तालिका (Table Detectors) को कैप्चर करना
+        if (line.includes("|") || line.includes("---") || line.startsWith("महीना") || line.startsWith("वर्ष") || line.includes("डेटा विभाजन")) {
+            insideTableZone = true;
+            activeTableDataAccumulator += escapeHtmlTags(line) + "<br>";
+            continue;
+        }
+
+        // 3. यदि कोई लाइन सामान्य टेक्स्ट है और टेबल के ठीक नीचे है, तो उसे टेबल का हिस्सा मानें
+        if (insideTableZone && !questionRegex.test(line) && !optionRegex.test(line) && !answerRegex.test(line)) {
+            activeTableDataAccumulator += escapeHtmlTags(line) + "<br>";
+            continue;
+        }
+
+        // 4. प्रश्न (Question) ब्लॉक का पता लगाना
+        if (questionRegex.test(line)) {
+            insideTableZone = false; // प्रश्न आते ही टेबल जोन समाप्त
 
             if (currentQuestion) {
                 questionsList.push({
@@ -372,9 +363,57 @@
                 });
             }
 
-            return questionsList;
-        };
+            // 🎯 मुख्य फिक्स: प्रश्न के ऊपर संचित निर्देश और तालिका डेटा को हेडर के रूप में जोड़ें
+            let completeQuestionHeader = "";
+            if (currentInstructionBlock) completeQuestionHeader += currentInstructionBlock + "<br>";
+            if (activeTableDataAccumulator) completeQuestionHeader += "<div class='bg-slate-950/60 p-3 rounded-xl border border-white/5 my-2 font-mono text-[11px] leading-relaxed'>" + activeTableDataAccumulator + "</div>";
 
+            const pureQuestionText = escapeHtmlTags(line.replace(questionRegex, '').trim());
+            currentQuestion = completeQuestionHeader + pureQuestionText;
+            
+            currentOptions = [];
+            currentCorrect = 0;
+        } 
+        // 5. उत्तर (Answer Key) का पता लगाना
+        else if (answerRegex.test(line)) {
+            const match = line.match(answerRegex);
+            const ansChar = match[2].toUpperCase();
+            if (['A', 'B', 'C', 'D'].includes(ansChar)) {
+                currentCorrect = ansChar.charCodeAt(0) - 65;
+            } else {
+                currentCorrect = (parseInt(ansChar) - 1) || 0;
+            }
+        } 
+        // 6. विकल्पों (Options) का पता लगाना
+        else if (optionRegex.test(line)) {
+            const optionText = escapeHtmlTags(line.replace(optionRegex, '').trim());
+            currentOptions.push(optionText);
+        } 
+        // 7. बहु-पंक्ति (Multi-line) पूरक टेक्स्ट का प्रबंधन
+        else {
+            const safeLine = escapeHtmlTags(line);
+            if (currentQuestion && currentOptions.length === 0) {
+                currentQuestion += "<br>" + safeLine;
+            } else if (currentOptions.length > 0) {
+                currentOptions[currentOptions.length - 1] += " " + safeLine;
+            } else {
+                // फॉलबैक: यदि बिना किसी ब्लॉक के स्वतंत्र टेक्स्ट है, तो इसे निर्देश मानें
+                currentInstructionBlock = "<b>" + safeLine + "</b>";
+            }
+        }
+    }
+
+    // अंतिम बचे हुए प्रश्न को एरे में धकेलें
+    if (currentQuestion) {
+        questionsList.push({
+            question: currentQuestion,
+            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
+            correct: currentCorrect
+        });
+    }
+
+    return questionsList;
+};
         // 🛡️ [AUTHENTICATION GATEWAY SYNC]
         window.onload = function() {
             const userEmail = localStorage.getItem('userEmail');
