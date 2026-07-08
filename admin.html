@@ -164,6 +164,26 @@
             </div>
         </div>
 
+        <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-pink-500 to-red-500"></div>
+            <h3 class="text-xs font-mono font-black text-pink-400 uppercase tracking-widest">🏆 Create Combined Exam (Paper-1 + Paper-2 Package)</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
+                <div class="md:col-span-2">
+                    <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Combo Exam Name</label>
+                    <input type="text" id="combo-name-input" placeholder="e.g. Pre-REET Mega Combo" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Required Cutoff %</label>
+                    <input type="number" id="combo-cutoff-input" value="40" min="1" max="100" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none font-mono text-amber-400 font-bold">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Deployment State</label>
+                    <button onclick="deployComboExamRoutine()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-black py-2.5 px-4 rounded-xl text-[11px] tracking-wider uppercase transition cursor-pointer">Deploy Combo</button>
+                </div>
+            </div>
+        </div>
+
         <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 shadow-xl relative">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-3 gap-3">
@@ -271,7 +291,7 @@
         </div>
     </div>
     
-    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; Exam Portal for Mock Tests</footer>
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
 
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
@@ -280,32 +300,70 @@
 
         let globalCategoriesArray = [];
 
-        // 🛡️ [INTELLIGENT PARSER CORE ENGINE bound to global object context]
         // 🚀 GLOBAL MATRIX PARSER ENGINE (HTML TAG ENCODING PROTECTED)
-window.autoFormatRawTextToJSON = function(rawText) {
-    const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-    const questionsList = [];
-    
-    let currentQuestion = null;
-    let currentOptions = [];
-    let currentCorrect = 0;
+        window.autoFormatRawTextToJSON = function(rawText) {
+            const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            const questionsList = [];
+            
+            let currentQuestion = null;
+            let currentOptions = [];
+            let currentCorrect = 0;
 
-    const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
-    const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
-    const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
+            const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
+            const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
+            const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
 
-    // 🎯 [HTML ENCODING SAFEGUARD]: < और > कैरेक्टर्स को HTML Entities में बदलने का सुरक्षित फ़ंक्शन
-    function escapeHtmlTags(text) {
-        if (!text) return "";
-        return text
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
-    }
+            // 🎯 [HTML ENCODING SAFEGUARD]: < और > कैरेक्टर्स को HTML Entities में बदलने का सुरक्षित फ़ंक्शन
+            function escapeHtmlTags(text) {
+                if (!text) return "";
+                return text
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;");
+            }
 
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
 
-        if (questionRegex.test(line)) {
+                if (questionRegex.test(line)) {
+                    if (currentQuestion) {
+                        questionsList.push({
+                            question: currentQuestion,
+                            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
+                            correct: currentCorrect
+                        });
+                    }
+                    // प्रश्न के मुख्य टेक्स्ट से HTML टैग्स को एस्केप करें
+                    currentQuestion = escapeHtmlTags(line.replace(questionRegex, '').trim());
+                    currentOptions = [];
+                    currentCorrect = 0;
+                } 
+                else if (answerRegex.test(line)) {
+                    const match = line.match(answerRegex);
+                    const ansChar = match[2].toUpperCase();
+                    if (['A', 'B', 'C', 'D'].includes(ansChar)) {
+                        currentCorrect = ansChar.charCodeAt(0) - 65;
+                    } else {
+                        currentCorrect = (parseInt(ansChar) - 1) || 0;
+                    }
+                } 
+                else if (optionRegex.test(line)) {
+                    // 🎯 फिक्स: यहाँ ऑप्शन टेक्स्ट के अंदर आने वाले < और > को एस्केप किया गया है
+                    const optionText = escapeHtmlTags(line.replace(optionRegex, '').trim());
+                    currentOptions.push(optionText);
+                } 
+                else {
+                    // यदि बहु-पंक्ति (Multi-line) प्रश्न या विकल्प हैं, तो उन्हें भी सुरक्षित करें
+                    const safeLine = escapeHtmlTags(line);
+                    if (currentQuestion && currentOptions.length === 0) {
+                        currentQuestion += "\n" + safeLine;
+                    } else if (currentOptions.length > 0) {
+                        currentOptions[currentOptions.length - 1] += " " + safeLine;
+                    } else {
+                        currentQuestion = safeLine;
+                    }
+                }
+            }
+
             if (currentQuestion) {
                 questionsList.push({
                     question: currentQuestion,
@@ -313,64 +371,25 @@ window.autoFormatRawTextToJSON = function(rawText) {
                     correct: currentCorrect
                 });
             }
-            // प्रश्न के मुख्य टेक्स्ट से HTML टैग्स को एस्केप करें
-            currentQuestion = escapeHtmlTags(line.replace(questionRegex, '').trim());
-            currentOptions = [];
-            currentCorrect = 0;
-        } 
-        else if (answerRegex.test(line)) {
-            const match = line.match(answerRegex);
-            const ansChar = match[2].toUpperCase();
-            if (['A', 'B', 'C', 'D'].includes(ansChar)) {
-                currentCorrect = ansChar.charCodeAt(0) - 65;
-            } else {
-                currentCorrect = (parseInt(ansChar) - 1) || 0;
+
+            return questionsList;
+        };
+
+        // 🛡️ [AUTHENTICATION GATEWAY SYNC]
+        window.onload = function() {
+            const userEmail = localStorage.getItem('userEmail');
+            const userRole = localStorage.getItem('userRole');
+            const adminAuthenticated = localStorage.getItem('adminAuthenticated');
+
+            if (!userEmail || userRole !== 'admin' || adminAuthenticated !== 'true' || userEmail !== 'examportalcse@gmail.com') { 
+                console.log("Unauthorized terminal interception. Redirecting to access gate...");
+                localStorage.clear();
+                window.location.replace("admin-login.html"); 
+                return; 
             }
-        } 
-        else if (optionRegex.test(line)) {
-            // 🎯 फिक्स: यहाँ ऑप्शन टेक्स्ट के अंदर आने वाले < और > को एस्केप किया गया है
-            const optionText = escapeHtmlTags(line.replace(optionRegex, '').trim());
-            currentOptions.push(optionText);
-        } 
-        else {
-            // यदि बहु-पंक्ति (Multi-line) प्रश्न या विकल्प हैं, तो उन्हें भी सुरक्षित करें
-            const safeLine = escapeHtmlTags(line);
-            if (currentQuestion && currentOptions.length === 0) {
-                currentQuestion += "\n" + safeLine;
-            } else if (currentOptions.length > 0) {
-                currentOptions[currentOptions.length - 1] += " " + safeLine;
-            } else {
-                currentQuestion = safeLine;
-            }
-        }
-    }
-
-    if (currentQuestion) {
-        questionsList.push({
-            question: currentQuestion,
-            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
-            correct: currentCorrect
-        });
-    }
-
-    return questionsList;
-};
-
-// 🛡️ [AUTHENTICATION GATEWAY SYNC]
-window.onload = function() {
-    const userEmail = localStorage.getItem('userEmail');
-    const userRole = localStorage.getItem('userRole');
-    const adminAuthenticated = localStorage.getItem('adminAuthenticated');
-
-    if (!userEmail || userRole !== 'admin' || adminAuthenticated !== 'true' || userEmail !== 'examportalcse@gmail.com') { 
-        console.log("Unauthorized terminal interception. Redirecting to access gate...");
-        localStorage.clear();
-        window.location.replace("admin-login.html"); 
-        return; 
-    }
-    
-    syncMasterDashboardControls();
-};
+            
+            syncMasterDashboardControls();
+        };
       
         // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS
         async function syncMasterDashboardControls() {
@@ -409,12 +428,12 @@ window.onload = function() {
                 });
 
                 fetchExamsOnAdminSide();
-                fetchGlobalStudentResults(); // बैकग्राउंड पाइपलाइन सिंक
+                fetchGlobalStudentResults(); // बैकग्राउंड सिंक
 
             } catch(e) { console.error("Initialization Sync Crash:", e); }
         }
 
-        // 🚀 Dynamic Workspace Navigation Elements
+        // 🚀 Dynamic Workspace Navigation
         function switchToResultsLedgerView() {
             document.getElementById('admin-main-workspace').classList.add('hidden');
             document.getElementById('admin-results-ledger-workspace').classList.remove('hidden');
@@ -615,7 +634,7 @@ window.onload = function() {
             document.getElementById('admin-review-modal').classList.add('hidden');
         }
 
-        // 🎯 USER INFO TERMINAL MODAL LOGIC
+        // 🎯 USER LOGIN ACTIVITY TERMINAL CONTROLS
         function openUsersActivityModal() {
             document.getElementById('users-info-modal-wrapper').classList.remove('hidden');
             streamActiveUsersProfileDataset();
@@ -674,7 +693,7 @@ window.onload = function() {
             }
         }
 
-        // 🎯 बॉक्स 1 फंक्शन
+        // 🎯 बॉक्स 1 फंक्शन: फ़िल्टर सिंक
         async function fetchExamsByCategory(categoryId) {
             const examSelector = document.getElementById('admin-exams-fetch-selector');
             const textareaBox = document.getElementById('exam-questions-json');
@@ -806,7 +825,7 @@ window.onload = function() {
                 return;
             }
 
-            // 🚀 स्कोप और नेमस्पेस सुरक्षा के तहत विंडो ऑब्जेक्ट को कॉल करना सुनिश्चित करें
+            // 🚀 फिक्स: स्कोप और नेमस्पेस सुरक्षा के तहत विंडो ऑब्जेक्ट को कॉल करना सुनिश्चित करें
             const formattedJsonPayload = window.autoFormatRawTextToJSON(rawTextData);
 
             try {
@@ -983,6 +1002,68 @@ window.onload = function() {
                 syncMasterDashboardControls();
 
             } catch(e) { alert("Insertion fail: " + e.message); }
+        }
+
+        // TOOL 1 ACTION: MANUALLY CREATE CATEGORY
+        async function createNewCategory() {
+            const name = document.getElementById('new-cat-name').value.trim();
+            if(!name) return;
+            try {
+                const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name });
+                if(error) throw error;
+                alert(`Category established!`);
+                document.getElementById('new-cat-name').value = "";
+                syncMasterDashboardControls();
+            } catch(e) { alert(e.message); }
+        }
+
+        // INLINE ACTION: TIME CONTROLLER
+        async function updateExamTimingDirect(encodedSubject) {
+            const decodedSub = decodeURIComponent(encodedSubject);
+            const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
+            try {
+                const { error } = await supabaseClient.from('exams').update({ duration_minutes: parseInt(inputVal) }).eq('subject', decodedSub);
+                if(error) throw error;
+                alert(`Time limit synchronization complete.`);
+                fetchExamsOnAdminSide();
+            } catch(e) { alert(e.message); }
+        }
+
+        // 🚀 NEW ADDITION: COMBO MULTI-STAGE DEPLOYMENT MATRIX ROUTINE
+        async function deployComboExamRoutine() {
+            const title = document.getElementById('combo-name-input').value.trim();
+            const cutoff = document.getElementById('combo-cutoff-input').value;
+            const p1 = document.getElementById('admin-exams-fetch-selector').value; // Paper-1 selection
+            const p2 = document.getElementById('map-exam-subject-select').value;    // Paper-2 selection
+
+            if(!title || !p1 || !p2) { 
+                alert("📢 Link Interrupted: Master console lacks proper selections for combo orchestration."); 
+                return; 
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('combo_exams')
+                    .insert({
+                        combo_title: title,
+                        paper1_subject: decodeURIComponent(p1),
+                        paper2_subject: decodeURIComponent(p2),
+                        required_cutoff_percentage: parseFloat(cutoff)
+                    });
+
+                if(error) throw error;
+                alert(`🎉 System Deployment Complete: Combo Exam Node [ ${title.toUpperCase()} ] established!`);
+                
+                // Fields resets
+                document.getElementById('combo-name-input').value = "";
+                document.getElementById('combo-cutoff-input').value = "40";
+                document.getElementById('admin-category-fetch-selector').value = "";
+                document.getElementById('admin-exams-fetch-selector').value = "";
+                document.getElementById('map-exam-subject-select').value = "";
+                
+            } catch(e) { 
+                alert("Combo Deployment Failure: " + e.message); 
+            }
         }
 
         function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
