@@ -260,71 +260,97 @@
         }
 
         // 📝 STEP 2: LOAD EXAMS FILTERED BY SELECTED CATEGORY ID
-        async function loadExamsSubView(categoryId, encodedCatName) {
-            const categoryName = decodeURIComponent(encodedCatName);
-            
-            document.getElementById('workspace-title').innerText = `${categoryName.toUpperCase()} — ACTIVE PAPERS`;
-            document.getElementById('workspace-desc').innerText = "Select an available test paper below to initialize live terminal examination runtime.";
-            document.getElementById('single-exams-header-title').innerText = "📋 Standalone Available Question Matrix Subjects";
-            
-            const bArrow = document.getElementById('breadcrumb-arrow');
-            const bCurrent = document.getElementById('breadcrumb-current-category');
-            bArrow.classList.remove('hidden');
-            bCurrent.classList.remove('hidden');
-            bCurrent.innerText = categoryName;
+       // 📝 STEP 2: LOAD EXAMS FILTERED BY CATEGORY (🏆 UPGRADED: HIDES COMBO SUBS)
+async function loadExamsSubView(categoryId, encodedCatName) {
+    const categoryName = decodeURIComponent(encodedCatName);
+    
+    document.getElementById('workspace-title').innerText = `${categoryName.toUpperCase()} — ACTIVE PAPERS`;
+    document.getElementById('workspace-desc').innerText = "Select an available test paper below to initialize live terminal examination runtime.";
+    document.getElementById('single-exams-header-title').innerText = "📋 Standalone Available Question Matrix Subjects";
+    
+    const bArrow = document.getElementById('breadcrumb-arrow');
+    const bCurrent = document.getElementById('breadcrumb-current-category');
+    if(bArrow) bArrow.classList.remove('hidden');
+    if(bCurrent) {
+        bCurrent.classList.remove('hidden');
+        bCurrent.innerText = categoryName;
+    }
 
-            const gridContainer = document.getElementById('portal-dynamic-grid');
-            gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase col-span-full">Filtering Test Clusters...</div>`;
+    const gridContainer = document.getElementById('portal-dynamic-grid');
+    gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase col-span-full">Filtering Test Clusters...</div>`;
 
-            try {
-                const { data: examsList, error } = await supabaseClient
-                    .from('exams')
-                    .select('subject, duration_minutes, questions_json')
-                    .eq('category_id', categoryId);
+    try {
+        // 🔒 १. सबसे पहले 'combo_exams' टेबल से उन सभी पेपर्स के नाम निकालें जो कॉम्बो में बुक हैं
+        const { data: comboList, error: comboErr } = await supabaseClient
+            .from('combo_exams')
+            .select('paper1_subject, paper2_subject');
 
-                if (error) throw error;
+        if (comboErr) throw comboErr;
 
-                if (!examsList || examsList.length === 0) {
-                    gridContainer.innerHTML = `
-                        <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
-                            No active exam templates listed inside this folder block yet.
-                        </div>`;
-                    return;
-                }
-
-                let htmlContent = "";
-                examsList.forEach(exam => {
-                    let totalQuestionsCount = 0;
-                    try {
-                        let parsedJson = typeof exam.questions_json === 'string' ? JSON.parse(exam.questions_json) : exam.questions_json;
-                        totalQuestionsCount = parsedJson ? parsedJson.length : 0;
-                    } catch(e) { totalQuestionsCount = 0; }
-
-                    htmlContent += `
-                        <div class="bg-slate-900/20 border border-white/5 hover:border-emerald-500/20 p-5 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
-                            <div class="space-y-1.5">
-                                <span class="text-[9px] font-mono font-black text-slate-500 bg-white/5 px-2 py-0.5 rounded uppercase tracking-wider">Active Evaluation Node</span>
-                                <h4 class="text-sm font-black text-slate-200 tracking-wide leading-snug uppercase pt-1">${exam.subject}</h4>
-                            </div>
-                            
-                            <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1 border-t border-white/5">
-                                <div>Questions: <span class="text-emerald-400 font-bold">${totalQuestionsCount}</span></div>
-                                <div>Duration: <span class="text-blue-400 font-bold">${exam.duration_minutes} Min</span></div>
-                            </div>
-
-                            <button onclick="initializeAssessmentRuntime('${encodeURIComponent(exam.subject)}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition transform active:scale-[0.98] cursor-pointer">
-                                Launch Live Engine
-                            </button>
-                        </div>`;
-                });
-
-                gridContainer.innerHTML = htmlContent;
-
-            } catch (err) {
-                gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-400 col-span-full">Failed to compile category elements matrix list.</div>`;
-            }
+        // सभी बुक हो चुके विषयों का एक सेफ सेट (Set) बनाएं
+        let blockedComboSubjects = new Set();
+        if (comboList) {
+            comboList.forEach(c => {
+                if(c.paper1_subject) blockedComboSubjects.add(c.paper1_subject.trim().toLowerCase());
+                if(c.paper2_subject) blockedComboSubjects.add(c.paper2_subject.trim().toLowerCase());
+            });
         }
 
+        // २. अब इस विशिष्ट कैटेगरी के सभी एग्जाम्स डेटाबेस से उठाएं
+        const { data: examsList, error } = await supabaseClient
+            .from('exams')
+            .select('subject, duration_minutes, questions_json')
+            .eq('category_id', categoryId);
+
+        if (error) throw error;
+
+        // 🔒 ३. [EXCLUSION FILTER]: केवल वही पेपर रखें जो कॉम्बो सेट (blockedComboSubjects) का हिस्सा नहीं हैं
+        const filteredExamsList = (examsList || []).filter(exam => {
+            const subjectKey = exam.subject ? exam.subject.trim().toLowerCase() : "";
+            return !blockedComboSubjects.has(subjectKey);
+        });
+
+        if (filteredExamsList.length === 0) {
+            gridContainer.innerHTML = `
+                <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
+                    No standalone single papers active inside this folder.
+                </div>`;
+            return;
+        }
+
+        let htmlContent = "";
+        filteredExamsList.forEach(exam => {
+            let totalQuestionsCount = 0;
+            try {
+                let parsedJson = typeof exam.questions_json === 'string' ? JSON.parse(exam.questions_json) : exam.questions_json;
+                totalQuestionsCount = parsedJson ? parsedJson.length : 0;
+            } catch(e) { totalQuestionsCount = 0; }
+
+            htmlContent += `
+                <div class="bg-slate-900/20 border border-white/5 hover:border-emerald-500/20 p-5 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5">
+                        <span class="text-[9px] font-mono font-black text-slate-500 bg-white/5 px-2 py-0.5 rounded uppercase tracking-wider">Active Evaluation Node</span>
+                        <h4 class="text-sm font-black text-slate-200 tracking-wide leading-snug uppercase pt-1">${exam.subject}</h4>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1 border-t border-white/5">
+                        <div>Questions: <span class="text-emerald-400 font-bold">${totalQuestionsCount}</span></div>
+                        <div>Duration: <span class="text-blue-400 font-bold">${exam.duration_minutes} Min</span></div>
+                    </div>
+
+                    <button onclick="initializeAssessmentRuntime('${encodeURIComponent(exam.subject)}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition transform active:scale-[0.98] cursor-pointer">
+                        Launch Live Engine
+                    </button>
+                </div>`;
+        });
+
+        gridContainer.innerHTML = htmlContent;
+
+    } catch (err) {
+        console.error(err);
+        gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-400 col-span-full">Failed to compile category elements matrix list.</div>`;
+    }
+}
         function initializeAssessmentRuntime(encodedSubject) {
             if(confirm("Confirm action: Do you want to initialize and authorize this secure exam session now?")) {
                 window.location.href = `exam.html?subject=${encodedSubject}`;
