@@ -281,57 +281,31 @@
         let globalCategoriesArray = [];
 
         // 🛡️ [INTELLIGENT PARSER CORE ENGINE bound to global object context]
-        window.autoFormatRawTextToJSON = function(rawText) {
-            const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-            const questionsList = [];
-            
-            let currentQuestion = null;
-            let currentOptions = [];
-            let currentCorrect = 0;
+        // 🚀 GLOBAL MATRIX PARSER ENGINE (HTML TAG ENCODING PROTECTED)
+window.autoFormatRawTextToJSON = function(rawText) {
+    const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    const questionsList = [];
+    
+    let currentQuestion = null;
+    let currentOptions = [];
+    let currentCorrect = 0;
 
-            const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
-            const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
-            const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
+    const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
+    const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
+    const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
 
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
+    // 🎯 [HTML ENCODING SAFEGUARD]: < और > कैरेक्टर्स को HTML Entities में बदलने का सुरक्षित फ़ंक्शन
+    function escapeHtmlTags(text) {
+        if (!text) return "";
+        return text
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
 
-                if (questionRegex.test(line)) {
-                    if (currentQuestion) {
-                        questionsList.push({
-                            question: currentQuestion,
-                            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
-                            correct: currentCorrect
-                        });
-                    }
-                    currentQuestion = line.replace(questionRegex, '').trim();
-                    currentOptions = [];
-                    currentCorrect = 0;
-                } 
-                else if (answerRegex.test(line)) {
-                    const match = line.match(answerRegex);
-                    const ansChar = match[2].toUpperCase();
-                    if (['A', 'B', 'C', 'D'].includes(ansChar)) {
-                        currentCorrect = ansChar.charCodeAt(0) - 65;
-                    } else {
-                        currentCorrect = (parseInt(ansChar) - 1) || 0;
-                    }
-                } 
-                else if (optionRegex.test(line)) {
-                    const optionText = line.replace(optionRegex, '').trim();
-                    currentOptions.push(optionText);
-                } 
-                else {
-                    if (currentQuestion && currentOptions.length === 0) {
-                        currentQuestion += "\n" + line;
-                    } else if (currentOptions.length > 0) {
-                        currentOptions[currentOptions.length - 1] += " " + line;
-                    } else {
-                        currentQuestion = line;
-                    }
-                }
-            }
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
 
+        if (questionRegex.test(line)) {
             if (currentQuestion) {
                 questionsList.push({
                     question: currentQuestion,
@@ -339,25 +313,64 @@
                     correct: currentCorrect
                 });
             }
-
-            return questionsList;
-        };
-
-        // 🛡️ [AUTHENTICATION GATEWAY SYNC]
-        window.onload = function() {
-            const userEmail = localStorage.getItem('userEmail');
-            const userRole = localStorage.getItem('userRole');
-            const adminAuthenticated = localStorage.getItem('adminAuthenticated');
-
-            if (!userEmail || userRole !== 'admin' || adminAuthenticated !== 'true' || userEmail !== 'examportalcse@gmail.com') { 
-                console.log("Unauthorized terminal interception. Redirecting to access gate...");
-                localStorage.clear();
-                window.location.replace("admin-login.html"); 
-                return; 
+            // प्रश्न के मुख्य टेक्स्ट से HTML टैग्स को एस्केप करें
+            currentQuestion = escapeHtmlTags(line.replace(questionRegex, '').trim());
+            currentOptions = [];
+            currentCorrect = 0;
+        } 
+        else if (answerRegex.test(line)) {
+            const match = line.match(answerRegex);
+            const ansChar = match[2].toUpperCase();
+            if (['A', 'B', 'C', 'D'].includes(ansChar)) {
+                currentCorrect = ansChar.charCodeAt(0) - 65;
+            } else {
+                currentCorrect = (parseInt(ansChar) - 1) || 0;
             }
-            
-            syncMasterDashboardControls();
-        };
+        } 
+        else if (optionRegex.test(line)) {
+            // 🎯 फिक्स: यहाँ ऑप्शन टेक्स्ट के अंदर आने वाले < और > को एस्केप किया गया है
+            const optionText = escapeHtmlTags(line.replace(optionRegex, '').trim());
+            currentOptions.push(optionText);
+        } 
+        else {
+            // यदि बहु-पंक्ति (Multi-line) प्रश्न या विकल्प हैं, तो उन्हें भी सुरक्षित करें
+            const safeLine = escapeHtmlTags(line);
+            if (currentQuestion && currentOptions.length === 0) {
+                currentQuestion += "\n" + safeLine;
+            } else if (currentOptions.length > 0) {
+                currentOptions[currentOptions.length - 1] += " " + safeLine;
+            } else {
+                currentQuestion = safeLine;
+            }
+        }
+    }
+
+    if (currentQuestion) {
+        questionsList.push({
+            question: currentQuestion,
+            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
+            correct: currentCorrect
+        });
+    }
+
+    return questionsList;
+};
+
+// 🛡️ [AUTHENTICATION GATEWAY SYNC]
+window.onload = function() {
+    const userEmail = localStorage.getItem('userEmail');
+    const userRole = localStorage.getItem('userRole');
+    const adminAuthenticated = localStorage.getItem('adminAuthenticated');
+
+    if (!userEmail || userRole !== 'admin' || adminAuthenticated !== 'true' || userEmail !== 'examportalcse@gmail.com') { 
+        console.log("Unauthorized terminal interception. Redirecting to access gate...");
+        localStorage.clear();
+        window.location.replace("admin-login.html"); 
+        return; 
+    }
+    
+    syncMasterDashboardControls();
+};
       
         // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS
         async function syncMasterDashboardControls() {
