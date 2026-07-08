@@ -103,24 +103,7 @@
 
                     <div class="sm:col-span-2">
                         <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">📋 Questions Array Dataset (Plain Text or JSON Format)</label>
-                        <textarea id="exam-questions-json" rows="6" placeholder='Paste plain text MCQs directly or structured JSON framework here...' class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none focus:border-blue-500/30 transition"></textarea>
-                    </div>
-
-                    <div class="sm:col-span-2 space-y-2">
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider">🖼️ Inject Image Into Current Question Node (Optional)</label>
-                        <div id="image-dropzone" class="border-2 border-dashed border-white/10 hover:border-blue-500/40 bg-slate-900/60 rounded-xl p-4 text-center cursor-pointer transition flex flex-col items-center justify-center space-y-1 group">
-                            <span class="text-lg group-hover:scale-110 transition duration-200">💧</span>
-                            <p class="text-[11px] font-mono text-slate-400">Drag & Drop an image here or <span class="text-blue-400 underline">Browse File</span></p>
-                            <p class="text-[9px] text-slate-500 font-sans">(PNG, JPG, JPEG — Auto-encoded to Base64 Struct)</p>
-                            <input type="file" id="hidden-image-input" accept="image/*" class="hidden">
-                        </div>
-                        <div id="image-preview-container" class="hidden flex items-center space-x-3 bg-slate-950/40 border border-white/5 p-2 rounded-xl w-fit">
-                            <img id="dz-preview-img" src="" class="h-12 w-auto object-contain rounded-lg border border-white/10">
-                            <div class="text-left font-mono">
-                                <p class="text-[10px] text-slate-300 truncate max-w-[150px]" id="dz-file-name">image.png</p>
-                                <button type="button" onclick="removeSelectedImage()" class="text-[9px] text-red-400 hover:text-red-300 font-bold block mt-0.5 uppercase">&times; Remove Image</button>
-                            </div>
-                        </div>
+                        <textarea id="exam-questions-json" rows="12" placeholder="Paste plain text MCQs directly OR drop structured JSON array format node here..." class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none focus:border-blue-500/30 transition"></textarea>
                     </div>
 
                     <div class="sm:col-span-2 pt-1">
@@ -201,7 +184,7 @@
             </div>
         </div>
 
-        <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-4 shadow-xl relative">
+        <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 shadow-xl relative">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-3 gap-3">
                 <h3 class="text-xs font-mono font-black text-purple-400 uppercase tracking-widest">Database Exam Log Repository Cluster</h3>
@@ -316,10 +299,65 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let globalCategoriesArray = [];
-        let currentBase64ImageData = ""; // 🖼️ GLOBAL REPOSITORY IMAGE BUFFER REGISTER
 
-        // 🚀 GLOBAL PARSER ENGINE: DATA INTERPRETATION & HTML TAG PROTECTED
+        // 🚀 SMART HYBRID DUAL PARSER ENGINE: PROCESSES BOTH PLAIN TEXT AND JSON STREAM DATA
         window.autoFormatRawTextToJSON = function(rawText) {
+            const trimmedInput = rawText.trim();
+            
+            // 🛡️ [STAGE-1: VALID JSON STRUCT MATRIX]
+            if (trimmedInput.startsWith('[') && trimmedInput.endsWith(']')) {
+                try {
+                    const parsedJson = JSON.parse(trimmedInput);
+                    return parsedJson.map(item => {
+                        let optionsArray = [];
+                        
+                        // Convert Object Options {"A":"1", "B":"2"} to Array ["1", "2"]
+                        if (Array.isArray(item.options)) {
+                            optionsArray = item.options;
+                        } else if (typeof item.options === 'object' && item.options !== null) {
+                            optionsArray = Object.values(item.options);
+                        } else {
+                            optionsArray = ["Option A", "Option B", "Option C", "Option D"];
+                        }
+
+                        // Parse Correct Index mapping dynamically
+                        let correctIndex = 0;
+                        let rawAnswer = item.correct !== undefined ? item.correct : item.answer;
+                        if (typeof rawAnswer === 'string') {
+                            const cleanAns = rawAnswer.trim().toUpperCase();
+                            if (['A', 'B', 'C', 'D'].includes(cleanAns)) {
+                                correctIndex = cleanAns.charCodeAt(0) - 65;
+                            } else {
+                                correctIndex = parseInt(cleanAns) || 0;
+                            }
+                        } else if (typeof rawAnswer === 'number') {
+                            correctIndex = rawAnswer;
+                        }
+
+                        // Append multi-row question headers safely (handles Markdown Tables)
+                        let baseQuestionText = item.question || item.title || item.text || "Objective Question Node";
+                        if (item.question_info) {
+                            baseQuestionText = item.question_info + "<br><br>" + baseQuestionText;
+                        }
+
+                        // If markdown tables exist inside JSON text, map them instantly
+                        if (baseQuestionText.includes('|')) {
+                            baseQuestionText = baseQuestionText.replace(/\n/g, '<br>').replace(/\\n/g, '<br>');
+                        }
+
+                        return {
+                            question: baseQuestionText,
+                            image_url: item.image_url || item.image || "",
+                            options: optionsArray,
+                            correct: correctIndex
+                        };
+                    });
+                } catch (e) {
+                    console.warn("Direct JSON payload failure. Re-routing compiler down to fallback plain text runner.", e);
+                }
+            }
+
+            // 📝 [STAGE-2: PLAIN-TEXT TEXT PARSER COMPILER FALLBACK]
             const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
             const questionsList = [];
             
@@ -345,19 +383,15 @@
 
             function compileHtmlTableMarkup(rawRows) {
                 if(rawRows.length === 0) return "";
-                
-                let tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-white/10 shadow-xl bg-slate-900/60">
-                                    <table class="min-w-full divide-y divide-white/10 text-xs font-sans text-left">`;
-                
+                let tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-white/10 shadow-xl bg-slate-900/60"><table class="min-w-full divide-y divide-white/10 text-xs font-sans text-left">`;
                 rawRows.forEach((row, rIdx) => {
                     let columns = row.split(/\s{2,}|\t/).filter(c => c.trim().length > 0);
-                    if(columns.length <= 1) {
-                        columns = row.split(" ").filter(c => c.trim().length > 0);
-                    }
-
+                    if(columns.length <= 1) { columns = row.split(" ").filter(c => c.trim().length > 0); }
+                    if(columns.length <= 1) { columns = row.split("|").filter(c => c.trim().length > 0 && !c.includes('---')); }
+                    if(columns.length === 0) return;
+                    
                     const rowBg = rIdx % 2 === 0 ? "bg-slate-900/40" : "bg-slate-950/20";
                     tableHtml += `<tr class="${rowBg} hover:bg-white/5 transition">`;
-                    
                     columns.forEach(col => {
                         if(rIdx === 0) {
                             tableHtml += `<th class="px-4 py-3 font-black text-slate-200 tracking-wider bg-slate-800/50 text-[11px] uppercase border border-white/5">${col.trim()}</th>`;
@@ -367,56 +401,45 @@
                     });
                     tableHtml += `</tr>`;
                 });
-                
                 tableHtml += `</table></div>`;
                 return tableHtml;
             }
 
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
-
                 if (instructionRegex.test(line)) {
                     currentInstructionBlock = "<div class='text-amber-400 font-bold mb-1'>" + window.escapeHtmlTags(line) + "</div>";
                     insideTableZone = false;
                     capturedTableRows = [];
                     continue;
                 }
-
-                if (line.includes("शोरूम") || line.includes("महीना") || line.includes("वर्ष") || line.includes("जिला") || line.startsWith("जनवरी") || line.startsWith("फरवरी") || line.startsWith("मार्च") || line.startsWith("अप्रैल") || line.startsWith("मई")) {
+                if (line.includes("शोरूम") || line.includes("महीना") || line.includes("वर्ष") || line.includes("जिला") || line.startsWith("जनवरी") || line.startsWith("फरवरी") || line.startsWith("मार्च") || line.startsWith("अप्रैल") || line.startsWith("मई") || line.startsWith("|")) {
                     insideTableZone = true;
                     capturedTableRows.push(line);
                     continue;
                 }
-
                 if (insideTableZone && !questionRegex.test(line) && !optionRegex.test(line) && !answerRegex.test(line)) {
                     capturedTableRows.push(line);
                     continue;
                 }
-
                 if (questionRegex.test(line)) {
                     insideTableZone = false;
-
                     if (currentQuestion) {
                         questionsList.push({
                             question: currentQuestion,
+                            image_url: "",
                             options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
                             correct: currentCorrect
                         });
                     }
-
                     let completeQuestionHeader = "";
                     if (currentInstructionBlock) completeQuestionHeader += currentInstructionBlock;
-                    if (capturedTableRows.length > 0) {
-                        completeQuestionHeader += compileHtmlTableMarkup(capturedTableRows);
-                    }
-
+                    if (capturedTableRows.length > 0) { completeQuestionHeader += compileHtmlTableMarkup(capturedTableRows); }
                     const pureQuestionText = window.escapeHtmlTags(line.replace(questionRegex, '').trim());
                     currentQuestion = completeQuestionHeader + `<div class="mt-2 text-slate-100 font-semibold">${pureQuestionText}</div>`;
-                    
                     currentOptions = [];
                     currentCorrect = 0;
-                } 
-                else if (answerRegex.test(line)) {
+                } else if (answerRegex.test(line)) {
                     const match = line.match(answerRegex);
                     const ansChar = match[2].toUpperCase();
                     if (['A', 'B', 'C', 'D'].includes(ansChar)) {
@@ -424,12 +447,10 @@
                     } else {
                         currentCorrect = (parseInt(ansChar) - 1) || 0;
                     }
-                } 
-                else if (optionRegex.test(line)) {
+                } else if (optionRegex.test(line)) {
                     const optionText = window.escapeHtmlTags(line.replace(optionRegex, '').trim());
                     currentOptions.push(optionText);
-                } 
-                else {
+                } else {
                     if (currentQuestion && currentOptions.length === 0) {
                         currentQuestion += "<br>" + window.escapeHtmlTags(line);
                     } else if (currentOptions.length > 0) {
@@ -441,65 +462,27 @@
             if (currentQuestion) {
                 questionsList.push({
                     question: currentQuestion,
+                    image_url: "",
                     options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
                     correct: currentCorrect
                 });
             }
-
             return questionsList;
         };
 
-        // 🖼️ NEW DYNAMIC IMAGE DROPZONE MATRIX INITIALIZER
-        document.addEventListener("DOMContentLoaded", () => {
-            const dropzone = document.getElementById('image-dropzone');
-            const fileInput = document.getElementById('hidden-image-input');
-
-            if(dropzone && fileInput) {
-                dropzone.onclick = () => fileInput.click();
-                fileInput.onchange = (e) => processSelectedImageFile(e.target.files[0]);
-
-                dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('border-blue-500/40', 'bg-blue-500/5'); };
-                dropzone.ondragleave = () => { dropzone.classList.remove('border-blue-500/40', 'bg-blue-500/5'); };
-                dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('border-blue-500/40', 'bg-blue-500/5'); processSelectedImageFile(e.dataTransfer.files[0]); };
-            }
-        });
-
-        function processSelectedImageFile(file) {
-            if (!file || !file.type.startsWith('image/')) { alert("Please select a valid image file node."); return; }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentBase64ImageData = e.target.result; 
-                document.getElementById('dz-preview-img').src = currentBase64ImageData;
-                document.getElementById('dz-file-name').innerText = file.name;
-                document.getElementById('image-preview-container').classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function removeSelectedImage() {
-            currentBase64ImageData = "";
-            document.getElementById('hidden-image-input').value = "";
-            document.getElementById('image-preview-container').classList.add('hidden');
-        }
-
-        // 🛡️ [AUTHENTICATION GATEWAY SYNC]
         window.onload = function() {
             const userEmail = localStorage.getItem('userEmail');
             const userRole = localStorage.getItem('userRole');
             const adminAuthenticated = localStorage.getItem('adminAuthenticated');
 
             if (!userEmail || userRole !== 'admin' || adminAuthenticated !== 'true' || userEmail !== 'examportalcse@gmail.com') { 
-                console.log("Unauthorized terminal interception. Redirecting to access gate...");
                 localStorage.clear();
                 window.location.replace("admin-login.html"); 
                 return; 
             }
-            
             syncMasterDashboardControls();
         };
       
-        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS
         async function syncMasterDashboardControls() {
             try {
                 const { data: categories, error: catErr } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
@@ -881,30 +864,12 @@
                     try { questionsArray = JSON.parse(questionsArray); } catch(jsonErr) {}
                 }
 
-                let plainTextResult = "";
                 if (questionsArray && Array.isArray(questionsArray)) {
-                    questionsArray.forEach((q, idx) => {
-                        plainTextResult += `Q${idx + 1}. ${q.question || q.title || q.text || 'Objective Question'}\n`;
-                        
-                        let rawOptions = q.options || q.choices || q.options_json || [];
-                        if (typeof rawOptions === 'string') {
-                            try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
-                        }
-
-                        if (Array.isArray(rawOptions)) {
-                            rawOptions.forEach((opt, optIdx) => {
-                                const optChar = String.fromCharCode(65 + optIdx); 
-                                plainTextResult += `${optChar}) ${opt}\n`;
-                            });
-                        }
-                        
-                        const ansChar = String.fromCharCode(65 + (parseInt(q.correct) || 0));
-                        plainTextResult += `Answer: ${ansChar}\n\n`;
-                    });
+                    if (textareaBox) {
+                        textareaBox.value = JSON.stringify(questionsArray, null, 2);
+                    }
                 }
 
-                if(textareaBox) textareaBox.value = plainTextResult.trim();
-                
                 const btnDeploy = document.getElementById('btn-deploy-main');
                 const btnUpdate = document.getElementById('btn-update-main');
                 if(btnDeploy) btnDeploy.classList.add('hidden');
@@ -915,7 +880,6 @@
             }
         }
 
-        // 🎯 अपडेट फंक्शन (Fully Linked with window object scope safety)
         async function updateExistingExamBase() {
             const trackingSubjectId = document.getElementById('current-editing-exam-id').value;
             const subjectName = document.getElementById('exam-subject-input').value;
@@ -930,11 +894,6 @@
 
             let formattedJsonPayload = window.autoFormatRawTextToJSON(rawTextData);
 
-            // 🖼️ PERSIST IMAGE SNAPSHOT IN CASE OF UPDATE OPERATIONS
-            if (currentBase64ImageData !== "" && formattedJsonPayload.length > 0) {
-                formattedJsonPayload[0].q_image = currentBase64ImageData;
-            }
-
             try {
                 const { error } = await supabaseClient
                     .from('exams')
@@ -948,7 +907,6 @@
                 if (error) throw error;
                 
                 alert(`🎉 Success: Exam dataset for [ ${subjectName.toUpperCase()} ] updated!`);
-                removeSelectedImage();
                 
                 document.getElementById('exam-questions-json').value = "";
                 document.getElementById('exam-subject-input').value = "";
@@ -968,7 +926,6 @@
             }
         }
 
-        // 🔄 LIVE REPOSITORY GRID LOADER 
         async function fetchExamsOnAdminSide() {
             const tbody = document.getElementById('admin-exams-tbody');
             const targetFilterValue = document.getElementById('admin-view-category-filter').value;
@@ -1008,7 +965,6 @@
             } catch(err) { tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Sync Error: ${err.message}</td></tr>`; }
         }
 
-        // 🎯 CRITICAL ADVANCED MULTI-MAPPING CONTROLLER
         async function mapExamToCategoryRoutine() {
             const encodedSub = document.getElementById('map-exam-subject-select').value;
             const catId = document.getElementById('map-target-category-select').value;
@@ -1060,7 +1016,6 @@
             } catch(e) { alert("Mapping script failure: " + e.message); }
         }
 
-        // TOOL 2 ACTION: INITIAL DEPLOY EXAM NODE
         async function createNewExamBase() {
             const sub = document.getElementById('exam-subject-input').value.trim();
             const dur = document.getElementById('exam-duration-input').value.trim();
@@ -1078,16 +1033,11 @@
 
             let parsedQuestions = [];
             if(jsonText !== "") {
-                try { 
-                    parsedQuestions = (jsonText.startsWith('[') && jsonText.endsWith(']')) 
-                        ? JSON.parse(jsonText) 
-                        : window.autoFormatRawTextToJSON(jsonText); 
-                } catch(err) { alert("JSON parsing error! Review syntax blocks."); return; }
-            }
-
-            // 🖼️ INJECT IMAGE PROPERTY INTO THE STRUCTURED OBJECT CORE GRID
-            if (currentBase64ImageData !== "" && parsedQuestions.length > 0) {
-                parsedQuestions[0].q_image = currentBase64ImageData;
+                parsedQuestions = window.autoFormatRawTextToJSON(jsonText);
+                if (parsedQuestions.length === 0) {
+                    alert("Processing Error: Compiled JSON array matrix is empty. Validate formatting schema.");
+                    return;
+                }
             }
 
             try {
@@ -1106,7 +1056,6 @@
 
                 if(error) throw error;
                 alert(`🎉 Success: Master base entry [ ${sub.toUpperCase()} ] deployed successfully!`);
-                removeSelectedImage();
                 
                 document.getElementById('exam-subject-input').value = "";
                 document.getElementById('exam-questions-json').value = "";
@@ -1118,7 +1067,6 @@
             } catch(e) { alert("Insertion fail: " + e.message); }
         }
 
-        // 🚀 NEW ADDITION: COMBO MULTI-STAGE DEPLOYMENT MATRIX ROUTINE
         async function deployComboExamRoutine() {
             const title = document.getElementById('combo-name-input').value.trim();
             const cutoff = document.getElementById('combo-cutoff-input').value;
