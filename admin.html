@@ -106,6 +106,23 @@
                         <textarea id="exam-questions-json" rows="6" placeholder='Paste plain text MCQs directly or structured JSON framework here...' class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none focus:border-blue-500/30 transition"></textarea>
                     </div>
 
+                    <div class="sm:col-span-2 space-y-2">
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider">🖼️ Inject Image Into Current Question Node (Optional)</label>
+                        <div id="image-dropzone" class="border-2 border-dashed border-white/10 hover:border-blue-500/40 bg-slate-900/60 rounded-xl p-4 text-center cursor-pointer transition flex flex-col items-center justify-center space-y-1 group">
+                            <span class="text-lg group-hover:scale-110 transition duration-200">💧</span>
+                            <p class="text-[11px] font-mono text-slate-400">Drag & Drop an image here or <span class="text-blue-400 underline">Browse File</span></p>
+                            <p class="text-[9px] text-slate-500 font-sans">(PNG, JPG, JPEG — Auto-encoded to Base64 Struct)</p>
+                            <input type="file" id="hidden-image-input" accept="image/*" class="hidden">
+                        </div>
+                        <div id="image-preview-container" class="hidden flex items-center space-x-3 bg-slate-950/40 border border-white/5 p-2 rounded-xl w-fit">
+                            <img id="dz-preview-img" src="" class="h-12 w-auto object-contain rounded-lg border border-white/10">
+                            <div class="text-left font-mono">
+                                <p class="text-[10px] text-slate-300 truncate max-w-[150px]" id="dz-file-name">image.png</p>
+                                <button type="button" onclick="removeSelectedImage()" class="text-[9px] text-red-400 hover:text-red-300 font-bold block mt-0.5 uppercase">&times; Remove Image</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="sm:col-span-2 pt-1">
                         <button onclick="createNewExamBase()" id="btn-deploy-main" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl uppercase text-[11px] tracking-wider transition transform active:scale-[0.98] cursor-pointer shadow-lg">
                             Deploy New Exam Base
@@ -299,88 +316,127 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let globalCategoriesArray = [];
+        let currentBase64ImageData = ""; // 🖼️ GLOBAL REPOSITORY IMAGE BUFFER REGISTER
 
-        // 🚀 GLOBAL MATRIX PARSER ENGINE (HTML TAG ENCODING PROTECTED)
-      // 🚀 GLOBAL MATRIX PARSER ENGINE: DATA INTERPRETATION & HTML TAG PROTECTED
-window.autoFormatRawTextToJSON = function(rawText) {
-    const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-    const questionsList = [];
-    
-    let currentQuestion = null;
-    let currentOptions = [];
-    let currentCorrect = 0;
-    
-    let currentInstructionBlock = "";
-    let capturedTableRows = [];
-    let insideTableZone = false;
+        // 🚀 GLOBAL PARSER ENGINE: DATA INTERPRETATION & HTML TAG PROTECTED
+        window.autoFormatRawTextToJSON = function(rawText) {
+            const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            const questionsList = [];
+            
+            let currentQuestion = null;
+            let currentOptions = [];
+            let currentCorrect = 0;
+            
+            let currentInstructionBlock = "";
+            let capturedTableRows = [];
+            let insideTableZone = false;
 
-    const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
-    const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
-    const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
-    const instructionRegex = /^(निर्देश|Instruction|Direction|Read the following)/i;
+            const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
+            const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
+            const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
+            const instructionRegex = /^(निर्देश|Instruction|Direction|Read the following)/i;
 
-    function escapeHtmlTags(text) {
-        if (!text) return "";
-        return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
-
-    // 🔄 RAW TEXT SE TABLE CODES COB-MATRIX GENERATOR FUNCTION
-    function compileHtmlTableMarkup(rawRows) {
-        if(rawRows.length === 0) return "";
-        
-        let tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-white/10 shadow-xl bg-slate-900/60">
-                            <table class="min-w-full divide-y divide-white/10 text-xs font-sans text-left">`;
-        
-        rawRows.forEach((row, rIdx) => {
-            // Clean tabs or spaces to treat as column grid separators
-            let columns = row.split(/\s{2,}|\t/).filter(c => c.trim().length > 0);
-            if(columns.length <= 1) {
-                columns = row.split(" ").filter(c => c.trim().length > 0);
+            if (typeof window.escapeHtmlTags !== 'function') {
+                window.escapeHtmlTags = function(text) {
+                    if (!text) return "";
+                    return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                };
             }
 
-            const rowBg = rIdx % 2 === 0 ? "bg-slate-900/40" : "bg-slate-950/20";
-            tableHtml += `<tr class="${rowBg} hover:bg-white/5 transition">`;
-            
-            columns.forEach(col => {
-                if(rIdx === 0) {
-                    // Header Row Configuration
-                    tableHtml += `<th class="px-4 py-3 font-black text-slate-200 tracking-wider bg-slate-800/50 text-[11px] uppercase border border-white/5">${col.trim()}</th>`;
-                } else {
-                    // Data Rows Configurations
-                    tableHtml += `<td class="px-4 py-2.5 font-medium text-slate-300 border border-white/5">${col.trim()}</td>`;
+            function compileHtmlTableMarkup(rawRows) {
+                if(rawRows.length === 0) return "";
+                
+                let tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-white/10 shadow-xl bg-slate-900/60">
+                                    <table class="min-w-full divide-y divide-white/10 text-xs font-sans text-left">`;
+                
+                rawRows.forEach((row, rIdx) => {
+                    let columns = row.split(/\s{2,}|\t/).filter(c => c.trim().length > 0);
+                    if(columns.length <= 1) {
+                        columns = row.split(" ").filter(c => c.trim().length > 0);
+                    }
+
+                    const rowBg = rIdx % 2 === 0 ? "bg-slate-900/40" : "bg-slate-950/20";
+                    tableHtml += `<tr class="${rowBg} hover:bg-white/5 transition">`;
+                    
+                    columns.forEach(col => {
+                        if(rIdx === 0) {
+                            tableHtml += `<th class="px-4 py-3 font-black text-slate-200 tracking-wider bg-slate-800/50 text-[11px] uppercase border border-white/5">${col.trim()}</th>`;
+                        } else {
+                            tableHtml += `<td class="px-4 py-2.5 font-medium text-slate-300 border border-white/5">${col.trim()}</td>`;
+                        }
+                    });
+                    tableHtml += `</tr>`;
+                });
+                
+                tableHtml += `</table></div>`;
+                return tableHtml;
+            }
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+
+                if (instructionRegex.test(line)) {
+                    currentInstructionBlock = "<div class='text-amber-400 font-bold mb-1'>" + window.escapeHtmlTags(line) + "</div>";
+                    insideTableZone = false;
+                    capturedTableRows = [];
+                    continue;
                 }
-            });
-            tableHtml += `</tr>`;
-        });
-        
-        tableHtml += `</table></div>`;
-        return tableHtml;
-    }
 
-    for (let i = 0; i < lines.length; i++) {
-        let line = lines[i];
+                if (line.includes("शोरूम") || line.includes("महीना") || line.includes("वर्ष") || line.includes("जिला") || line.startsWith("जनवरी") || line.startsWith("फरवरी") || line.startsWith("मार्च") || line.startsWith("अप्रैल") || line.startsWith("मई")) {
+                    insideTableZone = true;
+                    capturedTableRows.push(line);
+                    continue;
+                }
 
-        if (instructionRegex.test(line)) {
-            currentInstructionBlock = "<div class='text-amber-400 font-bold mb-1'>" + escapeHtmlTags(line) + "</div>";
-            insideTableZone = false;
-            capturedTableRows = [];
-            continue;
-        }
+                if (insideTableZone && !questionRegex.test(line) && !optionRegex.test(line) && !answerRegex.test(line)) {
+                    capturedTableRows.push(line);
+                    continue;
+                }
 
-        // Table Elements Filter Mapping
-        if (line.includes("शोरूम") || line.includes("महीना") || line.includes("वर्ष") || line.includes("जिला") || line.startsWith("जनवरी") || line.startsWith("फरवरी") || line.startsWith("मार्च") || line.startsWith("अप्रैल") || line.startsWith("मई")) {
-            insideTableZone = true;
-            capturedTableRows.push(line);
-            continue;
-        }
+                if (questionRegex.test(line)) {
+                    insideTableZone = false;
 
-        if (insideTableZone && !questionRegex.test(line) && !optionRegex.test(line) && !answerRegex.test(line)) {
-            capturedTableRows.push(line);
-            continue;
-        }
+                    if (currentQuestion) {
+                        questionsList.push({
+                            question: currentQuestion,
+                            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
+                            correct: currentCorrect
+                        });
+                    }
 
-        if (questionRegex.test(line)) {
-            insideTableZone = false;
+                    let completeQuestionHeader = "";
+                    if (currentInstructionBlock) completeQuestionHeader += currentInstructionBlock;
+                    if (capturedTableRows.length > 0) {
+                        completeQuestionHeader += compileHtmlTableMarkup(capturedTableRows);
+                    }
+
+                    const pureQuestionText = window.escapeHtmlTags(line.replace(questionRegex, '').trim());
+                    currentQuestion = completeQuestionHeader + `<div class="mt-2 text-slate-100 font-semibold">${pureQuestionText}</div>`;
+                    
+                    currentOptions = [];
+                    currentCorrect = 0;
+                } 
+                else if (answerRegex.test(line)) {
+                    const match = line.match(answerRegex);
+                    const ansChar = match[2].toUpperCase();
+                    if (['A', 'B', 'C', 'D'].includes(ansChar)) {
+                        currentCorrect = ansChar.charCodeAt(0) - 65;
+                    } else {
+                        currentCorrect = (parseInt(ansChar) - 1) || 0;
+                    }
+                } 
+                else if (optionRegex.test(line)) {
+                    const optionText = window.escapeHtmlTags(line.replace(optionRegex, '').trim());
+                    currentOptions.push(optionText);
+                } 
+                else {
+                    if (currentQuestion && currentOptions.length === 0) {
+                        currentQuestion += "<br>" + window.escapeHtmlTags(line);
+                    } else if (currentOptions.length > 0) {
+                        currentOptions[currentOptions.length - 1] += " " + window.escapeHtmlTags(line);
+                    }
+                }
+            }
 
             if (currentQuestion) {
                 questionsList.push({
@@ -390,52 +446,43 @@ window.autoFormatRawTextToJSON = function(rawText) {
                 });
             }
 
-            let completeQuestionHeader = "";
-            if (currentInstructionBlock) completeQuestionHeader += currentInstructionBlock;
-            if (capturedTableRows.length > 0) {
-                completeQuestionHeader += compileHtmlTableMarkup(capturedTableRows);
-            }
+            return questionsList;
+        };
 
-            const pureQuestionText = escapeHtmlTags(line.replace(questionRegex, '').trim());
-            currentQuestion = completeQuestionHeader + `<div class="mt-2 text-slate-100 font-semibold">${pureQuestionText}</div>`;
-            
-            currentOptions = [];
-            currentCorrect = 0;
-            // Note: Keep instruction block and table for questions 1-5 cluster unless new instruction hits
-        } 
-        else if (answerRegex.test(line)) {
-            const match = line.match(answerRegex);
-            const ansChar = match[2].toUpperCase();
-            if (['A', 'B', 'C', 'D'].includes(ansChar)) {
-                currentCorrect = ansChar.charCodeAt(0) - 65;
-            } else {
-                currentCorrect = (parseInt(ansChar) - 1) || 0;
-            }
-        } 
-        else if (optionRegex.test(line)) {
-            const optionText = escapeHtmlTags(line.replace(optionRegex, '').trim());
-            currentOptions.push(optionText);
-        } 
-        else {
-            if (currentQuestion && currentOptions.length === 0) {
-                currentQuestion += "<br>" + escapeHtmlTags(line);
-            } else if (currentOptions.length > 0) {
-                currentOptions[currentOptions.length - 1] += " " + escapeHtmlTags(line);
-            }
-        }
-    }
+        // 🖼️ NEW DYNAMIC IMAGE DROPZONE MATRIX INITIALIZER
+        document.addEventListener("DOMContentLoaded", () => {
+            const dropzone = document.getElementById('image-dropzone');
+            const fileInput = document.getElementById('hidden-image-input');
 
-    if (currentQuestion) {
-        questionsList.push({
-            question: currentQuestion,
-            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
-            correct: currentCorrect
+            if(dropzone && fileInput) {
+                dropzone.onclick = () => fileInput.click();
+                fileInput.onchange = (e) => processSelectedImageFile(e.target.files[0]);
+
+                dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('border-blue-500/40', 'bg-blue-500/5'); };
+                dropzone.ondragleave = () => { dropzone.classList.remove('border-blue-500/40', 'bg-blue-500/5'); };
+                dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('border-blue-500/40', 'bg-blue-500/5'); processSelectedImageFile(e.dataTransfer.files[0]); };
+            }
         });
-    }
 
-    return questionsList;
-};
-        
+        function processSelectedImageFile(file) {
+            if (!file || !file.type.startsWith('image/')) { alert("Please select a valid image file node."); return; }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentBase64ImageData = e.target.result; 
+                document.getElementById('dz-preview-img').src = currentBase64ImageData;
+                document.getElementById('dz-file-name').innerText = file.name;
+                document.getElementById('image-preview-container').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeSelectedImage() {
+            currentBase64ImageData = "";
+            document.getElementById('hidden-image-input').value = "";
+            document.getElementById('image-preview-container').classList.add('hidden');
+        }
+
         // 🛡️ [AUTHENTICATION GATEWAY SYNC]
         window.onload = function() {
             const userEmail = localStorage.getItem('userEmail');
@@ -489,12 +536,11 @@ window.autoFormatRawTextToJSON = function(rawText) {
                 });
 
                 fetchExamsOnAdminSide();
-                fetchGlobalStudentResults(); // बैकग्राउंड सिंक
+                fetchGlobalStudentResults(); 
 
             } catch(e) { console.error("Initialization Sync Crash:", e); }
         }
 
-        // 🚀 Dynamic Workspace Navigation
         function switchToResultsLedgerView() {
             document.getElementById('admin-main-workspace').classList.add('hidden');
             document.getElementById('admin-results-ledger-workspace').classList.remove('hidden');
@@ -505,12 +551,8 @@ window.autoFormatRawTextToJSON = function(rawText) {
             document.getElementById('admin-results-ledger-workspace').classList.add('hidden');
             document.getElementById('admin-main-workspace').classList.remove('hidden');
         };
-        // Global scope alias wrapper compatibility link mapping
         window.switchToMainConsoleWorkspace = document.switchToMainConsoleWorkspace;
 
-        // =========================================================================
-        // 📊 🏆 LIVE STUDENT RESULTS REFERENCE LINK PROCESSING ENGINE
-        // =========================================================================
         async function fetchGlobalStudentResults() {
             const tbody = document.getElementById('admin-results-tbody');
             if (!tbody) return;
@@ -695,7 +737,10 @@ window.autoFormatRawTextToJSON = function(rawText) {
             document.getElementById('admin-review-modal').classList.add('hidden');
         }
 
-        // 🎯 USER LOGIN ACTIVITY TERMINAL CONTROLS
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') { closeAdminReviewModal(); }
+        });
+
         function openUsersActivityModal() {
             document.getElementById('users-info-modal-wrapper').classList.remove('hidden');
             streamActiveUsersProfileDataset();
@@ -754,7 +799,6 @@ window.autoFormatRawTextToJSON = function(rawText) {
             }
         }
 
-        // 🎯 बॉक्स 1 फंक्शन: फ़िल्टर सिंक
         async function fetchExamsByCategory(categoryId) {
             const examSelector = document.getElementById('admin-exams-fetch-selector');
             const textareaBox = document.getElementById('exam-questions-json');
@@ -796,7 +840,6 @@ window.autoFormatRawTextToJSON = function(rawText) {
             }
         }
 
-        // 🎯 बॉक्स 2 फंक्शन (VARIABLE NAME SYNCHRONIZED COMPATIBILITY FIX)
         async function fetchExamDataToEditor(encodedSubject) {
             const textareaBox = document.getElementById('exam-questions-json');
             if (!encodedSubject) {
@@ -843,7 +886,6 @@ window.autoFormatRawTextToJSON = function(rawText) {
                     questionsArray.forEach((q, idx) => {
                         plainTextResult += `Q${idx + 1}. ${q.question || q.title || q.text || 'Objective Question'}\n`;
                         
-                        // 🚀 [FIXED SYNC]: वेरिएबल नाम का संरेखण 'rawOptions' पर लॉक किया गया
                         let rawOptions = q.options || q.choices || q.options_json || [];
                         if (typeof rawOptions === 'string') {
                             try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
@@ -886,8 +928,12 @@ window.autoFormatRawTextToJSON = function(rawText) {
                 return;
             }
 
-            // 🚀 फिक्स: स्कोप और नेमस्पेस सुरक्षा के तहत विंडो ऑब्जेक्ट को कॉल करना सुनिश्चित करें
-            const formattedJsonPayload = window.autoFormatRawTextToJSON(rawTextData);
+            let formattedJsonPayload = window.autoFormatRawTextToJSON(rawTextData);
+
+            // 🖼️ PERSIST IMAGE SNAPSHOT IN CASE OF UPDATE OPERATIONS
+            if (currentBase64ImageData !== "" && formattedJsonPayload.length > 0) {
+                formattedJsonPayload[0].q_image = currentBase64ImageData;
+            }
 
             try {
                 const { error } = await supabaseClient
@@ -902,6 +948,7 @@ window.autoFormatRawTextToJSON = function(rawText) {
                 if (error) throw error;
                 
                 alert(`🎉 Success: Exam dataset for [ ${subjectName.toUpperCase()} ] updated!`);
+                removeSelectedImage();
                 
                 document.getElementById('exam-questions-json').value = "";
                 document.getElementById('exam-subject-input').value = "";
@@ -1038,6 +1085,11 @@ window.autoFormatRawTextToJSON = function(rawText) {
                 } catch(err) { alert("JSON parsing error! Review syntax blocks."); return; }
             }
 
+            // 🖼️ INJECT IMAGE PROPERTY INTO THE STRUCTURED OBJECT CORE GRID
+            if (currentBase64ImageData !== "" && parsedQuestions.length > 0) {
+                parsedQuestions[0].q_image = currentBase64ImageData;
+            }
+
             try {
                 const uniqueId = Math.floor(Date.now() + Math.random() * 1000);
 
@@ -1054,6 +1106,7 @@ window.autoFormatRawTextToJSON = function(rawText) {
 
                 if(error) throw error;
                 alert(`🎉 Success: Master base entry [ ${sub.toUpperCase()} ] deployed successfully!`);
+                removeSelectedImage();
                 
                 document.getElementById('exam-subject-input').value = "";
                 document.getElementById('exam-questions-json').value = "";
@@ -1065,37 +1118,12 @@ window.autoFormatRawTextToJSON = function(rawText) {
             } catch(e) { alert("Insertion fail: " + e.message); }
         }
 
-        // TOOL 1 ACTION: MANUALLY CREATE CATEGORY
-        async function createNewCategory() {
-            const name = document.getElementById('new-cat-name').value.trim();
-            if(!name) return;
-            try {
-                const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name });
-                if(error) throw error;
-                alert(`Category established!`);
-                document.getElementById('new-cat-name').value = "";
-                syncMasterDashboardControls();
-            } catch(e) { alert(e.message); }
-        }
-
-        // INLINE ACTION: TIME CONTROLLER
-        async function updateExamTimingDirect(encodedSubject) {
-            const decodedSub = decodeURIComponent(encodedSubject);
-            const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
-            try {
-                const { error } = await supabaseClient.from('exams').update({ duration_minutes: parseInt(inputVal) }).eq('subject', decodedSub);
-                if(error) throw error;
-                alert(`Time limit synchronization complete.`);
-                fetchExamsOnAdminSide();
-            } catch(e) { alert(e.message); }
-        }
-
         // 🚀 NEW ADDITION: COMBO MULTI-STAGE DEPLOYMENT MATRIX ROUTINE
         async function deployComboExamRoutine() {
             const title = document.getElementById('combo-name-input').value.trim();
             const cutoff = document.getElementById('combo-cutoff-input').value;
-            const p1 = document.getElementById('admin-exams-fetch-selector').value; // Paper-1 selection
-            const p2 = document.getElementById('map-exam-subject-select').value;    // Paper-2 selection
+            const p1 = document.getElementById('admin-exams-fetch-selector').value; 
+            const p2 = document.getElementById('map-exam-subject-select').value;    
 
             if(!title || !p1 || !p2) { 
                 alert("📢 Link Interrupted: Master console lacks proper selections for combo orchestration."); 
@@ -1115,7 +1143,6 @@ window.autoFormatRawTextToJSON = function(rawText) {
                 if(error) throw error;
                 alert(`🎉 System Deployment Complete: Combo Exam Node [ ${title.toUpperCase()} ] established!`);
                 
-                // Fields resets
                 document.getElementById('combo-name-input').value = "";
                 document.getElementById('combo-cutoff-input').value = "40";
                 document.getElementById('admin-category-fetch-selector').value = "";
