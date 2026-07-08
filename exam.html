@@ -307,104 +307,109 @@
         }
         
         // 🔄 RENDERING PIPELINE: SYNCHRONIZED HYBRID OBJECT SHELL MAPPER (.innerText REINFORCED)
-        async function renderAssessmentLayout() {
-            const container = document.getElementById('questions-pipeline-wrapper');
-            if (!container) return;
-            
-            container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing Language Layout Matrices...</div>`;
+       // 🔄 RENDERING PIPELINE: SYNCHRONIZED HYBRID MULTI-MODE MAPPER (DI TABLE COMPATIBLE)
+async function renderAssessmentLayout() {
+    const container = document.getElementById('questions-pipeline-wrapper');
+    if (!container) return;
+    
+    container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing Language Layout Matrices...</div>`;
 
-            let finalHtml = "";
-            let translatedObjectPool = null;
+    let finalHtml = "";
+    let translatedObjectPool = null;
 
-            if (currentSelectedLanguage === "hi") {
-                container.innerHTML = `<div class="text-center font-mono text-xs text-orange-400 py-12 animate-pulse uppercase">Translating Question Matrix Framework via Structured Object Pipeline...</div>`;
-                translatedObjectPool = await translateBulkQuestions(globalLoadedQuestions, "hi");
-                
-                if (!translatedObjectPool) {
-                    alert("📢 Translation pipeline timeout. Reverting test stream safely to English layout corridor.");
-                    currentSelectedLanguage = "en";
-                    const selector = document.getElementById('global-lang-selector');
-                    if (selector) selector.value = "en";
-                }
-            }
-
-            for (let index = 0; index < globalLoadedQuestions.length; index++) {
-                finalHtml += `
-                    <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex items-start space-x-3 min-w-0 w-full">
-                                <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md shrink-0">Q. ${index + 1}</span>
-                                <h4 class="text-xs sm:text-sm font-bold text-slate-100 tracking-wide pt-0.5 leading-relaxed live-q-text-node"></h4>
-                            </div>
-                            <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-red-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition shrink-0">
-                                Mark Review
-                            </button>
-                        </div>
-                        <div class="grid grid-cols-1 gap-1 pt-1 options-container-node"></div>
-                    </div>`;
-            }
-
-            container.innerHTML = finalHtml;
-
-            globalLoadedQuestions.forEach((q, index) => {
-                const card = document.getElementById(`question-card-${index}`);
-                if (!card) return;
-
-                const qTitleNode = card.querySelector('.live-q-text-node');
-                
-                const targetDataSource = (currentSelectedLanguage === "hi" && translatedObjectPool) 
-                    ? translatedObjectPool[index] 
-                    : q;
-
-                const finalQuestionText = targetDataSource.question || targetDataSource.title || targetDataSource.text || 'Objective Question';
-                
-                if (qTitleNode) qTitleNode.innerText = finalQuestionText;
-
-                const optionsContainer = card.querySelector('.options-container-node');
-                if (optionsContainer) {
-                    let rawOptions = targetDataSource.options || targetDataSource.choices || targetDataSource.options_json || [];
-                    if (typeof rawOptions === 'string') {
-                        try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
-                    }
-
-                    optionsContainer.innerHTML = ""; 
-
-                    rawOptions.forEach((opt, optIdx) => {
-                        const isChecked = userResponses[index] === optIdx ? "checked" : "";
-
-                        const label = document.createElement('label');
-                        label.className = "flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2";
-                        
-                        label.innerHTML = `<input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">`;
-                        
-                        const optSpan = document.createElement('span');
-                        optSpan.className = "text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium";
-                        optSpan.innerText = opt; 
-
-                        label.appendChild(optSpan);
-                        optionsContainer.appendChild(label);
-                    });
-                }
-            });
-
-            globalLoadedQuestions.forEach((_, index) => {
-                const pBtn = document.getElementById(`palette-btn-${index}`);
-                const mBtn = document.getElementById(`mark-btn-${index}`);
-                
-                if (markedForReviewSet.has(index)) {
-                    if(mBtn) {
-                        mBtn.classList.add("border-red-500/50", "text-red-400", "bg-red-500/10");
-                        mBtn.innerText = "🔴 Marked";
-                    }
-                    if(pBtn) pBtn.className = "bg-red-600 text-white font-mono text-xs font-black py-2 rounded-lg transition text-center cursor-pointer";
-                } else if (userResponses[index] !== undefined) {
-                    if(pBtn) pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
-                } else {
-                    if(pBtn) pBtn.className = "bg-slate-800 border border-white/10 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer text-center";
-                }
-            });
-        }        
+    if (currentSelectedLanguage === "hi") {
+        container.innerHTML = `<div class="text-center font-mono text-xs text-orange-400 py-12 animate-pulse uppercase">Translating Question Matrix Framework via Structured Object Pipeline...</div>`;
+        translatedObjectPool = await translateBulkQuestions(globalLoadedQuestions, "hi");
         
+        if (!translatedObjectPool) {
+            alert("📢 Translation pipeline timeout. Reverting test stream safely to English layout corridor.");
+            currentSelectedLanguage = "en";
+            const selector = document.getElementById('global-lang-selector');
+            if (selector) selector.value = "en";
+        }
+    }
+
+    // 1. कार्ड्स का मजबूत डोम स्केलेटन शेल इंजेक्ट करें
+    for (let index = 0; index < globalLoadedQuestions.length; index++) {
+        finalHtml += `
+            <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-start space-x-3 min-w-0 w-full">
+                        <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md shrink-0">Q. ${index + 1}</span>
+                        <h4 class="text-xs sm:text-sm text-slate-100 tracking-wide pt-0.5 leading-relaxed live-q-text-node"></h4>
+                    </div>
+                    <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 hover:border-red-500/40 bg-white/5 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition shrink-0">
+                        Mark Review
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 gap-1 pt-1 options-container-node"></div>
+            </div>`;
+    }
+
+    container.innerHTML = finalHtml;
+
+    // 🚀 2. सुरक्षित हाइब्रिड रेंडरिंग लेयर: प्रश्न को innerHTML (DI Tables के लिए) और ऑप्शंस को innerText (टैग सुरक्षा के लिए)
+    globalLoadedQuestions.forEach((q, index) => {
+        const card = document.getElementById(`question-card-${index}`);
+        if (!card) return;
+
+        const qTitleNode = card.querySelector('.live-q-text-node');
+        
+        const targetDataSource = (currentSelectedLanguage === "hi" && translatedObjectPool) 
+            ? translatedObjectPool[index] 
+            : q;
+
+        const finalQuestionText = targetDataSource.question || targetDataSource.title || targetDataSource.text || 'Objective Question';
+        
+        // 🎯 [CRITICAL FIX-1]: प्रश्न फ़ील्ड को innerHTML दें ताकि निर्देश और तालिका संरचना का ब्रेक (<br>) और बोल्ड (<b>) रेंडर हो सके
+        if (qTitleNode) qTitleNode.innerHTML = finalQuestionText;
+
+        const optionsContainer = card.querySelector('.options-container-node');
+        if (optionsContainer) {
+            let rawOptions = targetDataSource.options || targetDataSource.choices || targetDataSource.options_json || [];
+            if (typeof rawOptions === 'string') {
+                try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
+            }
+
+            optionsContainer.innerHTML = ""; 
+
+            rawOptions.forEach((opt, optIdx) => {
+                const isChecked = userResponses[index] === optIdx ? "checked" : "";
+
+                const label = document.createElement('label');
+                label.className = "flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2";
+                
+                label.innerHTML = `<input type="radio" name="question-${index}" value="${optIdx}" ${isChecked} onchange="registerRadioResponse(${index}, ${optIdx})" class="w-4 h-4 text-blue-600 bg-slate-950 border-white/10 focus:ring-blue-500/40">`;
+                
+                // 🎯 [CRITICAL FIX-2]: ऑप्शंस को कड़ाई से innerText पर लॉक रखें ताकि C/HTML कोडिंग ऑप्शंस गायब न हों
+                const optSpan = document.createElement('span');
+                optSpan.className = "text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium";
+                optSpan.innerText = opt; 
+
+                label.appendChild(optSpan);
+                optionsContainer.appendChild(label);
+            });
+        }
+    });
+
+    // पैलेट सिंक
+    globalLoadedQuestions.forEach((_, index) => {
+        const pBtn = document.getElementById(`palette-btn-${index}`);
+        const mBtn = document.getElementById(`mark-btn-${index}`);
+        
+        if (markedForReviewSet.has(index)) {
+            if(mBtn) {
+                mBtn.classList.add("border-red-500/50", "text-red-400", "bg-red-500/10");
+                mBtn.innerText = "🔴 Marked";
+            }
+            if(pBtn) pBtn.className = "bg-red-600 text-white font-mono text-xs font-black py-2 rounded-lg transition text-center cursor-pointer";
+        } else if (userResponses[index] !== undefined) {
+            if(pBtn) pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+        } else {
+            if(pBtn) pBtn.className = "bg-slate-800 border border-white/10 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer text-center";
+        }
+    });
+} 
         function switchAssessmentLanguage(selectedLang) {
             currentSelectedLanguage = selectedLang;
             renderAssessmentLayout(); 
