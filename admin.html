@@ -102,8 +102,8 @@
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">📋 Questions Array Dataset (Plain Text or JSON Format)</label>
-                        <textarea id="exam-questions-json" rows="12" placeholder="Paste plain text MCQs directly OR drop structured JSON array format node here..." class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none focus:border-blue-500/30 transition"></textarea>
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">📋 Questions Array Dataset (Plain Text or Structured Bilingual JSON Array)</label>
+                        <textarea id="exam-questions-json" rows="12" placeholder="Paste plain text MCQs directly OR drop structured bilingual JSON array format node here..." class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none focus:border-blue-500/30 transition"></textarea>
                     </div>
 
                     <div class="sm:col-span-2 pt-1">
@@ -300,64 +300,101 @@
 
         let globalCategoriesArray = [];
 
-        // 🚀 SMART HYBRID DUAL PARSER ENGINE: PROCESSES BOTH PLAIN TEXT AND JSON STREAM DATA
+        // 🚀 MASTER HYBRID COMPILER: PARSES PLAIN TEXT OR DUAL-LANGUAGE JSON STRUCTURES
         window.autoFormatRawTextToJSON = function(rawText) {
             const trimmedInput = rawText.trim();
             
-            // 🛡️ [STAGE-1: VALID JSON STRUCT MATRIX]
+            // =========================================================================
+            // 📦 MODE A: STRUCTURED BILINGUAL JSON OBJECT STREAM PROCESSING
+            // =========================================================================
             if (trimmedInput.startsWith('[') && trimmedInput.endsWith(']')) {
                 try {
                     const parsedJson = JSON.parse(trimmedInput);
                     return parsedJson.map(item => {
-                        let optionsArray = [];
-                        
-                        // Convert Object Options {"A":"1", "B":"2"} to Array ["1", "2"]
-                        if (Array.isArray(item.options)) {
-                            optionsArray = item.options;
-                        } else if (typeof item.options === 'object' && item.options !== null) {
-                            optionsArray = Object.values(item.options);
+                        let englishQuestionText = "";
+                        let hindiQuestionText = "";
+
+                        // Extract Questions Node Preferring Multilingual Object Clusters
+                        if (typeof item.question === 'object' && item.question !== null) {
+                            englishQuestionText = item.question.en || "Objective Question Node";
+                            hindiQuestionText = item.question.hi || englishQuestionText;
                         } else {
-                            optionsArray = ["Option A", "Option B", "Option C", "Option D"];
+                            englishQuestionText = String(item.question || item.title || "Objective Question Node");
+                            hindiQuestionText = englishQuestionText;
                         }
 
-                        // Parse Correct Index mapping dynamically
+                        // Process Markdown Tables or Metadata headers within JSON fields
+                        if (englishQuestionText.includes('|')) {
+                            englishQuestionText = englishQuestionText.replace(/\n/g, '<br>').replace(/\\n/g, '<br>');
+                            hindiQuestionText = hindiQuestionText.replace(/\n/g, '<br>').replace(/\\n/g, '<br>');
+                        }
+
+                        // Parse Multilingual Options {"A": {"en": "...", "hi": "..."}} to Flat Unified Matrix Array
+                        let flatOptionsArray = [];
+                        let rawOptionsObj = item.options || item.choices || {};
+
+                        if (Array.isArray(rawOptionsObj)) {
+                            flatOptionsArray = rawOptionsObj;
+                        } else if (typeof rawOptionsObj === 'object') {
+                            const optionKeys = ['A', 'B', 'C', 'D', '1', '2', '3', '4'];
+                            optionKeys.forEach(k => {
+                                if (rawOptionsObj[k] !== undefined) {
+                                    const optVal = rawOptionsObj[k];
+                                    if (typeof optVal === 'object' && optVal !== null) {
+                                        // Package both languages using distinct custom structural parameters
+                                        flatOptionsArray.push({
+                                            en: optVal.en || "Option Node",
+                                            hi: optVal.hi || optVal.en || "Option Node"
+                                        });
+                                    } else {
+                                        flatOptionsArray.push({
+                                            en: String(optVal),
+                                            hi: String(optVal)
+                                        });
+                                    }
+                                }
+                            });
+                        }
+
+                        if (flatOptionsArray.length === 0) {
+                            flatOptionsArray = [
+                                { en: "Option A", hi: "Option A" },
+                                { en: "Option B", hi: "Option B" },
+                                { en: "Option C", hi: "Option C" },
+                                { en: "Option D", hi: "Option D" }
+                            ];
+                        }
+
+                        // Parse Correct Target Keys Mappings
                         let correctIndex = 0;
-                        let rawAnswer = item.correct !== undefined ? item.correct : item.answer;
+                        let rawAnswer = item.answer !== undefined ? item.answer : item.correct;
                         if (typeof rawAnswer === 'string') {
                             const cleanAns = rawAnswer.trim().toUpperCase();
                             if (['A', 'B', 'C', 'D'].includes(cleanAns)) {
                                 correctIndex = cleanAns.charCodeAt(0) - 65;
                             } else {
-                                correctIndex = parseInt(cleanAns) || 0;
+                                correctIndex = (parseInt(cleanAns) - 1) || 0;
                             }
                         } else if (typeof rawAnswer === 'number') {
                             correctIndex = rawAnswer;
                         }
 
-                        // Append multi-row question headers safely (handles Markdown Tables)
-                        let baseQuestionText = item.question || item.title || item.text || "Objective Question Node";
-                        if (item.question_info) {
-                            baseQuestionText = item.question_info + "<br><br>" + baseQuestionText;
-                        }
-
-                        // If markdown tables exist inside JSON text, map them instantly
-                        if (baseQuestionText.includes('|')) {
-                            baseQuestionText = baseQuestionText.replace(/\n/g, '<br>').replace(/\\n/g, '<br>');
-                        }
-
+                        // 🎯 Return Synchronized Object Base Package Struct
                         return {
-                            question: baseQuestionText,
-                            image_url: item.image_url || item.image || "",
-                            options: optionsArray,
-                            correct: correctIndex
+                            question: { en: englishQuestionText, hi: hindiQuestionText },
+                            options: flatOptionsArray,
+                            correct: correctIndex,
+                            is_json_uploaded: true // Flag to notify frontend execution renderer to skip translation pipelines
                         };
                     });
-                } catch (e) {
-                    console.warn("Direct JSON payload failure. Re-routing compiler down to fallback plain text runner.", e);
+                } catch (jsonErr) {
+                    console.error("Core JSON parsing drop. Falling back onto text compiler layout layer.", jsonErr);
                 }
             }
 
-            // 📝 [STAGE-2: PLAIN-TEXT TEXT PARSER COMPILER FALLBACK]
+            // =========================================================================
+            // 📝 MODE B: NATIVE PLAIN-TEXT MATRICES COMPILE ENGINE (FALLBACK CORRIDOR)
+            // =========================================================================
             const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
             const questionsList = [];
             
@@ -373,13 +410,6 @@
             const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
             const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
             const instructionRegex = /^(निर्देश|Instruction|Direction|Read the following)/i;
-
-            if (typeof window.escapeHtmlTags !== 'function') {
-                window.escapeHtmlTags = function(text) {
-                    if (!text) return "";
-                    return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                };
-            }
 
             function compileHtmlTableMarkup(rawRows) {
                 if(rawRows.length === 0) return "";
@@ -427,7 +457,6 @@
                     if (currentQuestion) {
                         questionsList.push({
                             question: currentQuestion,
-                            image_url: "",
                             options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
                             correct: currentCorrect
                         });
@@ -462,7 +491,6 @@
             if (currentQuestion) {
                 questionsList.push({
                     question: currentQuestion,
-                    image_url: "",
                     options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
                     correct: currentCorrect
                 });
@@ -470,6 +498,7 @@
             return questionsList;
         };
 
+        // 🛡️ [AUTHENTICATION GATEWAY SYNC]
         window.onload = function() {
             const userEmail = localStorage.getItem('userEmail');
             const userRole = localStorage.getItem('userRole');
@@ -664,6 +693,13 @@
                     let indicatorIcon = "";
                     let optionCharStyle = "bg-white/5 border border-white/10 text-slate-400 font-bold";
                     
+                    let finalOptText = "";
+                    if (typeof opt === 'object' && opt !== null) {
+                        finalOptText = opt.en || "Option Node";
+                    } else {
+                        finalOptText = String(opt);
+                    }
+
                     if (optIdx === correctIdx) {
                         optStyle = "bg-emerald-950/40 border-emerald-500/40 text-emerald-400 font-bold ring-1 ring-emerald-500/10";
                         optionCharStyle = "bg-emerald-500 text-slate-950 font-black";
@@ -677,13 +713,19 @@
                     optionsHtml += `
                         <div class="border p-3 rounded-xl text-xs flex items-center gap-3 transition-all ${optStyle}">
                             <span class="font-mono px-2 py-0.5 rounded text-[10px] ${optionCharStyle}">${optChar}</span>
-                            <span class="font-sans font-medium">${opt}</span>
+                            <span class="font-sans font-medium">${finalOptText}</span>
                             ${indicatorIcon}
                         </div>`;
                 });
 
+                let finalQuestionText = "";
+                if (typeof q.question === 'object' && q.question !== null) {
+                    finalQuestionText = q.question.en || "Objective Question Node";
+                } else {
+                    finalQuestionText = String(q.question || q.title || "Objective Question Node");
+                }
+
                 const correctChar = String.fromCharCode(65 + correctIdx);
-                const questionText = q.question || q.title || q.text || "Objective Assessment Query Node";
                 
                 reviewBody.innerHTML += `
                     <div class="border rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl transition relative ${borderStyle}">
@@ -695,7 +737,7 @@
                         </div>
                         <h4 class="text-sm font-bold text-white font-sans leading-relaxed">
                             <span class="font-mono text-slate-500 bg-white/5 px-2 py-0.5 rounded text-[11px] mr-1">Q${idx + 1}</span> 
-                            ${questionText}
+                            ${finalQuestionText}
                         </h4>
                         <div class="grid grid-cols-1 gap-2.5 pt-1">
                             ${optionsHtml}
@@ -894,6 +936,11 @@
 
             let formattedJsonPayload = window.autoFormatRawTextToJSON(rawTextData);
 
+            // 🖼️ Inject Image Buffer Registration during updates
+            if (currentBase64ImageData !== "" && formattedJsonPayload.length > 0) {
+                formattedJsonPayload[0].q_image = currentBase64ImageData;
+            }
+
             try {
                 const { error } = await supabaseClient
                     .from('exams')
@@ -907,6 +954,7 @@
                 if (error) throw error;
                 
                 alert(`🎉 Success: Exam dataset for [ ${subjectName.toUpperCase()} ] updated!`);
+                removeSelectedImage();
                 
                 document.getElementById('exam-questions-json').value = "";
                 document.getElementById('exam-subject-input').value = "";
@@ -1040,6 +1088,11 @@
                 }
             }
 
+            // 🖼️ Inject Image Buffer trait into primary question node
+            if (currentBase64ImageData !== "" && parsedQuestions.length > 0) {
+                parsedQuestions[0].q_image = currentBase64ImageData;
+            }
+
             try {
                 const uniqueId = Math.floor(Date.now() + Math.random() * 1000);
 
@@ -1056,6 +1109,7 @@
 
                 if(error) throw error;
                 alert(`🎉 Success: Master base entry [ ${sub.toUpperCase()} ] deployed successfully!`);
+                removeSelectedImage();
                 
                 document.getElementById('exam-subject-input').value = "";
                 document.getElementById('exam-questions-json').value = "";
@@ -1065,6 +1119,29 @@
                 syncMasterDashboardControls();
 
             } catch(e) { alert("Insertion fail: " + e.message); }
+        }
+
+        async function createNewCategory() {
+            const name = document.getElementById('new-cat-name').value.trim();
+            if(!name) return;
+            try {
+                const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name });
+                if(error) throw error;
+                alert(`Category established!`);
+                document.getElementById('new-cat-name').value = "";
+                syncMasterDashboardControls();
+            } catch(e) { alert(e.message); }
+        }
+
+        async function updateExamTimingDirect(encodedSubject) {
+            const decodedSub = decodeURIComponent(encodedSubject);
+            const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
+            try {
+                const { error } = await supabaseClient.from('exams').update({ duration_minutes: parseInt(inputVal) }).eq('subject', decodedSub);
+                if(error) throw error;
+                alert(`Time limit synchronization complete.`);
+                fetchExamsOnAdminSide();
+            } catch(e) { alert(e.message); }
         }
 
         async function deployComboExamRoutine() {
@@ -1100,6 +1177,42 @@
             } catch(e) { 
                 alert("Combo Deployment Failure: " + e.message); 
             }
+        }
+
+        // 🖼️ DYNAMIC BASE64 FILE CONVERTER ENGINES REGISTER
+        document.addEventListener("DOMContentLoaded", () => {
+            const dropzone = document.getElementById('image-dropzone');
+            const fileInput = document.getElementById('hidden-image-input');
+
+            if(dropzone && fileInput) {
+                dropzone.onclick = () => fileInput.click();
+                fileInput.onchange = (e) => processSelectedImageFile(e.target.files[0]);
+
+                dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('border-blue-500/40', 'bg-blue-500/5'); };
+                dropzone.ondragleave = () => { dropzone.classList.remove('border-blue-500/40', 'bg-blue-500/5'); };
+                dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('border-blue-500/40', 'bg-blue-500/5'); processSelectedImageFile(e.dataTransfer.files[0]); };
+            }
+        });
+
+        function processSelectedImageFile(file) {
+            if (!file || !file.type.startsWith('image/')) { alert("Please select a valid image file node."); return; }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentBase64ImageData = e.target.result; 
+                document.getElementById('dz-preview-img').src = currentBase64ImageData;
+                document.getElementById('dz-file-name').innerText = file.name;
+                const previewContainer = document.getElementById('image-preview-container');
+                if (previewContainer) previewContainer.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeSelectedImage() {
+            currentBase64ImageData = "";
+            const hiddenInput = document.getElementById('hidden-image-input');
+            if (hiddenInput) hiddenInput.value = "";
+            const previewContainer = document.getElementById('image-preview-container');
+            if (previewContainer) previewContainer.classList.add('hidden');
         }
 
         function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
