@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'IBM Plex Sans', sans-serif; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
@@ -22,7 +22,7 @@
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         
-        /* 10 MCQ Progressive Navigation Utilities */
+        /* Interactive 10 MCQ Navigation Slider Utilities */
         .quiz-item { display: none; }
         .quiz-item.active-question { display: block; animation: fadeIn .3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -41,13 +41,12 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- ---------- NAV BAR BAR MODULE ---------- -->
+    <!-- ---------- RESPONSIVE NAVIGATION BAR ---------- -->
     <header class="w-full bg-slate-950/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
             <div class="flex items-center space-x-3.5 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                 <div class="bg-white/95 p-1 rounded-xl shadow-md shrink-0">
-                    <!-- Maximized Logo Scale Execution -->
-                    <img src="logo.png" alt="Logo" class="h-14 sm:h-16 w-auto object-contain transition duration-200 hover:scale-102">
+                    <img src="logo.png" alt="Logo" class="h-12 sm:h-16 w-auto object-contain transition duration-200 hover:scale-102">
                 </div>
                 <div class="flex flex-col">
                     <span class="text-sm sm:text-base font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-amber-200 uppercase leading-none font-serif">EXAM PORTAL</span>
@@ -66,28 +65,32 @@
         </div>
     </header>
 
-    <!-- ---------- HERO TERMINAL BLOCK ---------- -->
-    <section class="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900/40 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-b border-white/5 overflow-hidden">
-        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+    <!-- ---------- HERO SECTION WITH INTEGRATED BACKGROUND IMAGE ---------- -->
+    <section class="relative min-h-[640px] lg:min-h-[680px] flex items-center py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-b border-white/5 overflow-hidden">
+        <!-- Background Asset Image Node Stack -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1741699428220-65f37f3fbbcb?auto=format&fit=crop&w=1800&q=80" alt="Student studying in library backend environment" class="w-full h-full object-cover object-position-[center_30%]">
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/85 lg:via-slate-950/75 to-slate-900/40"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 w-full">
             <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
                 <span class="font-mono text-[10px] sm:text-xs tracking-widest text-amber-400 bg-amber-400/10 border border-amber-500/20 px-3.5 py-1.5 rounded-full uppercase inline-block font-bold">🚀 Live Simulated Testing Repositories</span>
                 
-                <!-- Main Header Logo & Title Branding Node -->
                 <div class="flex flex-col items-center lg:items-start gap-5">
-                    <img src="logo.png" alt="Branding Header Identity" class="h-24 sm:h-28 w-auto block filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.4)]">
-                    <h1 class="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-none">Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">Sarkari &amp; Private</span> Exam Prep, Simplified.</h1>
+                    <img src="logo.png" alt="Branding Header Identity" class="h-24 sm:h-28 w-auto block filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)]">
+                    <h1 class="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-tight">Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">Sarkari &amp; Private</span> Exam Prep, Simplified.</h1>
                 </div>
 
-                <p class="text-slate-400 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">Access premium full-length mocks, real-time index matrices, and previous-year question banks engineered for GATE CSE, UGC NET, and state competitive assessments.</p>
+                <p class="text-slate-300 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">Access premium full-length mocks, real-time index matrices, and previous-year question banks engineered for GATE CSE, UGC NET, and state competitive assessments.</p>
                 <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
                     <button onclick="openGatedAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest shadow-xl shadow-amber-500/20 transition transform active:scale-95 cursor-pointer">Start Free Mock Test</button>
-                    <a href="#live-demo-test" class="border border-white/10 hover:border-white/20 bg-white/5 backdrop-blur text-white font-bold px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition">Try Live Demo Test ↓</a>
+                    <a href="#live-demo-test" class="border border-white/20 hover:border-white/40 bg-slate-950/40 backdrop-blur text-white font-bold px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition">Try Live Demo Test ↓</a>
                 </div>
             </div>
             <div class="lg:col-span-5 w-full max-w-md mx-auto">
-                <div class="bg-slate-950/60 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden">
-                    <div class="bg-slate-950/80 px-5 py-4 border-b border-white/5 flex items-center justify-between">
+                <div class="bg-slate-950/70 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden">
+                    <div class="bg-slate-950/90 px-5 py-4 border-b border-white/5 flex items-center justify-between">
                         <span class="font-mono text-[10px] tracking-wider text-slate-400 uppercase font-bold">Live Stream Tracker</span>
                         <div class="flex items-center space-x-2 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/10"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span><span class="text-[9px] font-mono font-black text-emerald-400 uppercase">Active</span></div>
                     </div>
@@ -111,6 +114,31 @@
             <div><div class="font-serif font-bold text-xl sm:text-2xl text-emerald-400">🛡️ Secure Auth</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Verified Student Nodes</div></div>
         </div>
     </div>
+
+    <!-- ---------- HOW IT WORKS ---------- -->
+    <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
+        <div class="max-w-2xl mx-auto text-center space-y-2">
+            <span class="font-mono text-[10px] text-amber-500 uppercase tracking-widest font-bold">// execution flow</span>
+            <h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Three Steps to Exam Readiness</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-3">
+                <div class="w-10 h-10 rounded-full bg-slate-950 text-amber-400 flex items-center justify-center font-mono font-bold border border-white/10">1</div>
+                <h3 class="font-serif text-lg font-bold text-white">Select Your Stream</h3>
+                <p class="text-slate-400 text-xs leading-relaxed font-medium">Identify your target assessment tracking line across corporate placements or technical state syllabus tracks.</p>
+            </div>
+            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-3">
+                <div class="w-10 h-10 rounded-full bg-slate-950 text-amber-400 flex items-center justify-center font-mono font-bold border border-white/10">2</div>
+                <h3 class="font-serif text-lg font-bold text-white">Simulate Testing Fields</h3>
+                <p class="text-slate-400 text-xs leading-relaxed font-medium">Experience complete real exam timer conditions with authentic grading schemes and navigation limits.</p>
+            </div>
+            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-3">
+                <div class="w-10 h-10 rounded-full bg-slate-950 text-amber-400 flex items-center justify-center font-mono font-bold border border-white/10">3</div>
+                <h3 class="font-serif text-lg font-bold text-white">Analyze Analytics Sheet</h3>
+                <p class="text-slate-400 text-xs leading-relaxed font-medium">Uncover deep micro-data profiles pinpointing logical performance gaps and target revision areas.</p>
+            </div>
+        </div>
+    </section>
 
     <!-- ---------- SARKARI EXAM CATEGORY MATRIX ---------- -->
     <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12" id="exams-hub">
@@ -388,14 +416,22 @@
         </div>
     </div>
 
-    <!-- ---------- CLOSING CALL-TO-ACTION FRAMEWORK ---------- -->
+    <!-- ---------- CLOSING CALL-TO-ACTION WITH INTEGRATED BACKGROUND IMAGE ---------- -->
     <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 border border-white/5 text-center py-14 px-6 rounded-3xl space-y-4 shadow-xl relative overflow-hidden">
-            <h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Your next attempt boundary starts here.</h2>
-            <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">Link your account profile node to instantly initialize highly scalable, simulated mock examination conditions.</p>
-            <button onclick="openGatedAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition shadow-lg shadow-amber-500/10 cursor-pointer">
-                Establish Free Profile
-            </button>
+        <div class="relative bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 border border-white/5 text-center py-14 px-6 rounded-3xl space-y-4 shadow-xl overflow-hidden min-h-[340px] flex flex-col justify-center items-center">
+            <!-- Background Image Node for CTA Footer -->
+            <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1652305500057-0fcb348b62aa?auto=format&fit=crop&w=1800&q=80" alt="Students cooperating on system checks" class="w-full h-full object-cover object-position-[center_25%]">
+                <div class="absolute inset-0 bg-gradient-to-b from-slate-950/60 to-slate-950/94"></div>
+            </div>
+            
+            <div class="relative z-10 space-y-4">
+                <h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Your next attempt boundary starts here.</h2>
+                <p class="text-slate-300 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">Link your account profile node to instantly initialize highly scalable, simulated mock examination conditions.</p>
+                <button onclick="openGatedAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition shadow-lg shadow-amber-500/10 cursor-pointer">
+                    Establish Free Profile
+                </button>
+            </div>
         </div>
     </section>
 
@@ -416,7 +452,6 @@
             }
         });
 
-        // Modal Action Scripts
         function openGatedAuthModal() {
             document.getElementById('gated-auth-modal').classList.add('active');
         }
@@ -425,7 +460,7 @@
             document.getElementById('gated-auth-modal').classList.remove('active');
         }
 
-        // Stepper Interactive Option Configuration
+        // Stepper Highlights Engine
         document.querySelectorAll('.quiz-opt').forEach(opt => {
             opt.addEventListener('click', function() {
                 const group = this.closest('.quiz-options-group');
@@ -462,7 +497,7 @@
             }
         }
 
-        // Mini-Mock Dynamic Evaluator Function
+        // Mini-Mock Evaluation Engine
         function evaluateMockTest(event) {
             event.preventDefault();
 
@@ -499,7 +534,7 @@
             sheet.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // Google Identity Configuration Node
+        // Google One-Tap Initializer Node
         window.onload = function () {
             google.accounts.id.initialize({
                 client_id: "313377576458-c198ssj598dcg6c58c3kmtvtg5sf9m84.apps.googleusercontent.com", 
@@ -512,7 +547,7 @@
             );
         };
 
-        // Identity Verification System Pipelines
+        // OAuth Token Session Receiver Pipeline
         async function handleGoogleAuthCallbackResponse(response) {
             try {
                 const { data, error } = await supabaseClient.auth.signInWithIdToken({
