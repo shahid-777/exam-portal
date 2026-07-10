@@ -1,758 +1,277 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EXAM-PORTAL-CSE.ONLINE — Welcome to Your Premier Exam Preparation Portal</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --navy:#12213B;
-    --saffron:#F2760D;
-    --saffron-deep:#D9600A;
-    --green:#0E7C4A;
-    --paper:#FAF9F6;
-    --white:#FFFFFF;
-    --ink:#1B1F27;
-    --ink-soft:#5B6270;
-    --line:#E7E4DD;
-    --font-display:'Fraunces','Noto Sans Devanagari',serif;
-    --font-sans:'Inter','Noto Sans Devanagari',sans-serif;
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  html{scroll-behavior:smooth;}
-  body{background:var(--paper); color:var(--ink); font-family:var(--font-sans); line-height:1.55;}
-  a{text-decoration:none; color:inherit;}
-  img{display:block; max-width:100%; height:auto;}
-
-  /* ---------- RESPONSIVE NAVIGATION BAR ---------- */
-  nav{
-    display:flex; align-items:center; justify-content:between;
-    padding:10px 5%; background:var(--white); border-bottom:1px solid var(--line);
-    position:sticky; top:0; z-index:100;
-  }
-  .nav-container { display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1280px; margin:0 auto; }
-  .logo{display:flex; align-items:center; z-index: 101;}
-  .logo img{height:75px; width:auto; display:block; transition: transform 0.2s ease;}
-  .logo img:hover { transform: scale(1.02); }
-  
-  .menu-toggle-btn { display: none; background: transparent; border: none; font-size: 1.8rem; color: var(--navy); cursor: pointer; z-index: 101; padding: 4px 8px; }
-
-  .nav-menu-wrapper { display: flex; align-items: center; justify-content: space-between; flex-grow: 1; margin-left: 40px; }
-  .nav-links{display:flex; gap:26px; font-size:0.95rem; font-weight:600; color:var(--ink);}
-  .nav-links a{padding:6px 2px; border-bottom:2px solid transparent; transition:border-color .2s ease, color .2s ease;}
-  .nav-links a:hover{border-color:var(--saffron); color:var(--saffron-deep);}
-  
-  .nav-buttons{display:flex; align-items:center; gap:12px;}
-  .btn-outline{
-    font-weight:600; font-size:0.9rem; padding:11px 22px; border-radius:999px;
-    border:1.5px solid var(--navy); color:var(--navy); background: transparent;
-    transition:all .2s ease; cursor: pointer;
-  }
-  .btn-outline:hover{background:var(--navy); color:var(--white);}
-  .btn-fill{
-    font-weight:700; font-size:0.9rem; padding:12px 24px; border-radius:999px;
-    background:var(--saffron); color:var(--white); border: none;
-    box-shadow:0 6px 16px rgba(242,118,13,0.32); cursor: pointer;
-    transition:transform .18s ease, box-shadow .2s ease;
-  }
-  .btn-fill:hover{transform:translateY(-2px); box-shadow:0 10px 22px rgba(242,118,13,0.4);}
-
-  @media (max-width: 992px) {
-    .menu-toggle-btn { display: block; }
-    .nav-menu-wrapper {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0; height: 100vh; width: 100vw;
-      background: var(--white); flex-direction: column; justify-content: center; align-items: center;
-      margin-left: 0; gap: 40px; transform: translateY(-100%); transition: transform 0.35s ease-in-out;
-      z-index: 100; padding: 80px 20px;
-    }
-    .nav-menu-wrapper.menu-is-open { transform: translateY(0); }
-    .nav-links { flex-direction: column; align-items: center; gap: 24px; font-size: 1.15rem; }
-    .nav-buttons { flex-direction: column; width: 100%; max-width: 280px; gap: 14px; }
-    .nav-buttons a, .nav-buttons button { width: 100%; text-align: center; }
-    .logo img { height: 60px; }
-  }
-
-  /* ---------- HERO ---------- */
-  .hero{position:relative; min-height:680px; display:flex; align-items:center; overflow:hidden;}
-  .hero-bg{position:absolute; inset:0; z-index:0;}
-  .hero-bg img{width:100%; height:100%; object-fit:cover; object-position:center 30%;}
-  .hero-bg::after{
-    content:''; position:absolute; inset:0;
-    background:linear-gradient(100deg, rgba(18,33,59,0.95) 0%, rgba(18,33,59,0.82) 45%, rgba(18,33,59,0.40) 75%, rgba(18,33,59,0.05) 100%);
-  }
-  .hero-inner{position:relative; z-index:2; width:100%; max-width:1280px; margin:0 auto; padding:60px 5% 80px;}
-  .hero-tag{
-    display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; font-weight:600;
-    color:#FFE3C4; background:rgba(242,118,13,0.18); border:1px solid rgba(242,118,13,0.45);
-    padding:8px 16px; border-radius:999px; margin-bottom:25px;
-  }
-  .hero-tag .pulse{width:7px; height:7px; border-radius:50%; background:#4ADE80; box-shadow:0 0 0 rgba(74,222,128,0.5); animation:pulse 1.8s infinite;}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,0.55);}70%{box-shadow:0 0 0 10px rgba(74,222,128,0);}100%{box-shadow:0 0 0 0 rgba(74,222,128,0);}}
-  
-  .hero-brand-heading { display: flex; flex-direction: column; gap: 20px; align-items: flex-start; margin-bottom: 25px; }
-  .hero-brand-logo { height: 110px; width: auto; display: block; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.25)); }
-  
-  h1.hero-h1{
-    font-family:var(--font-display); font-weight:700; color:var(--white);
-    font-size:clamp(2.1rem, 4.5vw, 3.5rem); line-height:1.15; max-width:22ch; margin: 0;
-  }
-  h1.hero-h1 .hl { color:#FFB25E; }
-  
-  .hero-sub{color:#EDEFF4; font-size:1.1rem; max-width:52ch; margin-bottom:35px; line-height:1.6;}
-  .hero-actions{display:flex; gap:14px; flex-wrap:wrap;}
-  .btn-hero-primary{
-    background:var(--saffron); color:var(--white); font-weight:700; font-size:1rem;
-    padding:16px 28px; border-radius:999px; box-shadow:0 10px 26px rgba(242,118,13,0.4);
-    transition:transform .18s ease; display: inline-block;
-  }
-  .btn-hero-primary:hover{transform:translateY(-2px);}
-  .btn-hero-secondary{
-    color:var(--white); font-weight:600; font-size:1rem; padding:16px 12px;
-    border-bottom:1.5px solid rgba(255,255,255,0.5); display: inline-block;
-  }
-
-  .float-card{
-    position:absolute; z-index:3; background:var(--white); border-radius:14px;
-    box-shadow:0 20px 45px rgba(0,0,0,0.28); padding:14px 18px; font-family:var(--font-sans);
-  }
-  .fc-live{top:16%; right:6%; display:flex; align-items:center; gap:10px;}
-  .fc-live .live-dot{width:9px; height:9px; border-radius:50%; background:#EF4444; animation:pulse 1.4s infinite;}
-  .fc-live .fc-title{font-weight:700; font-size:0.85rem; color:var(--navy);}
-  .fc-live .fc-sub{font-size:0.75rem; color:var(--ink-soft);}
-  .fc-result{bottom:20%; right:9%; max-width:210px;}
-  .fc-result .fc-name{font-weight:700; font-size:0.82rem; color:var(--green); margin-bottom:2px;}
-  .fc-result .fc-msg{font-size:0.85rem; color:var(--ink);}
-
-  @media (max-width:1200px){
-    .float-card{display:none;}
-    .hero{min-height:auto;}
-    .hero-bg::after { background: rgba(18,33,59,0.85); }
-  }
-  @media (max-width:576px) {
-    .hero-brand-logo { height: 80px; }
-    .hero-actions a { width: 100%; text-align: center; }
-  }
-
-  /* ---------- SECTION HEAD ---------- */
-  .section-wrap{max-width:1280px; margin:0 auto; padding:60px 5%;}
-  .section-head{max-width:700px; margin-bottom:40px;}
-  .eyebrow-tag{font-size:0.8rem; font-weight:700; color:var(--saffron-deep); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; display:block;}
-  .section-head h2{font-family:var(--font-display); font-weight:700; font-size:clamp(1.6rem,3.2vw,2.3rem); color:var(--navy); line-height: 1.2;}
-  .section-head p{color:var(--ink-soft); margin-top:12px; font-size:1.02rem;}
-
-  /* ---------- EXAM CATEGORY GRID ---------- */
-  .cat-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;}
-  .cat-card{
-    position:relative; border-radius:16px; overflow:hidden; aspect-ratio:4/3;
-    box-shadow:0 8px 24px rgba(18,33,59,0.06); background: var(--navy);
-  }
-  .cat-card img{width:100%; height:100%; object-fit:cover; transition:transform .5s ease;}
-  .cat-card:hover img{transform:scale(1.07);}
-  .cat-overlay{
-    position:absolute; inset:0; background:linear-gradient(0deg, rgba(18,33,59,0.92) 0%, rgba(18,33,59,0.3) 60%, transparent 100%);
-    display:flex; flex-direction:column; justify-content:flex-end; padding:24px;
-  }
-  .cat-overlay .cat-eyebrow{font-size:0.72rem; color:#FFC98C; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:6px;}
-  .cat-overlay h3{font-family:var(--font-display); color:var(--white); font-size:1.2rem; font-weight:600; margin-bottom:4px;}
-  .cat-overlay p{color:#D9DCE4; font-size:0.88rem; line-height: 1.4;}
-
-  @media (max-width:992px){ .cat-grid{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:650px){ .cat-grid{grid-template-columns:1fr; gap:16px;} }
-
-  /* ---------- HOW IT WORKS ---------- */
-  .steps-row{display:grid; grid-template-columns:repeat(3,1fr); gap:26px;}
-  .step-card{background:var(--white); border:1px solid var(--line); border-radius:16px; padding:30px;}
-  .step-num{
-    width:38px; height:38px; border-radius:50%; background:var(--navy); color:var(--white);
-    display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700;
-    margin-bottom:18px; font-size:1rem;
-  }
-  .step-card h3{font-family:var(--font-display); font-size:1.15rem; color:var(--navy); margin-bottom:8px; font-weight:600;}
-  .step-card p{color:var(--ink-soft); font-size:0.95rem; line-height: 1.5;}
-
-  @media (max-width:850px){ .steps-row{grid-template-columns:1fr; gap:16px;} }
-
-  /* ---------- TEMPLATE / SAMPLE QUESTION ---------- */
-  .template-section{background:var(--navy);}
-  .template-section .section-head h2{color:var(--white);}
-  .template-section .section-head p{color:#C6CBD6;}
-  .template-section .eyebrow-tag{color:#FFB25E;}
-  .q-card{
-    max-width:600px; background:var(--white); border-radius:18px; padding:28px 30px;
-    box-shadow:0 30px 60px rgba(0,0,0,0.25);
-  }
-  .q-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
-  .q-tag{font-size:0.78rem; font-weight:700; color:var(--saffron-deep);}
-  .q-timer{font-size:0.78rem; color:var(--ink-soft); font-weight:600;}
-  .q-text{font-size:1.05rem; margin-bottom:20px; color:var(--ink); font-weight:500;}
-  .q-options{display:flex; flex-direction:column; gap:10px; margin-bottom:18px;}
-  .opt{display:flex; align-items:center; gap:12px; padding:13px 15px; border:1.5px solid var(--line); border-radius:10px; font-size:0.92rem; color:var(--ink-soft); cursor:pointer;}
-  .opt input{accent-color:var(--saffron);}
-  .opt.sel{border-color:var(--green); color:var(--ink); background:rgba(14,124,74,0.06); font-weight:600;}
-  .q-foot{display:flex; justify-content:space-between; padding-top:14px; border-top:1px dashed var(--line); font-size:0.8rem;}
-  .q-marks{color:var(--ink-soft); font-weight:600;}
-  .q-next{color:var(--saffron-deep); font-weight:700;}
-
-  /* ---------- LIVE 10-MCQ DEMO WIZARD SYSTEM ---------- */
-  .demo-quiz-section { background: #f0f4f8; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .quiz-container { max-width: 800px; margin: 0 auto; background: var(--white); border-radius: 20px; padding: 40px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
-  
-  .quiz-item { display: none; }
-  .quiz-item.active-question { display: block; animation: fadeIn .3s ease-in-out; }
-
-  .quiz-q-text { font-size: 1.15rem; font-weight: 600; color: var(--navy); margin-bottom: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; line-height: 1.4; }
-  .quiz-q-text .q-num { color: var(--saffron); font-weight: 800; }
-  .quiz-subject-badge { font-size: 0.75rem; text-transform: uppercase; padding: 4px 10px; background: #e2e8f0; border-radius: 6px; font-weight: 700; color: var(--navy); }
-  .quiz-options-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 10px; }
-  .quiz-opt { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border: 1.5px solid var(--line); border-radius: 12px; font-size: 0.98rem; color: var(--ink-soft); cursor: pointer; transition: all 0.2s ease; }
-  .quiz-opt:hover { border-color: var(--saffron); background: rgba(242,118,13,0.02); }
-  .quiz-opt input { accent-color: var(--saffron); width: 18px; height: 18px; cursor: pointer; }
-  .quiz-opt.active-selected { border-color: var(--saffron); color: var(--navy); background: rgba(242,118,13,0.06); font-weight: 600; }
-  
-  .quiz-nav-ctrls { display: flex; justify-content: space-between; align-items: center; margin-top: 35px; padding-top: 25px; border-top: 1px solid var(--line); gap: 10px; }
-  .ctrl-btn { font-weight: 600; font-size: 0.95rem; padding: 12px 24px; border-radius: 8px; border: 1.5px solid var(--navy); background: transparent; color: var(--navy); cursor: pointer; transition: all .2s; min-width: 110px; }
-  .ctrl-btn:hover:not(:disabled) { background: var(--navy); color: var(--white); }
-  .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; border-color: var(--ink-soft); color: var(--ink-soft); }
-  .ctrl-btn.submit-action { background: var(--saffron); border-color: var(--saffron); color: var(--white); font-weight: 700; }
-  .ctrl-btn.submit-action:hover { background: var(--saffron-deep); border-color: var(--saffron-deep); }
-  .quiz-progress-text { font-size: 0.9rem; color: var(--ink-soft); font-weight: 600; text-align: center; }
-
-  @media (max-width: 480px) {
-    .quiz-container { padding: 25px 15px; }
-    .quiz-nav-ctrls { flex-wrap: wrap; justify-content: center; gap: 15px; }
-    .quiz-progress-text { order: -1; width: 100%; }
-    .ctrl-btn { flex-grow: 1; text-align: center; }
-  }
-
-  /* Live Results Scorecard UI */
-  .results-sheet { display: none; background: #fff; border: 2px solid var(--green); border-radius: 16px; padding: 35px 25px; margin-top: 40px; animation: slideDown 0.4s ease forwards; }
-  .results-headline { font-family: var(--font-display); color: var(--green); font-size: 2rem; font-weight: 700; margin-bottom: 10px; text-align: center; }
-  .score-display { text-align: center; font-size: 3.5rem; font-weight: 800; color: var(--navy); margin: 15px 0 10px; font-family: var(--font-display); }
-  .score-display span { color: var(--saffron); }
-  .progress-bar-container { background: #e2e8f0; height: 14px; border-radius: 10px; width: 100%; overflow: hidden; margin-bottom: 25px; }
-  .progress-bar-fill { height: 100%; background: var(--green); width: 0%; transition: width 1s ease-in-out; }
-  .results-summary-text { font-size: 1.1rem; text-align: center; color: var(--ink-soft); max-width: 580px; margin: 0 auto 35px; line-height: 1.6; }
-  
-  .cta-box-results { background: var(--navy); color: var(--white); padding: 30px 20px; border-radius: 14px; text-align: center; border-left: 6px solid var(--saffron); }
-  .cta-box-results h4 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 10px; color: var(--white); }
-  .cta-box-results p { font-size: 0.95rem; color: #c6cbd6; margin-bottom: 20px; }
-  .cta-box-results .btn-redirect { display: inline-block; background: var(--saffron); color: var(--white); font-weight: 700; padding: 14px 30px; border-radius: 999px; font-size: 1rem; transition: transform 0.2s; }
-  .cta-box-results .btn-redirect:hover { transform: scale(1.03); background: var(--saffron-deep); }
-
-  /* ---------- FEATURES GRID ---------- */
-  .features-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;}
-  .feature-card{background:var(--white); border-radius:18px; overflow:hidden; border:1px solid var(--line); transition: transform 0.2s ease;}
-  .feature-card:hover{transform: translateY(-4px);}
-  .feature-photo{aspect-ratio:5/4; overflow:hidden; background: #e2e8f0;}
-  .feature-photo img{width:100%; height:100%; object-fit:cover;}
-  .feature-body{padding:22px;}
-  .feature-title{font-family:var(--font-display); font-weight:700; color:var(--navy); font-size:1.15rem; margin-bottom:8px;}
-  .feature-desc{font-size:0.92rem; color:var(--ink-soft); line-height:1.5;}
-
-  @media (max-width:950px){ .features-grid{grid-template-columns:1fr; gap:20px;} }
-
-  /* ---------- RESPONSIVE FOOTER BAND GRID & CTA ---------- */
-  .final-cta{position:relative; overflow:hidden; min-height: 420px; display: flex; align-items: center;}
-  .final-cta-bg{position:absolute; inset:0; z-index: 0;}
-  .final-cta-bg img{width:100%; height:100%; object-fit:cover; object-position:center 25%;}
-  .final-cta::after{
-    content:''; position:absolute; inset:0;
-    background:linear-gradient(180deg, rgba(18,33,59,0.60), rgba(18,33,59,0.94)); z-index: 1;
-  }
-  .final-cta-inner{
-    position:relative; z-index:2; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; text-align:center; padding:60px 6%; margin: 0 auto; width: 100%;
-  }
-  .final-cta-inner h2{font-family:var(--font-display); color:var(--white); font-size:clamp(1.7rem,3.4vw,2.5rem); font-weight:700; max-width:24ch; margin-bottom:16px; line-height: 1.2;}
-  .final-cta-inner p{color:#DADEE6; max-width:48ch; margin-bottom:28px; font-size:1.02rem;}
-
-  /* ---------- FOOTER ---------- */
-  footer{background:var(--navy); color:#C6CBD6; padding:40px 5% 30px; border-top: 1px solid rgba(255,255,255,0.05);}
-  .footer-inner{max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:30px; align-items:center;}
-  footer .logo img{height:65px; width:auto;}
-  .footer-tagline { font-size:0.9rem; color: #8990A3; max-width: 40ch; }
-  .footer-bottom{font-size:0.85rem; color:#64748b; margin-top:35px; text-align:center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);}
-
-  @media (max-width: 768px) {
-    .footer-inner { flex-direction: column; text-align: center; gap: 20px; }
-    .footer-tagline { max-width: 100%; }
-  }
-
-  :focus-visible{outline:2px solid var(--saffron); outline-offset:2px;}
-  @media (prefers-reduced-motion: reduce){ * {animation:none !important; transition:none !important;} }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <link rel="icon" type="image/png" href="logo.png">
+    <title>Online Exam Portal - Welcome Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'IBM Plex Sans', sans-serif; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+        .font-serif { font-family: 'Fraunces', serif; }
+        .font-mono { font-family: 'IBM Plex Mono', monospace; }
+        .modal-blur-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .modal-blur-overlay.active { opacity: 1; pointer-events: auto; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    </style>
+    <script>
+        // 🛡️ Anti-Copy & Anti-Inspect Security Layer
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) || (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.key === 'c')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
 </head>
-<body>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased selection:bg-amber-500 selection:text-slate-950">
 
-<nav>
-  <div class="nav-container">
-    <div class="logo">
-      <a href="#"><img src="logo.png" alt="EXAM-PORTAL-CSE.ONLINE Logo"></a>
-    </div>
-    
-    <button class="menu-toggle-btn" id="menuToggleClick" aria-label="Toggle Navigation Menu">☰</button>
-    
-    <div class="nav-menu-wrapper" id="navMenuDropdown">
-      <div class="nav-links">
-        <a href="#exams">Exams</a>
-        <a href="#live-demo-test">Interactive Demo</a>
-        <a href="#features">Platform Features</a>
-        <a href="#">Help Center</a>
-      </div>
-      <div class="nav-buttons">
-        <a class="btn-outline" href="https://exam-portal-cse.online" target="_blank" rel="noopener">Log In</a>
-        <a class="btn-fill" href="https://exam-portal-cse.online" target="_blank" rel="noopener">Start Free Test</a>
-      </div>
-    </div>
-  </div>
-</nav>
-
-<section class="hero">
-  <div class="hero-bg">
-    <img src="https://images.unsplash.com/photo-1741699428220-65f37f3fbbcb?auto=format&fit=crop&w=1800&q=80" alt="Student studying with books in a library">
-  </div>
-  <div class="hero-inner">
-    <div class="hero-tag"><span class="pulse"></span>Over 4,200+ students actively practicing online</div>
-    
-    <div class="hero-brand-heading">
-      <img src="logo.png" alt="EXAM-PORTAL-CSE.ONLINE Logo" class="hero-brand-logo">
-      <h1 class="hero-h1">Your <span class="hl">Sarkari &amp; Private</span> Exam Prep, Simplified.</h1>
-    </div>
-    
-    <p class="hero-sub">Comprehensive mock exams based on genuine assessment patterns for major corporate placements and competitive government exams. Experience immediate analytical feedback with zero operational cost.</p>
-    <div class="hero-actions">
-      <a class="btn-hero-primary" href="#live-demo-test">Try Live Demo Test Now ↓</a>
-      <a class="btn-hero-secondary" href="#exams">Browse All Exams</a>
-    </div>
-  </div>
-
-  <div class="float-card fc-live">
-    <span class="live-dot"></span>
-    <div>
-      <div class="fc-title">SSC CGL · Live Mock</div>
-      <div class="fc-sub">340 students currently active</div>
-    </div>
-  </div>
-
-  <div class="float-card fc-result">
-    <div class="fc-name">Priya · Banking PO</div>
-    <div class="fc-msg">Achieved a top score of 94/100! 🎉</div>
-  </div>
-</section>
-
-<section class="section-wrap" id="exams">
-  <div class="section-head">
-    <span class="eyebrow-tag">// exam categories</span>
-    <h2>Target Any Assessment with Targeted Practice.</h2>
-    <p>Select your specialized domain and evaluate your readiness using exact standard exam architectures.</p>
-  </div>
-  <div class="cat-grid">
-    <div class="cat-card">
-      <img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=900&q=80" alt="Student writing SSC exam paper">
-      <div class="cat-overlay">
-        <span class="cat-eyebrow">Sarkari Jobs</span>
-        <h3>Staff Selection Commission</h3>
-        <p>Comprehensive evaluations covering Analytical Reasoning, Quant, and English Language components.</p>
-      </div>
-    </div>
-    <div class="cat-card">
-      <img src="https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=900&q=80" alt="Books and notes for banking exam preparation">
-      <div class="cat-overlay">
-        <span class="cat-eyebrow">Sarkari Jobs</span>
-        <h3>Banking &amp; Insurance</h3>
-        <p>Complete preparatory structural blueprints covering both Preliminary and Main exam layouts.</p>
-      </div>
-    </div>
-    <div class="cat-card">
-      <img src="https://images.unsplash.com/photo-1534644107580-3a4dbd494a95?auto=format&fit=crop&w=900&q=80" alt="Student solving exam questions with pencil">
-      <div class="cat-overlay">
-        <span class="cat-eyebrow">Sarkari Jobs</span>
-        <h3>Railways &amp; Infrastructure</h3>
-        <p>Syllabus-aligned technical and non-technical structural mock question matrices.</p>
-      </div>
-    </div>
-    <div class="cat-card">
-      <img src="https://images.unsplash.com/photo-1585661417298-8236a5f449aa?auto=format&fit=crop&w=900&q=80" alt="Student writing state PSC exam">
-      <div class="cat-overlay">
-        <span class="cat-eyebrow">Sarkari Jobs</span>
-        <h3>State Civil Services &amp; Law</h3>
-        <p>Regionally optimized practice pathways engineered specifically for updated state syllabi.</p>
-      </div>
-    </div>
-    <div class="cat-card">
-      <img src="https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=900&q=80" alt="Student preparing for private company placement test">
-      <div class="cat-overlay">
-        <span class="cat-eyebrow">Private Sector</span>
-        <h3>Campus Placement &amp; Aptitude</h3>
-        <p>Corporate hiring patterns spanning algorithm development, logic testing, and quantitative competency.</p>
-      </div>
-    </div>
-    <div class="cat-card">
-      <img src="https://images.unsplash.com/photo-1652305500057-0fcb348b62aa?auto=format&fit=crop&w=900&q=80" alt="Group of students studying together for exams">
-      <div class="cat-overlay">
-        <span class="cat-eyebrow">Universal Core</span>
-        <h3>General Aptitude &amp; Reasoning</h3>
-        <p>Master the universal foundational frameworks utilized globally across diverse institutional matrices.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ---------- LIVE DEMO MOCK TEST SECTION ---------- -->
-<section class="section-wrap demo-quiz-section" id="live-demo-test">
-  <div class="section-head">
-    <span class="eyebrow-tag">// progressive evaluation</span>
-    <h2>Mixed Mini Mock Exam (C, Java &amp; DBMS)</h2>
-    <p>Test your knowledge with our single-question sequential test window. Complete the track to generate live data calculations instantly.</p>
-  </div>
-
-  <div class="quiz-container">
-    <form id="demoMockForm" onsubmit="evaluateMockTest(event)">
-      
-      <!-- Q1 -->
-      <div class="quiz-item active-question" data-qindex="1">
-        <div class="quiz-q-text"><span class="q-num">01.</span> What will be the output of the expression <code>sizeof('A')</code> in a standard C compiler?<span class="quiz-subject-badge">C Language</span></div>
-        <div class="quiz-options-group">
-          <label class="quiz-opt"><input type="radio" name="q1" value="A"> 1 Byte</label>
-          <label class="quiz-opt"><input type="radio" name="q1" value="B"> Depends on character set architecture</label>
-          <label class="quiz-opt"><input type="radio" name="q1" value="C"> Size equivalent to an integer (typically 4 Bytes)</label>
-          <label class="quiz-opt"><input type="radio" name="q1" value="D"> Compilation Error</label>
+    <header class="w-full bg-slate-950/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3.5 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <div class="bg-white/95 p-1.5 rounded-xl shadow-md shrink-0">
+                    <img src="logo.png" alt="Logo" class="h-8 sm:h-9 w-auto object-contain">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-sm sm:text-base font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-amber-200 uppercase leading-none font-serif">EXAM PORTAL</span>
+                    <span class="text-[8px] sm:text-[9px] font-mono font-black text-slate-500 tracking-widest mt-1 uppercase">Computer Science Dept</span>
+                </div>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-8 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <a href="#exams-hub" class="hover:text-amber-400 transition">National Mocks</a>
+                <a href="#" onclick="openGatedAuthModal()" class="hover:text-amber-400 transition">Test Series</a>
+                <a href="#" onclick="openGatedAuthModal()" class="hover:text-amber-400 transition">Previous Papers</a>
+            </div>
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <button onclick="openGatedAuthModal()" class="text-xs sm:text-sm font-bold text-slate-300 hover:text-white transition px-4 py-2 border border-white/10 rounded-xl bg-white/5">Aspirant Gateway</button>
+            </div>
         </div>
-      </div>
+    </header>
 
-      <!-- Q2 -->
-      <div class="quiz-item" data-qindex="2">
-        <div class="quiz-q-text"><span class="q-num">02.</span> Which memory management area in Java holds method names, field data, and static variables?<span class="quiz-subject-badge">Java Runtime</span></div>
-        <div class="quiz-options-group">
-          <label class="quiz-opt"><input type="radio" name="q2" value="A"> Heap Memory</label>
-          <label class="quiz-opt"><input type="radio" name="q2" value="B"> Java Stack Area</label>
-          <label class="quiz-opt"><input type="radio" name="q2" value="C"> Program Counter (PC) Register</label>
-          <label class="quiz-opt"><input type="radio" name="q2" value="D"> Method Area</label>
+    <section class="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900/40 py-12 sm:py-20 px-4 sm:px-6 lg:px-8 border-b border-white/5 overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <span class="font-mono text-[10px] sm:text-xs tracking-widest text-amber-400 bg-amber-400/10 border border-amber-500/20 px-3.5 py-1.5 rounded-full uppercase inline-block font-bold">🚀 Live Simulated Testing Repositories</span>
+                <h1 class="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-none">Practice like it's exam day, <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">every day.</span></h1>
+                <p class="text-slate-400 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">Access premium full-length mocks, real-time index matrices, and previous-year question banks engineered for GATE CSE, UGC NET, and Rajasthan State Government competitive assessments.</p>
+                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+                    <button onclick="openGatedAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest shadow-xl shadow-amber-500/20 transition transform active:scale-95 cursor-pointer">Start Free Mock Test</button>
+                    <a href="#exams-hub" class="border border-white/10 hover:border-white/20 bg-white/5 backdrop-blur text-white font-bold px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition">Explore Exam Matrix</a>
+                </div>
+            </div>
+            <div class="lg:col-span-5 w-full max-w-md mx-auto">
+                <div class="bg-slate-950/60 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden">
+                    <div class="bg-slate-950/80 px-5 py-4 border-b border-white/5 flex items-center justify-between">
+                        <span class="font-mono text-[10px] tracking-wider text-slate-400 uppercase font-bold">Live Stream Tracker</span>
+                        <div class="flex items-center space-x-2 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/10"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span><span class="text-[9px] font-mono font-black text-emerald-400 uppercase">Active</span></div>
+                    </div>
+                    <div class="divide-y divide-white/5 text-xs font-medium font-mono">
+                        <div class="p-4 flex items-center justify-between hover:bg-white/[0.02] transition"><span class="text-slate-200 tracking-wide uppercase font-bold text-[11px]">RAS Patwari · Mock 09</span><span class="text-amber-400 text-[10px]">06:00 PM</span></div>
+                        <div class="p-4 flex items-center justify-between hover:bg-white/[0.02] transition"><span class="text-slate-200 tracking-wide uppercase font-bold text-[11px]">GATE CSE · Algorithms</span><span class="text-amber-400 text-[10px]">08:30 PM</span></div>
+                        <div class="p-4 flex items-center justify-between hover:bg-white/[0.02] transition"><span class="text-slate-200 tracking-wide uppercase font-bold text-[11px]">UGC NET · Paper I Base</span><span class="text-slate-500 text-[10px]">TOMORROW</span></div>
+                        <div class="p-4 flex items-center justify-between hover:bg-white/[0.02] transition"><span class="text-slate-200 tracking-wide uppercase font-bold text-[11px]">REET · Level 2 Core</span><span class="text-slate-500 text-[10px]">TOMORROW</span></div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+    </section>
 
-      <!-- Q3 -->
-      <div class="quiz-item" data-qindex="3">
-        <div class="quiz-q-text"><span class="q-num">03.</span> Which property of ACID rules ensures that a database remains transaction-resilient even in the event of an abrupt system power loss?<span class="quiz-subject-badge">DBMS Core</span></div>
-        <div class="quiz-options-group">
-          <label class="quiz-opt"><input type="radio" name="q3" value="A"> Atomicity</label>
-          <label class="quiz-opt"><input type="radio" name="q3" value="B"> Consistency</label>
-          <label class="quiz-opt"><input type="radio" name="q3" value="C"> Isolation</label>
-          <label class="quiz-opt"><input type="radio" name="q3" value="D"> Durability</label>
+    <div class="bg-slate-950/40 border-b border-white/5 py-6 sm:py-8 px-4 sm:px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div><div class="font-serif font-bold text-xl sm:text-2xl text-amber-400">⚡ Live Engine</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Real-time Exam Timer</div></div>
+            <div><div class="font-serif font-bold text-xl sm:text-2xl text-blue-400">🎯 100% Aligned</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Latest Syllabus Matrix</div></div>
+            <div><div class="font-serif font-bold text-xl sm:text-2xl text-purple-400">📉 Negative Mark</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Standard Scoring System</div></div>
+            <div><div class="font-serif font-bold text-xl sm:text-2xl text-emerald-400">🛡️ Secure Auth</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Verified Student Nodes</div></div>
         </div>
-      </div>
+    </div>
 
-      <!-- Q4 -->
-      <div class="quiz-item" data-qindex="4">
-        <div class="quiz-q-text"><span class="q-num">04.</span> What is the default storage class initialization value of a local variable in C if left explicitly unassigned?<span class="quiz-subject-badge">C Language</span></div>
-        <div class="quiz-options-group">
-          <label class="quiz-opt"><input type="radio" name="q4" value="A"> Zero (0)</label>
-          <label class="quiz-opt"><input type="radio" name="q4" value="B"> Undefined Garbage Value</label>
-          <label class="quiz-opt"><input type="radio" name="q4" value="C"> Null pointer flag</label>
-          <label class="quiz-opt"><input type="radio" name="q4" value="D"> Infinite memory loop</label>
+    <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12" id="exams-hub">
+        <div class="max-w-2xl mx-auto text-center space-y-2"><span class="font-mono text-[10px] text-amber-500 uppercase tracking-widest font-bold">Comprehensive Repository Matrix</span><h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Targeted Examination Streams</h2><p class="text-slate-400 text-xs sm:text-sm font-medium">Select a core structure down below to unlock specific verified question models and diagnostics.</p></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">IIT GATE Base</span><img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80" alt="GATE" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">GATE CS & IT Matrix</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Core Engineering Algorithms, Architecture Theory & Data Structure Subsets.</p></div>
+                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                </div>
+            </div>
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">NTA Network</span><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=600&q=80" alt="UGC NET" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">UGC NET Paper I & II</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Research Methodologies, General Aptitude Vectors, and Computing Diagnostics.</p></div>
+                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                </div>
+            </div>
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">RSMSSB State</span><img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?q=80&w=600&auto=format&fit=crop" alt="Patwari" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">RAS Patwari Compilations</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Complete Rajasthan Cultural History, Mental Aptitude & Language Parameters.</p></div>
+                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                </div>
+            </div>
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">BSER Portal</span><img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80" alt="REET" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">REET Level 1 & 2 Framework</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Child Psychology, Teaching Pedagogies, and Subject Competency Repositories.</p></div>
+                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                </div>
+            </div>
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">RSSB Professional</span><img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" alt="Instructor" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">Computer Instructor Base</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Object Oriented paradigms, DBMS Structuring, Web-Architectures & Technical Coding.</p></div>
+                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                </div>
+            </div>
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">SSC Central</span><img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80" alt="SSC" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">SSC CGL Core Modules</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Quantitative Aptitude, Logical Reasoning Matrices & Institutional Comprehension.</p></div>
+                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                </div>
+            </div>
         </div>
-      </div>
+    </section>
 
-      <!-- Q5 -->
-      <div class="quiz-item" data-qindex="5">
-        <div class="quiz-q-text"><span class="q-num">05.</span> Why is the String class defined as Immutable within standard Java framework implementations?<span class="quiz-subject-badge">Java Core</span></div>
-        <div class="quiz-options-group">
-          <label class="quiz-opt"><input type="radio" name="q5" value="A"> To accommodate security, synchronization, and optimization pools</label>
-          <label class="quiz-opt"><input type="radio" name="q5" value="B"> Java does not support mutable string reference models</label>
-          <label class="quiz-opt"><input type="radio" name="q5" value="C"> To prevent runtime memory allocation procedures</label>
-          <label class="quiz-opt"><input type="radio" name="q5" value="D"> Because it belongs directly to the primitive keyword matrix</label>
+    <div id="gated-auth-modal" class="modal-blur-overlay flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900/90 border border-white/10 w-full max-w-sm p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6 relative overflow-hidden">
+            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400"></div>
+            <button onclick="closeGatedAuthModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white font-mono font-bold text-lg cursor-pointer transition">&times;</button>
+            
+            <div class="space-y-1 text-center">
+                <h2 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-amber-400 uppercase tracking-wide font-serif">IDENTITY GATEWAY</h2>
+                <p class="text-[11px] text-slate-400 font-medium leading-relaxed">Secure instant authorization using single-sign-on validation node.</p>
+            </div>
+            
+            <div class="py-4 flex flex-col items-center justify-center space-y-4 bg-slate-950/30 border border-white/5 rounded-2xl p-4">
+                <span class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest block mb-2">Verified Aspirant SSO Channel</span>
+                <div class="flex justify-center transition hover:scale-[1.01] w-full max-w-full overflow-hidden">
+                    <div id="google-auth-element-root" class="w-full flex justify-center"></div>
+                </div>
+            </div>
+
+            <div class="text-center text-[10px] font-mono font-bold text-slate-600 uppercase tracking-wider">
+                🔒 System secured by Google Cloud Single Sign-On
+            </div>
         </div>
-      </div>
+    </div>
 
-      <!-- Q6 -->
-      <div class="quiz-item" data-qindex="6">
-        <div class="quiz-q-text"><span class="q-num">06.</span> In relational database algebra, which normal form explicitly addresses anomalies stemming from transitive functional dependencies?<span class="quiz-subject-badge">DBMS Architecture</span></div>
-        <div class="quiz-options-group">
-          <label class="quiz-opt"><input type="radio" name="q6" value="A"> First Normal Form (1NF)</label>
-          <label class="quiz-opt"><input type="radio" name="q6" value="B"> Second Normal Form (2NF)</label>
-          <label class="quiz-opt"><input type="radio" name="q6" value="C"> Third Normal Form (3NF)</label>
-          <label class="quiz-opt"><input type="radio" name="q6" value="D"> Boyce-Codd Normal Form (BCNF)</label>
+    <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 border border-white/5 text-center py-12 px-4 rounded-3xl space-y-4 shadow-xl relative overflow-hidden">
+            <h2 class="font-serif font-bold text-xl sm:text-3xl text-white">Your next attempt boundary starts here.</h2>
+            <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto">Link your account profile node to instantly initialize highly scalable, simulated mock examination conditions.</p>
+            <button onclick="openGatedAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3 rounded-xl text-xs uppercase tracking-widest transition shadow-lg shadow-amber-500/10 cursor-pointer">
+                Establish Free Profile
+            </button>
         </div>
-      </div>
+    </section>
 
-      <!-- Q7 -->
-      <div class="quiz-item" data-qindex="7">
-        <div class="quiz-q-text"><span class="q-num">07.</span> Which standard dynamic memory library function in C initializes allocated memory blocks to zero automatically?<span class="quiz-subject-badge">C Language</span></div>
-        <div class="quiz-options-group">
-          <label class="quiz-opt"><input type="radio" name="q7" value="A"> malloc()</label>
-          <label class="quiz-opt"><input type="radio" name="q7" value="B"> calloc()</label>
-          <label class="quiz-opt"><input type="radio" name="q7" value="C"> realloc()</label>
-          <label class="quiz-opt"><input type="radio" name="q7" value="D"> alloc()</label>
-        </div>
-      </div>
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[9px] sm:text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">&copy; Computer Science Management System Terminal</footer>
 
-      <!-- Q8 -->
-      <div class="quiz-item" data-qindex="8">
-        <div class="quiz-q-text"><span class="q-num">08.</span> Which mechanism prevents a class from being subclassed or inherited within a Java structure?<span class="quiz-subject-badge">Java OOP</span></div>
-        <div class="quiz-options-group">
-          <label class="quiz-opt"><input type="radio" name="q8" value="A"> Declaring the class as static</label>
-          <label class="quiz-opt"><input type="radio" name="q8" value="B"> Declaring the class as abstract</label>
-          <label class="quiz-opt"><input type="radio" name="q8" value="C"> Declaring the class as final</label>
-          <label class="quiz-opt"><input type="radio" name="q8" value="D"> Securing the main entry constructor</label>
-        </div>
-      </div>
+    <script>
+        const _u = "https://lelvinusfxniqrmfufql.supabase.co";
+        const _k = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        
+        const supabaseClient = supabase.createClient(_u, _k, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true,
+                storage: window.localStorage
+            }
+        });
 
-      <!-- Q9 -->
-      <div class="quiz-item" data-qindex="9">
-        <div class="quiz-q-text"><span class="q-num">09.</span> What type of structural command constraint does the statement 'DROP TABLE' represent in SQL architecture?<span class="quiz-subject-badge">DBMS Structure</span></div>
-        <div class="quiz-options-group">
-          <label class="quiz-opt"><input type="radio" name="q9" value="A"> Data Manipulation Language (DML)</label>
-          <label class="quiz-opt"><input type="radio" name="q9" value="B"> Data Definition Language (DDL)</label>
-          <label class="quiz-opt"><input type="radio" name="q9" value="C"> Data Control Language (DCL)</label>
-          <label class="quiz-opt"><input type="radio" name="q9" value="D"> Transaction Control Language (TCL)</label>
-        </div>
-      </div>
+        function openGatedAuthModal() {
+            document.getElementById('gated-auth-modal').classList.add('active');
+        }
 
-      <!-- Q10 -->
-      <div class="quiz-item" data-qindex="10">
-        <div class="quiz-q-text"><span class="q-num">10.</span> In object-oriented languages like Java, what structural principle maps directly to a schema definition inside a relational database system?<span class="quiz-subject-badge">Architecture</span></div>
-        <div class="quiz-options-group">
-          <label class="quiz-opt"><input type="radio" name="q10" value="A"> An Object instance</label>
-          <label class="quiz-opt"><input type="radio" name="q10" value="B"> A Class blueprint declaration</label>
-          <label class="quiz-opt"><input type="radio" name="q10" value="C"> A Method override block</label>
-          <label class="quiz-opt"><input type="radio" name="q10" value="D"> Encapsulated array list packets</label>
-        </div>
-      </div>
+        function closeGatedAuthModal() {
+            document.getElementById('gated-auth-modal').classList.remove('active');
+        }
 
-      <!-- Navigation Interactive Controls Footer -->
-      <div class="quiz-nav-ctrls">
-        <button type="button" class="ctrl-btn" id="prevQuizBtn" onclick="shiftQuestion(-1)" disabled>Previous</button>
-        <span class="quiz-progress-text" id="quizNavProgressText">Question 1 of 10</span>
-        <button type="button" class="ctrl-btn" id="nextQuizBtn" onclick="shiftQuestion(1)">Next</button>
-        <button type="submit" class="ctrl-btn submit-action" id="submitQuizBtn" style="display:none;">Submit Mock Exam</button>
-      </div>
-    </form>
+        window.onload = function () {
+            google.accounts.id.initialize({
+                client_id: "313377576458-c198ssj598dcg6c58c3kmtvtg5sf9m84.apps.googleusercontent.com", 
+                callback: handleGoogleAuthCallbackResponse,
+                auto_select: false
+            });
+            google.accounts.id.renderButton(
+                document.getElementById("google-auth-element-root"),
+                { theme: "filled_blue", size: "large", type: "standard", text: "continue_with", width: "280", shape: "pill" }
+            );
+        };
 
-    <!-- Unified Result Framework Sheet Container -->
-    <div id="quizResultsSheet" class="results-sheet">
-      <div class="results-headline">Evaluation Complete! 🎉</div>
-      <div class="score-display"><span id="rawCorrectCount">0</span> / 10</div>
-      <div class="progress-bar-container">
-        <div id="resultPercentBar" class="progress-bar-fill"></div>
-      </div>
-      <div id="customQuizFeedback" class="results-summary-text"></div>
-      
-      <div class="cta-box-results">
-        <h4>Unlock Hundreds of Full-Length Mock Exams!</h4>
-        <p>This is just a preview of our premium testing interface. To access highly targeted tests with detailed answers, time analytics, and global student ranks, join our main system.</p>
-        <a href="https://exam-portal-cse.online" class="btn-redirect" target="_blank" rel="noopener">Explore exam-portal-cse.online Now →</a>
-      </div>
-    </div>
-  </div>
-</section>
+        // 🛡️ Google One-Click Sync Engine (Database Insert + Auto Login)
+        async function handleGoogleAuthCallbackResponse(response) {
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithIdToken({
+                    provider: 'google',
+                    token: response.credential
+                });
 
-<section class="section-wrap" style="padding-top:0;">
-  <div class="section-head">
-    <span class="eyebrow-tag">// methodology</span>
-    <h2>Three Simple Steps to Complete Exam Readiness.</h2>
-  </div>
-  <div class="steps-row">
-    <div class="step-card">
-      <div class="step-num">1</div>
-      <h3>Select Your Exam Pathway</h3>
-      <p>Identify your targeted milestone across private technical corporate routes or public sector frameworks.</p>
-    </div>
-    <div class="step-card">
-      <div class="step-num">2</div>
-      <h3>Simulate Real Testing Environments</h3>
-      <p>Experience realistic, timed environments utilizing identical assessment metrics and layout logic.</p>
-    </div>
-    <div class="step-card">
-      <div class="step-num">3</div>
-      <h3>Review Deep Performance Analytics</h3>
-      <p>Uncover micro-level data regarding subject proficiencies, logic gaps, and optimization options.</p>
-    </div>
-  </div>
-</section>
+                if (error) throw error;
 
-<section class="template-section" id="template">
-  <div class="section-wrap">
-    <div class="section-head">
-      <span class="eyebrow-tag">// interface preview</span>
-      <h2>Engineered to Simulate the True Examination Environment.</h2>
-      <p>Familiarize yourself early with the authentic structural user interfaces, counting down live data analytics instantly.</p>
-    </div>
-    <div class="q-card">
-      <div class="q-head">
-        <span class="q-tag">Analytical Reasoning · Q. 22 / 50</span>
-        <span class="q-timer">⏱ 01:10</span>
-      </div>
-      <p class="q-text">Five individuals are seated in a linear row configuration. If A is positioned to the left of B and to the immediate right of C, who occupies the central position?</p>
-      <div class="q-options">
-        <label class="opt"><input type="radio" name="sample-q2" disabled> A</label>
-        <label class="opt sel"><input type="radio" name="sample-q2" disabled checked> B</label>
-        <label class="opt"><input type="radio" name="sample-q2" disabled> C</label>
-        <label class="opt"><input type="radio" name="sample-q2" disabled> None of the options provided</label>
-      </div>
-      <div class="q-foot">
-        <span class="q-marks">+1.0 Correct Selection · −0.25 Incorrect Penalty</span>
-        <span class="q-next">Proceed to Next Question →</span>
-      </div>
-    </div>
-  </div>
-</section>
+                // Sync token with browser local storage session
+                if (data && data.session) {
+                    await supabaseClient.auth.setSession(data.session);
+                }
 
-<!-- ---------- FEATURES DISPLAY GRID ---------- -->
-<section class="section-wrap" id="features">
-  <div class="section-head">
-    <span class="eyebrow-tag">// advanced framework</span>
-    <h2>Why Thousands of Students Train Here Daily.</h2>
-    <p>Get access to elite structural training mechanisms carefully optimized to maximize student learning capability.</p>
-  </div>
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-photo">
-        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=700&q=80" alt="Advanced performance dashboard analytics charts">
-      </div>
-      <div class="feature-body">
-        <div class="feature-title">Real-Time Performance Dashboards</div>
-        <div class="feature-desc">Isolate your weaknesses immediately. Our real-time engine maps out precision accuracy tracks and processing metrics after every submission.</div>
-      </div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-photo">
-        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=80" alt="Computer screen showcasing code execution syntax">
-      </div>
-      <div class="feature-body">
-        <div class="feature-title">Adaptive Core Question Bank</div>
-        <div class="feature-desc">Never look at repetitive datasets. Access thousands of calibrated challenges spanning computer architecture, standard programming, and algorithm metrics.</div>
-      </div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-photo">
-        <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=700&q=80" alt="Student reviewing educational materials and notebooks">
-      </div>
-      <div class="feature-body">
-        <div class="feature-title">Detailed Conceptual Breakdowns</div>
-        <div class="feature-desc">Understand the comprehensive underlying rules. Every mock question comes with direct step-by-step logic sheets to guide intermediate and advanced learners alike.</div>
-      </div>
-    </div>
-  </div>
-</section>
+                const googleEmail = data.user.email.toLowerCase();
+                const userName = data.user.user_metadata?.full_name || googleEmail.split('@')[0];
+                const currentTimestamp = new Date().toISOString();
 
-<section class="final-cta">
-  <div class="final-cta-bg">
-    <img src="https://images.unsplash.com/photo-1652305500057-0fcb348b62aa?auto=format&fit=crop&w=1800&q=80" alt="Group of students preparing together for exams">
-  </div>
-  <div class="final-cta-inner">
-    <h2>Initiate Your Diagnostic Mock Examination Today.</h2>
-    <p>Benchmark your knowledge metrics across adaptive technical patterns and public criteria right now.</p>
-    <a class="btn-hero-primary" href="https://exam-portal-cse.online" target="_blank" rel="noopener">Access exam-portal-cse.online →</a>
-  </div>
-</section>
+                // 🚀 Check if the user already exists in the portal database
+                const { data: dbUser } = await supabaseClient
+                    .from('portal_users')
+                    .select('role')
+                    .eq('email', googleEmail)
+                    .maybeSingle();
 
-<footer>
-  <div class="footer-inner">
-    <div class="logo">
-      <a href="#"><img src="logo.png" alt="Exam Portal CSE"></a>
-    </div>
-    <div class="footer-tagline">Empowering professional learning pathways — built by students, optimized for students.</div>
-  </div>
-  <div class="footer-bottom">© exam-portal-cse.online</div>
-</footer>
+                if (!dbUser) {
+                    // 🚀 New User Pipeline (Sign Up): Directly insert with 'student' role logic
+                    await supabaseClient
+                        .from('portal_users')
+                        .insert([{
+                            email: googleEmail,
+                            name: userName,
+                            role: googleEmail === 'examportalcse@gmail.com' ? 'admin' : 'student',
+                            password: 'OAUTH_GOOGLE_NODE',
+                            last_login: currentTimestamp
+                        }]);
+                    
+                    localStorage.setItem('userRole', googleEmail === 'examportalcse@gmail.com' ? 'admin' : 'student');
+                } else {
+                    // 🚀 Existing User Pipeline (Log In): Update last login timestamp metrics
+                    await supabaseClient
+                        .from('portal_users')
+                        .update({ last_login: currentTimestamp })
+                        .eq('email', googleEmail);
+                    
+                    localStorage.setItem('userRole', dbUser.role);
+                }
 
-<!-- ---------- PLATFORM JAVASCRIPT SYSTEM ENGINES ---------- -->
-<script>
-  // Mobile Responsive Menu Toggle Handler
-  const toggleBtn = document.getElementById('menuToggleClick');
-  const navDropdown = document.getElementById('navMenuDropdown');
+                localStorage.setItem('userEmail', googleEmail);
+                localStorage.setItem('sessionLoginTime', Date.now().toString());
+                
+                // Redirect user to application dashboard terminal
+                window.location.replace("dashboard.html");
 
-  toggleBtn.addEventListener('click', () => {
-    navDropdown.classList.toggle('menu-is-open');
-    toggleBtn.innerText = navDropdown.classList.contains('menu-is-open') ? '✕' : '☰';
-  });
-
-  document.querySelectorAll('.nav-links a').forEach(link => {
-    link.addEventListener('click', () => {
-      navDropdown.classList.remove('menu-is-open');
-      toggleBtn.innerText = '☰';
-    });
-  });
-
-  // Option Selection Highlights Logic
-  let activeQuestionNum = 1;
-  const totalQuestionsCount = 10;
-
-  document.querySelectorAll('.quiz-opt').forEach(option => {
-    option.addEventListener('click', function() {
-      const parentGroup = this.closest('.quiz-options-group');
-      parentGroup.querySelectorAll('.quiz-opt').forEach(opt => opt.classList.remove('active-selected'));
-      this.classList.add('active-selected');
-      
-      const radioBtn = this.querySelector('input[type="radio"]');
-      if (radioBtn) radioBtn.checked = true;
-    });
-  });
-
-  // Step Quiz Navigator Layout Switcher
-  function shiftQuestion(direction) {
-    const questionsList = document.querySelectorAll('.quiz-item');
-    questionsList[activeQuestionNum - 1].classList.remove('active-question');
-    
-    activeQuestionNum += direction;
-    if (activeQuestionNum < 1) activeQuestionNum = 1;
-    if (activeQuestionNum > totalQuestionsCount) activeQuestionNum = totalQuestionsCount;
-    
-    questionsList[activeQuestionNum - 1].classList.add('active-question');
-    
-    document.getElementById('quizNavProgressText').innerText = `Question ${activeQuestionNum} of ${totalQuestionsCount}`;
-    document.getElementById('prevQuizBtn').disabled = (activeQuestionNum === 1);
-    
-    if (activeQuestionNum === totalQuestionsCount) {
-      document.getElementById('nextQuizBtn').style.display = "none";
-      document.getElementById('submitQuizBtn').style.display = "inline-block";
-    } else {
-      document.getElementById('nextQuizBtn').style.display = "inline-block";
-      document.getElementById('submitQuizBtn').style.display = "none";
-    }
-  }
-
-  // Diagnostic Test Evaluation Logic
-  function evaluateMockTest(event) {
-    event.preventDefault();
-
-    const solutionKeys = {
-      q1: "C", q2: "D", q3: "D", q4: "B", q5: "A", 
-      q6: "C", q7: "B", q8: "C", q9: "B", q10: "B"
-    };
-
-    const formData = new FormData(document.getElementById('demoMockForm'));
-    let studentScore = 0;
-
-    for (let key in solutionKeys) {
-      if (formData.get(key) === solutionKeys[key]) {
-        studentScore++;
-      }
-    }
-
-    let feedbackPhrase = "";
-    if (studentScore === 10) {
-      feedbackPhrase = "Excellent score! Perfect 100% processing capability. You are fully prepared for advanced computer science core testing tracks.";
-    } else if (studentScore >= 7) {
-      feedbackPhrase = "Good job! You demonstrated stable competencies across basic core criteria. Tune up small runtime details to reach maximum optimization.";
-    } else {
-      feedbackPhrase = "Foundational review recommended. Certain architectural concepts regarding compilation steps, memory tracking, and storage normalizations require adjustment.";
-    }
-
-    document.getElementById('rawCorrectCount').innerText = studentScore;
-    
-    const calculatedPercentage = (studentScore / totalQuestionsCount) * 100;
-    document.getElementById('resultPercentBar').style.width = calculatedPercentage + "%";
-    document.getElementById('customQuizFeedback').innerText = feedbackPhrase;
-
-    const resultsView = document.getElementById('quizResultsSheet');
-    resultsView.style.display = "block";
-    resultsView.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-</script>
-
+            } catch (err) {
+                alert("Identity verification session mapping exception: " + err.message);
+            }
+        }
+    </script>
 </body>
 </html>
