@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
     <link rel="icon" type="image/png" href="logo.png">
-    <title>Online Exam Portal - Welcome Terminal</title>
+    <title>EXAM-PORTAL-CSE.ONLINE — Welcome to Your Premier Exam Preparation Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -16,11 +16,16 @@
         body { font-family: 'IBM Plex Sans', sans-serif; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
         .font-serif { font-family: 'Fraunces', serif; }
         .font-mono { font-family: 'IBM Plex Mono', monospace; }
-        .modal-blur-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .modal-blur-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; }
         .modal-blur-overlay.active { opacity: 1; pointer-events: auto; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        
+        /* 10 MCQ Progressive Navigation Utilities */
+        .quiz-item { display: none; }
+        .quiz-item.active-question { display: block; animation: fadeIn .3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
     <script>
         // 🛡️ Anti-Copy & Anti-Inspect Security Layer
@@ -36,11 +41,13 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased selection:bg-amber-500 selection:text-slate-950">
 
+    <!-- ---------- NAV BAR BAR MODULE ---------- -->
     <header class="w-full bg-slate-950/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 transition-all">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
             <div class="flex items-center space-x-3.5 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-                <div class="bg-white/95 p-1.5 rounded-xl shadow-md shrink-0">
-                    <img src="logo.png" alt="Logo" class="h-8 sm:h-9 w-auto object-contain">
+                <div class="bg-white/95 p-1 rounded-xl shadow-md shrink-0">
+                    <!-- Maximized Logo Scale Execution -->
+                    <img src="logo.png" alt="Logo" class="h-14 sm:h-16 w-auto object-contain transition duration-200 hover:scale-102">
                 </div>
                 <div class="flex flex-col">
                     <span class="text-sm sm:text-base font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-amber-200 uppercase leading-none font-serif">EXAM PORTAL</span>
@@ -49,9 +56,9 @@
             </div>
             
             <div class="hidden md:flex items-center space-x-8 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                <a href="#exams-hub" class="hover:text-amber-400 transition">National Mocks</a>
-                <a href="#" onclick="openGatedAuthModal()" class="hover:text-amber-400 transition">Test Series</a>
-                <a href="#" onclick="openGatedAuthModal()" class="hover:text-amber-400 transition">Previous Papers</a>
+                <a href="#exams-hub" class="hover:text-amber-400 transition">Sarkari Mocks</a>
+                <a href="#live-demo-test" class="hover:text-amber-400 transition">Interactive Demo</a>
+                <a href="#features-hub" class="hover:text-amber-400 transition">Platform Features</a>
             </div>
             <div class="flex items-center space-x-3 sm:space-x-4">
                 <button onclick="openGatedAuthModal()" class="text-xs sm:text-sm font-bold text-slate-300 hover:text-white transition px-4 py-2 border border-white/10 rounded-xl bg-white/5">Aspirant Gateway</button>
@@ -59,16 +66,23 @@
         </div>
     </header>
 
-    <section class="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900/40 py-12 sm:py-20 px-4 sm:px-6 lg:px-8 border-b border-white/5 overflow-hidden">
+    <!-- ---------- HERO TERMINAL BLOCK ---------- -->
+    <section class="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900/40 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-b border-white/5 overflow-hidden">
         <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:16px_16px]"></div>
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
             <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
                 <span class="font-mono text-[10px] sm:text-xs tracking-widest text-amber-400 bg-amber-400/10 border border-amber-500/20 px-3.5 py-1.5 rounded-full uppercase inline-block font-bold">🚀 Live Simulated Testing Repositories</span>
-                <h1 class="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-none">Practice like it's exam day, <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">every day.</span></h1>
-                <p class="text-slate-400 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">Access premium full-length mocks, real-time index matrices, and previous-year question banks engineered for GATE CSE, UGC NET, and Rajasthan State Government competitive assessments.</p>
+                
+                <!-- Main Header Logo & Title Branding Node -->
+                <div class="flex flex-col items-center lg:items-start gap-5">
+                    <img src="logo.png" alt="Branding Header Identity" class="h-24 sm:h-28 w-auto block filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.4)]">
+                    <h1 class="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-none">Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">Sarkari &amp; Private</span> Exam Prep, Simplified.</h1>
+                </div>
+
+                <p class="text-slate-400 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">Access premium full-length mocks, real-time index matrices, and previous-year question banks engineered for GATE CSE, UGC NET, and state competitive assessments.</p>
                 <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
                     <button onclick="openGatedAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest shadow-xl shadow-amber-500/20 transition transform active:scale-95 cursor-pointer">Start Free Mock Test</button>
-                    <a href="#exams-hub" class="border border-white/10 hover:border-white/20 bg-white/5 backdrop-blur text-white font-bold px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition">Explore Exam Matrix</a>
+                    <a href="#live-demo-test" class="border border-white/10 hover:border-white/20 bg-white/5 backdrop-blur text-white font-bold px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition">Try Live Demo Test ↓</a>
                 </div>
             </div>
             <div class="lg:col-span-5 w-full max-w-md mx-auto">
@@ -88,6 +102,7 @@
         </div>
     </section>
 
+    <!-- ---------- VALUE PROPOSITION METRIC STRIP ---------- -->
     <div class="bg-slate-950/40 border-b border-white/5 py-6 sm:py-8 px-4 sm:px-6">
         <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div><div class="font-serif font-bold text-xl sm:text-2xl text-amber-400">⚡ Live Engine</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Real-time Exam Timer</div></div>
@@ -97,6 +112,7 @@
         </div>
     </div>
 
+    <!-- ---------- SARKARI EXAM CATEGORY MATRIX ---------- -->
     <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12" id="exams-hub">
         <div class="max-w-2xl mx-auto text-center space-y-2"><span class="font-mono text-[10px] text-amber-500 uppercase tracking-widest font-bold">Comprehensive Repository Matrix</span><h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Targeted Examination Streams</h2><p class="text-slate-400 text-xs sm:text-sm font-medium">Select a core structure down below to unlock specific verified question models and diagnostics.</p></div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -115,37 +131,241 @@
                 </div>
             </div>
             <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
-                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">RSMSSB State</span><img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?q=80&w=600&auto=format&fit=crop" alt="Patwari" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">Sarkari Jobs Base</span><img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?q=80&w=600&auto=format&fit=crop" alt="Patwari" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
                 <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">RAS Patwari Compilations</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Complete Rajasthan Cultural History, Mental Aptitude & Language Parameters.</p></div>
-                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
-                </div>
-            </div>
-            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
-                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">BSER Portal</span><img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80" alt="REET" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
-                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">REET Level 1 & 2 Framework</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Child Psychology, Teaching Pedagogies, and Subject Competency Repositories.</p></div>
-                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
-                </div>
-            </div>
-            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
-                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">RSSB Professional</span><img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" alt="Instructor" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
-                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">Computer Instructor Base</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Object Oriented paradigms, DBMS Structuring, Web-Architectures & Technical Coding.</p></div>
-                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
-                </div>
-            </div>
-            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
-                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">SSC Central</span><img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80" alt="SSC" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
-                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">SSC CGL Core Modules</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Quantitative Aptitude, Logical Reasoning Matrices & Institutional Comprehension.</p></div>
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">Sarkari Patwari Compilations</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Complete Cultural History, Mental Aptitude & Language Parameters.</p></div>
                     <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <div id="gated-auth-modal" class="modal-blur-overlay flex items-center justify-center p-4 z-50">
+    <!-- ---------- PROGRESSIVE 10 MCQ EXAM WIZARD SECTION ---------- -->
+    <section class="w-full bg-slate-950/40 border-y border-white/5 py-16 px-4 sm:px-6 lg:px-8" id="live-demo-test">
+        <div class="max-w-3xl mx-auto space-y-8">
+            <div class="text-center space-y-2">
+                <span class="font-mono text-[10px] text-amber-500 uppercase tracking-widest font-bold">// progressive evaluation</span>
+                <h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Mixed Mini Mock Exam (C, Java &amp; DBMS)</h2>
+                <p class="text-slate-400 text-xs sm:text-sm font-medium">Test your baseline capabilities below. Answers compute client-side immediately upon final submission node.</p>
+            </div>
+
+            <div class="bg-slate-900/90 border border-white/10 rounded-2xl p-6 sm:p-10 shadow-2xl">
+                <form id="demoMockForm" onsubmit="evaluateMockTest(event)">
+                    
+                    <!-- Q1 -->
+                    <div class="quiz-item active-question" data-qindex="1">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono font-bold text-amber-400">Question 01 of 10</span>
+                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">C Language</span>
+                        </div>
+                        <p class="text-slate-200 text-base font-semibold mb-6">What will be the output of the expression <code class="bg-slate-950 text-amber-400 px-1.5 py-0.5 rounded font-mono text-sm">sizeof('A')</code> in a standard C compiler?</p>
+                        <div class="flex flex-col gap-3">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q1" value="A" class="accent-amber-500"> <span>1 Byte</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q1" value="B"> <span>Depends on character set architecture</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q1" value="C"> <span>Size equivalent to an integer (typically 4 Bytes)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q1" value="D"> <span>Compilation Error</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="quiz-item" data-qindex="2">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono font-bold text-amber-400">Question 02 of 10</span>
+                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">Java Runtime</span>
+                        </div>
+                        <p class="text-slate-200 text-base font-semibold mb-6">Which memory management area in Java holds method names, field data, and static variables?</p>
+                        <div class="flex flex-col gap-3">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q2" value="A"> <span>Heap Memory</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q2" value="B"> <span>Java Stack Area</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q2" value="C"> <span>Program Counter (PC) Register</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q2" value="D"> <span>Method Area</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="quiz-item" data-qindex="3">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono font-bold text-amber-400">Question 03 of 10</span>
+                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">DBMS Core</span>
+                        </div>
+                        <p class="text-slate-200 text-base font-semibold mb-6">Which property of ACID rules ensures that a database remains transaction-resilient even in the event of an abrupt system power loss?</p>
+                        <div class="flex flex-col gap-3">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q3" value="A"> <span>Atomicity</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q3" value="B"> <span>Consistency</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q3" value="C"> <span>Isolation</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q3" value="D"> <span>Durability</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="quiz-item" data-qindex="4">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono font-bold text-amber-400">Question 04 of 10</span>
+                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">C Language</span>
+                        </div>
+                        <p class="text-slate-200 text-base font-semibold mb-6">What is the default storage class initialization value of a local variable in C if left explicitly unassigned?</p>
+                        <div class="flex flex-col gap-3">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q4" value="A"> <span>Zero (0)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q4" value="B"> <span>Undefined Garbage Value</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q4" value="C"> <span>Null pointer flag</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q4" value="D"> <span>Infinite memory loop</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="quiz-item" data-qindex="5">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono font-bold text-amber-400">Question 05 of 10</span>
+                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">Java Core</span>
+                        </div>
+                        <p class="text-slate-200 text-base font-semibold mb-6">Why is the String class defined as Immutable within standard Java framework implementations?</p>
+                        <div class="flex flex-col gap-3">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q5" value="A"> <span>To accommodate security, synchronization, and optimization pools</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q5" value="B"> <span>Java does not support mutable string reference models</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q5" value="C"> <span>To prevent runtime memory allocation procedures</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q5" value="D"> <span>Because it belongs directly to the primitive keyword matrix</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q6 -->
+                    <div class="quiz-item" data-qindex="6">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono font-bold text-amber-400">Question 06 of 10</span>
+                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">DBMS Architecture</span>
+                        </div>
+                        <p class="text-slate-200 text-base font-semibold mb-6">In relational database algebra, which normal form explicitly addresses anomalies stemming from transitive functional dependencies?</p>
+                        <div class="flex flex-col gap-3">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q6" value="A"> <span>First Normal Form (1NF)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q6" value="B"> <span>Second Normal Form (2NF)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q6" value="C"> <span>Third Normal Form (3NF)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q6" value="D"> <span>Boyce-Codd Normal Form (BCNF)</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q7 -->
+                    <div class="quiz-item" data-qindex="7">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono font-bold text-amber-400">Question 07 of 10</span>
+                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">C Language</span>
+                        </div>
+                        <p class="text-slate-200 text-base font-semibold mb-6">Which standard dynamic memory library function in C initializes allocated memory blocks to zero automatically?</p>
+                        <div class="flex flex-col gap-3">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q7" value="A"> <span>malloc()</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q7" value="B"> <span>calloc()</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q7" value="C"> <span>realloc()</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q7" value="D"> <span>alloc()</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q8 -->
+                    <div class="quiz-item" data-qindex="8">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono font-bold text-amber-400">Question 08 of 10</span>
+                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">Java OOP</span>
+                        </div>
+                        <p class="text-slate-200 text-base font-semibold mb-6">Which mechanism prevents a class from being subclassed or inherited within a Java structure?</p>
+                        <div class="flex flex-col gap-3">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q8" value="A"> <span>Declaring the class as static</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q8" value="B"> <span>Declaring the class as abstract</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q8" value="C"> <span>Declaring the class as final</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q8" value="D"> <span>Securing the main entry constructor</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q9 -->
+                    <div class="quiz-item" data-qindex="9">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono font-bold text-amber-400">Question 09 of 10</span>
+                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">DBMS Structure</span>
+                        </div>
+                        <p class="text-slate-200 text-base font-semibold mb-6">What type of structural command constraint does the statement 'DROP TABLE' represent in SQL architecture?</p>
+                        <div class="flex flex-col gap-3">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q9" value="A"> <span>Data Manipulation Language (DML)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q9" value="B"> <span>Data Definition Language (DDL)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q9" value="C"> <span>Data Control Language (DCL)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q9" value="D"> <span>Transaction Control Language (TCL)</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Q10 -->
+                    <div class="quiz-item" data-qindex="10">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono font-bold text-amber-400">Question 10 of 10</span>
+                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">Architecture</span>
+                        </div>
+                        <p class="text-slate-200 text-base font-semibold mb-6">In object-oriented languages like Java, what structural principle maps directly to a schema definition inside a relational database system?</p>
+                        <div class="flex flex-col gap-3">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q10" value="A"> <span>An Object instance</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q10" value="B"> <span>A Class blueprint declaration</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q10" value="C"> <span>A Method override block</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q10" value="D"> <span>Encapsulated array list packets</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Wizard Stepper Controls Layout -->
+                    <div class="flex justify-between items-center mt-8 pt-6 border-t border-white/5 gap-4">
+                        <button type="button" class="border border-white/10 text-slate-300 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-white/5 hover:bg-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed" id="prevQuizBtn" onclick="shiftQuestion(-1)" disabled>Previous</button>
+                        <span class="text-xs font-mono text-slate-500 font-bold tracking-wide" id="quizNavProgressText">Question 1 of 10</span>
+                        <button type="button" class="border border-amber-500 text-amber-400 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-amber-500/5 hover:bg-amber-500/10 transition" id="nextQuizBtn" onclick="shiftQuestion(1)">Next</button>
+                        <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs uppercase tracking-widest transition" id="submitQuizBtn" style="display:none;">Submit Mock Exam</button>
+                    </div>
+                </form>
+
+                <!-- Live Client-Side Rendered Scorecard Dashboard -->
+                <div id="quizResultsSheet" class="mt-8 p-6 bg-slate-950/40 border border-emerald-500/30 rounded-2xl space-y-6 hidden">
+                    <div class="text-center">
+                        <h3 class="font-serif text-xl font-bold text-emerald-400 uppercase tracking-wide">Evaluation Complete! 🎉</h3>
+                        <div class="text-4xl font-mono font-black text-white mt-3"><span id="rawCorrectCount" class="text-amber-400">0</span> / 10</div>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                        <div id="resultPercentBar" class="bg-emerald-500 h-full w-0 transition-all duration-1000"></div>
+                    </div>
+                    <p id="customQuizFeedback" class="text-xs text-slate-400 font-medium text-center leading-relaxed px-2"></p>
+                    
+                    <div class="p-5 bg-slate-950/80 border-l-4 border-amber-500 rounded-xl text-center space-y-3">
+                        <h4 class="font-serif text-sm font-bold text-white uppercase tracking-wide">Unlock Hundreds of Full-Length Mock Exams!</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed font-medium">To access highly targeted tests with detailed answers, real-time analytics, and student matrices, join our main portal system.</p>
+                        <button onclick="openGatedAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-[10px] uppercase tracking-widest transition">Explore More Mock Tests</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ---------- HIGH VALUE HOVER FEATURE HIGHLIGHTS GRID ---------- -->
+    <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12" id="features-hub">
+        <div class="max-w-2xl mx-auto text-center space-y-2">
+            <span class="font-mono text-[10px] text-amber-500 uppercase tracking-widest font-bold">Advanced Testing Matrix</span>
+            <h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Engineered for Peak Student Output</h2>
+            <p class="text-slate-400 text-xs sm:text-sm font-medium">Get access to elite structural training mechanisms carefully optimized to maximize core learning capability.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/20 rounded-2xl overflow-hidden p-6 space-y-4 shadow-xl group transition-all duration-300 transform hover:-translate-y-1">
+                <div class="w-full h-40 rounded-xl overflow-hidden bg-slate-900">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80" alt="Analytics" class="w-full h-full object-cover">
+                </div>
+                <h3 class="font-serif text-lg font-bold text-white group-hover:text-amber-400 transition">Real-Time Dashboards</h3>
+                <p class="text-slate-400 text-xs leading-relaxed font-medium">Isolate your weaknesses immediately. Our internal assessment layer tracks accuracy paths and processing metrics after every submission node.</p>
+            </div>
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/20 rounded-2xl overflow-hidden p-6 space-y-4 shadow-xl group transition-all duration-300 transform hover:-translate-y-1">
+                <div class="w-full h-40 rounded-xl overflow-hidden bg-slate-900">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80" alt="Syllabus" class="w-full h-full object-cover">
+                </div>
+                <h3 class="font-serif text-lg font-bold text-white group-hover:text-amber-400 transition">Adaptive Question Banking</h3>
+                <p class="text-slate-400 text-xs leading-relaxed font-medium">Access thousands of calibrated challenges spanning computer architecture parameters, advanced discrete structures, and algorithmic calculations.</p>
+            </div>
+            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/20 rounded-2xl overflow-hidden p-6 space-y-4 shadow-xl group transition-all duration-300 transform hover:-translate-y-1">
+                <div class="w-full h-40 rounded-xl overflow-hidden bg-slate-900">
+                    <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&q=80" alt="Study" class="w-full h-full object-cover">
+                </div>
+                <h3 class="font-serif text-lg font-bold text-white group-hover:text-amber-400 transition">Conceptual Logic Blueprints</h3>
+                <p class="text-slate-400 text-xs leading-relaxed font-medium">Understand the underlying execution logic steps. Every simulated test track contains comprehensive answers optimized to assist intermediate and advanced learners.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ---------- SINGLE SIGN-ON AUTHENTICATION GATEWAY ---------- -->
+    <div id="gated-auth-modal" class="modal-blur-overlay flex items-center justify-center p-4">
         <div class="bg-slate-900/90 border border-white/10 w-full max-w-sm p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6 relative overflow-hidden">
             <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400"></div>
             <button onclick="closeGatedAuthModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white font-mono font-bold text-lg cursor-pointer transition">&times;</button>
@@ -168,18 +388,21 @@
         </div>
     </div>
 
+    <!-- ---------- CLOSING CALL-TO-ACTION FRAMEWORK ---------- -->
     <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 border border-white/5 text-center py-12 px-4 rounded-3xl space-y-4 shadow-xl relative overflow-hidden">
-            <h2 class="font-serif font-bold text-xl sm:text-3xl text-white">Your next attempt boundary starts here.</h2>
-            <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto">Link your account profile node to instantly initialize highly scalable, simulated mock examination conditions.</p>
-            <button onclick="openGatedAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3 rounded-xl text-xs uppercase tracking-widest transition shadow-lg shadow-amber-500/10 cursor-pointer">
+        <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 border border-white/5 text-center py-14 px-6 rounded-3xl space-y-4 shadow-xl relative overflow-hidden">
+            <h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Your next attempt boundary starts here.</h2>
+            <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">Link your account profile node to instantly initialize highly scalable, simulated mock examination conditions.</p>
+            <button onclick="openGatedAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition shadow-lg shadow-amber-500/10 cursor-pointer">
                 Establish Free Profile
             </button>
         </div>
     </section>
 
-    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[9px] sm:text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">&copy; Computer Science Management System Terminal</footer>
+    <!-- ---------- FOOTER MATRICES TERMINAL ---------- -->
+    <footer class="w-full text-center py-5 border-t border-white/5 bg-slate-950/40 text-[9px] sm:text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">&copy; Computer Science Management System Terminal</footer>
 
+    <!-- ---------- INTEGRATED JAVASCRIPT SYSTEM ENGINE MODULES ---------- -->
     <script>
         const _u = "https://lelvinusfxniqrmfufql.supabase.co";
         const _k = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
@@ -193,6 +416,7 @@
             }
         });
 
+        // Modal Action Scripts
         function openGatedAuthModal() {
             document.getElementById('gated-auth-modal').classList.add('active');
         }
@@ -201,6 +425,81 @@
             document.getElementById('gated-auth-modal').classList.remove('active');
         }
 
+        // Stepper Interactive Option Configuration
+        document.querySelectorAll('.quiz-opt').forEach(opt => {
+            opt.addEventListener('click', function() {
+                const group = this.closest('.quiz-options-group');
+                group.querySelectorAll('.quiz-opt').forEach(item => item.classList.remove('bg-amber-500/10', 'border-amber-500/30', 'text-amber-400'));
+                this.classList.add('bg-amber-500/10', 'border-amber-500/30', 'text-amber-400');
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) radio.checked = true;
+            });
+        });
+
+        // 10 MCQ Sequential Wizard Controller
+        let activeQuestionNum = 1;
+        const totalQuestionsCount = 10;
+
+        function shiftQuestion(direction) {
+            const list = document.querySelectorAll('.quiz-item');
+            list[activeQuestionNum - 1].classList.remove('active-question');
+            
+            activeQuestionNum += direction;
+            if (activeQuestionNum < 1) activeQuestionNum = 1;
+            if (activeQuestionNum > totalQuestionsCount) activeQuestionNum = totalQuestionsCount;
+            
+            list[activeQuestionNum - 1].classList.add('active-question');
+            
+            document.getElementById('quizNavProgressText').innerText = `Question ${activeQuestionNum} of ${totalQuestionsCount}`;
+            document.getElementById('prevQuizBtn').disabled = (activeQuestionNum === 1);
+            
+            if (activeQuestionNum === totalQuestionsCount) {
+                document.getElementById('nextQuizBtn').style.display = "none";
+                document.getElementById('submitQuizBtn').style.display = "inline-block";
+            } else {
+                document.getElementById('nextQuizBtn').style.display = "inline-block";
+                document.getElementById('submitQuizBtn').style.display = "none";
+            }
+        }
+
+        // Mini-Mock Dynamic Evaluator Function
+        function evaluateMockTest(event) {
+            event.preventDefault();
+
+            const solutionKeys = {
+                q1: "C", q2: "D", q3: "D", q4: "B", q5: "A", 
+                q6: "C", q7: "B", q8: "C", q9: "B", q10: "B"
+            };
+
+            const formData = new FormData(document.getElementById('demoMockForm'));
+            let studentScore = 0;
+
+            for (let key in solutionKeys) {
+                if (formData.get(key) === solutionKeys[key]) {
+                    studentScore++;
+                }
+            }
+
+            let feedbackPhrase = "";
+            if (studentScore === 10) {
+                feedbackPhrase = "Excellent score! Perfect 100% conceptual mastery. You are fully optimized for advanced technical analysis sheets.";
+            } else if (studentScore >= 7) {
+                feedbackPhrase = "Good job! You demonstrated stable core competencies. Tune up minute runtime details to reach maximum optimization parameters.";
+            } else {
+                feedbackPhrase = "Foundational tracking review recommended. Specific architecture normalization methodologies require structural adjustment.";
+            }
+
+            document.getElementById('rawCorrectCount').innerText = studentScore;
+            const calculatedPercentage = (studentScore / totalQuestionsCount) * 100;
+            document.getElementById('resultPercentBar').style.width = calculatedPercentage + "%";
+            document.getElementById('customQuizFeedback').innerText = feedbackPhrase;
+
+            const sheet = document.getElementById('quizResultsSheet');
+            sheet.classList.remove('hidden');
+            sheet.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Google Identity Configuration Node
         window.onload = function () {
             google.accounts.id.initialize({
                 client_id: "313377576458-c198ssj598dcg6c58c3kmtvtg5sf9m84.apps.googleusercontent.com", 
@@ -213,7 +512,7 @@
             );
         };
 
-        // 🛡️ Google One-Click Sync Engine (Database Insert + Auto Login)
+        // Identity Verification System Pipelines
         async function handleGoogleAuthCallbackResponse(response) {
             try {
                 const { data, error } = await supabaseClient.auth.signInWithIdToken({
@@ -223,7 +522,6 @@
 
                 if (error) throw error;
 
-                // Sync token with browser local storage session
                 if (data && data.session) {
                     await supabaseClient.auth.setSession(data.session);
                 }
@@ -232,7 +530,6 @@
                 const userName = data.user.user_metadata?.full_name || googleEmail.split('@')[0];
                 const currentTimestamp = new Date().toISOString();
 
-                // 🚀 Check if the user already exists in the portal database
                 const { data: dbUser } = await supabaseClient
                     .from('portal_users')
                     .select('role')
@@ -240,7 +537,6 @@
                     .maybeSingle();
 
                 if (!dbUser) {
-                    // 🚀 New User Pipeline (Sign Up): Directly insert with 'student' role logic
                     await supabaseClient
                         .from('portal_users')
                         .insert([{
@@ -253,7 +549,6 @@
                     
                     localStorage.setItem('userRole', googleEmail === 'examportalcse@gmail.com' ? 'admin' : 'student');
                 } else {
-                    // 🚀 Existing User Pipeline (Log In): Update last login timestamp metrics
                     await supabaseClient
                         .from('portal_users')
                         .update({ last_login: currentTimestamp })
@@ -265,7 +560,6 @@
                 localStorage.setItem('userEmail', googleEmail);
                 localStorage.setItem('sessionLoginTime', Date.now().toString());
                 
-                // Redirect user to application dashboard terminal
                 window.location.replace("dashboard.html");
 
             } catch (err) {
