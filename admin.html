@@ -293,12 +293,13 @@
     
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono text-slate-600 uppercase tracking-widest">&copy; JECRC University</footer>
 
-    <script>
+   <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let globalCategoriesArray = [];
+        let currentBase64ImageData = ""; // 🖼️ 🎯 FIXED: GLOBAL REPOSITORY IMAGE BUFFER REGISTER DEFINED HERE NATIVELY
 
         // 🚀 MASTER HYBRID COMPILER: PARSES PLAIN TEXT OR DUAL-LANGUAGE JSON STRUCTURES
         window.autoFormatRawTextToJSON = function(rawText) {
@@ -411,6 +412,13 @@
             const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
             const instructionRegex = /^(निर्देश|Instruction|Direction|Read the following)/i;
 
+            if (typeof window.escapeHtmlTags !== 'function') {
+                window.escapeHtmlTags = function(text) {
+                    if (!text) return "";
+                    return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                };
+            }
+
             function compileHtmlTableMarkup(rawRows) {
                 if(rawRows.length === 0) return "";
                 let tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-white/10 shadow-xl bg-slate-900/60"><table class="min-w-full divide-y divide-white/10 text-xs font-sans text-left">`;
@@ -498,6 +506,42 @@
             return questionsList;
         };
 
+        // 🖼️ NEW DYNAMIC IMAGE DROPZONE MATRIX INITIALIZER
+        document.addEventListener("DOMContentLoaded", () => {
+            const dropzone = document.getElementById('image-dropzone');
+            const fileInput = document.getElementById('hidden-image-input');
+
+            if(dropzone && fileInput) {
+                dropzone.onclick = () => fileInput.click();
+                fileInput.onchange = (e) => processSelectedImageFile(e.target.files[0]);
+
+                dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('border-blue-500/40', 'bg-blue-500/5'); };
+                dropzone.ondragleave = () => { dropzone.classList.remove('border-blue-500/40', 'bg-blue-500/5'); };
+                dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('border-blue-500/40', 'bg-blue-500/5'); processSelectedImageFile(e.dataTransfer.files[0]); };
+            }
+        });
+
+        function processSelectedImageFile(file) {
+            if (!file || !file.type.startsWith('image/')) { alert("Please select a valid image file node."); return; }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentBase64ImageData = e.target.result; 
+                document.getElementById('dz-preview-img').src = currentBase64ImageData;
+                document.getElementById('dz-file-name').innerText = file.name;
+                const previewContainer = document.getElementById('image-preview-container');
+                if (previewContainer) previewContainer.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeSelectedImage() {
+            currentBase64ImageData = "";
+            const hiddenInput = document.getElementById('hidden-image-input');
+            if (hiddenInput) hiddenInput.value = "";
+            const previewContainer = document.getElementById('image-preview-container');
+            if (previewContainer) previewContainer.classList.add('hidden');
+        }
+
         // 🛡️ [AUTHENTICATION GATEWAY SYNC]
         window.onload = function() {
             const userEmail = localStorage.getItem('userEmail');
@@ -512,6 +556,7 @@
             syncMasterDashboardControls();
         };
       
+        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS
         async function syncMasterDashboardControls() {
             try {
                 const { data: categories, error: catErr } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
@@ -634,8 +679,9 @@
             const subjectName = attempt.subject ? String(attempt.subject) : "EXAMINATION MOCK NODE";
             const subjectNameUpper = subjectName.toUpperCase();
             
-            document.getElementById('admin-modal-title').innerText = `${subjectNameUpper} — DETAILED SHEET AUDIT`;
-            document.getElementById('admin-modal-subtitle').innerText = `Auditing Logs for: ${studentEmail.toLowerCase()}`;
+            document.getElementById('admin-review-modal').innerText = `${subjectNameUpper} — DETAILED SHEET AUDIT`;
+            const subtitle = document.getElementById('admin-modal-subtitle');
+            if (subtitle) subtitle.innerText = `Auditing Logs for: ${studentEmail.toLowerCase()}`;
             
             const totalQ = attempt.total_questions || 0;
             const correctQ = attempt.correct_answers || 0;
@@ -643,12 +689,15 @@
             const finalScore = attempt.score !== undefined ? attempt.score : 0;
             const wrongAnswersCount = attempt.wrong_answers !== undefined ? attempt.wrong_answers : 0;
             
-            document.getElementById('admin-modal-stats-summary').innerHTML = `
-                <div class="border-r border-white/5"><div class="text-slate-200 font-black text-xs">${accuracy}%</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Student Accuracy</div></div>
-                <div class="border-r border-white/5"><div class="text-emerald-400 font-black text-xs">${correctQ} / ${totalQ}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Correct Answers</div></div>
-                <div class="border-r border-white/5"><div class="text-red-400 font-black text-xs">${wrongAnswersCount}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Wrong Selection</div></div>
-                <div><div class="text-blue-400 font-black text-xs">${finalScore} Mks</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Net Score Obtained</div></div>
-            `;
+            const summary = document.getElementById('admin-modal-stats-summary');
+            if (summary) {
+                summary.innerHTML = `
+                    <div class="border-r border-white/5"><div class="text-slate-200 font-black text-xs">${accuracy}%</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Student Accuracy</div></div>
+                    <div class="border-r border-white/5"><div class="text-emerald-400 font-black text-xs">${correctQ} / ${totalQ}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Correct Answers</div></div>
+                    <div class="border-r border-white/5"><div class="text-red-400 font-black text-xs">${wrongAnswersCount}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Wrong Selection</div></div>
+                    <div><div class="text-blue-400 font-black text-xs">${finalScore} Mks</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Net Score Obtained</div></div>
+                `;
+            }
 
             const reviewBody = document.getElementById('admin-modal-body');
             if (!reviewBody) return;
@@ -936,7 +985,7 @@
 
             let formattedJsonPayload = window.autoFormatRawTextToJSON(rawTextData);
 
-            // 🖼️ Inject Image Buffer Registration during updates
+            // 🖼️ Inject Image Buffer Trait during live update deployments
             if (currentBase64ImageData !== "" && formattedJsonPayload.length > 0) {
                 formattedJsonPayload[0].q_image = currentBase64ImageData;
             }
@@ -1088,7 +1137,7 @@
                 }
             }
 
-            // 🖼️ Inject Image Buffer trait into primary question node
+            // 🖼️ Inject Image property token into primary index mapping node context
             if (currentBase64ImageData !== "" && parsedQuestions.length > 0) {
                 parsedQuestions[0].q_image = currentBase64ImageData;
             }
@@ -1119,29 +1168,6 @@
                 syncMasterDashboardControls();
 
             } catch(e) { alert("Insertion fail: " + e.message); }
-        }
-
-        async function createNewCategory() {
-            const name = document.getElementById('new-cat-name').value.trim();
-            if(!name) return;
-            try {
-                const { error } = await supabaseClient.from('exam_categories').insert({ category_name: name });
-                if(error) throw error;
-                alert(`Category established!`);
-                document.getElementById('new-cat-name').value = "";
-                syncMasterDashboardControls();
-            } catch(e) { alert(e.message); }
-        }
-
-        async function updateExamTimingDirect(encodedSubject) {
-            const decodedSub = decodeURIComponent(encodedSubject);
-            const inputVal = document.getElementById(`inline-time-${encodedSubject}`).value;
-            try {
-                const { error } = await supabaseClient.from('exams').update({ duration_minutes: parseInt(inputVal) }).eq('subject', decodedSub);
-                if(error) throw error;
-                alert(`Time limit synchronization complete.`);
-                fetchExamsOnAdminSide();
-            } catch(e) { alert(e.message); }
         }
 
         async function deployComboExamRoutine() {
@@ -1179,43 +1205,6 @@
             }
         }
 
-        // 🖼️ DYNAMIC BASE64 FILE CONVERTER ENGINES REGISTER
-        document.addEventListener("DOMContentLoaded", () => {
-            const dropzone = document.getElementById('image-dropzone');
-            const fileInput = document.getElementById('hidden-image-input');
-
-            if(dropzone && fileInput) {
-                dropzone.onclick = () => fileInput.click();
-                fileInput.onchange = (e) => processSelectedImageFile(e.target.files[0]);
-
-                dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('border-blue-500/40', 'bg-blue-500/5'); };
-                dropzone.ondragleave = () => { dropzone.classList.remove('border-blue-500/40', 'bg-blue-500/5'); };
-                dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('border-blue-500/40', 'bg-blue-500/5'); processSelectedImageFile(e.dataTransfer.files[0]); };
-            }
-        });
-
-        function processSelectedImageFile(file) {
-            if (!file || !file.type.startsWith('image/')) { alert("Please select a valid image file node."); return; }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentBase64ImageData = e.target.result; 
-                document.getElementById('dz-preview-img').src = currentBase64ImageData;
-                document.getElementById('dz-file-name').innerText = file.name;
-                const previewContainer = document.getElementById('image-preview-container');
-                if (previewContainer) previewContainer.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function removeSelectedImage() {
-            currentBase64ImageData = "";
-            const hiddenInput = document.getElementById('hidden-image-input');
-            if (hiddenInput) hiddenInput.value = "";
-            const previewContainer = document.getElementById('image-preview-container');
-            if (previewContainer) previewContainer.classList.add('hidden');
-        }
-
         function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
-    </script>
-</body>
+    </script></body>
 </html>
