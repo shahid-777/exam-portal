@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" translate="auto">
+<html lang="en" translate="no">
 <head>
     <meta name="google" content="notranslate">
     <meta charset="UTF-8">
@@ -241,9 +241,15 @@
             }
         }
 
+        // 🌍 🚀 ADVANCED STRUCTURED TRANSLATION ENGINE (INDEXING DESYNC PROOF)
         async function translateBulkQuestions(questions, targetLang) {
             if (!questions || questions.length === 0 || targetLang === "en") return null;
             if (hindiTranslationsCachePool) return hindiTranslationsCachePool; 
+
+            // 🎯 [BILINGUAL JSON BYPASS]: यदि पहला प्रश्न पहले से प्रीडिफाइंड ऑब्जेक्ट संरचना में है, तो अनुवाद इंजन को छोड़ दें
+            if (questions[0] && questions[0].is_json_uploaded === true) {
+                return questions;
+            }
 
             try {
                 const container = document.getElementById('questions-pipeline-wrapper');
@@ -301,7 +307,7 @@
             }
         }
         
-        // 🔄 RENDERING PIPELINE WITH IMAGE ATTACHMENT ROUTER
+        // 🔄 RENDERING PIPELINE: SYNCHRONIZED HYBRID MULTI-MODE MAPPER (DI TABLE, IMAGE & BILINGUAL SAFE)
         async function renderAssessmentLayout() {
             const container = document.getElementById('questions-pipeline-wrapper');
             if (!container) return;
@@ -311,7 +317,8 @@
             let finalHtml = "";
             let translatedObjectPool = null;
 
-            if (currentSelectedLanguage === "hi") {
+            // केवल तभी अनुवाद इंजन को ट्रिगर करें जब डेटा नोड पूर्व-अनुवादित (Bilingual) JSON संरचना का न हो
+            if (currentSelectedLanguage === "hi" && (!globalLoadedQuestions[0] || !globalLoadedQuestions[0].is_json_uploaded)) {
                 container.innerHTML = `<div class="text-center font-mono text-xs text-orange-400 py-12 animate-pulse uppercase">Translating Question Matrix Framework via Structured Object Pipeline...</div>`;
                 translatedObjectPool = await translateBulkQuestions(globalLoadedQuestions, "hi");
                 
@@ -323,7 +330,7 @@
                 }
             }
 
-            // 1. Inject DOM structures with explicit container slots for images
+            // 1. कार्ड्स का मजबूत डोम स्केलेटन शेल इंजेक्ट करें
             for (let index = 0; index < globalLoadedQuestions.length; index++) {
                 finalHtml += `
                     <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
@@ -347,7 +354,7 @@
 
             container.innerHTML = finalHtml;
 
-            // 2. Synchronize Hybrid Data Bindings
+            // 🚀 2. सुरक्षित हाइब्रिड रेंडरिंग लेयर
             globalLoadedQuestions.forEach((q, index) => {
                 const card = document.getElementById(`question-card-${index}`);
                 if (!card) return;
@@ -355,29 +362,42 @@
                 const qTitleNode = card.querySelector('.live-q-text-node');
                 const imageContainer = card.querySelector('.live-q-image-container');
                 
-                const targetDataSource = (currentSelectedLanguage === "hi" && translatedObjectPool) 
-                    ? translatedObjectPool[index] 
-                    : q;
+                let finalQuestionText = "";
+                let rawOptions = [];
 
-                const finalQuestionText = targetDataSource.question || targetDataSource.title || targetDataSource.text || 'Objective Question';
-                
+                // 🎯 [BILINGUAL RENDERING SCHEME]: यदि अपलोड किया गया डेटा शुद्ध द्विभाषी ऑब्जेक्ट संरचना है
+                if (q.is_json_uploaded === true) {
+                    if (typeof q.question === 'object' && q.question !== null) {
+                        finalQuestionText = q.question[currentSelectedLanguage] || q.question["en"];
+                    } else {
+                        finalQuestionText = String(q.question || q.title);
+                    }
+                    rawOptions = q.options || [];
+                } else {
+                    // अन्यथा पारंपरिक अनुवाद आर्किटेक्चर लागू करें
+                    const targetDataSource = (currentSelectedLanguage === "hi" && translatedObjectPool) 
+                        ? translatedObjectPool[index] 
+                        : q;
+                    finalQuestionText = targetDataSource.question || targetDataSource.title || targetDataSource.text || 'Objective Question';
+                    rawOptions = targetDataSource.options || targetDataSource.choices || [];
+                }
+
                 if (qTitleNode) qTitleNode.innerHTML = finalQuestionText;
 
-                // 🎯 💻 [IMAGE RENDERING GATEWAY]: Checks for data fields across variants ('image_url' or 'image')
-                const activeImgUrl = targetDataSource.image_url || targetDataSource.image || globalLoadedQuestions[index].image_url || globalLoadedQuestions[index].image;
+                // इमेज बफर असाइनमेंट
+                const activeImgUrl = q.image_url || q.image || q.q_image;
                 if (activeImgUrl && activeImgUrl.trim() !== "" && activeImgUrl !== "null") {
                     if (imageContainer) {
                         const imgNode = imageContainer.querySelector('img');
                         if (imgNode) {
                             imgNode.src = activeImgUrl;
-                            imageContainer.classList.remove('hidden'); // Expose block wrapper
+                            imageContainer.classList.remove('hidden');
                         }
                     }
                 }
 
                 const optionsContainer = card.querySelector('.options-container-node');
                 if (optionsContainer) {
-                    let rawOptions = targetDataSource.options || targetDataSource.choices || targetDataSource.options_json || [];
                     if (typeof rawOptions === 'string') {
                         try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
                     }
@@ -386,6 +406,14 @@
 
                     rawOptions.forEach((opt, optIdx) => {
                         const isChecked = userResponses[index] === optIdx ? "checked" : "";
+                        
+                        let finalOptText = "";
+                        // द्विभाषी जेसन के लिए विशिष्ट विकल्प भाषा का चयन करें
+                        if (q.is_json_uploaded === true && typeof opt === 'object' && opt !== null) {
+                            finalOptText = opt[currentSelectedLanguage] || opt["en"];
+                        } else {
+                            finalOptText = typeof opt === 'object' ? (opt.en || String(opt)) : String(opt);
+                        }
 
                         const label = document.createElement('label');
                         label.className = "flex items-center space-x-3 bg-slate-900/60 hover:bg-slate-900/90 border border-white/5 hover:border-blue-500/30 p-3.5 rounded-xl cursor-pointer transition group mt-2";
@@ -394,7 +422,7 @@
                         
                         const optSpan = document.createElement('span');
                         optSpan.className = "text-xs sm:text-sm text-slate-300 group-hover:text-white transition font-medium";
-                        optSpan.innerText = opt; 
+                        optSpan.innerText = finalOptText; 
 
                         label.appendChild(optSpan);
                         optionsContainer.appendChild(label);
@@ -402,7 +430,7 @@
                 }
             });
 
-            // Palette sync
+            // पैलेट री-पेंट सिंक
             globalLoadedQuestions.forEach((_, index) => {
                 const pBtn = document.getElementById(`palette-btn-${index}`);
                 const mBtn = document.getElementById(`mark-btn-${index}`);
@@ -419,8 +447,8 @@
                     if(pBtn) pBtn.className = "bg-slate-800 border border-white/10 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer text-center";
                 }
             });
-        } 
-
+        }        
+        
         function switchAssessmentLanguage(selectedLang) {
             currentSelectedLanguage = selectedLang;
             renderAssessmentLayout(); 
