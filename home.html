@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXAM-PORTAL-CSE.ONLINE — Government & Private Exam Preparation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#12213B;
+    --saffron:#F2760D;
+    --saffron-deep:#D9600A;
+    --green:#0E7C4A;
+    --paper:#FAF9F6;
+    --white:#FFFFFF;
+    --ink:#1B1F27;
+    --ink-soft:#5B6270;
+    --line:#E7E4DD;
+    --font-display:'Fraunces','Noto Sans Devanagari',serif;
+    --font-sans:'Inter','Noto Sans Devanagari',sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--font-sans); line-height:1.55;}
+  a{text-decoration:none; color:inherit;}
+  img{display:block; max-width:100%; height:auto;}
+
+  /* ---------- RESPONSIVE NAVIGATION BAR ---------- */
+  nav{
+    display:flex; align-items:center; justify-content:between;
+    padding:10px 5%; background:var(--white); border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:100;
+  }
+  .nav-container { display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1280px; margin:0 auto; }
+  .logo{display:flex; align-items:center; z-index: 101;}
+  .logo img{height:75px; width:auto; display:block; transition: transform 0.2s ease;}
+  .logo img:hover { transform: scale(1.02); }
+  
+  /* Mobile Menu Toggle button triggers */
+  .menu-toggle-btn { display: none; background: transparent; border: none; font-size: 1.8rem; color: var(--navy); cursor: pointer; z-index: 101; padding: 4px 8px; }
+
+  .nav-menu-wrapper { display: flex; align-items: center; justify-content: space-between; flex-grow: 1; margin-left: 40px; }
+  .nav-links{display:flex; gap:26px; font-size:0.95rem; font-weight:600; color:var(--ink);}
+  .nav-links a{padding:6px 2px; border-bottom:2px solid transparent; transition:border-color .2s ease, color .2s ease;}
+  .nav-links a:hover{border-color:var(--saffron); color:var(--saffron-deep);}
+  
+  .nav-buttons{display:flex; align-items:center; gap:12px;}
+  .btn-outline{
+    font-weight:600; font-size:0.9rem; padding:11px 22px; border-radius:999px;
+    border:1.5px solid var(--navy); color:var(--navy); background: transparent;
+    transition:all .2s ease; cursor: pointer;
+  }
+  .btn-outline:hover{background:var(--navy); color:var(--white);}
+  .btn-fill{
+    font-weight:700; font-size:0.9rem; padding:12px 24px; border-radius:999px;
+    background:var(--saffron); color:var(--white); border: none;
+    box-shadow:0 6px 16px rgba(242,118,13,0.32); cursor: pointer;
+    transition:transform .18s ease, box-shadow .2s ease;
+  }
+  .btn-fill:hover{transform:translateY(-2px); box-shadow:0 10px 22px rgba(242,118,13,0.4);}
+
+  /* Responsive Navbar Media Query Breakpoints */
+  @media (max-width: 992px) {
+    .menu-toggle-btn { display: block; }
+    .nav-menu-wrapper {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; height: 100vh; width: 100vw;
+      background: var(--white); flex-direction: column; justify-content: center; align-items: center;
+      margin-left: 0; gap: 40px; transform: translateY(-100%); transition: transform 0.35s ease-in-out;
+      z-index: 100; padding: 80px 20px;
+    }
+    .nav-menu-wrapper.menu-is-open { transform: translateY(0); }
+    .nav-links { flex-direction: column; align-items: center; gap: 24px; font-size: 1.15rem; }
+    .nav-buttons { flex-direction: column; width: 100%; max-width: 280px; gap: 14px; }
+    .nav-buttons a, .nav-buttons button { width: 100%; text-align: center; }
+    .logo img { height: 60px; }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative; min-height:680px; display:flex; align-items:center; overflow:hidden;}
+  .hero-bg{position:absolute; inset:0; z-index:0;}
+  .hero-bg img{width:100%; height:100%; object-fit:cover; object-position:center 30%;}
+  .hero-bg::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(100deg, rgba(18,33,59,0.95) 0%, rgba(18,33,59,0.82) 45%, rgba(18,33,59,0.40) 75%, rgba(18,33,59,0.05) 100%);
+  }
+  .hero-inner{position:relative; z-index:2; width:100%; max-width:1280px; margin:0 auto; padding:60px 5% 80px;}
+  .hero-tag{
+    display:inline-flex; align-items:center; gap:8px; font-size:0.82rem; font-weight:600;
+    color:#FFE3C4; background:rgba(242,118,13,0.18); border:1px solid rgba(242,118,13,0.45);
+    padding:8px 16px; border-radius:999px; margin-bottom:25px;
+  }
+  .hero-tag .pulse{width:7px; height:7px; border-radius:50%; background:#4ADE80; box-shadow:0 0 0 rgba(74,222,128,0.5); animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,0.55);}70%{box-shadow:0 0 0 10px rgba(74,222,128,0);}100%{box-shadow:0 0 0 0 rgba(74,222,128,0);}}
+  
+  .hero-brand-heading { display: flex; flex-direction: column; gap: 20px; align-items: flex-start; margin-bottom: 25px; }
+  .hero-brand-logo { height: 110px; width: auto; display: block; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.25)); }
+  
+  h1.hero-h1{
+    font-family:var(--font-display); font-weight:700; color:var(--white);
+    font-size:clamp(2.1rem, 4.5vw, 3.5rem); line-height:1.15; max-width:22ch; margin: 0;
+  }
+  h1.hero-h1 .hl { color:#FFB25E; }
+  
+  .hero-sub{color:#EDEFF4; font-size:1.1rem; max-width:52ch; margin-bottom:35px; line-height:1.6;}
+  .hero-actions{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn-hero-primary{
+    background:var(--saffron); color:var(--white); font-weight:700; font-size:1rem;
+    padding:16px 28px; border-radius:999px; box-shadow:0 10px 26px rgba(242,118,13,0.4);
+    transition:transform .18s ease; display: inline-block;
+  }
+  .btn-hero-primary:hover{transform:translateY(-2px);}
+  .btn-hero-secondary{
+    color:var(--white); font-weight:600; font-size:1rem; padding:16px 12px;
+    border-bottom:1.5px solid rgba(255,255,255,0.5); display: inline-block;
+  }
+
+  /* floating widgets cards over hero */
+  .float-card{
+    position:absolute; z-index:3; background:var(--white); border-radius:14px;
+    box-shadow:0 20px 45px rgba(0,0,0,0.28); padding:14px 18px; font-family:var(--font-sans);
+  }
+  .fc-live{top:16%; right:6%; display:flex; align-items:center; gap:10px;}
+  .fc-live .live-dot{width:9px; height:9px; border-radius:50%; background:#EF4444; animation:pulse 1.4s infinite;}
+  .fc-live .fc-title{font-weight:700; font-size:0.85rem; color:var(--navy);}
+  .fc-live .fc-sub{font-size:0.75rem; color:var(--ink-soft);}
+  .fc-result{bottom:20%; right:9%; max-width:210px;}
+  .fc-result .fc-name{font-weight:700; font-size:0.82rem; color:var(--green); margin-bottom:2px;}
+  .fc-result .fc-msg{font-size:0.85rem; color:var(--ink);}
+
+  @media (max-width:1200px){
+    .float-card{display:none;}
+    .hero{min-height:auto;}
+    .hero-bg::after { background: rgba(18,33,59,0.85); }
+  }
+  @media (max-width:576px) {
+    .hero-brand-logo { height: 80px; }
+    .hero-actions a { width: 100%; text-align: center; }
+  }
+
+  /* ---------- SECTION HEAD ---------- */
+  .section-wrap{max-width:1280px; margin:0 auto; padding:60px 5%;}
+  .section-head{max-width:700px; margin-bottom:40px;}
+  .eyebrow-tag{font-size:0.8rem; font-weight:700; color:var(--saffron-deep); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; display:block;}
+  .section-head h2{font-family:var(--font-display); font-weight:700; font-size:clamp(1.6rem,3.2vw,2.3rem); color:var(--navy); line-height: 1.2;}
+  .section-head p{color:var(--ink-soft); margin-top:12px; font-size:1.02rem;}
+
+  /* ---------- EXAM CATEGORY GRID ---------- */
+  .cat-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;}
+  .cat-card{
+    position:relative; border-radius:16px; overflow:hidden; aspect-ratio:4/3;
+    box-shadow:0 8px 24px rgba(18,33,59,0.06); background: var(--navy);
+  }
+  .cat-card img{width:100%; height:100%; object-fit:cover; transition:transform .5s ease;}
+  .cat-card:hover img{transform:scale(1.07);}
+  .cat-overlay{
+    position:absolute; inset:0; background:linear-gradient(0deg, rgba(18,33,59,0.92) 0%, rgba(18,33,59,0.3) 60%, transparent 100%);
+    display:flex; flex-direction:column; justify-content:flex-end; padding:24px;
+  }
+  .cat-overlay .cat-eyebrow{font-size:0.72rem; color:#FFC98C; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:6px;}
+  .cat-overlay h3{font-family:var(--font-display); color:var(--white); font-size:1.2rem; font-weight:600; margin-bottom:4px;}
+  .cat-overlay p{color:#D9DCE4; font-size:0.88rem; line-height: 1.4;}
+
+  @media (max-width:992px){ .cat-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:650px){ .cat-grid{grid-template-columns:1fr; gap:16px;} }
+
+  /* ---------- HOW IT WORKS ---------- */
+  .steps-row{display:grid; grid-template-columns:repeat(3,1fr); gap:26px;}
+  .step-card{background:var(--white); border:1px solid var(--line); border-radius:16px; padding:30px;}
+  .step-num{
+    width:38px; height:38px; border-radius:50%; background:var(--navy); color:var(--white);
+    display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700;
+    margin-bottom:18px; font-size:1rem;
+  }
+  .step-card h3{font-family:var(--font-display); font-size:1.15rem; color:var(--navy); margin-bottom:8px; font-weight:600;}
+  .step-card p{color:var(--ink-soft); font-size:0.95rem; line-height: 1.5;}
+
+  @media (max-width:850px){ .steps-row{grid-template-columns:1fr; gap:16px;} }
+
+  /* ---------- TEMPLATE / SAMPLE QUESTION ---------- */
+  .template-section{background:var(--navy);}
+  .template-section .section-head h2{color:var(--white);}
+  .template-section .section-head p{color:#C6CBD6;}
+  .template-section .eyebrow-tag{color:#FFB25E;}
+  .q-card{
+    max-width:600px; background:var(--white); border-radius:18px; padding:28px 30px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.25);
+  }
+  .q-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+  .q-tag{font-size:0.78rem; font-weight:700; color:var(--saffron-deep);}
+  .q-timer{font-size:0.78rem; color:var(--ink-soft); font-weight:600;}
+  .q-text{font-size:1.05rem; margin-bottom:20px; color:var(--ink); font-weight:500;}
+  .q-options{display:flex; flex-direction:column; gap:10px; margin-bottom:18px;}
+  .opt{display:flex; align-items:center; gap:12px; padding:13px 15px; border:1.5px solid var(--line); border-radius:10px; font-size:0.92rem; color:var(--ink-soft); cursor:pointer;}
+  .opt input{accent-color:var(--saffron);}
+  .opt.sel{border-color:var(--green); color:var(--ink); background:rgba(14,124,74,0.06); font-weight:600;}
+  .q-foot{display:flex; justify-content:space-between; padding-top:14px; border-top:1px dashed var(--line); font-size:0.8rem;}
+  .q-marks{color:var(--ink-soft); font-weight:600;}
+  .q-next{color:var(--saffron-deep); font-weight:700;}
+
+  /* ---------- LIVE 10-MCQ DEMO WIZARD SYSTEM ---------- */
+  .demo-quiz-section { background: #f0f4f8; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .quiz-container { max-width: 800px; margin: 0 auto; background: var(--white); border-radius: 20px; padding: 40px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
+  
+  .quiz-item { display: none; }
+  .quiz-item.active-question { display: block; animation: fadeIn .3s ease-in-out; }
+
+  .quiz-q-text { font-size: 1.15rem; font-weight: 600; color: var(--navy); margin-bottom: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; line-height: 1.4; }
+  .quiz-q-text .q-num { color: var(--saffron); font-weight: 800; }
+  .quiz-subject-badge { font-size: 0.75rem; text-transform: uppercase; padding: 4px 10px; background: #e2e8f0; border-radius: 6px; font-weight: 700; color: var(--navy); }
+  .quiz-options-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 10px; }
+  .quiz-opt { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border: 1.5px solid var(--line); border-radius: 12px; font-size: 0.98rem; color: var(--ink-soft); cursor: pointer; transition: all 0.2s ease; }
+  .quiz-opt:hover { border-color: var(--saffron); background: rgba(242,118,13,0.02); }
+  .quiz-opt input { accent-color: var(--saffron); width: 18px; height: 18px; cursor: pointer; }
+  .quiz-opt.active-selected { border-color: var(--saffron); color: var(--navy); background: rgba(242,118,13,0.06); font-weight: 600; }
+  
+  .quiz-nav-ctrls { display: flex; justify-content: space-between; align-items: center; margin-top: 35px; padding-top: 25px; border-top: 1px solid var(--line); gap: 10px; }
+  .ctrl-btn { font-weight: 600; font-size: 0.95rem; padding: 12px 24px; border-radius: 8px; border: 1.5px solid var(--navy); background: transparent; color: var(--navy); cursor: pointer; transition: all .2s; min-width: 110px; }
+  .ctrl-btn:hover:not(:disabled) { background: var(--navy); color: var(--white); }
+  .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; border-color: var(--ink-soft); color: var(--ink-soft); }
+  .ctrl-btn.submit-action { background: var(--saffron); border-color: var(--saffron); color: var(--white); font-weight: 700; }
+  .ctrl-btn.submit-action:hover { background: var(--saffron-deep); border-color: var(--saffron-deep); }
+  .quiz-progress-text { font-size: 0.9rem; color: var(--ink-soft); font-weight: 600; text-align: center; }
+
+  @media (max-width: 480px) {
+    .quiz-container { padding: 25px 15px; }
+    .quiz-nav-ctrls { flex-wrap: wrap; justify-content: center; gap: 15px; }
+    .quiz-progress-text { order: -1; width: 100%; }
+    .ctrl-btn { flex-grow: 1; text-align: center; }
+  }
+
+  /* Live Results Scorecard UI */
+  .results-sheet { display: none; background: #fff; border: 2px solid var(--green); border-radius: 16px; padding: 35px 25px; margin-top: 40px; animation: slideDown 0.4s ease forwards; }
+  .results-headline { font-family: var(--font-display); color: var(--green); font-size: 2rem; font-weight: 700; margin-bottom: 10px; text-align: center; }
+  .score-display { text-align: center; font-size: 3.5rem; font-weight: 800; color: var(--navy); margin: 15px 0 10px; font-family: var(--font-display); }
+  .score-display span { color: var(--saffron); }
+  .progress-bar-container { background: #e2e8f0; height: 14px; border-radius: 10px; width: 100%; overflow: hidden; margin-bottom: 25px; }
+  .progress-bar-fill { height: 100%; background: var(--green); width: 0%; transition: width 1s ease-in-out; }
+  .results-summary-text { font-size: 1.1rem; text-align: center; color: var(--ink-soft); max-width: 580px; margin: 0 auto 35px; line-height: 1.6; }
+  
+  .cta-box-results { background: var(--navy); color: var(--white); padding: 30px 20px; border-radius: 14px; text-align: center; border-left: 6px solid var(--saffron); }
+  .cta-box-results h4 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 10px; color: var(--white); }
+  .cta-box-results p { font-size: 0.95rem; color: #c6cbd6; margin-bottom: 20px; }
+  .cta-box-results .btn-redirect { display: inline-block; background: var(--saffron); color: var(--white); font-weight: 700; padding: 14px 30px; border-radius: 999px; font-size: 1rem; transition: transform 0.2s; }
+  .cta-box-results .btn-redirect:hover { transform: scale(1.03); background: var(--saffron-deep); }
+
+  /* ---------- FEATURES GRID ---------- */
+  .features-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;}
+  .feature-card{background:var(--white); border-radius:18px; overflow:hidden; border:1px solid var(--line); transition: transform 0.2s ease;}
+  .feature-card:hover{transform: translateY(-4px);}
+  .feature-photo{aspect-ratio:5/4; overflow:hidden; background: #e2e8f0;}
+  .feature-photo img{width:100%; height:100%; object-fit:cover;}
+  .feature-body{padding:22px;}
+  .feature-title{font-family:var(--font-display); font-weight:700; color:var(--navy); font-size:1.15rem; margin-bottom:8px;}
+  .feature-desc{font-size:0.92rem; color:var(--ink-soft); line-height:1.5;}
+
+  @media (max-width:950px){ .features-grid{grid-template-columns:1fr; gap:20px;} }
+
+  /* ---------- RESPONSIVE FOOTER BAND GRID & CTA ---------- */
+  .final-cta{position:relative; overflow:hidden; min-height: 420px; display: flex; align-items: center;}
+  .final-cta-bg{position:absolute; inset:0; z-index: 0;}
+  .final-cta-bg img{width:100%; height:100%; object-fit:cover; object-position:center 25%;}
+  .final-cta::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(18,33,59,0.60), rgba(18,33,59,0.94)); z-index: 1;
+  }
+  .final-cta-inner{
+    position:relative; z-index:2; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; padding:60px 6%; margin: 0 auto; width: 100%;
+  }
+  .final-cta-inner h2{font-family:var(--font-display); color:var(--white); font-size:clamp(1.7rem,3.4vw,2.5rem); font-weight:700; max-width:24ch; margin-bottom:16px; line-height: 1.2;}
+  .final-cta-inner p{color:#DADEE6; max-width:48ch; margin-bottom:28px; font-size:1.02rem;}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--navy); color:#C6CBD6; padding:40px 5% 30px; border-top: 1px solid rgba(255,255,255,0.05);}
+  .footer-inner{max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:30px; align-items:center;}
+  footer .logo img{height:65px; width:auto;}
+  .footer-tagline { font-size:0.9rem; color: #8990A3; max-width: 40ch; }
+  .footer-bottom{font-size:0.85rem; color:#64748b; margin-top:35px; text-align:center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);}
+
+  @media (max-width: 768px) {
+    .footer-inner { flex-direction: column; text-align: center; gap: 20px; }
+    .footer-tagline { max-width: 100%; }
+  }
+
+  :focus-visible{outline:2px solid var(--saffron); outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){ * {animation:none !important; transition:none !important;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-container">
+    <div class="logo">
+      <a href="#"><img src="logo.png" alt="EXAM-PORTAL-CSE.ONLINE Logo"></a>
+    </div>
+    
+    <button class="menu-toggle-btn" id="menuToggleClick" aria-label="Toggle Navigation Menu">☰</button>
+    
+    <div class="nav-menu-wrapper" id="navMenuDropdown">
+      <div class="nav-links">
+        <a href="#exams">Exams</a>
+        <a href="#live-demo-test">Interactive Demo</a>
+        <a href="#features">Platform Features</a>
+        <a href="#">Help Center</a>
+      </div>
+      <div class="nav-buttons">
+        <a class="btn-outline" href="https://exam-portal-cse.online" target="_blank" rel="noopener">Log In</a>
+        <a class="btn-fill" href="https://exam-portal-cse.online" target="_blank" rel="noopener">Start Free Test</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg">
+    <img src="https://images.unsplash.com/photo-1741699428220-65f37f3fbbcb?auto=format&fit=crop&w=1800&q=80" alt="Student studying with books in a library">
+  </div>
+  <div class="hero-inner">
+    <div class="hero-tag"><span class="pulse"></span>Over 4,200+ students actively practicing online</div>
+    
+    <div class="hero-brand-heading">
+      <img src="logo.png" alt="EXAM-PORTAL-CSE.ONLINE Logo" class="hero-brand-logo">
+      <h1 class="hero-h1">Your <span class="hl">Sarkari &amp; Private</span> Exam Prep, Simplified.</h1>
+    </div>
+    
+    <p class="hero-sub">Comprehensive mock exams based on genuine assessment patterns for major corporate placements and competitive government exams. Experience immediate analytical feedback with zero operational cost.</p>
+    <div class="hero-actions">
+      <a class="btn-hero-primary" href="#live-demo-test">Try Live Demo Test Now ↓</a>
+      <a class="btn-hero-secondary" href="#exams">Browse All Exams</a>
+    </div>
+  </div>
+
+  <div class="float-card fc-live">
+    <span class="live-dot"></span>
+    <div>
+      <div class="fc-title">SSC CGL · Live Mock</div>
+      <div class="fc-sub">340 students currently active</div>
+    </div>
+  </div>
+
+  <div class="float-card fc-result">
+    <div class="fc-name">Priya · Banking PO</div>
+    <div class="fc-msg">Achieved a top score of 94/100! 🎉</div>
+  </div>
+</section>
+
+<section class="section-wrap" id="exams">
+  <div class="section-head">
+    <span class="eyebrow-tag">// exam categories</span>
+    <h2>Target Any Assessment with Targeted Practice.</h2>
+    <p>Select your specialized domain and evaluate your readiness using exact standard exam architectures.</p>
+  </div>
+  <div class="cat-grid">
+    <div class="cat-card">
+      <img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=900&q=80" alt="Student writing SSC exam paper">
+      <div class="cat-overlay">
+        <span class="cat-eyebrow">Sarkari Jobs</span>
+        <h3>Staff Selection Commission</h3>
+        <p>Comprehensive evaluations covering Analytical Reasoning, Quant, and English Language components.</p>
+      </div>
+    </div>
+    <div class="cat-card">
+      <img src="https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=900&q=80" alt="Books and notes for banking exam preparation">
+      <div class="cat-overlay">
+        <span class="cat-eyebrow">Sarkari Jobs</span>
+        <h3>Banking &amp; Insurance</h3>
+        <p>Complete preparatory structural blueprints covering both Preliminary and Main exam layouts.</p>
+      </div>
+    </div>
+    <div class="cat-card">
+      <img src="https://images.unsplash.com/photo-1534644107580-3a4dbd494a95?auto=format&fit=crop&w=900&q=80" alt="Student solving exam questions with pencil">
+      <div class="cat-overlay">
+        <span class="cat-eyebrow">Sarkari Jobs</span>
+        <h3>Railways &amp; Infrastructure</h3>
+        <p>Syllabus-aligned technical and non-technical structural mock question matrices.</p>
+      </div>
+    </div>
+    <div class="cat-card">
+      <img src="https://images.unsplash.com/photo-1585661417298-8236a5f449aa?auto=format&fit=crop&w=900&q=80" alt="Student writing state PSC exam">
+      <div class="cat-overlay">
+        <span class="cat-eyebrow">Sarkari Jobs</span>
+        <h3>State Civil Services &amp; Law</h3>
+        <p>Regionally optimized practice pathways engineered specifically for updated state syllabi.</p>
+      </div>
+    </div>
+    <div class="cat-card">
+      <img src="https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=900&q=80" alt="Student preparing for private company placement test">
+      <div class="cat-overlay">
+        <span class="cat-eyebrow">Private Sector</span>
+        <h3>Campus Placement &amp; Aptitude</h3>
+        <p>Corporate hiring patterns spanning algorithm development, logic testing, and quantitative competency.</p>
+      </div>
+    </div>
+    <div class="cat-card">
+      <img src="https://images.unsplash.com/photo-1652305500057-0fcb348b62aa?auto=format&fit=crop&w=900&q=80" alt="Group of students studying together for exams">
+      <div class="cat-overlay">
+        <span class="cat-eyebrow">Universal Core</span>
+        <h3>General Aptitude &amp; Reasoning</h3>
+        <p>Master the universal foundational frameworks utilized globally across diverse institutional matrices.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-wrap demo-quiz-section" id="live-demo-test">
+  <div class="section-head">
+    <span class="eyebrow-tag">// progressive evaluation</span>
+    <h2>Mixed Mini Mock Exam (C, Java &amp; DBMS)</h2>
+    <p>Test your knowledge with our single-question sequential test window. Complete the track to generate live data calculations instantly.</p>
+  </div>
+
+  <div class="quiz-container">
+    <form id="demoMockForm" onsubmit="evaluateMockTest(event)">
+      
+      <div class="quiz-item active-question" data-qindex="1">
+        <div class="quiz-q-text"><span class="q-num">01.</span> What will be the output of the expression <code>sizeof('A')</code> in a standard C compiler?<span class="quiz-subject-badge">C Language</span></div>
+        <div class="quiz-options-group">
+          <label class="quiz-opt"><input type="radio" name="q1" value="A"> 1 Byte</label>
+          <label class="quiz-opt"><input type="radio" name="q1" value="B"> Depends on character set architecture</label>
+          <label class="quiz-opt"><input type="radio" name="q1" value="C"> Size equivalent to an integer (typically 4 Bytes)</label>
+          <label class="quiz-opt"><input type="radio" name="q1" value="D"> Compilation Error</label>
+        </div>
+      </div>
+
+      <div class="quiz-item" data-qindex="2">
+        <div class="quiz-q-text"><span class="q-num">02.</span> Which memory management area in Java holds method names, field data, and static variables?<span class="quiz-subject-badge">Java Runtime</span></div>
+        <div class="quiz-options-group">
+          <label class="quiz-opt"><input type="radio" name="q2" value="A"> Heap Memory</label>
+          <label class="quiz-opt"><input type="radio" name="q2" value="B"> Java Stack Area</label>
+          <label class="quiz-opt"><input type="radio" name="q2" value="C"> Program Counter (PC) Register</label>
+          <label class="quiz-opt"><input type="radio" name="q2" value="D"> Method Area</label>
+        </div>
+      </div>
+
+      <div class="quiz-item" data-qindex="3">
+        <div class="quiz-q-text"><span class="q-num">03.</span> Which property of ACID rules ensures that a database remains transaction-resilient even in the event of an abrupt system power loss?<span class="quiz-subject-badge">DBMS Core</span></div>
+        <div class="quiz-options-group">
+          <label class="quiz-opt"><input type="radio" name="q3" value="A"> Atomicity</label>
+          <label class="quiz-opt"><input type="radio" name="q3" value="B"> Consistency</label>
+          <label class="quiz-opt"><input type="radio" name="q3" value="C"> Isolation</label>
+          <label class="quiz-opt"><input type="radio" name="q3" value="D"> Durability</label>
+        </div>
+      </div>
+
+      <div class="quiz-item" data-qindex="4">
+        <div class="quiz-q-text"><span class="q-num">04.</span> What is the default storage class initialization value of a local variable in C if left explicitly unassigned?<span class="quiz-subject-badge">C Language</span></div>
+        <div class="quiz-options-group">
+          <label class="quiz-opt"><input type="radio" name="q4" value="A"> Zero (0)</label>
+          <label class="quiz-opt"><input type="radio" name="q4" value="B"> Undefined Garbage Value</label>
+          <label class="quiz-opt"><input type="radio" name="q4" value="C"> Null pointer flag</label>
+          <label class="quiz-opt"><input type="radio" name="q4" value="D"> Infinite memory loop</label>
+        </div>
+      </div>
+
+      <div class="quiz-item" data-qindex="5">
+        <div class="quiz-q-text"><span class="q-num">05.</span> Why is the String class defined as Immutable within standard Java framework implementations?<span class="quiz-subject-badge">Java Core</span></div>
+        <div class="quiz-options-group">
+          <label class="quiz-opt"><input type="radio" name="q5" value="A"> To accommodate security, synchronization, and optimization pools</label>
+          <label class="quiz-opt"><input type="radio" name="q5" value="B"> Java does not support mutable string reference models</label>
+          <label class="quiz-opt"><input type="radio" name="q5" value="C"> To prevent runtime memory allocation procedures</label>
+          <label class="quiz-opt"><input type="radio" name="q5" value="D"> Because it belongs directly to the primitive keyword matrix</label>
+        </div>
+      </div>
+
+      <div class="quiz-item" data-qindex="6">
+        <div class="quiz-q-text"><span class="q-num">06.</span> In relational database algebra, which normal form explicitly addresses anomalies stemming from transitive functional dependencies?<span class="quiz-subject-badge">DBMS Architecture</span></div>
+        <div class="quiz-options-group">
+          <label class="quiz-opt"><input type="radio" name="q6" value="A"> First Normal Form (1NF)</label>
+          <label class="quiz-opt"><input type="radio" name="q6" value="B"> Second Normal Form (2NF)</label>
+          <label class="quiz-opt"><input type="radio" name="q6" value="C"> Third Normal Form (3NF)</label>
+          <label class="quiz-opt"><input type="radio" name="q6" value="D"> Boyce-Codd Normal Form (BCNF)</label>
+        </div>
+      </div>
+
+      <div class="quiz-item" data-qindex="7">
+        <div class="quiz-q-text"><span class="q-num">07.</span> Which standard dynamic memory library function in C initializes allocated memory blocks to zero automatically?<span class="quiz-subject-badge">C Language</span></div>
+        <div class="quiz-options-group">
+          <label class="quiz-opt"><input type="radio" name="q7" value="A"> malloc()</label>
+          <label class="quiz-opt"><input type="radio" name="q7" value="B"> calloc()</label>
+          <label class="quiz-opt"><input type="radio" name="q7" value="C"> realloc()</label>
+          <label class="quiz-opt"><input type="radio" name="q7" value="D"> alloc()</label>
+        </div>
+      </div>
+
+      <div class="quiz-item" data-qindex="8">
+        <div class="quiz-q-text"><span class="q-num">08.</span> Which mechanism prevents a class from being subclassed or inherited within a Java structure?<span class="quiz-subject-badge">Java OOP</span></div>
+        <div class="quiz-options-group">
+          <label class="quiz-opt"><input type="radio" name="q8" value="A"> Declaring the class as static</label>
+          <label class="quiz-opt"><input type="radio" name="q8" value="B"> Declaring the class as abstract</label>
+          <label class="quiz-opt"><input type="radio" name="q8" value="C"> Declaring the class as final</label>
+          <label class="quiz-opt"><input type="radio" name="q8" value="D"> Securing the main entry constructor</label>
+        </div>
+      </div>
+
+      <div class="quiz-item" data-qindex="9">
+        <div class="quiz-q-text"><span class="q-num">09.</span> What type of structural command constraint does the statement 'DROP TABLE' represent in SQL architecture?<span class="quiz-subject-badge">DBMS Structure</span></div>
+        <div class="quiz-options-group">
+          <label class="quiz-opt"><input type="radio" name="q9" value="A"> Data Manipulation Language (DML)</label>
+          <label class="quiz-opt"><input type="radio" name="q9" value="B"> Data Definition Language (DDL)</label>
+          <label class="quiz-opt"><input type="radio" name="q9" value="C"> Data Control Language (DCL)</label>
+          <label class="quiz-opt"><input type="radio" name="q9" value="D"> Transaction Control Language (TCL)</label>
+        </div>
+      </div>
+
+      <div class="quiz-item" data-qindex="10">
+        <div class="quiz-q-text"><span class="q-num">10.</span> In object-oriented languages like Java, what structural principle maps directly to a schema definition inside a relational database system?<span class="quiz-subject-badge">Architecture</span></div>
+        <div class="quiz-options-group">
+          <label class="quiz-opt"><input type="radio" name="q10" value="A"> An Object instance</label>
+          <label class="quiz-opt"><input type="radio" name="q10" value="B"> A Class blueprint declaration</label>
+          <label class="quiz-opt"><input type="radio" name="q10" value="C"> A Method override block</label>
+          <label class="quiz-opt"><input type="radio" name="q10" value="D"> Encapsulated array list packets</label>
+        </div>
+      </div>
+
+      <div class="quiz-nav-ctrls">
+        <button type="button" class="ctrl-btn" id="prevQuizBtn" onclick="shiftQuestion(-1)" disabled>Previous</button>
+        <span class="quiz-progress-text" id="quizNavProgressText">Question 1 of 10</span>
+        <button type="button" class="ctrl-btn" id="nextQuizBtn" onclick="shiftQuestion(1)">Next</button>
+        <button type="submit" class="ctrl-btn submit-action" id="submitQuizBtn" style="display:none;">Submit Mock Exam</button>
+      </div>
+    </form>
+
+    <div id="quizResultsSheet" class="results-sheet">
+      <div class="results-headline">Evaluation Complete! 🎉</div>
+      <div class="score-display"><span id="rawCorrectCount">0</span> / 10</div>
+      <div class="progress-bar-container">
+        <div id="resultPercentBar" class="progress-bar-fill"></div>
+      </div>
+      <div id="customQuizFeedback" class="results-summary-text"></div>
+      
+      <div class="cta-box-results">
+        <h4>Unlock Hundreds of Full-Length Mock Exams!</h4>
+        <p>This is just a preview of our premium testing interface. To access highly targeted tests with detailed answers, time analytics, and global student ranks, join our main system.</p>
+        <a href="https://exam-portal-cse.online" class="btn-redirect" target="_blank" rel="noopener">Explore exam-portal-cse.online Now →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-wrap" style="padding-top:0;">
+  <div class="section-head">
+    <span class="eyebrow-tag">// methodology</span>
+    <h2>Three Simple Steps to Complete Exam Readiness.</h2>
+  </div>
+  <div class="steps-row">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <h3>Select Your Exam Pathway</h3>
+      <p>Identify your targeted milestone across private technical corporate routes or public sector frameworks.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <h3>Simulate Real Testing Environments</h3>
+      <p>Experience realistic, timed environments utilizing identical assessment metrics and layout logic.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <h3>Review Deep Performance Analytics</h3>
+      <p>Uncover micro-level data regarding subject proficiencies, logic gaps, and optimization options.</p>
+    </div>
+  </div>
+</section>
+
+<section class="template-section" id="template">
+  <div class="section-wrap">
+    <div class="section-head">
+      <span class="eyebrow-tag">// interface preview</span>
+      <h2>Engineered to Simulate the True Examination Environment.</h2>
+      <p>Familiarize yourself early with the authentic structural user interfaces, counting down live data analytics instantly.</p>
+    </div>
+    <div class="q-card">
+      <div class="q-head">
+        <span class="q-tag">Analytical Reasoning · Q. 22 / 50</span>
+        <span class="q-timer">⏱ 01:10</span>
+      </div>
+      <p class="q-text">Five individuals are seated in a linear row configuration. If A is positioned to the left of B and to the immediate right of C, who occupies the central position?</p>
+      <div class="q-options">
+        <label class="opt"><input type="radio" name="sample-q2" disabled> A</label>
+        <label class="opt sel"><input type="radio" name="sample-q2" disabled checked> B</label>
+        <label class="opt"><input type="radio" name="sample-q2" disabled> C</label>
+        <label class="opt"><input type="radio" name="sample-q2" disabled> None of the options provided</label>
+      </div>
+      <div class="q-foot">
+        <span class="q-marks">+1.0 Correct Selection · −0.25 Incorrect Penalty</span>
+        <span class="q-next">Proceed to Next Question →</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-wrap" id="features">
+  <div class="section-head">
+    <span class="eyebrow-tag">// advanced framework</span>
+    <h2>Why Thousands of Students Train Here Daily.</h2>
+    <p>Get access to elite structural training mechanisms carefully optimized to maximize student learning capability.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-photo">
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=700&q=80" alt="Advanced performance dashboard analytics charts">
+      </div>
+      <div class="feature-body">
+        <div class="feature-title">Real-Time Performance Dashboards</div>
+        <div class="feature-desc">Isolate your weaknesses immediately. Our real-time engine maps out precision accuracy tracks and processing metrics after every submission.</div>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-photo">
+        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=80" alt="Computer screen showcasing code execution syntax">
+      </div>
+      <div class="feature-body">
+        <div class="feature-title">Adaptive Core Question Bank</div>
+        <div class="feature-desc">Never look at repetitive datasets. Access thousands of calibrated challenges spanning computer architecture, standard programming, and algorithm metrics.</div>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-photo">
+        <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=700&q=80" alt="Student reviewing educational materials and notebooks">
+      </div>
+      <div class="feature-body">
+        <div class="feature-title">Detailed Conceptual Breakdowns</div>
+        <div class="feature-desc">Understand the comprehensive underlying rules. Every mock question comes with direct step-by-step logic sheets to guide intermediate and advanced learners alike.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="final-cta-bg">
+    <img src="https://images.unsplash.com/photo-1652305500057-0fcb348b62aa?auto=format&fit=crop&w=1800&q=80" alt="Group of students preparing together for exams">
+  </div>
+  <div class="final-cta-inner">
+    <h2>Initiate Your Diagnostic Mock Examination Today.</h2>
+    <p>Benchmark your knowledge metrics across adaptive technical patterns and public criteria right now.</p>
+    <a class="btn-hero-primary" href="https://exam-portal-cse.online" target="_blank" rel="noopener">Access exam-portal-cse.online →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="logo">
+      <a href="#"><img src="logo.png" alt="Exam Portal CSE"></a>
+    </div>
+    <div class="footer-tagline">Empowering professional learning pathways — built by students, optimized for students.</div>
+  </div>
+  <div class="footer-bottom">© exam-portal-cse.online</div>
+</footer>
+
+<script>
+  // Mobile Responsive Menu Toggle Handler
+  const toggleBtn = document.getElementById('menuToggleClick');
+  const navDropdown = document.getElementById('navMenuDropdown');
+
+  toggleBtn.addEventListener('click', () => {
+    navDropdown.classList.toggle('menu-is-open');
+    toggleBtn.innerText = navDropdown.classList.contains('menu-is-open') ? '✕' : '☰';
+  });
+
+  // Auto close slide menu layout upon hyperlink jumping triggers
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+      navDropdown.classList.remove('menu-is-open');
+      toggleBtn.innerText = '☰';
+    });
+  });
+
+  // Option Selection Highlights Logic
+  let activeQuestionNum = 1;
+  const totalQuestionsCount = 10;
+
+  document.querySelectorAll('.quiz-opt').forEach(option => {
+    option.addEventListener('click', function() {
+      const parentGroup = this.closest('.quiz-options-group');
+      parentGroup.querySelectorAll('.quiz-opt').forEach(opt => opt.classList.remove('active-selected'));
+      this.classList.add('active-selected');
+      
+      const radioBtn = this.querySelector('input[type="radio"]');
+      if (radioBtn) radioBtn.checked = true;
+    });
+  });
+
+  // Step Quiz Navigator Layout Switcher
+  function shiftQuestion(direction) {
+    const questionsList = document.querySelectorAll('.quiz-item');
+    questionsList[activeQuestionNum - 1].classList.remove('active-question');
+    
+    activeQuestionNum += direction;
+    if (activeQuestionNum < 1) activeQuestionNum = 1;
+    if (activeQuestionNum > totalQuestionsCount) activeQuestionNum = totalQuestionsCount;
+    
+    questionsList[activeQuestionNum - 1].classList.add('active-question');
+    
+    document.getElementById('quizNavProgressText').innerText = `Question ${activeQuestionNum} of ${totalQuestionsCount}`;
+    document.getElementById('prevQuizBtn').disabled = (activeQuestionNum === 1);
+    
+    if (activeQuestionNum === totalQuestionsCount) {
+      document.getElementById('nextQuizBtn').style.display = "none";
+      document.getElementById('submitQuizBtn').style.display = "inline-block";
+    } else {
+      document.getElementById('nextQuizBtn').style.display = "inline-block";
+      document.getElementById('submitQuizBtn').style.display = "none";
+    }
+  }
+
+  // Diagnostic Test Evaluation Logic
+  function evaluateMockTest(event) {
+    event.preventDefault();
+
+    const solutionKeys = {
+      q1: "C", q2: "D", q3: "D", q4: "B", q5: "A", 
+      q6: "C", q7: "B", q8: "C", q9: "B", q10: "B"
+    };
+
+    const formData = new FormData(document.getElementById('demoMockForm'));
+    let studentScore = 0;
+
+    for (let key in solutionKeys) {
+      if (formData.get(key) === solutionKeys[key]) {
+        studentScore++;
+      }
+    }
+
+    let feedbackPhrase = "";
+    if (studentScore === 10) {
+      feedbackPhrase = "Excellent score! Perfect 100% processing capability. You are fully prepared for advanced computer science core testing tracks.";
+    } else if (studentScore >= 7) {
+      feedbackPhrase = "Good job! You demonstrated stable competencies across basic core criteria. Tune up small runtime details to reach maximum optimization.";
+    } else {
+      feedbackPhrase = "Foundational review recommended. Certain architectural concepts regarding compilation steps, memory tracking, and storage normalizations require adjustment.";
+    }
+
+    document.getElementById('rawCorrectCount').innerText = studentScore;
+    
+    const calculatedPercentage = (studentScore / totalQuestionsCount) * 100;
+    document.getElementById('resultPercentBar').style.width = calculatedPercentage + "%";
+    document.getElementById('customQuizFeedback').innerText = feedbackPhrase;
+
+    const resultsView = document.getElementById('quizResultsSheet');
+    resultsView.style.display = "block";
+    resultsView.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+
+</body>
+</html>
