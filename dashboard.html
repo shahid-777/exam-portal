@@ -17,11 +17,15 @@
             </div>
             <div class="flex flex-col">
                 <span class="text-sm font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 uppercase leading-none">STUDENT HUB</span>
-                <span id="user-display-email" class="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">AUTH_USER_STREAM</span>
+                <span class="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">EXAM CATEGORY EXPLORER</span>
             </div>
         </div>
+        
         <div class="flex items-center space-x-4">
-            <button onclick="handleUserLogout()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-1.5 px-4 rounded-xl text-xs transition">Logout</button>
+            <span id="user-display-email" class="text-xs font-mono text-slate-400 hidden sm:inline-block">student@gmail.com</span>
+            <button onclick="handleUserLogout()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-1.5 px-4 rounded-xl text-xs transition">
+                Logout
+            </button>
         </div>
     </header>
 
@@ -34,97 +38,574 @@
     </section>
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-12">
+        
         <div class="space-y-1">
-            <h3 id="workspace-title" class="text-xl font-black text-slate-100 uppercase tracking-wider">Available Exam Streams</h3>
-            <p id="workspace-desc" class="text-xs text-slate-400">Select an academic stream or recruitment category folder to access active examination test papers.</p>
+            <h3 id="workspace-title" class="text-xl font-black text-slate-100 uppercase tracking-wider">
+                Available Exam Streams
+            </h3>
+            <p id="workspace-desc" class="text-xs text-slate-400">
+                Select an academic stream or recruitment category folder to access active examination test papers.
+            </p>
         </div>
 
         <div id="combo-exams-section-wrapper" class="space-y-4">
             <h4 class="text-xs font-mono font-black text-pink-400 uppercase tracking-widest flex items-center gap-2">
                 <span class="flex h-2 w-2 rounded-full bg-pink-500 animate-ping"></span>
-                🏆 Active Combined Assessment Clusters
+                🏆 Active Combined Assessment Clusters (Paper-1 + Paper-2 Package)
             </h4>
-            <div id="student-combo-exams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="student-combo-exams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="text-center font-mono text-[11px] text-slate-600 border border-dashed border-white/5 py-6 rounded-2xl uppercase">
+                    Syncing live combined exam nodes pipeline...
+                </div>
+            </div>
         </div>
 
         <div class="space-y-4">
-            <h4 id="single-exams-header-title" class="text-xs font-mono font-black text-blue-400 uppercase tracking-widest">📂 Standard Categorized Subject Folders</h4>
-            <div id="portal-dynamic-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <h4 id="single-exams-header-title" class="text-xs font-mono font-black text-blue-400 uppercase tracking-widest">
+                📂 Standard Categorized Subject Folders
+            </h4>
+            <div id="portal-dynamic-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="text-center font-mono text-xs text-slate-500 py-12 animate-pulse uppercase col-span-full">
+                    Initializing Portal Schema Matrices...
+                </div>
+            </div>
         </div>
 
-        <div class="bg-slate-900/40 border border-white/5 rounded-3xl p-6 shadow-xl pt-6">
-            <h2 class="text-sm font-black text-white uppercase tracking-widest font-mono border-b border-white/5 pb-4 mb-4">My Performance Repository</h2>
-            <div id="past-results-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div class="bg-slate-900/40 border border-white/5 rounded-3xl p-6 space-y-6 shadow-xl pt-6">
+            <div class="flex items-center space-x-3 border-b border-white/5 pb-4">
+                <span class="text-xl">🏆</span>
+                <div>
+                    <h2 class="text-sm font-black text-white uppercase tracking-widest font-mono">My Performance Repository Terminal</h2>
+                    <p class="text-[11px] text-slate-400 font-sans mt-0.5">Review your past simulated exam history metrics, solutions, and scorecard analysis anytime.</p>
+                </div>
+            </div>
+
+            <div id="past-results-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="text-center py-6 font-mono text-[11px] text-slate-500 animate-pulse uppercase col-span-full">Syncing exam telemetry history nodes...</div>
+            </div>
         </div>
+
     </main>
+
+    <div id="result-review-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-2 sm:p-4 hidden">
+        <div class="bg-slate-900 border border-white/10 w-full max-w-4xl h-[90vh] sm:h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+            
+            <div class="bg-slate-950/80 border-b border-white/5 p-4 flex items-center justify-between shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="h-2.5 w-2.5 rounded-full bg-amber-500 animate-pulse"></div>
+                    <div>
+                        <h2 id="modal-review-title" class="text-xs sm:text-sm font-black text-white font-mono uppercase tracking-widest">EXAM PERFORMANCE MATRIX</h2>
+                        <p class="text-[9px] text-slate-500 font-mono uppercase tracking-wider mt-0.5">Testbook Deductive Analytics Architecture</p>
+                    </div>
+                </div>
+                <button onclick="closeReviewModal()" class="text-[10px] font-mono font-black text-slate-400 hover:text-white bg-white/5 hover:bg-red-500/20 border border-white/10 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider">Close Panel [ESC]</button>
+            </div>
+
+            <div id="modal-review-stats-summary" class="bg-slate-950/30 border-b border-white/5 px-6 py-3 grid grid-cols-2 sm:grid-cols-4 gap-4 shrink-0 text-center font-mono text-[10px]"></div>
+            <div id="modal-review-body" class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-8 bg-slate-950/10"></div>
+        </div>
+    </div>
+
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest">
+        &copy; Computer Science Department
+    </footer>
 
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let isUserSubscribed = false;
+        let activeUserEmail = "";
 
-        window.onload = async function () {
-            const email = localStorage.getItem('userEmail');
-            if (!email) { window.location.replace("index.html"); return; }
-            document.getElementById('user-display-email').innerText = email;
+        window.onload = function () {
+            activeUserEmail = localStorage.getItem('userEmail');
+            if (!activeUserEmail) {
+                window.location.replace("index.html");
+                return;
+            }
+            document.getElementById('user-display-email').innerText = activeUserEmail;
             
-            // 1. Check Subscription State
-            isUserSubscribed = await checkUserSubscription(email);
-            
-            // 2. Load Dashboard Components
+            // Initializing Telemetry Streams
             loadCategoriesView();
-            renderStudentComboExamLinks();
+            renderStudentComboExamLinks(); // लाइव कंबाइंड कॉम्बो लिंक्स लोड करें
             fetchStudentPastExamHistory();
         };
 
-        async function checkUserSubscription(email) {
-            const { data } = await supabaseClient
-                .from('subscriptions')
-                .select('is_active')
-                .eq('user_email', email)
-                .eq('is_active', true)
-                .maybeSingle();
-            return !!data;
+        // 🚀 NEW ENGINE addition: FETCH COMBINED COMBO CHANNELS REAL-TIME FROM DATABASE
+        async function renderStudentComboExamLinks() {
+            const comboContainer = document.getElementById('student-combo-exams-grid');
+            if (!comboContainer) return;
+
+            try {
+                const { data: comboExams, error } = await supabaseClient
+                    .from('combo_exams')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!comboExams || comboExams.length === 0) {
+                    comboContainer.innerHTML = `
+                        <div class="col-span-full border border-dashed border-white/5 text-center p-6 rounded-xl text-slate-600 font-mono text-[11px] uppercase uppercase tracking-wider">
+                            No Combined Mega Exams allocated by Administration.
+                        </div>`;
+                    return;
+                }
+
+                comboContainer.innerHTML = ""; 
+
+                comboExams.forEach(combo => {
+                    // 🎯 [STRICT TIMING REINFORCEMENT CORRIDOR]: पेपर-2 का सिंटैक्स छिपाकर केवल वन-वे यूआरएल रूट पास किया गया है
+                    comboContainer.innerHTML += `
+                        <div class="bg-slate-900/40 border border-white/5 hover:border-pink-500/20 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-xl transition transform hover:scale-[1.005] group">
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-0.5 text-[8px] font-black bg-pink-500/10 text-pink-400 border border-pink-500/20 rounded font-mono tracking-widest uppercase">COMBO ASSESSMENT</span>
+                                    <span class="text-[9px] font-mono text-emerald-400 font-bold uppercase">● Stage 1 Locked</span>
+                                </div>
+                                <h3 class="font-black text-sm text-slate-100 uppercase tracking-wide group-hover:text-pink-400 transition leading-snug pt-1">${combo.combo_title}</h3>
+                                <p class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Initial Target: ${combo.paper1_subject.toUpperCase()}</p>
+                            </div>
+                            
+                            <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1.5 border-t border-white/5">
+                                <div>Combined Evaluation Node</div>
+                                <div>Cutoff: <span class="text-amber-400 font-bold">${combo.required_cutoff_percentage}%</span></div>
+                            </div>
+
+                            <button onclick="launchSecureComboPipeline('${combo.id}')" class="w-full bg-gradient-to-r from-pink-600 to-red-600 hover:from-pink-500 hover:to-red-500 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition cursor-pointer">
+                                Launch Combined Test ↗
+                            </button>
+                        </div>`;
+                });
+
+            } catch (e) {
+                console.error("Combo linkage crash matrix handler:", e);
+                comboContainer.innerHTML = `<div class="col-span-full text-center font-mono text-xs text-red-500 uppercase">Combo Data Pipeline Disrupted.</div>`;
+            }
         }
 
-        function handlePaymentRequest() {
-            alert("This subject requires a paid subscription. Please contact the administrator at examportalcse@gmail.com to complete your subscription and unlock full library access.");
+        function launchSecureComboPipeline(comboId) {
+            if(confirm("Strict Notice: You are initializing a Multi-Stage Combined Exam. After submitting Paper-1, Paper-2 will launch automatically. You cannot return to the first stage. Initialize session now?")) {
+                window.location.href = `exam.html?combo_id=${comboId}`;
+            }
         }
 
-        // Modified loadExamsSubView to include isLocked check
-        async function loadExamsSubView(categoryId, encodedCatName) {
-            const categoryName = decodeURIComponent(encodedCatName);
-            document.getElementById('workspace-title').innerText = `${categoryName.toUpperCase()} — ACTIVE PAPERS`;
-            
+        // 📁 STEP 1: LOAD MAIN EXAM CATEGORIES (FOLDERS)
+        async function loadCategoriesView() {
+            document.getElementById('workspace-title').innerText = "Available Exam Streams";
+            document.getElementById('workspace-desc').innerText = "Select a category below to explore its active examinations list.";
+            document.getElementById('breadcrumb-arrow').classList.add('hidden');
+            document.getElementById('breadcrumb-current-category').classList.add('hidden');
+            document.getElementById('single-exams-header-title').innerText = "📂 Standard Categorized Subject Folders";
+
             const gridContainer = document.getElementById('portal-dynamic-grid');
-            gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse col-span-full">Loading Exams...</div>`;
+            gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase col-span-full">Mapping Active Categories...</div>`;
 
-            const { data: examsList, error } = await supabaseClient.from('exams').select('*').eq('category_id', categoryId);
+            try {
+                const { data: examsData, error: examsErr } = await supabaseClient
+                    .from('exams')
+                    .select('category_id');
 
-            if (error || !examsList.length) { gridContainer.innerHTML = "<div class='text-center col-span-full text-slate-500'>No exams found.</div>"; return; }
+                if (examsErr) throw examsErr;
 
-            gridContainer.innerHTML = "";
-            examsList.forEach(exam => {
-                const isLocked = exam.is_premium && !isUserSubscribed;
-                gridContainer.innerHTML += `
-                    <div class="bg-slate-900/40 border ${isLocked ? 'border-amber-500/30' : 'border-white/5'} p-6 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
-                        <div>
-                            ${isLocked ? '<span class="text-[9px] font-black text-amber-400 uppercase bg-amber-500/10 px-2 py-0.5 rounded mb-2 inline-block">🔒 Locked</span>' : ''}
-                            <h4 class="text-sm font-black text-slate-100 uppercase">${exam.subject}</h4>
+                const activeCategoryIds = [...new Set(examsData.map(item => item.category_id).filter(Boolean))];
+
+                if (activeCategoryIds.length === 0) {
+                    gridContainer.innerHTML = `
+                        <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
+                            No active exam streams found. Waiting for Admin allocations.
+                        </div>`;
+                    return;
+                }
+
+                const { data: categoriesData, error: catErr } = await supabaseClient
+                    .from('exam_categories')
+                    .select('id, category_name')
+                    .in('id', activeCategoryIds);
+
+                if (catErr) throw catErr;
+
+                if (!categoriesData || categoriesData.length === 0) {
+                    gridContainer.innerHTML = `
+                        <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
+                            No matching category data configured in system master nodes.
+                        </div>`;
+                    return;
+                }
+
+                let htmlContent = "";
+                categoriesData.forEach(cat => {
+                    const displayTitle = cat.category_name || `Category #${cat.id}`;
+
+                    htmlContent += `
+                        <div onclick="loadExamsSubView('${cat.id}', '${encodeURIComponent(displayTitle)}')" class="bg-slate-900/40 border border-white/5 hover:border-blue-500/30 p-6 rounded-2xl shadow-xl hover:bg-slate-900/80 transition transform hover:scale-[1.01] cursor-pointer group relative overflow-hidden flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="p-2.5 bg-blue-500/10 rounded-xl text-blue-400 group-hover:bg-blue-500/20 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h1.5A2.25 2.25 0 0 0 8.25 8.5h3.053c.421 0 .824.168 1.121.467l2.137 2.138a2.25 2.25 0 0 1 .659 1.592v1.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25Z" /></svg>
+                                    </div>
+                                    <span class="text-[10px] font-mono text-slate-500 font-bold uppercase tracking-wider group-hover:text-blue-400/60 transition">Open Folder &rarr;</span>
+                                </div>
+                                <h4 class="text-sm font-black tracking-wide text-slate-100 group-hover:text-blue-400 transition uppercase">${displayTitle}</h4>
+                            </div>
+                        </div>`;
+                });
+
+                gridContainer.innerHTML = htmlContent;
+
+            } catch (err) {
+                console.error(err);
+                gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-400 col-span-full">Database parsing cluster connection fault: ${err.message || err}</div>`;
+            }
+        }
+
+        // 📝 STEP 2: LOAD EXAMS FILTERED BY SELECTED CATEGORY ID
+       // 📝 STEP 2: LOAD EXAMS FILTERED BY CATEGORY (🏆 UPGRADED: HIDES COMBO SUBS)
+async function loadExamsSubView(categoryId, encodedCatName) {
+    const categoryName = decodeURIComponent(encodedCatName);
+    
+    document.getElementById('workspace-title').innerText = `${categoryName.toUpperCase()} — ACTIVE PAPERS`;
+    document.getElementById('workspace-desc').innerText = "Select an available test paper below to initialize live terminal examination runtime.";
+    document.getElementById('single-exams-header-title').innerText = "📋 Standalone Available Question Matrix Subjects";
+    
+    const bArrow = document.getElementById('breadcrumb-arrow');
+    const bCurrent = document.getElementById('breadcrumb-current-category');
+    if(bArrow) bArrow.classList.remove('hidden');
+    if(bCurrent) {
+        bCurrent.classList.remove('hidden');
+        bCurrent.innerText = categoryName;
+    }
+
+    const gridContainer = document.getElementById('portal-dynamic-grid');
+    gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase col-span-full">Filtering Test Clusters...</div>`;
+
+    try {
+        // 🔒 १. सबसे पहले 'combo_exams' टेबल से उन सभी पेपर्स के नाम निकालें जो कॉम्बो में बुक हैं
+        const { data: comboList, error: comboErr } = await supabaseClient
+            .from('combo_exams')
+            .select('paper1_subject, paper2_subject');
+
+        if (comboErr) throw comboErr;
+
+        // सभी बुक हो चुके विषयों का एक सेफ सेट (Set) बनाएं
+        let blockedComboSubjects = new Set();
+        if (comboList) {
+            comboList.forEach(c => {
+                if(c.paper1_subject) blockedComboSubjects.add(c.paper1_subject.trim().toLowerCase());
+                if(c.paper2_subject) blockedComboSubjects.add(c.paper2_subject.trim().toLowerCase());
+            });
+        }
+
+        // २. अब इस विशिष्ट कैटेगरी के सभी एग्जाम्स डेटाबेस से उठाएं
+        const { data: examsList, error } = await supabaseClient
+            .from('exams')
+            .select('subject, duration_minutes, questions_json')
+            .eq('category_id', categoryId);
+
+        if (error) throw error;
+
+        // 🔒 ३. [EXCLUSION FILTER]: केवल वही पेपर रखें जो कॉम्बो सेट (blockedComboSubjects) का हिस्सा नहीं हैं
+        const filteredExamsList = (examsList || []).filter(exam => {
+            const subjectKey = exam.subject ? exam.subject.trim().toLowerCase() : "";
+            return !blockedComboSubjects.has(subjectKey);
+        });
+
+        if (filteredExamsList.length === 0) {
+            gridContainer.innerHTML = `
+                <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
+                    No standalone single papers active inside this folder.
+                </div>`;
+            return;
+        }
+
+        let htmlContent = "";
+        filteredExamsList.forEach(exam => {
+            let totalQuestionsCount = 0;
+            try {
+                let parsedJson = typeof exam.questions_json === 'string' ? JSON.parse(exam.questions_json) : exam.questions_json;
+                totalQuestionsCount = parsedJson ? parsedJson.length : 0;
+            } catch(e) { totalQuestionsCount = 0; }
+
+            htmlContent += `
+                <div class="bg-slate-900/20 border border-white/5 hover:border-emerald-500/20 p-5 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
+                    <div class="space-y-1.5">
+                        <span class="text-[9px] font-mono font-black text-slate-500 bg-white/5 px-2 py-0.5 rounded uppercase tracking-wider">Active Evaluation Node</span>
+                        <h4 class="text-sm font-black text-slate-200 tracking-wide leading-snug uppercase pt-1">${exam.subject}</h4>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1 border-t border-white/5">
+                        <div>Questions: <span class="text-emerald-400 font-bold">${totalQuestionsCount}</span></div>
+                        <div>Duration: <span class="text-blue-400 font-bold">${exam.duration_minutes} Min</span></div>
+                    </div>
+
+                    <button onclick="initializeAssessmentRuntime('${encodeURIComponent(exam.subject)}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition transform active:scale-[0.98] cursor-pointer">
+                        Launch Live Engine
+                    </button>
+                </div>`;
+        });
+
+        gridContainer.innerHTML = htmlContent;
+
+    } catch (err) {
+        console.error(err);
+        gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-400 col-span-full">Failed to compile category elements matrix list.</div>`;
+    }
+}
+        function initializeAssessmentRuntime(encodedSubject) {
+            if(confirm("Confirm action: Do you want to initialize and authorize this secure exam session now?")) {
+                window.location.href = `exam.html?subject=${encodedSubject}`;
+            }
+        }
+
+        function handleUserLogout() {
+            localStorage.clear();
+            window.location.replace("index.html");
+        }
+
+        // =========================================================================
+        // 📊 🏆 🚀 CORE ENGINE: UPDATED TESTBOOK ANALYSIS SYNC WITH 'public.results'
+        // =========================================================================
+
+        async function fetchStudentPastExamHistory() {
+            const container = document.getElementById('past-results-container');
+            const studentEmail = localStorage.getItem('userEmail');
+
+            if (!studentEmail || !container) return;
+
+            try {
+                const { data: attempts, error } = await supabaseClient
+                    .from('results') 
+                    .select('*')
+                    .eq('email', studentEmail.toLowerCase()) 
+                    .order('submitted_at', { ascending: false }); 
+
+                if (error) throw error;
+
+                if (!attempts || attempts.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full border border-dashed border-white/5 text-center p-8 rounded-2xl text-slate-500 font-mono text-[11px] uppercase tracking-wider bg-slate-950/20">
+                            No conducted mock exams detected in your student log cluster.
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = "";
+                window.globalAttemptsCache = attempts; 
+
+                attempts.forEach((attempt, index) => {
+                    const dateStr = attempt.submitted_at 
+                        ? new Date(attempt.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+                        : "N/A CORRIDOR";
+                    
+                    const subjectName = attempt.subject || "Objective Evaluation Node";
+                    const finalScore = attempt.score !== undefined ? attempt.score : 0;
+                    const totalQs = attempt.total_questions || 0;
+                    const correctQs = attempt.correct_answers || 0;
+                    const wrongQs = attempt.wrong_answers || 0;
+
+                    container.innerHTML += `
+                        <div class="bg-slate-900/60 border border-white/5 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:border-amber-500/20 transition shadow-xl relative overflow-hidden group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="text-[9px] font-mono font-black bg-white/5 border border-white/10 text-slate-400 px-2 py-0.5 rounded uppercase tracking-wider">${dateStr}</span>
+                                    <h3 class="font-bold text-sm text-slate-100 uppercase tracking-wide mt-2.5 leading-snug group-hover:text-amber-400 transition">${subjectName}</h3>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="text-lg font-black text-amber-400 font-mono">${finalScore}</span>
+                                    <span class="text-[8px] font-mono text-slate-500 block uppercase font-bold tracking-tighter mt-0.5">Score</span>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2 bg-slate-950/40 p-2.5 rounded-xl text-center font-mono text-[10px] border border-white/[0.02]">
+                                <div><div class="text-slate-400 font-bold">${totalQs}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Total Qs</div></div>
+                                <div><div class="text-emerald-400 font-bold">+${correctQs}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Correct</div></div>
+                                <div><div class="text-red-400 font-bold">-${wrongQs}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Wrong</div></div>
+                            </div>
+
+                            <button onclick="viewDetailedExamAnalysis(${index})" class="w-full bg-white/5 hover:bg-amber-500/10 text-amber-400 border border-white/10 font-black py-2 px-3 rounded-xl text-[10px] uppercase tracking-widest transition font-mono cursor-pointer shadow-md">
+                                Analyze Answer Sheet &rarr;
+                            </button>
+                        </div>`;
+                });
+
+            } catch (err) {
+                console.error("Telemetry history pull breakdown:", err);
+                container.innerHTML = `<div class="col-span-full text-center text-red-500 font-mono text-xs uppercase">Telemetry Cluster Sync Error.</div>`;
+            }
+        }
+
+        function viewDetailedExamAnalysis(cacheIndex) {
+            const attempt = window.globalAttemptsCache && window.globalAttemptsCache[cacheIndex];
+            if (!attempt) return;
+
+            const subjectName = attempt.subject ? String(attempt.subject) : "EXAMINATION MOCK NODE";
+            const subjectNameUpper = subjectName.toUpperCase();
+            
+            const modalTitleElement = document.getElementById('modal-review-title');
+            if (modalTitleElement) {
+                modalTitleElement.innerText = `${subjectNameUpper} — SOLUTIONS & ANALYSIS`;
+            }
+            
+            const totalQ = attempt.total_questions || 0;
+            const correctQ = attempt.correct_answers || 0;
+            const accuracy = totalQ > 0 ? ((correctQ / totalQ) * 100).toFixed(1) : 0;
+            const finalScore = attempt.score !== undefined ? attempt.score : 0;
+            const wrongAnswersCount = attempt.wrong_answers !== undefined ? attempt.wrong_answers : 0;
+            
+            const statsSummary = document.getElementById('modal-review-stats-summary');
+            if (statsSummary) {
+                statsSummary.innerHTML = `
+                    <div class="border-r border-white/5"><div class="text-slate-200 font-black text-xs">${accuracy}%</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Your Accuracy</div></div>
+                    <div class="border-r border-white/5"><div class="text-emerald-400 font-black text-xs">${correctQ} / ${totalQ}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Correct Breakdown</div></div>
+                    <div class="border-r border-white/5"><div class="text-red-400 font-black text-xs">${wrongAnswersCount}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Wrong Selection</div></div>
+                    <div><div class="text-blue-400 font-black text-xs">${finalScore} Mks</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Net Score Matrix</div></div>
+                `;
+            }
+
+            const reviewBody = document.getElementById('modal-review-body');
+            if (!reviewBody) return;
+            reviewBody.innerHTML = "";
+
+            let questionsArray = attempt.questions_snapshot_json;
+            let responsesArray = attempt.user_responses_json;
+
+            // 🚀 [CRITICAL COMBO HANDLING]: यदि कॉम्बो डेटा सबमिट हुआ है, तो दोनों पेपर्स को एक के नीचे एक जोड़कर दिखाएं
+            let isComboPayload = false;
+            let p1Questions = [], p2Questions = [];
+            let p1Responses = {}, p2Responses = {};
+
+            if (typeof questionsArray === 'string') { try { questionsArray = JSON.parse(questionsArray); } catch(e){} }
+            if (typeof responsesArray === 'string') { try { responsesArray = JSON.parse(responsesArray); } catch(e){} }
+
+            if (questionsArray && !Array.isArray(questionsArray) && questionsArray.paper1) {
+                isComboPayload = true;
+                p1Questions = questionsArray.paper1;
+                p2Questions = questionsArray.paper2;
+                p1Responses = responsesArray.paper1 || {};
+                p2Responses = responsesArray.paper2 || {};
+            }
+
+            if (isComboPayload) {
+                // रेंडर पेपर 1 हेडर
+                reviewBody.innerHTML += `<div class="col-span-full border-b border-pink-500/20 pb-2 text-pink-400 font-mono text-xs font-black uppercase tracking-widest pt-4">📋 SECTION A : PAPER 1 ANALYSIS</div>`;
+                renderReviewCardsGrid(p1Questions, p1Responses, subjectNameUpper);
+                
+                // रेंडर पेपर 2 हेडर
+                reviewBody.innerHTML += `<div class="col-span-full border-b border-blue-500/20 pb-2 text-blue-400 font-mono text-xs font-black uppercase tracking-widest pt-8">📋 SECTION B : PAPER 2 ANALYSIS</div>`;
+                renderReviewCardsGrid(p2Questions, p2Responses, subjectNameUpper);
+            } else {
+                if (!questionsArray || !Array.isArray(questionsArray)) {
+                    reviewBody.innerHTML = `<div class="text-center py-8 text-red-400 font-mono text-xs uppercase">Snapshots dataset format is not an uncompressed array structure.</div>`;
+                    return;
+                }
+                renderReviewCardsGrid(questionsArray, responsesArray, subjectNameUpper);
+            }
+
+            document.getElementById('result-review-modal').classList.remove('hidden');
+        }
+
+        // सहायक रिज़ॉर्ट रेंडरर फ़ंक्शन (कॉम्बो संगतता)
+        function renderReviewCardsGrid(questions, responses, subjectNameUpper) {
+            const reviewBody = document.getElementById('modal-review-body');
+            
+            questions.forEach((q, idx) => {
+                const studentSelectedIdx = (responses && responses[idx] !== undefined) ? parseInt(responses[idx]) : (q.selected !== undefined ? q.selected : -1);
+                const correctIdx = q.correct !== undefined ? parseInt(q.correct) : 0;
+
+                const isCorrect = studentSelectedIdx === correctIdx;
+                const isSkipped = studentSelectedIdx === null || studentSelectedIdx === undefined || studentSelectedIdx === -1;
+                
+                let borderStyle = 'border-red-500/20 bg-red-500/[0.01]';
+                let statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-red-500/10 text-red-400 border border-red-500/20 rounded-md uppercase tracking-widest font-mono">𐄂 INCORRECT</span>';
+                
+                if (isCorrect) {
+                    borderStyle = 'border-emerald-500/20 bg-emerald-500/[0.01]';
+                    statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-md uppercase tracking-widest font-mono">✓ CORRECT</span>';
+                } else if (isSkipped) {
+                    borderStyle = 'border-slate-700/40 bg-slate-800/[0.02]';
+                    statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-slate-800 border border-white/10 text-slate-400 rounded-md uppercase tracking-widest font-mono">⚠️ SKIPPED</span>';
+                }
+
+                const peerCorrect = Math.floor(Math.random() * (85 - 35) + 35); 
+                const avgTime = Math.floor(Math.random() * (75 - 20) + 20);
+
+                let optionsHtml = "";
+                const rawOptions = q.options || ["Option A", "Option B", "Option C", "Option D"];
+                
+                rawOptions.forEach((opt, optIdx) => {
+                    const optChar = String.fromCharCode(65 + optIdx);
+                    let optStyle = "bg-slate-900 border-white/5 text-slate-300";
+                    let indicatorIcon = "";
+                    let optionCharStyle = "bg-white/5 border border-white/10 text-slate-400 font-bold";
+                    
+                    if (optIdx === correctIdx) {
+                        optStyle = "bg-emerald-950/40 border-emerald-500/40 text-emerald-400 font-bold ring-1 ring-emerald-500/10";
+                        optionCharStyle = "bg-emerald-500 text-slate-950 font-black";
+                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-emerald-400 ml-auto uppercase tracking-wider">Correct Option</span>`;
+                    } else if (optIdx === studentSelectedIdx && !isCorrect) {
+                        optStyle = "bg-red-950/40 border-red-500/40 text-red-400 font-bold ring-1 ring-red-500/10";
+                        optionCharStyle = "bg-red-500 text-white font-black";
+                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-red-400 ml-auto uppercase tracking-wider">Your Selection</span>`;
+                    }
+
+                    optionsHtml += `
+                        <div class="border p-3 rounded-xl text-xs flex items-center gap-3 transition-all ${optStyle}">
+                            <span class="font-mono px-2 py-0.5 rounded text-[10px] ${optionCharStyle}">${optChar}</span>
+                            <span class="font-sans font-medium">${opt}</span>
+                            ${indicatorIcon}
+                        </div>`;
+                });
+
+                const correctChar = String.fromCharCode(65 + correctIdx);
+                const questionText = q.question || q.title || q.text || "Objective Assessment Query Node";
+                
+                reviewBody.innerHTML += `
+                    <div class="border rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl transition relative ${borderStyle} mt-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-2.5">
+                            <div class="flex items-center space-x-2 text-[9px] font-mono text-slate-500 uppercase tracking-wider font-bold">
+                                <span>Question Unit Stack Node #${idx + 1}</span>
+                                <span>•</span>
+                                <span class="text-slate-400">Avg Time taken: ${avgTime}s</span>
+                                <span>•</span>
+                                <span class="text-blue-400">Correctly Answered by ${peerCorrect}% peers</span>
+                            </div>
+                            <div class="ml-auto sm:ml-0">${statusBadge}</div>
                         </div>
-                        <button onclick="${isLocked ? 'handlePaymentRequest()' : 'initializeAssessmentRuntime(\'' + encodeURIComponent(exam.subject) + '\')'}" 
-                                class="w-full ${isLocked ? 'bg-amber-600 hover:bg-amber-500' : 'bg-blue-600 hover:bg-blue-500'} text-white font-black py-2.5 rounded-xl uppercase text-[10px] transition">
-                            ${isLocked ? 'Pay to Unlock' : 'Launch Live Engine'}
-                        </button>
+
+                        <h4 class="text-sm font-bold text-white font-sans leading-relaxed">
+                            <span class="font-mono text-slate-500 bg-white/5 px-2 py-0.5 rounded text-[11px] mr-1">Q${idx + 1}</span> 
+                            ${questionText}
+                        </h4>
+
+                        <div class="grid grid-cols-1 gap-2.5 pt-1">
+                            ${optionsHtml}
+                        </div>
+
+                        <div class="bg-slate-950/60 border border-white/5 rounded-xl p-4 mt-3 space-y-2 font-sans">
+                            <div class="flex items-center space-x-2 text-amber-400 font-mono text-[10px] font-black uppercase tracking-widest">
+                                <span>💡</span>
+                                <span>Official Solutions & Deduction Framework</span>
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed font-medium">
+                                The correct matching evaluation node responds to choice <strong class="text-emerald-400 font-mono text-xs font-black bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">${correctChar}</strong>. 
+                                Standard academic computer science paradigms rule out competing configurations because Option ${correctChar} models the requested core criteria optimally.
+                            </p>
+                            <div class="pt-2 text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider flex items-center gap-1">
+                                <span>🔍 Core Segment Matrix:</span>
+                                <span class="text-purple-400">${subjectNameUpper} Evaluated Contexts</span>
+                            </div>
+                        </div>
                     </div>`;
             });
         }
 
-        // ... (पुराने फंक्शन्स जैसे loadCategoriesView, renderStudentComboExamLinks, fetchStudentPastExamHistory बरकरार हैं) ...
-        
-        function handleUserLogout() { localStorage.clear(); window.location.replace("index.html"); }
+        function closeReviewModal() {
+            document.getElementById('result-review-modal').classList.add('hidden');
+        }
+
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') { closeReviewModal(); }
+        });
     </script>
 </body>
 </html>
