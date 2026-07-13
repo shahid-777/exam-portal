@@ -104,6 +104,29 @@
                     <div class="sm:col-span-2">
                         <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">📋 Questions Array Dataset (Plain Text or Structured Bilingual JSON Array)</label>
                         <textarea id="exam-questions-json" rows="12" placeholder="Paste plain text MCQs directly OR drop structured bilingual JSON array format node here..." class="w-full border border-white/10 p-2.5 font-mono text-[11px] rounded-xl bg-slate-900 text-slate-300 outline-none resize-none focus:border-blue-500/30 transition"></textarea>
+                        <p class="text-[10px] text-slate-500 font-mono mt-1.5 leading-relaxed">
+                            💡 Image ke liye: JSON mein <code class="text-blue-400">"question_image":"https://..."</code> ya option mein <code class="text-blue-400">"image":"https://..."</code> daalein.
+                            Plain text mein <code class="text-blue-400">![alt](https://image-url)</code> likhein. Table ke liye JSON mein <code class="text-blue-400">"table":{headers:[...],rows:[[...]]}</code>
+                            ya plain text mein markdown table (<code class="text-blue-400">| col | col |</code>) use karein.
+                        </p>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">🖼️ Attach Image (optional — is question ke saath link ho jaayegi jo textarea ke pehle question se match ho)</label>
+                        <div id="image-dropzone" class="w-full border-2 border-dashed border-white/10 rounded-xl p-5 text-center cursor-pointer hover:border-blue-500/30 transition bg-slate-900/40">
+                            <p class="text-[11px] font-mono text-slate-400">Click ya drag-and-drop karein image yahan</p>
+                            <p class="text-[9px] font-mono text-slate-600 mt-1">PNG / JPG / WEBP</p>
+                        </div>
+                        <input type="file" id="hidden-image-input" accept="image/*" class="hidden">
+
+                        <div id="image-preview-container" class="hidden mt-3 flex items-center gap-3 bg-slate-900 border border-white/10 rounded-xl p-3">
+                            <img id="dz-preview-img" src="" alt="Preview" class="h-16 w-16 object-cover rounded-lg border border-white/10">
+                            <div class="flex-1 min-w-0">
+                                <p id="dz-file-name" class="text-[11px] font-mono text-slate-300 truncate"></p>
+                                <p class="text-[9px] font-mono text-slate-500 mt-0.5">Ready to attach</p>
+                            </div>
+                            <button type="button" onclick="removeSelectedImage()" class="text-[10px] font-mono font-black text-red-400 hover:text-red-300 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-lg uppercase tracking-wider">Remove</button>
+                        </div>
                     </div>
 
                     <div class="sm:col-span-2 pt-1">
@@ -301,191 +324,332 @@
         let globalCategoriesArray = [];
         let currentBase64ImageData = ""; // 🖼️ 🎯 FIXED: GLOBAL REPOSITORY IMAGE BUFFER REGISTER DEFINED HERE NATIVELY
 
-        // 🚀 MASTER HYBRID COMPILER: PARSES PLAIN TEXT OR DUAL-LANGUAGE JSON STRUCTURES
-       window.autoFormatRawTextToJSON = function(rawText) {
-    const trimmedInput = rawText.trim();
-    
-    // 📦 MODE A: Structured JSON Processing
-    if (trimmedInput.startsWith('[') && trimmedInput.endsWith(']')) {
-        try {
-            const parsedJson = JSON.parse(trimmedInput);
-            return parsedJson.map(item => {
-                // 1. प्रश्न रेंडरिंग लॉजिक
-                let englishQuestionText = "";
-                let hindiQuestionText = "";
-
-                if (typeof item.question === 'object' && item.question !== null) {
-                    englishQuestionText = item.question.en || "Objective Question Node";
-                    hindiQuestionText = item.question.hi || englishQuestionText;
-                } else {
-                    englishQuestionText = String(item.question || item.title || "Objective Question Node");
-                    hindiQuestionText = englishQuestionText;
-                }
-
-                // 2. टेबल डेटा को सुरक्षित रखना (महत्वपूर्ण!)
-                const tableData = item.table || null;
-
-                // 3. विकल्प (Options)
-                let flatOptionsArray = [];
-                let rawOptionsObj = item.options || item.choices || {};
-
-                if (Array.isArray(rawOptionsObj)) {
-                    flatOptionsArray = rawOptionsObj;
-                } else if (typeof rawOptionsObj === 'object') {
-                    const optionKeys = ['A', 'B', 'C', 'D', '1', '2', '3', '4'];
-                    optionKeys.forEach(k => {
-                        if (rawOptionsObj[k] !== undefined) {
-                            const optVal = rawOptionsObj[k];
-                            if (typeof optVal === 'object' && optVal !== null) {
-                                flatOptionsArray.push({
-                                    en: optVal.en || "Option Node",
-                                    hi: optVal.hi || optVal.en || "Option Node"
-                                });
-                            } else {
-                                flatOptionsArray.push({ en: String(optVal), hi: String(optVal) });
-                            }
-                        }
-                    });
-                }
-
-                // 4. सही उत्तर
-                let correctIndex = 0;
-                let rawAnswer = item.answer !== undefined ? item.answer : item.correct;
-                if (typeof rawAnswer === 'string') {
-                    const cleanAns = rawAnswer.trim().toUpperCase();
-                    correctIndex = ['A', 'B', 'C', 'D'].includes(cleanAns) ? cleanAns.charCodeAt(0) - 65 : (parseInt(cleanAns) - 1) || 0;
-                } else {
-                    correctIndex = rawAnswer;
-                }
-
-                // 🎯 रिटर्न: टेबल डेटा के साथ पूरा ऑब्जेक्ट
-                return {
-                    question: { en: englishQuestionText, hi: hindiQuestionText },
-                    options: flatOptionsArray,
-                    correct: correctIndex,
-                    table: tableData, // 👈 यहाँ टेबल डेटा सुरक्षित रहेगा
-                    is_json_uploaded: true
-                };
-            });
-        } catch (jsonErr) {
-            console.error("JSON Error:", jsonErr);
-            return [];
-        }
-    }
-    return []; // अगर प्लेन टेक्स्ट है तो इसे हैंडल करने के लिए पुराना लॉजिक रखें
-};
-            // =========================================================================
-            // 📝 MODE B: NATIVE PLAIN-TEXT MATRICES COMPILE ENGINE (FALLBACK CORRIDOR)
-            // =========================================================================
-            const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-            const questionsList = [];
-            
-            let currentQuestion = null;
-            let currentOptions = [];
-            let currentCorrect = 0;
-            
-            let currentInstructionBlock = "";
-            let capturedTableRows = [];
-            let insideTableZone = false;
-
-            const questionRegex = /^(Q\d+[:.]?|Question\d+[:.]?|\d+[\).:-])/i; 
-            const optionRegex = /^([A-D][:.]?|[A-D]\)|[1-4][:.]?|[1-4]\)|[•*-])/i;
-            const answerRegex = /^(Answer|Ans|Correct|उत्तर)[:.: ]*([A-D0-4])/i;
-            const instructionRegex = /^(निर्देश|Instruction|Direction|Read the following)/i;
-
-            if (typeof window.escapeHtmlTags !== 'function') {
-                window.escapeHtmlTags = function(text) {
-                    if (!text) return "";
-                    return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                };
-            }
-
-            function compileHtmlTableMarkup(rawRows) {
-                if(rawRows.length === 0) return "";
-                let tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-white/10 shadow-xl bg-slate-900/60"><table class="min-w-full divide-y divide-white/10 text-xs font-sans text-left">`;
-                rawRows.forEach((row, rIdx) => {
-                    let columns = row.split(/\s{2,}|\t/).filter(c => c.trim().length > 0);
-                    if(columns.length <= 1) { columns = row.split(" ").filter(c => c.trim().length > 0); }
-                    if(columns.length <= 1) { columns = row.split("|").filter(c => c.trim().length > 0 && !c.includes('---')); }
-                    if(columns.length === 0) return;
-                    
-                    const rowBg = rIdx % 2 === 0 ? "bg-slate-900/40" : "bg-slate-950/20";
-                    tableHtml += `<tr class="${rowBg} hover:bg-white/5 transition">`;
-                    columns.forEach(col => {
-                        if(rIdx === 0) {
-                            tableHtml += `<th class="px-4 py-3 font-black text-slate-200 tracking-wider bg-slate-800/50 text-[11px] uppercase border border-white/5">${col.trim()}</th>`;
-                        } else {
-                            tableHtml += `<td class="px-4 py-2.5 font-medium text-slate-300 border border-white/5">${col.trim()}</td>`;
-                        }
-                    });
-                    tableHtml += `</tr>`;
-                });
-                tableHtml += `</table></div>`;
-                return tableHtml;
-            }
-
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i];
-                if (instructionRegex.test(line)) {
-                    currentInstructionBlock = "<div class='text-amber-400 font-bold mb-1'>" + window.escapeHtmlTags(line) + "</div>";
-                    insideTableZone = false;
-                    capturedTableRows = [];
-                    continue;
-                }
-                if (line.includes("शोरूम") || line.includes("महीना") || line.includes("वर्ष") || line.includes("जिला") || line.startsWith("जनवरी") || line.startsWith("फरवरी") || line.startsWith("मार्च") || line.startsWith("अप्रैल") || line.startsWith("मई") || line.startsWith("|")) {
-                    insideTableZone = true;
-                    capturedTableRows.push(line);
-                    continue;
-                }
-                if (insideTableZone && !questionRegex.test(line) && !optionRegex.test(line) && !answerRegex.test(line)) {
-                    capturedTableRows.push(line);
-                    continue;
-                }
-                if (questionRegex.test(line)) {
-                    insideTableZone = false;
-                    if (currentQuestion) {
-                        questionsList.push({
-                            question: currentQuestion,
-                            options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
-                            correct: currentCorrect
-                        });
-                    }
-                    let completeQuestionHeader = "";
-                    if (currentInstructionBlock) completeQuestionHeader += currentInstructionBlock;
-                    if (capturedTableRows.length > 0) { completeQuestionHeader += compileHtmlTableMarkup(capturedTableRows); }
-                    const pureQuestionText = window.escapeHtmlTags(line.replace(questionRegex, '').trim());
-                    currentQuestion = completeQuestionHeader + `<div class="mt-2 text-slate-100 font-semibold">${pureQuestionText}</div>`;
-                    currentOptions = [];
-                    currentCorrect = 0;
-                } else if (answerRegex.test(line)) {
-                    const match = line.match(answerRegex);
-                    const ansChar = match[2].toUpperCase();
-                    if (['A', 'B', 'C', 'D'].includes(ansChar)) {
-                        currentCorrect = ansChar.charCodeAt(0) - 65;
-                    } else {
-                        currentCorrect = (parseInt(ansChar) - 1) || 0;
-                    }
-                } else if (optionRegex.test(line)) {
-                    const optionText = window.escapeHtmlTags(line.replace(optionRegex, '').trim());
-                    currentOptions.push(optionText);
-                } else {
-                    if (currentQuestion && currentOptions.length === 0) {
-                        currentQuestion += "<br>" + window.escapeHtmlTags(line);
-                    } else if (currentOptions.length > 0) {
-                        currentOptions[currentOptions.length - 1] += " " + window.escapeHtmlTags(line);
-                    }
-                }
-            }
-
-            if (currentQuestion) {
-                questionsList.push({
-                    question: currentQuestion,
-                    options: currentOptions.length > 0 ? currentOptions : ["Option A", "Option B", "Option C", "Option D"],
-                    correct: currentCorrect
-                });
-            }
-            return questionsList;
+        // =====================================================================
+        // 🚀 MASTER HYBRID COMPILER — parses PLAIN TEXT या JSON array दोनों
+        // और हमेशा एक STANDARD schema लौटाता है ताकि admin review, exam-taking
+        // page और result ledger — सब जगह data ek jaisa shape mein mile.
+        //
+        // STANDARD PER-QUESTION SHAPE:
+        // {
+        //   id, question:{en,hi}, question_image, table:{headers,rows}|null,
+        //   options:[{en,hi,image}], correct, explanation:{en,hi}|null,
+        //   is_json_uploaded, source_type:"json"|"text"
+        // }
+        //
+        // Ek galat/incomplete question poore batch ko fail nahi karta — usse
+        // skip karke console.warn mein reason likh diya jaata hai, aur result
+        // array par `.skipped` list attach hoti hai.
+        // =====================================================================
+        window.escapeHtmlTags = function (text) {
+            if (!text) return "";
+            return String(text).replace(/</g, "&lt;").replace(/>/g, "&gt;");
         };
+
+        // Table object ko ek styled HTML <table> mein convert karta hai —
+        // review modal aur (agar zaroorat pade to) exam-taking page dono
+        // isi helper ko reuse kar sakte hain.
+        window.renderMcqTableHtml = function (table) {
+            if (!table || !Array.isArray(table.headers) || !table.headers.length) return "";
+            let html = `<div class="overflow-x-auto my-3 rounded-xl border border-white/10 shadow-lg bg-slate-900/60"><table class="min-w-full divide-y divide-white/10 text-xs font-sans text-left">`;
+            html += `<tr>` + table.headers.map(h => `<th class="px-4 py-2.5 font-black text-slate-200 bg-slate-800/50 text-[11px] uppercase border border-white/5">${window.escapeHtmlTags(h)}</th>`).join("") + `</tr>`;
+            (table.rows || []).forEach((row, rIdx) => {
+                const rowBg = rIdx % 2 === 0 ? "bg-slate-900/40" : "bg-slate-950/20";
+                html += `<tr class="${rowBg} hover:bg-white/5 transition">` + row.map(cell => `<td class="px-4 py-2 font-medium text-slate-300 border border-white/5">${window.escapeHtmlTags(cell)}</td>`).join("") + `</tr>`;
+            });
+            html += `</table></div>`;
+            return html;
+        };
+
+        window.autoFormatRawTextToJSON = function (rawText) {
+            const trimmedInput = String(rawText || "").trim();
+            const skippedLog = [];
+
+            if (!trimmedInput) {
+                const empty = [];
+                empty.skipped = skippedLog;
+                return empty;
+            }
+
+            let result;
+            if (trimmedInput.startsWith("[") && trimmedInput.endsWith("]")) {
+                result = mcqParseJsonMode(trimmedInput, skippedLog);
+            } else {
+                result = mcqParseTextMode(trimmedInput, skippedLog);
+            }
+            result.skipped = skippedLog;
+            return result;
+        };
+
+        // ---------------- MODE A: Structured JSON Processing ----------------
+        function mcqParseJsonMode(trimmedInput, skippedLog) {
+            let parsedJson;
+            try {
+                parsedJson = JSON.parse(trimmedInput);
+            } catch (jsonErr) {
+                console.error("JSON Error:", jsonErr);
+                skippedLog.push({ index: -1, reason: "Invalid JSON: " + jsonErr.message });
+                return [];
+            }
+            if (!Array.isArray(parsedJson)) {
+                skippedLog.push({ index: -1, reason: "Root JSON element array nahi hai." });
+                return [];
+            }
+
+            const out = [];
+            parsedJson.forEach((item, index) => {
+                try {
+                    const normalized = mcqNormalizeJsonItem(item);
+                    const problem = mcqValidate(normalized);
+                    if (problem) {
+                        skippedLog.push({ index, reason: problem });
+                        console.warn(`Question #${index + 1} skipped: ${problem}`, item);
+                        return;
+                    }
+                    out.push(normalized);
+                } catch (err) {
+                    skippedLog.push({ index, reason: err.message });
+                    console.warn(`Question #${index + 1} skipped: ${err.message}`, item);
+                }
+            });
+            return out;
+        }
+
+        function mcqNormalizeJsonItem(item) {
+            item = item || {};
+
+            const question = mcqToBilingual(item.question !== undefined ? item.question : item.title, "Objective Question Node");
+            const question_image = mcqPickImage(item.question_image || item.q_image || item.image);
+            const table = mcqNormalizeTable(item.table);
+            const options = mcqNormalizeOptions(item.options || item.choices);
+            const correct = mcqNormalizeAnswerIndex(item.answer !== undefined ? item.answer : item.correct, options.length);
+            const explanation = (item.explanation !== undefined || item.explaination !== undefined)
+                ? mcqToBilingual(item.explanation !== undefined ? item.explanation : item.explaination, "")
+                : null;
+
+            return {
+                id: item.id ? String(item.id) : mcqGenerateId(),
+                question,
+                question_image,
+                table,
+                options,
+                correct,
+                explanation,
+                source_type: "json",
+                is_json_uploaded: true,
+            };
+        }
+
+        // ---------------- MODE B: Plain Text Processing ----------------
+        // Supports: "Q1. ..." / "A) ..." "B) ..." / "Answer: B" / "Explanation: ..."
+        // + markdown image ![alt](url) + markdown table (| col | col |)
+        function mcqParseTextMode(trimmedInput, skippedLog) {
+            const blocks = mcqSplitIntoQuestionBlocks(trimmedInput);
+            const out = [];
+            blocks.forEach((block, index) => {
+                try {
+                    const normalized = mcqParseTextBlock(block);
+                    const problem = mcqValidate(normalized);
+                    if (problem) {
+                        skippedLog.push({ index, reason: problem });
+                        console.warn(`Question #${index + 1} skipped: ${problem}`, block);
+                        return;
+                    }
+                    out.push(normalized);
+                } catch (err) {
+                    skippedLog.push({ index, reason: err.message });
+                    console.warn(`Question #${index + 1} skipped: ${err.message}`, block);
+                }
+            });
+            return out;
+        }
+
+        function mcqSplitIntoQuestionBlocks(text) {
+            const lines = text.split(/\r?\n/);
+            const blocks = [];
+            let current = [];
+            const newQuestionPattern = /^\s*(Q(uestion)?\s*\.?\s*\d+\s*[.):-]|\d+\s*[.)])\s*/i;
+
+            lines.forEach((line) => {
+                if (newQuestionPattern.test(line) && current.length) {
+                    blocks.push(current.join("\n"));
+                    current = [line];
+                } else {
+                    current.push(line);
+                }
+            });
+            if (current.length) blocks.push(current.join("\n"));
+            return blocks.map((b) => b.trim()).filter((b) => b.length > 0);
+        }
+
+        function mcqParseTextBlock(block) {
+            const lines = block.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
+
+            const newQuestionPattern = /^\s*(Q(uestion)?\s*\.?\s*\d+\s*[.):-]|\d+\s*[.)])\s*/i;
+            const optionPattern = /^\(?([A-Da-d1-4])[).:-]\s*(.*)$/;
+            const answerPattern = /^(Answer|Ans|Correct|उत्तर)\s*[:\-]\s*(.+)$/i;
+            const explanationPattern = /^(Explanation|Exp|Reason|व्याख्या)\s*[:\-]\s*(.+)$/i;
+            const tableRowPattern = /^\|(.+)\|$/;
+
+            let questionLines = [];
+            const optionLines = [];
+            let answerRaw = null;
+            let explanationLines = [];
+            const tableLines = [];
+            let mode = "question";
+
+            lines.forEach((line) => {
+                const cleanedQLine = line.replace(newQuestionPattern, "").trim();
+                const optMatch = line.match(optionPattern);
+                const ansMatch = line.match(answerPattern);
+                const expMatch = line.match(explanationPattern);
+                const isTableRow = tableRowPattern.test(line);
+
+                if (ansMatch) { answerRaw = ansMatch[2].trim(); mode = "after_answer"; return; }
+                if (expMatch) { explanationLines.push(expMatch[2].trim()); mode = "explanation"; return; }
+                if (mode === "explanation") { explanationLines.push(line); return; }
+                if (isTableRow) { tableLines.push(line); return; }
+                if (optMatch) { optionLines.push(optMatch[0]); mode = "options"; return; }
+                if (mode === "question") { questionLines.push(cleanedQLine || line); }
+            });
+
+            const rawQuestionText = questionLines.join(" ").trim();
+            const { text: questionTextClean, image: questionImage } = mcqExtractInlineImage(rawQuestionText);
+
+            const options = optionLines.map((line) => {
+                const m = line.match(optionPattern);
+                const rawOptText = m ? m[2].trim() : line;
+                const { text: optClean, image: optImage } = mcqExtractInlineImage(rawOptText);
+                return { en: optClean, hi: optClean, image: optImage };
+            });
+
+            const table = tableLines.length >= 2 ? mcqParseMarkdownTable(tableLines) : null;
+            const correct = mcqNormalizeAnswerIndex(answerRaw, options.length);
+            const explanationText = explanationLines.join(" ").trim();
+
+            return {
+                id: mcqGenerateId(),
+                question: { en: questionTextClean, hi: questionTextClean },
+                question_image: questionImage,
+                table,
+                options,
+                correct,
+                explanation: explanationText ? { en: explanationText, hi: explanationText } : null,
+                source_type: "text",
+                is_json_uploaded: true,
+            };
+        }
+
+        function mcqExtractInlineImage(text) {
+            const mdImage = text.match(/!\[[^\]]*\]\(([^)]+)\)/);
+            if (mdImage) return { text: text.replace(mdImage[0], "").trim(), image: mdImage[1].trim() };
+            const bareUrl = text.match(/^(https?:\/\/\S+\.(?:png|jpe?g|gif|webp|svg))$/i);
+            if (bareUrl) return { text: "", image: bareUrl[1] };
+            return { text, image: null };
+        }
+
+        function mcqParseMarkdownTable(tableLines) {
+            const rows = tableLines
+                .filter((l) => !/^\|[\s:|-]+\|$/.test(l))
+                .map((l) => l.replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim()));
+            if (!rows.length) return null;
+            const headers = rows[0];
+            const bodyRows = rows.slice(1);
+            return { headers, rows: bodyRows.length ? bodyRows : [] };
+        }
+
+        // ---------------- Shared helpers ----------------
+        function mcqToBilingual(value, fallback) {
+            if (value && typeof value === "object" && !Array.isArray(value)) {
+                const en = value.en !== undefined ? String(value.en) : fallback;
+                const hi = value.hi !== undefined ? String(value.hi) : en;
+                return { en, hi };
+            }
+            const text = value !== undefined && value !== null && String(value).trim() !== "" ? String(value) : fallback;
+            return { en: text, hi: text };
+        }
+
+        function mcqPickImage(value) {
+            if (!value) return null;
+            if (typeof value === "string") return value.trim() || null;
+            if (typeof value === "object" && value.url) return String(value.url).trim() || null;
+            return null;
+        }
+
+        function mcqNormalizeTable(rawTable) {
+            if (!rawTable) return null;
+            if (!Array.isArray(rawTable) && rawTable.headers && rawTable.rows) {
+                return { headers: rawTable.headers.map(String), rows: rawTable.rows.map((r) => (Array.isArray(r) ? r.map(String) : [String(r)])) };
+            }
+            if (Array.isArray(rawTable) && Array.isArray(rawTable[0])) {
+                const [headerRow, ...bodyRows] = rawTable;
+                return { headers: headerRow.map(String), rows: bodyRows.map((r) => r.map(String)) };
+            }
+            if (Array.isArray(rawTable) && typeof rawTable[0] === "object") {
+                const headers = Object.keys(rawTable[0]);
+                const rows = rawTable.map((obj) => headers.map((h) => String(obj[h] !== undefined ? obj[h] : "")));
+                return { headers, rows };
+            }
+            console.warn("Table format samajh nahi aaya, null set kar diya:", rawTable);
+            return null;
+        }
+
+        function mcqNormalizeOptions(rawOptions) {
+            const out = [];
+            if (Array.isArray(rawOptions)) {
+                rawOptions.forEach((opt) => {
+                    if (opt && typeof opt === "object" && !Array.isArray(opt)) {
+                        const en = opt.en !== undefined ? String(opt.en) : (opt.text !== undefined ? String(opt.text) : "Option Node");
+                        const hi = opt.hi !== undefined ? String(opt.hi) : en;
+                        out.push({ en, hi, image: mcqPickImage(opt.image) });
+                    } else {
+                        const text = String(opt);
+                        out.push({ en: text, hi: text, image: null });
+                    }
+                });
+                return out;
+            }
+            if (rawOptions && typeof rawOptions === "object") {
+                ["A", "B", "C", "D", "E", "1", "2", "3", "4", "5"].forEach((k) => {
+                    if (rawOptions[k] === undefined) return;
+                    const optVal = rawOptions[k];
+                    if (typeof optVal === "object" && optVal !== null) {
+                        out.push({ en: optVal.en || "Option Node", hi: optVal.hi || optVal.en || "Option Node", image: mcqPickImage(optVal.image) });
+                    } else {
+                        const text = String(optVal);
+                        out.push({ en: text, hi: text, image: null });
+                    }
+                });
+            }
+            return out;
+        }
+
+        function mcqNormalizeAnswerIndex(rawAnswer, optionCount) {
+            if (rawAnswer === undefined || rawAnswer === null || rawAnswer === "") return -1;
+            if (typeof rawAnswer === "number" && Number.isFinite(rawAnswer)) {
+                if (rawAnswer >= 0 && rawAnswer < optionCount) return rawAnswer;
+                if (rawAnswer >= 1 && rawAnswer <= optionCount) return rawAnswer - 1;
+                return -1;
+            }
+            const cleanAns = String(rawAnswer).trim().toUpperCase();
+            if (/^[A-E]$/.test(cleanAns)) return cleanAns.charCodeAt(0) - 65;
+            if (/^\d+$/.test(cleanAns)) {
+                const n = parseInt(cleanAns, 10);
+                return n >= 1 && n <= optionCount ? n - 1 : -1;
+            }
+            return -1;
+        }
+
+        function mcqValidate(q) {
+            if (!q.question || !q.question.en || !q.question.en.trim()) return "Question text missing/empty hai.";
+            if (!Array.isArray(q.options) || q.options.length < 2) return "Kam se kam 2 options zaroori hain.";
+            const hasEmptyOption = q.options.some((o) => (!o.en || !o.en.trim()) && !o.image);
+            if (hasEmptyOption) return "Ek ya zyada options khaali hain (text aur image dono missing).";
+            return null;
+        }
+
+        function mcqGenerateId() {
+            return "q_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
+        }
 
         // 🖼️ NEW DYNAMIC IMAGE DROPZONE MATRIX INITIALIZER
         document.addEventListener("DOMContentLoaded", () => {
@@ -537,6 +701,59 @@
             syncMasterDashboardControls();
         };
       
+        // 🆕 CREATE A NEW CATEGORY (button was wired in HTML but function was missing)
+        async function createNewCategory() {
+            const input = document.getElementById('new-cat-name');
+            const name = input.value.trim();
+            if (!name) { alert("Please input a valid category domain name."); return; }
+
+            try {
+                const { data: existing } = await supabaseClient
+                    .from('exam_categories')
+                    .select('id')
+                    .ilike('category_name', name)
+                    .maybeSingle();
+
+                if (existing) {
+                    alert(`📢 This category [ ${name.toUpperCase()} ] already exists.`);
+                    return;
+                }
+
+                const { error } = await supabaseClient
+                    .from('exam_categories')
+                    .insert({ category_name: name });
+
+                if (error) throw error;
+
+                alert(`🎉 Success: Category [ ${name.toUpperCase()} ] deployed!`);
+                input.value = "";
+                syncMasterDashboardControls();
+            } catch (e) {
+                alert("Category creation failed: " + e.message);
+            }
+        }
+
+        // 🆕 SAVE INLINE TIME EDIT FROM THE EXAM LOG TABLE (button was wired in HTML but function was missing)
+        async function updateExamTimingDirect(encodedSubject) {
+            const decodedSubject = decodeURIComponent(encodedSubject);
+            const inputEl = document.getElementById(`inline-time-${encodedSubject}`);
+            if (!inputEl) return;
+
+            const newDuration = parseInt(inputEl.value) || 60;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('exams')
+                    .update({ duration_minutes: newDuration })
+                    .eq('subject', decodedSubject);
+
+                if (error) throw error;
+                alert(`🎉 Time limit updated for [ ${decodedSubject.toUpperCase()} ] → ${newDuration} min.`);
+            } catch (e) {
+                alert("Time update failed: " + e.message);
+            }
+        }
+
         // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS
         async function syncMasterDashboardControls() {
             try {
@@ -724,8 +941,12 @@
                     let optionCharStyle = "bg-white/5 border border-white/10 text-slate-400 font-bold";
                     
                     let finalOptText = "";
+                    let optImageHtml = "";
                     if (typeof opt === 'object' && opt !== null) {
                         finalOptText = opt.en || "Option Node";
+                        if (opt.image) {
+                            optImageHtml = `<img src="${opt.image}" alt="Option ${optChar}" class="h-14 w-14 object-cover rounded-lg border border-white/10 ml-2">`;
+                        }
                     } else {
                         finalOptText = String(opt);
                     }
@@ -743,16 +964,25 @@
                     optionsHtml += `
                         <div class="border p-3 rounded-xl text-xs flex items-center gap-3 transition-all ${optStyle}">
                             <span class="font-mono px-2 py-0.5 rounded text-[10px] ${optionCharStyle}">${optChar}</span>
-                            <span class="font-sans font-medium">${finalOptText}</span>
+                            <span class="font-sans font-medium flex-1">${finalOptText}</span>
                             ${indicatorIcon}
+                            ${optImageHtml}
                         </div>`;
                 });
 
                 let finalQuestionText = "";
+                let questionImageUrl = null;
+                let questionTableHtml = "";
                 if (typeof q.question === 'object' && q.question !== null) {
                     finalQuestionText = q.question.en || "Objective Question Node";
                 } else {
                     finalQuestionText = String(q.question || q.title || "Objective Question Node");
+                }
+                if (q.question_image || q.q_image) {
+                    questionImageUrl = q.question_image || q.q_image;
+                }
+                if (q.table) {
+                    questionTableHtml = window.renderMcqTableHtml(q.table);
                 }
 
                 const correctChar = String.fromCharCode(65 + correctIdx);
@@ -769,6 +999,8 @@
                             <span class="font-mono text-slate-500 bg-white/5 px-2 py-0.5 rounded text-[11px] mr-1">Q${idx + 1}</span> 
                             ${finalQuestionText}
                         </h4>
+                        ${questionImageUrl ? `<img src="${questionImageUrl}" alt="Question ${idx + 1} illustration" class="max-h-64 rounded-xl border border-white/10 object-contain">` : ""}
+                        ${questionTableHtml}
                         <div class="grid grid-cols-1 gap-2.5 pt-1">
                             ${optionsHtml}
                         </div>
@@ -966,9 +1198,16 @@
 
             let formattedJsonPayload = window.autoFormatRawTextToJSON(rawTextData);
 
-            // 🖼️ Inject Image Buffer Trait during live update deployments
-            if (currentBase64ImageData !== "" && formattedJsonPayload.length > 0) {
-                formattedJsonPayload[0].q_image = currentBase64ImageData;
+            // 🖼️ Dropzone se attach ki gayi image pehle question par lagti hai
+            // (sirf tab, jab uss question mein pehle se koi image na ho)
+            if (currentBase64ImageData !== "" && formattedJsonPayload.length > 0 && !formattedJsonPayload[0].question_image) {
+                formattedJsonPayload[0].question_image = currentBase64ImageData;
+            }
+
+            if (formattedJsonPayload.skipped && formattedJsonPayload.skipped.length > 0) {
+                console.warn("Skipped questions during update:", formattedJsonPayload.skipped);
+                const proceed = confirm(`⚠️ ${formattedJsonPayload.skipped.length} question(s) ko format issue ki wajah se skip kiya gaya (console mein details hain). Baaki ${formattedJsonPayload.length} questions ke saath aage badhein?`);
+                if (!proceed) return;
             }
 
             try {
@@ -1116,11 +1355,17 @@
                     alert("Processing Error: Compiled JSON array matrix is empty. Validate formatting schema.");
                     return;
                 }
+                if (parsedQuestions.skipped && parsedQuestions.skipped.length > 0) {
+                    console.warn("Skipped questions during deploy:", parsedQuestions.skipped);
+                    const proceed = confirm(`⚠️ ${parsedQuestions.skipped.length} question(s) ko format issue ki wajah se skip kiya gaya (console mein details hain). Baaki ${parsedQuestions.length} questions ke saath aage badhein?`);
+                    if (!proceed) return;
+                }
             }
 
-            // 🖼️ Inject Image property token into primary index mapping node context
-            if (currentBase64ImageData !== "" && parsedQuestions.length > 0) {
-                parsedQuestions[0].q_image = currentBase64ImageData;
+            // 🖼️ Dropzone se attach ki gayi image pehle question par lagti hai
+            // (sirf tab, jab uss question mein pehle se koi image na ho)
+            if (currentBase64ImageData !== "" && parsedQuestions.length > 0 && !parsedQuestions[0].question_image) {
+                parsedQuestions[0].question_image = currentBase64ImageData;
             }
 
             try {
