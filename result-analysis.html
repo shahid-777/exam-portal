@@ -162,6 +162,54 @@
             }
         } 
 
+        // =====================================================================
+        // 🔧 SCHEMA HELPERS — admin.html ke normalizer se match karte hain:
+        // question:{en,hi}, question_image, table:{headers,rows}, options:[{en,hi,image}]
+        // Purane (legacy) plain-string format ko bhi fallback ke through support
+        // karte hain, taaki purani exams bhi bina crash kiye render ho sakein.
+        // =====================================================================
+        function resultEscapeHtml(text) {
+            if (text === undefined || text === null) return "";
+            return String(text).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function resultGetBilingualText(field, fallback) {
+            if (field && typeof field === 'object' && !Array.isArray(field)) {
+                return field.en || field.hi || fallback;
+            }
+            if (field !== undefined && field !== null && String(field).trim() !== "") return String(field);
+            return fallback;
+        }
+
+        function resultGetQuestionImage(q) {
+            return q.question_image || q.q_image || q.image_url || q.image || null;
+        }
+
+        function resultNormalizeOptions(rawOptions) {
+            if (typeof rawOptions === 'string') {
+                try { rawOptions = JSON.parse(rawOptions); } catch (e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
+            }
+            if (!Array.isArray(rawOptions)) return [];
+            return rawOptions.map((opt) => {
+                if (opt && typeof opt === 'object' && !Array.isArray(opt)) {
+                    return { text: opt.en || opt.hi || opt.text || "Option Node", image: opt.image || null };
+                }
+                return { text: String(opt), image: null };
+            });
+        }
+
+        function resultRenderTableHtml(table) {
+            if (!table || !Array.isArray(table.headers) || !table.headers.length) return "";
+            let html = `<div class="overflow-x-auto my-3 rounded-xl border border-white/10 bg-slate-900/80 p-2"><table class="w-full text-[10px] text-left border-collapse text-white">`;
+            html += `<thead class="bg-slate-800 uppercase"><tr>` + table.headers.map(h => `<th class="p-2 border border-white/10">${resultEscapeHtml(h)}</th>`).join("") + `</tr></thead>`;
+            html += `<tbody class="text-slate-300">`;
+            (table.rows || []).forEach((row) => {
+                html += `<tr>` + row.map(cell => `<td class="p-2 border border-white/10">${resultEscapeHtml(cell)}</td>`).join("") + `</tr>`;
+            });
+            html += `</tbody></table></div>`;
+            return html;
+        }
+
         // 🔄 RENDERING MODULE: HYBRID SECURE INJECTOR (.innerText SAFELY ARMED)
         function renderReviewCardsHtmlMatrix(questionsArray, responsesMap, sectionHeaderTitle) {
             const container = document.getElementById('analysis-pipeline-cards');
@@ -200,6 +248,12 @@
                 const cardNode = document.createElement('div');
                 cardNode.className = `border ${cardBorderClass} p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl transition mt-4`;
                 
+                // असली explanation agar admin ne di hai, warna generic fallback text
+                const explanationText = resultGetBilingualText(q.explanation, "");
+                const explanationHtml = explanationText
+                    ? resultEscapeHtml(explanationText)
+                    : `Standard computer science paradigms verify that the correct option satisfies evaluation contexts perfectly.`;
+
                 cardNode.innerHTML = `
                     <div class="flex items-start justify-between gap-4">
                         <div class="flex items-start space-x-3 w-full min-w-0">
@@ -208,6 +262,8 @@
                         </div>
                         <div class="shrink-0">${questionStatusBadge}</div>
                     </div>
+                    <div class="analysis-q-image-container"></div>
+                    <div class="analysis-q-table-container"></div>
                     <div class="grid grid-cols-1 gap-2.5 pt-1 options-review-container"></div>
                     
                     <div class="bg-slate-950/60 border border-white/5 rounded-xl p-4 mt-3 space-y-2 font-sans">
@@ -216,7 +272,7 @@
                         </div>
                         <p class="text-xs text-slate-300 leading-relaxed font-medium">
                             The correct matching evaluation node responds to choice <strong class="text-emerald-400 font-mono text-xs font-black bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">${String.fromCharCode(65 + systemCorrectKey)}</strong>. 
-                            Standard computer science paradigms verify that your selected structure satisfies evaluation contexts perfectly.
+                            ${explanationHtml}
                         </p>
                         <div class="pt-1 text-[8px] font-mono text-slate-500 uppercase font-bold tracking-wider flex items-center gap-2">
                             <span>Avg Time taken: ${avgTime}s</span><span>•</span>
@@ -226,16 +282,33 @@
                 `;
 
                 // 🎯 [SAFEGUARD-1]: innerText फ़िक्स ताकि प्रश्न के HTML सिंटैक्स एलिमेंट नष्ट न हों
+                // 🆕 अब bilingual object {en,hi} bhi handle karta hai, plain string bhi
                 const qTextNode = cardNode.querySelector('.analysis-q-text-node');
-                if(qTextNode) qTextNode.innerText = q.question || q.title || q.text || 'Objective Question';
+                if(qTextNode) qTextNode.innerText = resultGetBilingualText(q.question, q.title || q.text || 'Objective Question');
+
+                // 🆕 Question image agar hai to dikhao
+                const imgUrl = resultGetQuestionImage(q);
+                const imgContainer = cardNode.querySelector('.analysis-q-image-container');
+                if (imgContainer && imgUrl) {
+                    const img = document.createElement('img');
+                    img.src = imgUrl;
+                    img.alt = `Question ${qIdx + 1} illustration`;
+                    img.className = "max-h-72 w-auto rounded-xl border border-white/10 object-contain";
+                    imgContainer.appendChild(img);
+                }
+
+                // 🆕 DI Table agar hai to dikhao ({headers, rows} shape — admin.html jaisa hi)
+                const tableContainer = cardNode.querySelector('.analysis-q-table-container');
+                if (tableContainer && q.table) {
+                    tableContainer.innerHTML = resultRenderTableHtml(q.table);
+                }
 
                 // ऑप्शंस रेंडर कंटेनर सिंक
                 const optionsContainer = cardNode.querySelector('.options-review-container');
                 if (optionsContainer) {
-                    let options = q.options || q.choices || q.options_json || [];
-                    if (typeof options === 'string') {
-                        try { options = JSON.parse(options); } catch(e) { options = options.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
-                    }
+                    // 🆕 admin.html ke standard shape [{en,hi,image}] aur legacy plain-string
+                    // arrays dono ko ek normalized {text, image} list mein convert karta hai
+                    const options = resultNormalizeOptions(q.options || q.choices || q.options_json || []);
 
                     options.forEach((opt, optIdx) => {
                         let optStyleClass = "bg-slate-900/20 border-white/5 text-slate-400";
@@ -254,10 +327,20 @@
                         
                         // 🎯 [SAFEGUARD-2]: innerText फ़िक्स ताकि ऑप्शन के कोडिंग एलिमेंट्स गायब न हों
                         const optTextSpan = document.createElement('span');
-                        optTextSpan.className = "font-sans font-medium";
-                        optTextSpan.innerText = `${String.fromCharCode(65 + optIdx)}) ${opt}`;
+                        optTextSpan.className = "font-sans font-medium flex-1";
+                        optTextSpan.innerText = `${String.fromCharCode(65 + optIdx)}) ${opt.text}`;
 
                         optRow.appendChild(optTextSpan);
+
+                        // 🆕 Option-level image agar hai to dikhao
+                        if (opt.image) {
+                            const optImg = document.createElement('img');
+                            optImg.src = opt.image;
+                            optImg.alt = `Option ${String.fromCharCode(65 + optIdx)}`;
+                            optImg.className = "h-12 w-12 object-cover rounded-lg border border-white/10 shrink-0";
+                            optRow.appendChild(optImg);
+                        }
+
                         if(iconBadge) {
                             const badgeSpan = document.createElement('span');
                             badgeSpan.innerHTML = iconBadge;
