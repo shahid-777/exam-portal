@@ -307,110 +307,66 @@
             }
         }
         
-        // 🔄 RENDERING PIPELINE: SYNCHRONIZED HYBRID MULTI-MODE MAPPER (DI TABLE, IMAGE & BILINGUAL SAFE)
-      // 🔄 RENDERING PIPELINE WITH TABLE AND IMAGE SUPPORT
 async function renderAssessmentLayout() {
     const container = document.getElementById('questions-pipeline-wrapper');
     if (!container) return;
     
     container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing...</div>`;
 
-    let finalHtml = "";
-    
-    // DEBUG: चेक करें कि डेटा में टेबल है या नहीं
-    console.log("Rendering questions:", globalLoadedQuestions);
+    // 1. यदि जरूरी हो तो अनुवाद डेटा तैयार करें
+    let translatedObjectPool = null;
+    if (currentSelectedLanguage === "hi" && (!globalLoadedQuestions[0] || !globalLoadedQuestions[0].is_json_uploaded)) {
+        translatedObjectPool = await translateBulkQuestions(globalLoadedQuestions, "hi");
+    }
 
-    for (let index = 0; index < globalLoadedQuestions.length; index++) {
-        const q = globalLoadedQuestions[index];
+    let finalHtml = "";
+
+    // 2. एक ही लूप में सब कुछ रेंडर करें
+    globalLoadedQuestions.forEach((q, index) => {
+        const targetDataSource = (currentSelectedLanguage === "hi" && translatedObjectPool) ? translatedObjectPool[index] : q;
         
-        // यदि डेटा में टेबल है, तो उसे यहाँ रेंडर करें
+        // टेबल रेंडरिंग लॉजिक
         let tableHtml = "";
         if (q.table) {
-            console.log(`Table found in Question ${index + 1}:`, q.table); // ब्राउज़र कंसोल में देखें
-            
             tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-white/10 bg-slate-900/80 p-2">
                             <table class="w-full text-[10px] text-left border-collapse text-white">
-                                <thead class="bg-slate-800"><tr>`;
-            
-            // टेबल हेडर (Keys)
-            Object.keys(q.table).forEach(key => {
-                tableHtml += `<th class="p-2 border border-white/10 uppercase">${key}</th>`;
-            });
-            tableHtml += `</tr></thead><tbody class="text-slate-300">`;
-            
-            // टेबल डेटा (Rows)
-            const keys = Object.keys(q.table);
-            const rowCount = q.table[keys[0]].length;
-            for(let r=0; r < rowCount; r++) {
-                tableHtml += `<tr>`;
-                keys.forEach(key => {
-                    tableHtml += `<td class="p-2 border border-white/10">${q.table[key][r]}</td>`;
-                });
-                tableHtml += `</tr>`;
-            }
-            tableHtml += `</tbody></table></div>`;
-        }
-
-        finalHtml += `
-            <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 rounded-2xl space-y-4">
-                <h4 class="text-sm text-slate-100 font-bold">Q. ${index + 1} ${q.question[currentSelectedLanguage] || q.question.en}</h4>
-                ${tableHtml} 
-                <div class="grid grid-cols-1 gap-2 options-container-node"></div>
-            </div>`;
-    }
-    container.innerHTML = finalHtml;
-}
-        // डेटा बाइंडिंग
-    globalLoadedQuestions.forEach((q, index) => {
-        const card = document.getElementById(`question-card-${index}`);
-        const qTitleNode = card.querySelector('.live-q-text-node');
-        const imageContainer = card.querySelector('.live-q-image-container');
-        const tableContainer = card.querySelector('.live-q-table-container');
-        
-        const targetDataSource = (currentSelectedLanguage === "hi" && translatedObjectPool) ? translatedObjectPool[index] : q;
-
-        // प्रश्न टेक्स्ट रेंडरिंग
-        qTitleNode.innerHTML = targetDataSource.question[currentSelectedLanguage] || targetDataSource.question["en"] || targetDataSource.question || "Objective Question";
-
-        // इमेज रेंडरिंग
-        const activeImgUrl = q.q_image || q.image_url || q.image;
-        if (activeImgUrl) {
-            const imgNode = imageContainer.querySelector('img');
-            imgNode.src = activeImgUrl;
-            imageContainer.classList.remove('hidden');
-        }
-
-        // टेबल रेंडरिंग (डेटा इंटरप्रिटेशन के लिए)
-        if (q.table) {
-            let tableHtml = `<table class="w-full text-[10px] text-left border-collapse border border-white/10 mt-2">
-                                <thead class="bg-slate-800 text-blue-400 uppercase"><tr>`;
+                                <thead class="bg-slate-800 uppercase"><tr>`;
             Object.keys(q.table).forEach(key => tableHtml += `<th class="p-2 border border-white/10">${key}</th>`);
             tableHtml += `</tr></thead><tbody class="text-slate-300">`;
             
             const keys = Object.keys(q.table);
             const rowCount = q.table[keys[0]].length;
-            for(let r=0; r<rowCount; r++) {
+            for(let r=0; r < rowCount; r++) {
                 tableHtml += `<tr>`;
                 keys.forEach(key => tableHtml += `<td class="p-2 border border-white/10">${q.table[key][r]}</td>`);
                 tableHtml += `</tr>`;
             }
-            tableHtml += `</tbody></table>`;
-            tableContainer.innerHTML = tableHtml;
+            tableHtml += `</tbody></table></div>`;
         }
 
-        // विकल्प रेंडरिंग
-        const optionsContainer = card.querySelector('.options-container-node');
+        // विकल्प तैयार करना
+        let optionsHtml = "";
         let rawOptions = targetDataSource.options || [];
         rawOptions.forEach((opt, optIdx) => {
             const optText = typeof opt === 'object' ? (opt[currentSelectedLanguage] || opt.en || String(opt)) : String(opt);
-            optionsContainer.innerHTML += `
-                <label class="flex items-center space-x-3 bg-slate-900/60 p-3 rounded-xl cursor-pointer">
+            optionsHtml += `
+                <label class="flex items-center space-x-3 bg-slate-900/60 p-3 rounded-xl cursor-pointer hover:bg-slate-800 transition">
                     <input type="radio" name="question-${index}" value="${optIdx}" onchange="registerRadioResponse(${index}, ${optIdx})">
                     <span class="text-xs">${optText}</span>
                 </label>`;
         });
+
+        // पूरा कार्ड स्ट्रक्चर
+        finalHtml += `
+            <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
+                <h4 class="text-sm font-bold text-slate-100">Q. ${index + 1} ${targetDataSource.question[currentSelectedLanguage] || targetDataSource.question.en || targetDataSource.question}</h4>
+                ${tableHtml}
+                <div class="grid grid-cols-1 gap-2">${optionsHtml}</div>
+            </div>`;
     });
-}  
+
+    container.innerHTML = finalHtml;
+}
         function switchAssessmentLanguage(selectedLang) {
             currentSelectedLanguage = selectedLang;
             renderAssessmentLayout(); 
