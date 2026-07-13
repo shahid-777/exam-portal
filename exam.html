@@ -325,22 +325,21 @@
                             globalLoadedQuestions.forEach((q, index) => {
                                 const targetDataSource = (currentSelectedLanguage === "hi" && translatedObjectPool) ? translatedObjectPool[index] : q;
                                 
-                                // टेबल रेंडरिंग लॉजिक (DI Tables)
+                                // टेबल रेंडरिंग लॉजिक (DI Tables) — अब {headers, rows} शेप एक्सपेक्ट करता है
+                                // (admin.html का normalizer हर table को इसी शेप में सेव करता है)
                                 let tableHtml = "";
-                                if (q.table) {
+                                if (q.table && q.table.headers && q.table.rows) {
                                     tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-white/10 bg-slate-900/80 p-2">
                                                     <table class="w-full text-[10px] text-left border-collapse text-white">
                                                         <thead class="bg-slate-800 uppercase"><tr>`;
-                                    Object.keys(q.table).forEach(key => tableHtml += `<th class="p-2 border border-white/10">${key}</th>`);
+                                    q.table.headers.forEach(h => tableHtml += `<th class="p-2 border border-white/10">${h}</th>`);
                                     tableHtml += `</tr></thead><tbody class="text-slate-300">`;
-                                    
-                                    const keys = Object.keys(q.table);
-                                    const rowCount = q.table[keys[0]].length;
-                                    for(let r=0; r < rowCount; r++) {
+
+                                    q.table.rows.forEach(row => {
                                         tableHtml += `<tr>`;
-                                        keys.forEach(key => tableHtml += `<td class="p-2 border border-white/10">${q.table[key][r]}</td>`);
+                                        row.forEach(cell => tableHtml += `<td class="p-2 border border-white/10">${cell}</td>`);
                                         tableHtml += `</tr>`;
-                                    }
+                                    });
                                     tableHtml += `</tbody></table></div>`;
                                 }
                         
