@@ -306,67 +306,87 @@
                 return null; 
             }
         }
-        
-async function renderAssessmentLayout() {
-    const container = document.getElementById('questions-pipeline-wrapper');
-    if (!container) return;
-    
-    container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing...</div>`;
+                // 🚀 UNIFIED RENDERING ENGINE: HANDLES TABLES, IMAGES, BILINGUAL TEXT & JSON
+                        async function renderAssessmentLayout() {
+                            const container = document.getElementById('questions-pipeline-wrapper');
+                            if (!container) return;
+                            
+                            container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing...</div>`;
+                        
+                            // 1. अनुवाद पूल तैयार करें
+                            let translatedObjectPool = null;
+                            if (currentSelectedLanguage === "hi" && (!globalLoadedQuestions[0] || !globalLoadedQuestions[0].is_json_uploaded)) {
+                                translatedObjectPool = await translateBulkQuestions(globalLoadedQuestions, "hi");
+                            }
+                        
+                            let finalHtml = "";
+                        
+                            // 2. एकल लूप में रेंडरिंग
+                            globalLoadedQuestions.forEach((q, index) => {
+                                const targetDataSource = (currentSelectedLanguage === "hi" && translatedObjectPool) ? translatedObjectPool[index] : q;
+                                
+                                // टेबल रेंडरिंग लॉजिक (DI Tables)
+                                let tableHtml = "";
+                                if (q.table) {
+                                    tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-white/10 bg-slate-900/80 p-2">
+                                                    <table class="w-full text-[10px] text-left border-collapse text-white">
+                                                        <thead class="bg-slate-800 uppercase"><tr>`;
+                                    Object.keys(q.table).forEach(key => tableHtml += `<th class="p-2 border border-white/10">${key}</th>`);
+                                    tableHtml += `</tr></thead><tbody class="text-slate-300">`;
+                                    
+                                    const keys = Object.keys(q.table);
+                                    const rowCount = q.table[keys[0]].length;
+                                    for(let r=0; r < rowCount; r++) {
+                                        tableHtml += `<tr>`;
+                                        keys.forEach(key => tableHtml += `<td class="p-2 border border-white/10">${q.table[key][r]}</td>`);
+                                        tableHtml += `</tr>`;
+                                    }
+                                    tableHtml += `</tbody></table></div>`;
+                                }
+                        
+                                // विकल्प (Options) रेंडरिंग
+                                let optionsHtml = "";
+                                let rawOptions = targetDataSource.options || [];
+                                rawOptions.forEach((opt, optIdx) => {
+                                    const optText = typeof opt === 'object' ? (opt[currentSelectedLanguage] || opt.en || String(opt)) : String(opt);
+                                    optionsHtml += `
+                                        <label class="flex items-center space-x-3 bg-slate-900/60 p-3 rounded-xl cursor-pointer hover:bg-slate-800 transition">
+                                            <input type="radio" name="question-${index}" value="${optIdx}" onchange="registerRadioResponse(${index}, ${optIdx})" ${userResponses[index] == optIdx ? 'checked' : ''}>
+                                            <span class="text-xs">${optText}</span>
+                                        </label>`;
+                                });
+                        
+                                // मुख्य प्रश्न कार्ड
+                                finalHtml += `
+                                    <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
+                                        <div class="flex items-start justify-between">
+                                            <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
+                                            <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition">Mark Review</button>
+                                        </div>
+                                        <h4 class="text-sm font-bold text-slate-100">${targetDataSource.question[currentSelectedLanguage] || targetDataSource.question.en || targetDataSource.question}</h4>
+                                        ${tableHtml}
+                                        <div class="live-q-image-container hidden w-full mt-2 rounded-xl border border-white/10 p-1">
+                                            <img src="" alt="Resource" class="w-full h-auto object-contain max-h-[320px] rounded-lg">
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-2">${optionsHtml}</div>
+                                    </div>`;
+                            });
+                        
+                            container.innerHTML = finalHtml;
+                        
+                            // इमेज अगर है तो रेंडर करें
+                            globalLoadedQuestions.forEach((q, index) => {
+                                const activeImgUrl = q.q_image || q.image_url || q.image;
+                                if (activeImgUrl) {
+                                    const card = document.getElementById(`question-card-${index}`);
+                                    const imgCont = card.querySelector('.live-q-image-container');
+                                    const imgNode = imgCont.querySelector('img');
+                                    imgNode.src = activeImgUrl;
+                                    imgCont.classList.remove('hidden');
+                                }
+                            });
+                        }
 
-    // 1. यदि जरूरी हो तो अनुवाद डेटा तैयार करें
-    let translatedObjectPool = null;
-    if (currentSelectedLanguage === "hi" && (!globalLoadedQuestions[0] || !globalLoadedQuestions[0].is_json_uploaded)) {
-        translatedObjectPool = await translateBulkQuestions(globalLoadedQuestions, "hi");
-    }
-
-    let finalHtml = "";
-
-    // 2. एक ही लूप में सब कुछ रेंडर करें
-    globalLoadedQuestions.forEach((q, index) => {
-        const targetDataSource = (currentSelectedLanguage === "hi" && translatedObjectPool) ? translatedObjectPool[index] : q;
-        
-        // टेबल रेंडरिंग लॉजिक
-        let tableHtml = "";
-        if (q.table) {
-            tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-white/10 bg-slate-900/80 p-2">
-                            <table class="w-full text-[10px] text-left border-collapse text-white">
-                                <thead class="bg-slate-800 uppercase"><tr>`;
-            Object.keys(q.table).forEach(key => tableHtml += `<th class="p-2 border border-white/10">${key}</th>`);
-            tableHtml += `</tr></thead><tbody class="text-slate-300">`;
-            
-            const keys = Object.keys(q.table);
-            const rowCount = q.table[keys[0]].length;
-            for(let r=0; r < rowCount; r++) {
-                tableHtml += `<tr>`;
-                keys.forEach(key => tableHtml += `<td class="p-2 border border-white/10">${q.table[key][r]}</td>`);
-                tableHtml += `</tr>`;
-            }
-            tableHtml += `</tbody></table></div>`;
-        }
-
-        // विकल्प तैयार करना
-        let optionsHtml = "";
-        let rawOptions = targetDataSource.options || [];
-        rawOptions.forEach((opt, optIdx) => {
-            const optText = typeof opt === 'object' ? (opt[currentSelectedLanguage] || opt.en || String(opt)) : String(opt);
-            optionsHtml += `
-                <label class="flex items-center space-x-3 bg-slate-900/60 p-3 rounded-xl cursor-pointer hover:bg-slate-800 transition">
-                    <input type="radio" name="question-${index}" value="${optIdx}" onchange="registerRadioResponse(${index}, ${optIdx})">
-                    <span class="text-xs">${optText}</span>
-                </label>`;
-        });
-
-        // पूरा कार्ड स्ट्रक्चर
-        finalHtml += `
-            <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
-                <h4 class="text-sm font-bold text-slate-100">Q. ${index + 1} ${targetDataSource.question[currentSelectedLanguage] || targetDataSource.question.en || targetDataSource.question}</h4>
-                ${tableHtml}
-                <div class="grid grid-cols-1 gap-2">${optionsHtml}</div>
-            </div>`;
-    });
-
-    container.innerHTML = finalHtml;
-}
         function switchAssessmentLanguage(selectedLang) {
             currentSelectedLanguage = selectedLang;
             renderAssessmentLayout(); 
