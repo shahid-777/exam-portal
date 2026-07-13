@@ -107,7 +107,7 @@
                         <p class="text-[10px] text-slate-500 font-mono mt-1.5 leading-relaxed">
                             💡 Image ke liye: JSON mein <code class="text-blue-400">"question_image":"https://..."</code> ya option mein <code class="text-blue-400">"image":"https://..."</code> daalein.
                             Plain text mein <code class="text-blue-400">![alt](https://image-url)</code> likhein. Table ke liye JSON mein <code class="text-blue-400">"table":{headers:[...],rows:[[...]]}</code>
-                            ya plain text mein markdown table (<code class="text-blue-400">| col | col |</code>) use karein.
+                            ya column-dict format <code class="text-blue-400">"table":{"col1":[...],"col2":[...]}</code> ya plain text mein markdown table (<code class="text-blue-400">| col | col |</code>) use karein.
                         </p>
                     </div>
 
@@ -575,6 +575,10 @@
             return null;
         }
 
+        // 🆕 FIXED: ab yeh function teen shapes ke alawa ek chautha (4th) shape bhi
+        // samajhta hai — COLUMN-ORIENTED DICT: { "month": [...], "showroom_x": [...] }
+        // Isse pehle yeh format silently null ho jaata tha aur DI tables save hone
+        // ke baad exam page par ghayab ho jaate the.
         function mcqNormalizeTable(rawTable) {
             if (!rawTable) return null;
             if (!Array.isArray(rawTable) && rawTable.headers && rawTable.rows) {
@@ -589,6 +593,23 @@
                 const rows = rawTable.map((obj) => headers.map((h) => String(obj[h] !== undefined ? obj[h] : "")));
                 return { headers, rows };
             }
+
+            // 🆕 COLUMN-ORIENTED DICT FORMAT: { "col1": [v1,v2,...], "col2": [v1,v2,...] }
+            if (!Array.isArray(rawTable) && typeof rawTable === "object") {
+                const keys = Object.keys(rawTable);
+                if (keys.length && Array.isArray(rawTable[keys[0]])) {
+                    const headers = keys;
+                    const rowCount = rawTable[keys[0]].length;
+                    const rows = [];
+                    for (let r = 0; r < rowCount; r++) {
+                        rows.push(headers.map((h) => String(
+                            rawTable[h] !== undefined && rawTable[h][r] !== undefined ? rawTable[h][r] : ""
+                        )));
+                    }
+                    return { headers, rows };
+                }
+            }
+
             console.warn("Table format samajh nahi aaya, null set kar diya:", rawTable);
             return null;
         }
