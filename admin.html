@@ -302,97 +302,78 @@
         let currentBase64ImageData = ""; // 🖼️ 🎯 FIXED: GLOBAL REPOSITORY IMAGE BUFFER REGISTER DEFINED HERE NATIVELY
 
         // 🚀 MASTER HYBRID COMPILER: PARSES PLAIN TEXT OR DUAL-LANGUAGE JSON STRUCTURES
-        window.autoFormatRawTextToJSON = function(rawText) {
-            const trimmedInput = rawText.trim();
-            
-            // =========================================================================
-            // 📦 MODE A: STRUCTURED BILINGUAL JSON OBJECT STREAM PROCESSING
-            // =========================================================================
-            if (trimmedInput.startsWith('[') && trimmedInput.endsWith(']')) {
-                try {
-                    const parsedJson = JSON.parse(trimmedInput);
-                    return parsedJson.map(item => {
-                        let englishQuestionText = "";
-                        let hindiQuestionText = "";
+       window.autoFormatRawTextToJSON = function(rawText) {
+    const trimmedInput = rawText.trim();
+    
+    // 📦 MODE A: Structured JSON Processing
+    if (trimmedInput.startsWith('[') && trimmedInput.endsWith(']')) {
+        try {
+            const parsedJson = JSON.parse(trimmedInput);
+            return parsedJson.map(item => {
+                // 1. प्रश्न रेंडरिंग लॉजिक
+                let englishQuestionText = "";
+                let hindiQuestionText = "";
 
-                        // Extract Questions Node Preferring Multilingual Object Clusters
-                        if (typeof item.question === 'object' && item.question !== null) {
-                            englishQuestionText = item.question.en || "Objective Question Node";
-                            hindiQuestionText = item.question.hi || englishQuestionText;
-                        } else {
-                            englishQuestionText = String(item.question || item.title || "Objective Question Node");
-                            hindiQuestionText = englishQuestionText;
-                        }
-
-                        // Process Markdown Tables or Metadata headers within JSON fields
-                        if (englishQuestionText.includes('|')) {
-                            englishQuestionText = englishQuestionText.replace(/\n/g, '<br>').replace(/\\n/g, '<br>');
-                            hindiQuestionText = hindiQuestionText.replace(/\n/g, '<br>').replace(/\\n/g, '<br>');
-                        }
-
-                        // Parse Multilingual Options {"A": {"en": "...", "hi": "..."}} to Flat Unified Matrix Array
-                        let flatOptionsArray = [];
-                        let rawOptionsObj = item.options || item.choices || {};
-
-                        if (Array.isArray(rawOptionsObj)) {
-                            flatOptionsArray = rawOptionsObj;
-                        } else if (typeof rawOptionsObj === 'object') {
-                            const optionKeys = ['A', 'B', 'C', 'D', '1', '2', '3', '4'];
-                            optionKeys.forEach(k => {
-                                if (rawOptionsObj[k] !== undefined) {
-                                    const optVal = rawOptionsObj[k];
-                                    if (typeof optVal === 'object' && optVal !== null) {
-                                        // Package both languages using distinct custom structural parameters
-                                        flatOptionsArray.push({
-                                            en: optVal.en || "Option Node",
-                                            hi: optVal.hi || optVal.en || "Option Node"
-                                        });
-                                    } else {
-                                        flatOptionsArray.push({
-                                            en: String(optVal),
-                                            hi: String(optVal)
-                                        });
-                                    }
-                                }
-                            });
-                        }
-
-                        if (flatOptionsArray.length === 0) {
-                            flatOptionsArray = [
-                                { en: "Option A", hi: "Option A" },
-                                { en: "Option B", hi: "Option B" },
-                                { en: "Option C", hi: "Option C" },
-                                { en: "Option D", hi: "Option D" }
-                            ];
-                        }
-
-                        // Parse Correct Target Keys Mappings
-                        let correctIndex = 0;
-                        let rawAnswer = item.answer !== undefined ? item.answer : item.correct;
-                        if (typeof rawAnswer === 'string') {
-                            const cleanAns = rawAnswer.trim().toUpperCase();
-                            if (['A', 'B', 'C', 'D'].includes(cleanAns)) {
-                                correctIndex = cleanAns.charCodeAt(0) - 65;
-                            } else {
-                                correctIndex = (parseInt(cleanAns) - 1) || 0;
-                            }
-                        } else if (typeof rawAnswer === 'number') {
-                            correctIndex = rawAnswer;
-                        }
-
-                        // 🎯 Return Synchronized Object Base Package Struct
-                        return {
-                            question: { en: englishQuestionText, hi: hindiQuestionText },
-                            options: flatOptionsArray,
-                            correct: correctIndex,
-                            is_json_uploaded: true // Flag to notify frontend execution renderer to skip translation pipelines
-                        };
-                    });
-                } catch (jsonErr) {
-                    console.error("Core JSON parsing drop. Falling back onto text compiler layout layer.", jsonErr);
+                if (typeof item.question === 'object' && item.question !== null) {
+                    englishQuestionText = item.question.en || "Objective Question Node";
+                    hindiQuestionText = item.question.hi || englishQuestionText;
+                } else {
+                    englishQuestionText = String(item.question || item.title || "Objective Question Node");
+                    hindiQuestionText = englishQuestionText;
                 }
-            }
 
+                // 2. टेबल डेटा को सुरक्षित रखना (महत्वपूर्ण!)
+                const tableData = item.table || null;
+
+                // 3. विकल्प (Options)
+                let flatOptionsArray = [];
+                let rawOptionsObj = item.options || item.choices || {};
+
+                if (Array.isArray(rawOptionsObj)) {
+                    flatOptionsArray = rawOptionsObj;
+                } else if (typeof rawOptionsObj === 'object') {
+                    const optionKeys = ['A', 'B', 'C', 'D', '1', '2', '3', '4'];
+                    optionKeys.forEach(k => {
+                        if (rawOptionsObj[k] !== undefined) {
+                            const optVal = rawOptionsObj[k];
+                            if (typeof optVal === 'object' && optVal !== null) {
+                                flatOptionsArray.push({
+                                    en: optVal.en || "Option Node",
+                                    hi: optVal.hi || optVal.en || "Option Node"
+                                });
+                            } else {
+                                flatOptionsArray.push({ en: String(optVal), hi: String(optVal) });
+                            }
+                        }
+                    });
+                }
+
+                // 4. सही उत्तर
+                let correctIndex = 0;
+                let rawAnswer = item.answer !== undefined ? item.answer : item.correct;
+                if (typeof rawAnswer === 'string') {
+                    const cleanAns = rawAnswer.trim().toUpperCase();
+                    correctIndex = ['A', 'B', 'C', 'D'].includes(cleanAns) ? cleanAns.charCodeAt(0) - 65 : (parseInt(cleanAns) - 1) || 0;
+                } else {
+                    correctIndex = rawAnswer;
+                }
+
+                // 🎯 रिटर्न: टेबल डेटा के साथ पूरा ऑब्जेक्ट
+                return {
+                    question: { en: englishQuestionText, hi: hindiQuestionText },
+                    options: flatOptionsArray,
+                    correct: correctIndex,
+                    table: tableData, // 👈 यहाँ टेबल डेटा सुरक्षित रहेगा
+                    is_json_uploaded: true
+                };
+            });
+        } catch (jsonErr) {
+            console.error("JSON Error:", jsonErr);
+            return [];
+        }
+    }
+    return []; // अगर प्लेन टेक्स्ट है तो इसे हैंडल करने के लिए पुराना लॉजिक रखें
+};
             // =========================================================================
             // 📝 MODE B: NATIVE PLAIN-TEXT MATRICES COMPILE ENGINE (FALLBACK CORRIDOR)
             // =========================================================================
