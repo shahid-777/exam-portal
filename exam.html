@@ -140,6 +140,20 @@
             }
         }
 
+        // 🆕 HTML-ESCAPE HELPER: question/option text ke andar agar <fstream>,
+        // vector<int>, a<b jaisi cheezein hon, to unhein raw innerHTML mein
+        // daalne par browser unhe ek (anjaan) HTML tag samajh kar chupa deta
+        // hai — is wajah se options khaali dikhte the (jaise Q17 mein <fstream>
+        // options). Yeh function un characters ko safely escape karta hai
+        // taaki wo hamesha visible text ki tarah render hon.
+        function escapeHtmlForDisplay(text) {
+            if (text === undefined || text === null) return "";
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+
         window.onload = function() {
             const studentSession = localStorage.getItem('userEmail');
             const adminSession = localStorage.getItem('adminEmail');
@@ -332,12 +346,12 @@
                                     tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-white/10 bg-slate-900/80 p-2">
                                                     <table class="w-full text-[10px] text-left border-collapse text-white">
                                                         <thead class="bg-slate-800 uppercase"><tr>`;
-                                    q.table.headers.forEach(h => tableHtml += `<th class="p-2 border border-white/10">${h}</th>`);
+                                    q.table.headers.forEach(h => tableHtml += `<th class="p-2 border border-white/10">${escapeHtmlForDisplay(h)}</th>`);
                                     tableHtml += `</tr></thead><tbody class="text-slate-300">`;
 
                                     q.table.rows.forEach(row => {
                                         tableHtml += `<tr>`;
-                                        row.forEach(cell => tableHtml += `<td class="p-2 border border-white/10">${cell}</td>`);
+                                        row.forEach(cell => tableHtml += `<td class="p-2 border border-white/10">${escapeHtmlForDisplay(cell)}</td>`);
                                         tableHtml += `</tr>`;
                                     });
                                     tableHtml += `</tbody></table></div>`;
@@ -347,7 +361,8 @@
                                 let optionsHtml = "";
                                 let rawOptions = targetDataSource.options || [];
                                 rawOptions.forEach((opt, optIdx) => {
-                                    const optText = typeof opt === 'object' ? (opt[currentSelectedLanguage] || opt.en || String(opt)) : String(opt);
+                                    const optTextRaw = typeof opt === 'object' ? (opt[currentSelectedLanguage] || opt.en || String(opt)) : String(opt);
+                                    const optText = escapeHtmlForDisplay(optTextRaw);
                                     optionsHtml += `
                                         <label class="flex items-center space-x-3 bg-slate-900/60 p-3 rounded-xl cursor-pointer hover:bg-slate-800 transition">
                                             <input type="radio" name="question-${index}" value="${optIdx}" onchange="registerRadioResponse(${index}, ${optIdx})" ${userResponses[index] == optIdx ? 'checked' : ''}>
@@ -362,7 +377,7 @@
                                             <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
                                             <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition">Mark Review</button>
                                         </div>
-                                        <h4 class="text-sm font-bold text-slate-100">${targetDataSource.question[currentSelectedLanguage] || targetDataSource.question.en || targetDataSource.question}</h4>
+                                        <h4 class="text-sm font-bold text-slate-100">${escapeHtmlForDisplay(targetDataSource.question[currentSelectedLanguage] || targetDataSource.question.en || targetDataSource.question)}</h4>
                                         ${tableHtml}
                                         <div class="live-q-image-container hidden w-full mt-2 rounded-xl border border-white/10 p-1">
                                             <img src="" alt="Resource" class="w-full h-auto object-contain max-h-[320px] rounded-lg">
