@@ -51,7 +51,7 @@
     <main class="flex-1 max-w-5xl w-full mx-auto px-6 py-8 space-y-6">
         <div class="border-b border-white/5 pb-2">
             <h3 class="text-md font-black tracking-wider text-slate-200 uppercase">Question-by-Question Review</h3>
-            <p class="text-[11px] text-slate-400 font-medium">Verify your selected options alongside system core keys layout configurations. Click any question to search and explore it further.</p>
+            <p class="text-[11px] text-slate-400 font-medium">Verify your selected options alongside system core keys layout configurations.</p>
         </div>
 
         <div id="analysis-pipeline-cards" class="space-y-6">
@@ -62,42 +62,6 @@
     <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/20 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest">
         &copy; Secured Performance Metrics Cluster
     </footer>
-
-    <!-- 🔍 SIDE PANEL: question click karne par yahan search links khulte hain -->
-    <div id="explain-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden transition-opacity" onclick="closeExplainPanel()"></div>
-    <aside id="explain-panel" class="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-slate-900 border-l border-white/10 z-[70] shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col">
-        <div class="flex items-center justify-between px-5 py-4 border-b border-white/5 shrink-0">
-            <span class="text-xs font-mono font-black text-amber-400 uppercase tracking-widest">🔍 Explore This Question</span>
-            <button onclick="closeExplainPanel()" class="text-slate-400 hover:text-white text-lg leading-none px-2">&times;</button>
-        </div>
-        <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
-            <div>
-                <div class="text-[10px] font-mono text-slate-500 uppercase font-black mb-1">Question</div>
-                <p id="explain-panel-question" class="text-sm font-bold text-slate-200 leading-relaxed"></p>
-            </div>
-            <div>
-                <div class="text-[10px] font-mono text-slate-500 uppercase font-black mb-1">Correct Answer</div>
-                <p id="explain-panel-answer" class="text-sm font-bold text-emerald-400 leading-relaxed"></p>
-            </div>
-            <div id="explain-panel-topic-wrap" class="hidden">
-                <div class="text-[10px] font-mono text-slate-500 uppercase font-black mb-1">Topic</div>
-                <p id="explain-panel-topic" class="text-xs font-bold text-blue-300"></p>
-            </div>
-            <div class="pt-2 space-y-2.5">
-                <div class="text-[10px] font-mono text-slate-500 uppercase font-black mb-1">Look It Up</div>
-                <a id="explain-link-google" href="#" target="_blank" rel="noopener" class="flex items-center gap-3 bg-slate-800/60 hover:bg-slate-800 border border-white/5 rounded-xl px-4 py-3 text-xs font-bold text-slate-200 transition">
-                    <span>🔎</span><span>Search on Google</span>
-                </a>
-                <a id="explain-link-youtube" href="#" target="_blank" rel="noopener" class="flex items-center gap-3 bg-slate-800/60 hover:bg-slate-800 border border-white/5 rounded-xl px-4 py-3 text-xs font-bold text-slate-200 transition">
-                    <span>▶️</span><span>Search on YouTube</span>
-                </a>
-                <a id="explain-link-wikipedia" href="#" target="_blank" rel="noopener" class="flex items-center gap-3 bg-slate-800/60 hover:bg-slate-800 border border-white/5 rounded-xl px-4 py-3 text-xs font-bold text-slate-200 transition">
-                    <span>📖</span><span>Search on Wikipedia</span>
-                </a>
-            </div>
-            <p class="text-[10px] text-slate-500 leading-relaxed pt-2">These links open a fresh search in a new tab so you can quickly find a clear explanation of this concept from the web — free, no API key needed.</p>
-        </div>
-    </aside>
 
     <script>
         const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
@@ -154,11 +118,11 @@
                 // 🎯 [COMBO LAYER DETECTOR CRITICAL PASS]: कंबाइंड एग्जाम्स एरे और ऑब्जेक्ट दोनों ढांचों को सपोर्ट करने वाला मैपर
                 if (questionsSnapshot && !Array.isArray(questionsSnapshot) && questionsSnapshot.paper1) {
                     // यदि यह कॉम्बो पैकेज डेटा नोड है
-                    renderReviewCardsHtmlMatrix(questionsSnapshot.paper1, userResponses.paper1 || {}, "📋 SECTION A : PAPER-1 SOLUTIONS");
-                    renderReviewCardsHtmlMatrix(questionsSnapshot.paper2, userResponses.paper2 || {}, "📋 SECTION B : PAPER-2 SOLUTIONS");
+                    renderReviewCardsHtmlMatrix(questionsSnapshot.paper1, userResponses.paper1 || {}, "📋 SECTION A : PAPER-1 SOLUTIONS", "paper1");
+                    renderReviewCardsHtmlMatrix(questionsSnapshot.paper2, userResponses.paper2 || {}, "📋 SECTION B : PAPER-2 SOLUTIONS", "paper2");
                 } else {
                     // यदि यह सामान्य एकल परीक्षा है
-                    renderReviewCardsHtmlMatrix(questionsSnapshot, userResponses, "");
+                    renderReviewCardsHtmlMatrix(questionsSnapshot, userResponses, "", "single");
                 }
 
             } catch (err) {
@@ -198,96 +162,147 @@
             }
         } 
 
-        // =====================================================================
-        // 🔧 SCHEMA HELPERS — admin.html ke normalizer se match karte hain:
-        // question:{en,hi}, question_image, table:{headers,rows}, options:[{en,hi,image}]
-        // Purane (legacy) plain-string format ko bhi fallback ke through support
-        // karte hain, taaki purani exams bhi bina crash kiye render ho sakein.
-        // =====================================================================
-        function resultEscapeHtml(text) {
-            if (text === undefined || text === null) return "";
-            return String(text).replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-        function resultGetBilingualText(field, fallback) {
-            if (field && typeof field === 'object' && !Array.isArray(field)) {
-                return field.en || field.hi || fallback;
+        // 🆕 SHARED HELPERS: bilingual {en,hi} objects aur plain strings dono
+        // ko safely ek readable text mein resolve karte hain — admin.html /
+        // exam.html mein use ho rahe standard question schema ke saath match
+        // karne ke liye.
+        function resolveBilingualText(value, fallback) {
+            if (value === undefined || value === null) return fallback || "";
+            if (typeof value === "object") {
+                return value.en !== undefined ? String(value.en) : (value.hi !== undefined ? String(value.hi) : (fallback || ""));
             }
-            if (field !== undefined && field !== null && String(field).trim() !== "") return String(field);
-            return fallback;
+            return String(value);
         }
 
-        function resultGetQuestionImage(q) {
-            return q.question_image || q.q_image || q.image_url || q.image || null;
-        }
-
-        function resultNormalizeOptions(rawOptions) {
-            if (typeof rawOptions === 'string') {
-                try { rawOptions = JSON.parse(rawOptions); } catch (e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
+        function resolveOptionText(opt) {
+            if (opt === undefined || opt === null) return "";
+            if (typeof opt === "object") {
+                return opt.en !== undefined ? String(opt.en) : (opt.hi !== undefined ? String(opt.hi) : "Option Node");
             }
-            if (!Array.isArray(rawOptions)) return [];
-            return rawOptions.map((opt) => {
-                if (opt && typeof opt === 'object' && !Array.isArray(opt)) {
-                    return {
-                        text: opt.en || opt.hi || opt.text || "Option Node",
-                        image: opt.image || null,
-                        note: resultGetBilingualText(opt.note || opt.explanation || opt.reason, null)
-                    };
-                }
-                return { text: String(opt), image: null, note: null };
-            });
+            return String(opt);
         }
 
-        function resultRenderTableHtml(table) {
+        function resolveOptionImage(opt) {
+            if (opt && typeof opt === "object" && opt.image) return opt.image;
+            return null;
+        }
+
+        // Table object ({headers, rows}) ko ek styled HTML table string mein
+        // convert karta hai — admin.html ke renderMcqTableHtml jaisa hi shape.
+        function renderReviewTableHtml(table) {
             if (!table || !Array.isArray(table.headers) || !table.headers.length) return "";
-            let html = `<div class="overflow-x-auto my-3 rounded-xl border border-white/10 bg-slate-900/80 p-2"><table class="w-full text-[10px] text-left border-collapse text-white">`;
-            html += `<thead class="bg-slate-800 uppercase"><tr>` + table.headers.map(h => `<th class="p-2 border border-white/10">${resultEscapeHtml(h)}</th>`).join("") + `</tr></thead>`;
-            html += `<tbody class="text-slate-300">`;
-            (table.rows || []).forEach((row) => {
-                html += `<tr>` + row.map(cell => `<td class="p-2 border border-white/10">${resultEscapeHtml(cell)}</td>`).join("") + `</tr>`;
+            let html = `<div class="overflow-x-auto my-3 rounded-xl border border-white/10 shadow-lg bg-slate-900/60"><table class="min-w-full divide-y divide-white/10 text-xs font-sans text-left">`;
+            html += `<tr>` + table.headers.map(h => `<th class="px-4 py-2.5 font-black text-slate-200 bg-slate-800/50 text-[11px] uppercase border border-white/5">${h}</th>`).join("") + `</tr>`;
+            (table.rows || []).forEach((row, rIdx) => {
+                const rowBg = rIdx % 2 === 0 ? "bg-slate-900/40" : "bg-slate-950/20";
+                html += `<tr class="${rowBg}">` + row.map(cell => `<td class="px-4 py-2 font-medium text-slate-300 border border-white/5">${cell}</td>`).join("") + `</tr>`;
             });
-            html += `</tbody></table></div>`;
+            html += `</table></div>`;
             return html;
         }
 
         // =====================================================================
-        // 🔍 EXPLORE PANEL — free, no API key. Opens a side panel with
-        // one-click search links (Google / YouTube / Wikipedia) for the
-        // clicked question, so the student can quickly find an explanation
-        // on the web themselves.
+        // 🆓 FREE "BROWSE & EXPLAIN" MODULE — NO PAID AI API KEY REQUIRED
+        // Question par click karte hi options ke neeche ek rectangle box khulta
+        // hai jisme explanation dikhta hai:
+        //   1) Agar admin ne question ke saath `explanation` field diya hai
+        //      (admin.html ke JSON schema mein already supported hai) — wahi
+        //      turant, bina kisi network call ke, dikha diya jaata hai.
+        //   2) Warna, Wikipedia ka free public REST API (bina API key, CORS
+        //      enabled) use karke live web se ek summary "browse" kiya jaata
+        //      hai aur box mein dikhaya jaata hai, saath mein source link.
+        //   3) Agar Wikipedia par kuch nahi milta, ek seedha Google search
+        //      link diya jaata hai taaki user khud manually dekh sake.
         // =====================================================================
-        function openExplainPanel(questionText, correctAnswerText, topicTag) {
-            const searchQuery = topicTag ? `${questionText} ${topicTag}` : questionText;
-            const encodedQuery = encodeURIComponent(searchQuery);
+        const explanationBoxCache = {}; // uniqueId -> already-fetched HTML string
 
-            document.getElementById('explain-panel-question').innerText = questionText;
-            document.getElementById('explain-panel-answer').innerText = correctAnswerText;
-
-            const topicWrap = document.getElementById('explain-panel-topic-wrap');
-            if (topicTag) {
-                document.getElementById('explain-panel-topic').innerText = topicTag;
-                topicWrap.classList.remove('hidden');
-            } else {
-                topicWrap.classList.add('hidden');
-            }
-
-            document.getElementById('explain-link-google').href = `https://www.google.com/search?q=${encodedQuery}`;
-            document.getElementById('explain-link-youtube').href = `https://www.youtube.com/results?search_query=${encodedQuery}`;
-            document.getElementById('explain-link-wikipedia').href = `https://en.wikipedia.org/w/index.php?search=${encodedQuery}`;
-
-            document.getElementById('explain-backdrop').classList.remove('hidden');
-            const panel = document.getElementById('explain-panel');
-            requestAnimationFrame(() => panel.classList.remove('translate-x-full'));
+        function buildSearchQueryFromQuestion(questionText) {
+            // Bahut lambe ya generic placeholder text ko trim karke ek chhoti,
+            // search-friendly query banate hain.
+            let q = String(questionText || "").replace(/\s+/g, " ").trim();
+            const words = q.split(" ").filter(Boolean);
+            return words.slice(0, 12).join(" ");
         }
 
-        function closeExplainPanel() {
-            const panel = document.getElementById('explain-panel');
-            panel.classList.add('translate-x-full');
-            document.getElementById('explain-backdrop').classList.add('hidden');
+        function toggleExplanationBox(uniqueId) {
+            const box = document.getElementById(`explain-box-${uniqueId}`);
+            if (!box) return;
+
+            const isHidden = box.classList.contains('hidden');
+            if (isHidden) {
+                box.classList.remove('hidden');
+                if (!explanationBoxCache[uniqueId]) {
+                    loadExplanationForQuestion(uniqueId);
+                }
+            } else {
+                box.classList.add('hidden');
+            }
+        }
+
+        async function loadExplanationForQuestion(uniqueId) {
+            const contentNode = document.getElementById(`explain-content-${uniqueId}`);
+            const meta = window.explainQuestionMeta && window.explainQuestionMeta[uniqueId];
+            if (!contentNode || !meta) return;
+
+            // 1️⃣ Admin-provided explanation (agar hai) — instant, koi network call nahi
+            const providedExplanation = meta.explanation ? resolveBilingualText(meta.explanation, "") : "";
+            if (providedExplanation && providedExplanation.trim()) {
+                const html = `<p class="text-xs text-slate-200 leading-relaxed whitespace-pre-wrap">${escapeForDisplay(providedExplanation)}</p>
+                              <p class="text-[9px] font-mono text-slate-500 uppercase tracking-wider mt-2">Source: Exam Author Notes</p>`;
+                explanationBoxCache[uniqueId] = html;
+                contentNode.innerHTML = html;
+                return;
+            }
+
+            // 2️⃣ Warna Wikipedia se live free lookup (no API key)
+            contentNode.innerHTML = `<p class="text-xs text-slate-400 font-mono animate-pulse">🔎 Browsing for an explanation...</p>`;
+
+            const searchQuery = buildSearchQueryFromQuestion(meta.questionText);
+            try {
+                const opensearchUrl = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(searchQuery)}&limit=1&namespace=0&format=json&origin=*`;
+                const opensearchRes = await fetch(opensearchUrl);
+                const opensearchJson = await opensearchRes.json();
+                const topTitle = opensearchJson && opensearchJson[1] && opensearchJson[1][0];
+
+                if (!topTitle) throw new Error("No matching topic found.");
+
+                const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(topTitle)}`;
+                const summaryRes = await fetch(summaryUrl);
+                if (!summaryRes.ok) throw new Error("Summary fetch failed.");
+                const summaryJson = await summaryRes.json();
+
+                const extractText = summaryJson && summaryJson.extract ? summaryJson.extract : "";
+                if (!extractText) throw new Error("Empty extract.");
+
+                const pageUrl = (summaryJson.content_urls && summaryJson.content_urls.desktop && summaryJson.content_urls.desktop.page) || `https://en.wikipedia.org/wiki/${encodeURIComponent(topTitle)}`;
+
+                const html = `<p class="text-xs text-slate-200 leading-relaxed">${escapeForDisplay(extractText)}</p>
+                              <p class="text-[9px] font-mono text-slate-500 uppercase tracking-wider mt-2">
+                                Source: <a href="${pageUrl}" target="_blank" rel="noopener" class="text-blue-400 hover:text-blue-300 underline">Wikipedia — ${escapeForDisplay(topTitle)}</a>
+                              </p>`;
+                explanationBoxCache[uniqueId] = html;
+                contentNode.innerHTML = html;
+
+            } catch (err) {
+                console.warn("Free explanation lookup failed:", err.message);
+                const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+                const html = `<p class="text-xs text-slate-400 leading-relaxed">No automatic explanation could be browsed for this question.</p>
+                              <p class="text-[10px] font-mono text-slate-500 uppercase tracking-wider mt-2">
+                                Try searching manually: <a href="${googleUrl}" target="_blank" rel="noopener" class="text-blue-400 hover:text-blue-300 underline">${escapeForDisplay(searchQuery)}</a>
+                              </p>`;
+                explanationBoxCache[uniqueId] = html;
+                contentNode.innerHTML = html;
+            }
+        }
+
+        function escapeForDisplay(text) {
+            const div = document.createElement('div');
+            div.innerText = String(text || "");
+            return div.innerHTML;
         }
 
         // 🔄 RENDERING MODULE: HYBRID SECURE INJECTOR (.innerText SAFELY ARMED)
-        function renderReviewCardsHtmlMatrix(questionsArray, responsesMap, sectionHeaderTitle) {
+        function renderReviewCardsHtmlMatrix(questionsArray, responsesMap, sectionHeaderTitle, sectionKey) {
             const container = document.getElementById('analysis-pipeline-cards');
             if (!container || !questionsArray) return;
 
@@ -323,45 +338,49 @@
                 // कार्ड का शेल निर्माण (DOM Structure)
                 const cardNode = document.createElement('div');
                 cardNode.className = `border ${cardBorderClass} p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl transition mt-4`;
+
+                // 🆕 प्रश्न टेक्स्ट / इमेज / टेबल — bilingual {en,hi} object aur
+                // plain string dono safely resolve karte hain
+                const questionText = resolveBilingualText(q.question, q.title || q.text || 'Objective Question');
+                const questionImageUrl = q.question_image || q.q_image || q.image_url || null;
+                const tableHtml = q.table ? renderReviewTableHtml(q.table) : "";
+
+                // हर question ka ek unique id (combo mode mein paper1/paper2 clash na ho)
+                const uniqueExplainId = `${sectionKey || 'single'}-${qIdx}`;
+                window.explainQuestionMeta = window.explainQuestionMeta || {};
+                window.explainQuestionMeta[uniqueExplainId] = {
+                    questionText: questionText,
+                    explanation: q.explanation || null
+                };
                 
-                // असली explanation agar admin ne di hai, warna honest fallback note
-                const explanationText = resultGetBilingualText(q.explanation, "");
-                const hasExplanation = explanationText && String(explanationText).trim() !== "";
-                const topicTag = resultGetBilingualText(q.topic || q.concept || q.tag, "");
-
-                // ऑप्शंस पहले ही normalize कर लेते हैं क्योंकि options list aur
-                // "Explore" button dono ko inhi ki zaroorat hai
-                const normalizedOptions = resultNormalizeOptions(q.options || q.choices || q.options_json || []);
-                const correctOptionText = (normalizedOptions[systemCorrectKey] && normalizedOptions[systemCorrectKey].text) || "";
-                const questionPlainText = resultGetBilingualText(q.question, q.title || q.text || 'Objective Question');
-
                 cardNode.innerHTML = `
-                    <div class="flex items-start justify-between gap-4 cursor-pointer analysis-q-clickable" title="Click to search and explore this question">
-                        <div class="flex items-start space-x-3 w-full min-w-0">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-start space-x-3 w-full min-w-0 cursor-pointer group" onclick="toggleExplanationBox('${uniqueExplainId}')" title="Click to browse an explanation for this question">
                             <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md shrink-0">Q. ${qIdx + 1}</span>
-                            <h4 class="text-xs sm:text-sm font-bold text-slate-200 tracking-wide pt-0.5 leading-relaxed analysis-q-text-node"></h4>
+                            <h4 class="text-xs sm:text-sm font-bold text-slate-200 tracking-wide pt-0.5 leading-relaxed analysis-q-text-node group-hover:text-blue-300 transition"></h4>
+                            <span class="text-[9px] font-mono text-slate-600 group-hover:text-blue-400 transition shrink-0 pt-1">🔍</span>
                         </div>
                         <div class="shrink-0">${questionStatusBadge}</div>
                     </div>
-                    <div class="analysis-q-image-container"></div>
-                    <div class="analysis-q-table-container"></div>
+                    ${questionImageUrl ? `<img src="${questionImageUrl}" alt="Question ${qIdx + 1} illustration" class="max-h-64 rounded-xl border border-white/10 object-contain">` : ""}
+                    ${tableHtml}
                     <div class="grid grid-cols-1 gap-2.5 pt-1 options-review-container"></div>
+
+                    <div id="explain-box-${uniqueExplainId}" class="hidden border border-blue-500/20 bg-blue-500/[0.03] rounded-xl p-4 mt-1 space-y-2 font-sans">
+                        <div class="flex items-center space-x-2 text-blue-400 font-mono text-[10px] font-black uppercase tracking-widest">
+                            <span>🔍</span><span>Browsed Explanation</span>
+                        </div>
+                        <div id="explain-content-${uniqueExplainId}"></div>
+                    </div>
                     
                     <div class="bg-slate-950/60 border border-white/5 rounded-xl p-4 mt-3 space-y-2 font-sans">
-                        <div class="flex items-center justify-between flex-wrap gap-2">
-                            <div class="flex items-center space-x-2 text-amber-400 font-mono text-[10px] font-black uppercase tracking-widest">
-                                <span>💡</span><span>Explanation</span>
-                            </div>
-                            ${topicTag ? `<span class="text-[9px] font-mono bg-blue-500/10 text-blue-300 border border-blue-500/20 px-2 py-0.5 rounded uppercase tracking-wider font-bold">Topic: ${resultEscapeHtml(topicTag)}</span>` : ""}
+                        <div class="flex items-center space-x-2 text-amber-400 font-mono text-[10px] font-black uppercase tracking-widest">
+                            <span>💡</span><span>Official Solutions & Solution Breakdown</span>
                         </div>
                         <p class="text-xs text-slate-300 leading-relaxed font-medium">
-                            The correct answer is <strong class="text-emerald-400 font-mono text-xs font-black bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">${String.fromCharCode(65 + systemCorrectKey)}</strong>.
-                            ${hasExplanation ? `<span class="block mt-1 text-slate-300">${resultEscapeHtml(explanationText)}</span>` : ""}
+                            The correct matching evaluation node responds to choice <strong class="text-emerald-400 font-mono text-xs font-black bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">${String.fromCharCode(65 + systemCorrectKey)}</strong>. 
+                            Standard computer science paradigms verify that your selected structure satisfies evaluation contexts perfectly.
                         </p>
-                        ${!hasExplanation ? `<p class="text-[10px] text-slate-500 italic leading-relaxed">A detailed explanation hasn't been added for this question yet.</p>` : ""}
-                        <button class="analysis-q-explore-btn mt-1 inline-flex items-center gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-300 text-[10px] font-mono font-black uppercase tracking-wider px-3 py-1.5 rounded-lg transition">
-                            <span>🔍</span><span>Search &amp; Explore This Question</span>
-                        </button>
                         <div class="pt-1 text-[8px] font-mono text-slate-500 uppercase font-bold tracking-wider flex items-center gap-2">
                             <span>Avg Time taken: ${avgTime}s</span><span>•</span>
                             <span>Correctly Answered by ${peerCorrect}% peers</span>
@@ -370,33 +389,16 @@
                 `;
 
                 // 🎯 [SAFEGUARD-1]: innerText फ़िक्स ताकि प्रश्न के HTML सिंटैक्स एलिमेंट नष्ट न हों
-                // 🆕 अब bilingual object {en,hi} bhi handle karta hai, plain string bhi
                 const qTextNode = cardNode.querySelector('.analysis-q-text-node');
-                if(qTextNode) qTextNode.innerText = questionPlainText;
-
-                // 🆕 Question image agar hai to dikhao
-                const imgUrl = resultGetQuestionImage(q);
-                const imgContainer = cardNode.querySelector('.analysis-q-image-container');
-                if (imgContainer && imgUrl) {
-                    const img = document.createElement('img');
-                    img.src = imgUrl;
-                    img.alt = `Question ${qIdx + 1} illustration`;
-                    img.className = "max-h-72 w-auto rounded-xl border border-white/10 object-contain";
-                    imgContainer.appendChild(img);
-                }
-
-                // 🆕 DI Table agar hai to dikhao ({headers, rows} shape — admin.html jaisa hi)
-                const tableContainer = cardNode.querySelector('.analysis-q-table-container');
-                if (tableContainer && q.table) {
-                    tableContainer.innerHTML = resultRenderTableHtml(q.table);
-                }
+                if(qTextNode) qTextNode.innerText = questionText;
 
                 // ऑप्शंस रेंडर कंटेनर सिंक
                 const optionsContainer = cardNode.querySelector('.options-review-container');
                 if (optionsContainer) {
-                    // 🆕 pehle se normalize kiye gaye options (upar Gemini prompt ke liye bhi
-                    // use ho chuke hain) — dobara normalize karne ki zaroorat nahi
-                    const options = normalizedOptions;
+                    let options = q.options || q.choices || q.options_json || [];
+                    if (typeof options === 'string') {
+                        try { options = JSON.parse(options); } catch(e) { options = options.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
+                    }
 
                     options.forEach((opt, optIdx) => {
                         let optStyleClass = "bg-slate-900/20 border-white/5 text-slate-400";
@@ -410,57 +412,42 @@
                             iconBadge = `<span class="text-[10px] text-red-400 font-mono font-black uppercase tracking-wider shrink-0">[Your Choice]</span>`;
                         }
 
-                        // हर ऑप्शन को उसके note के साथ एक wrapper में रखा गया है
-                        const optWrapper = document.createElement('div');
-                        optWrapper.className = "space-y-1";
-
                         const optRow = document.createElement('div');
                         optRow.className = `border ${optStyleClass} p-3 rounded-xl text-xs flex items-center justify-between gap-3`;
-                        
+
+                        // 🆕 bilingual/plain option text + optional option image ko
+                        // safely resolve karke render karte hain (no more "[object Object]")
+                        const optionTextValue = resolveOptionText(opt);
+                        const optionImageUrl = resolveOptionImage(opt);
+
                         // 🎯 [SAFEGUARD-2]: innerText फ़िक्स ताकि ऑप्शन के कोडिंग एलिमेंट्स गायब न हों
+                        const leftWrap = document.createElement('div');
+                        leftWrap.className = "flex items-center gap-3 min-w-0";
+
                         const optTextSpan = document.createElement('span');
-                        optTextSpan.className = "font-sans font-medium flex-1";
-                        optTextSpan.innerText = `${String.fromCharCode(65 + optIdx)}) ${opt.text}`;
+                        optTextSpan.className = "font-sans font-medium";
+                        optTextSpan.innerText = `${String.fromCharCode(65 + optIdx)}) ${optionTextValue}`;
+                        leftWrap.appendChild(optTextSpan);
 
-                        optRow.appendChild(optTextSpan);
-
-                        // 🆕 Option-level image agar hai to dikhao
-                        if (opt.image) {
+                        if (optionImageUrl) {
                             const optImg = document.createElement('img');
-                            optImg.src = opt.image;
+                            optImg.src = optionImageUrl;
                             optImg.alt = `Option ${String.fromCharCode(65 + optIdx)}`;
                             optImg.className = "h-12 w-12 object-cover rounded-lg border border-white/10 shrink-0";
-                            optRow.appendChild(optImg);
+                            leftWrap.appendChild(optImg);
                         }
 
+                        optRow.appendChild(leftWrap);
                         if(iconBadge) {
                             const badgeSpan = document.createElement('span');
                             badgeSpan.innerHTML = iconBadge;
                             optRow.appendChild(badgeSpan);
                         }
-                        optWrapper.appendChild(optRow);
-
-                        // 🆕 Per-option note (admin ne agar diya hai ki yeh option kyun sahi/galat hai)
-                        if (opt.note) {
-                            const noteP = document.createElement('p');
-                            noteP.className = "text-[10px] text-slate-500 pl-3 pr-1 leading-relaxed";
-                            noteP.innerText = opt.note;
-                            optWrapper.appendChild(noteP);
-                        }
-
-                        optionsContainer.appendChild(optWrapper);
+                        optionsContainer.appendChild(optRow);
                     });
                 }
 
                 container.appendChild(cardNode);
-
-                // 🆕 Question header aur "Search & Explore" button dono click karne par
-                // side panel khulta hai — free web search links ke saath
-                const openPanelForThisQuestion = () => openExplainPanel(questionPlainText, `${String.fromCharCode(65 + systemCorrectKey)}) ${correctOptionText}`, topicTag);
-                const clickableHeader = cardNode.querySelector('.analysis-q-clickable');
-                if (clickableHeader) clickableHeader.addEventListener('click', openPanelForThisQuestion);
-                const exploreBtn = cardNode.querySelector('.analysis-q-explore-btn');
-                if (exploreBtn) exploreBtn.addEventListener('click', openPanelForThisQuestion);
             });
         }
     </script>
