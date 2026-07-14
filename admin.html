@@ -985,7 +985,7 @@
                     optionsHtml += `
                         <div class="border p-3 rounded-xl text-xs flex items-center gap-3 transition-all ${optStyle}">
                             <span class="font-mono px-2 py-0.5 rounded text-[10px] ${optionCharStyle}">${optChar}</span>
-                            <span class="font-sans font-medium flex-1">${finalOptText}</span>
+                            <span class="font-sans font-medium flex-1">${window.escapeHtmlTags(finalOptText)}</span>
                             ${indicatorIcon}
                             ${optImageHtml}
                         </div>`;
@@ -1018,7 +1018,7 @@
                         </div>
                         <h4 class="text-sm font-bold text-white font-sans leading-relaxed">
                             <span class="font-mono text-slate-500 bg-white/5 px-2 py-0.5 rounded text-[11px] mr-1">Q${idx + 1}</span> 
-                            ${finalQuestionText}
+                            ${window.escapeHtmlTags(finalQuestionText)}
                         </h4>
                         ${questionImageUrl ? `<img src="${questionImageUrl}" alt="Question ${idx + 1} illustration" class="max-h-64 rounded-xl border border-white/10 object-contain">` : ""}
                         ${questionTableHtml}
