@@ -192,9 +192,13 @@
             if (!Array.isArray(rawOptions)) return [];
             return rawOptions.map((opt) => {
                 if (opt && typeof opt === 'object' && !Array.isArray(opt)) {
-                    return { text: opt.en || opt.hi || opt.text || "Option Node", image: opt.image || null };
+                    return {
+                        text: opt.en || opt.hi || opt.text || "Option Node",
+                        image: opt.image || null,
+                        note: resultGetBilingualText(opt.note || opt.explanation || opt.reason, null)
+                    };
                 }
-                return { text: String(opt), image: null };
+                return { text: String(opt), image: null, note: null };
             });
         }
 
@@ -248,11 +252,10 @@
                 const cardNode = document.createElement('div');
                 cardNode.className = `border ${cardBorderClass} p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl transition mt-4`;
                 
-                // असली explanation agar admin ne di hai, warna generic fallback text
+                // असली explanation agar admin ne di hai, warna honest fallback note
                 const explanationText = resultGetBilingualText(q.explanation, "");
-                const explanationHtml = explanationText
-                    ? resultEscapeHtml(explanationText)
-                    : `Standard computer science paradigms verify that the correct option satisfies evaluation contexts perfectly.`;
+                const hasExplanation = explanationText && String(explanationText).trim() !== "";
+                const topicTag = resultGetBilingualText(q.topic || q.concept || q.tag, "");
 
                 cardNode.innerHTML = `
                     <div class="flex items-start justify-between gap-4">
@@ -267,13 +270,17 @@
                     <div class="grid grid-cols-1 gap-2.5 pt-1 options-review-container"></div>
                     
                     <div class="bg-slate-950/60 border border-white/5 rounded-xl p-4 mt-3 space-y-2 font-sans">
-                        <div class="flex items-center space-x-2 text-amber-400 font-mono text-[10px] font-black uppercase tracking-widest">
-                            <span>💡</span><span>Official Solutions & Solution Breakdown</span>
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <div class="flex items-center space-x-2 text-amber-400 font-mono text-[10px] font-black uppercase tracking-widest">
+                                <span>💡</span><span>Explanation</span>
+                            </div>
+                            ${topicTag ? `<span class="text-[9px] font-mono bg-blue-500/10 text-blue-300 border border-blue-500/20 px-2 py-0.5 rounded uppercase tracking-wider font-bold">Topic: ${resultEscapeHtml(topicTag)}</span>` : ""}
                         </div>
                         <p class="text-xs text-slate-300 leading-relaxed font-medium">
-                            The correct matching evaluation node responds to choice <strong class="text-emerald-400 font-mono text-xs font-black bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">${String.fromCharCode(65 + systemCorrectKey)}</strong>. 
-                            ${explanationHtml}
+                            The correct answer is <strong class="text-emerald-400 font-mono text-xs font-black bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">${String.fromCharCode(65 + systemCorrectKey)}</strong>.
+                            ${hasExplanation ? `<span class="block mt-1 text-slate-300">${resultEscapeHtml(explanationText)}</span>` : ""}
                         </p>
+                        ${!hasExplanation ? `<p class="text-[10px] text-slate-500 italic leading-relaxed">A detailed explanation hasn't been added for this question yet. Compare the correct option above with your selected answer to work out the concept being tested — or check with your instructor for a full breakdown.</p>` : ""}
                         <div class="pt-1 text-[8px] font-mono text-slate-500 uppercase font-bold tracking-wider flex items-center gap-2">
                             <span>Avg Time taken: ${avgTime}s</span><span>•</span>
                             <span>Correctly Answered by ${peerCorrect}% peers</span>
@@ -306,8 +313,8 @@
                 // ऑप्शंस रेंडर कंटेनर सिंक
                 const optionsContainer = cardNode.querySelector('.options-review-container');
                 if (optionsContainer) {
-                    // 🆕 admin.html ke standard shape [{en,hi,image}] aur legacy plain-string
-                    // arrays dono ko ek normalized {text, image} list mein convert karta hai
+                    // 🆕 admin.html ke standard shape [{en,hi,image,note}] aur legacy plain-string
+                    // arrays dono ko ek normalized {text, image, note} list mein convert karta hai
                     const options = resultNormalizeOptions(q.options || q.choices || q.options_json || []);
 
                     options.forEach((opt, optIdx) => {
@@ -321,6 +328,10 @@
                             optStyleClass = "bg-red-500/10 border-red-500/30 text-red-300 font-medium line-through ring-1 ring-red-500/10";
                             iconBadge = `<span class="text-[10px] text-red-400 font-mono font-black uppercase tracking-wider shrink-0">[Your Choice]</span>`;
                         }
+
+                        // हर ऑप्शन को उसके note के साथ एक wrapper में रखा गया है
+                        const optWrapper = document.createElement('div');
+                        optWrapper.className = "space-y-1";
 
                         const optRow = document.createElement('div');
                         optRow.className = `border ${optStyleClass} p-3 rounded-xl text-xs flex items-center justify-between gap-3`;
@@ -346,7 +357,17 @@
                             badgeSpan.innerHTML = iconBadge;
                             optRow.appendChild(badgeSpan);
                         }
-                        optionsContainer.appendChild(optRow);
+                        optWrapper.appendChild(optRow);
+
+                        // 🆕 Per-option note (admin ne agar diya hai ki yeh option kyun sahi/galat hai)
+                        if (opt.note) {
+                            const noteP = document.createElement('p');
+                            noteP.className = "text-[10px] text-slate-500 pl-3 pr-1 leading-relaxed";
+                            noteP.innerText = opt.note;
+                            optWrapper.appendChild(noteP);
+                        }
+
+                        optionsContainer.appendChild(optWrapper);
                     });
                 }
 
