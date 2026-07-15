@@ -209,10 +209,15 @@
 
         <div class="bg-slate-950/40 border border-red-500/20 rounded-2xl p-6 space-y-4 shadow-xl relative overflow-hidden">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-600 to-orange-500"></div>
-            <h3 class="text-xs font-mono font-black text-red-400 uppercase tracking-widest flex items-center gap-2">
-                <span class="flex h-2 w-2 rounded-full bg-red-500 animate-ping"></span>
-                🔴 Go Live: Launch Real-Time Proctored Exam
-            </h3>
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <h3 class="text-xs font-mono font-black text-red-400 uppercase tracking-widest flex items-center gap-2">
+                    <span class="flex h-2 w-2 rounded-full bg-red-500 animate-ping"></span>
+                    🔴 Go Live: Launch Real-Time Proctored Exam
+                </h3>
+                <button onclick="clearAllLiveExamData()" class="bg-slate-800 hover:bg-red-600/80 text-slate-300 hover:text-white border border-white/10 hover:border-red-500/40 transition font-mono text-[10px] font-black px-3 py-2 rounded-xl uppercase tracking-wider cursor-pointer">
+                    🧹 Clear ALL Live Data
+                </button>
+            </div>
             <p class="text-[11px] text-slate-400 font-sans leading-relaxed">Snapshot an existing exam into a live session. Students see a shared countdown and live-updating leaderboard; switching tabs or minimizing instantly disqualifies them with score 0.</p>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
@@ -368,30 +373,11 @@
         let globalCategoriesArray = [];
         let currentBase64ImageData = ""; // 🖼️ 🎯 FIXED: GLOBAL REPOSITORY IMAGE BUFFER REGISTER DEFINED HERE NATIVELY
 
-        // =====================================================================
-        // 🚀 MASTER HYBRID COMPILER — parses PLAIN TEXT या JSON array दोनों
-        // और हमेशा एक STANDARD schema लौटाता है ताकि admin review, exam-taking
-        // page और result ledger — सब जगह data ek jaisa shape mein mile.
-        //
-        // STANDARD PER-QUESTION SHAPE:
-        // {
-        //   id, question:{en,hi}, question_image, table:{headers,rows}|null,
-        //   options:[{en,hi,image}], correct, explanation:{en,hi}|null,
-        //   is_json_uploaded, source_type:"json"|"text"
-        // }
-        //
-        // Ek galat/incomplete question poore batch ko fail nahi karta — usse
-        // skip karke console.warn mein reason likh diya jaata hai, aur result
-        // array par `.skipped` list attach hoti hai.
-        // =====================================================================
         window.escapeHtmlTags = function (text) {
             if (!text) return "";
             return String(text).replace(/</g, "&lt;").replace(/>/g, "&gt;");
         };
 
-        // Table object ko ek styled HTML <table> mein convert karta hai —
-        // review modal aur (agar zaroorat pade to) exam-taking page dono
-        // isi helper ko reuse kar sakte hain.
         window.renderMcqTableHtml = function (table) {
             if (!table || !Array.isArray(table.headers) || !table.headers.length) return "";
             let html = `<div class="overflow-x-auto my-3 rounded-xl border border-white/10 shadow-lg bg-slate-900/60"><table class="min-w-full divide-y divide-white/10 text-xs font-sans text-left">`;
@@ -424,7 +410,6 @@
             return result;
         };
 
-        // ---------------- MODE A: Structured JSON Processing ----------------
         function mcqParseJsonMode(trimmedInput, skippedLog) {
             let parsedJson;
             try {
@@ -483,9 +468,6 @@
             };
         }
 
-        // ---------------- MODE B: Plain Text Processing ----------------
-        // Supports: "Q1. ..." / "A) ..." "B) ..." / "Answer: B" / "Explanation: ..."
-        // + markdown image ![alt](url) + markdown table (| col | col |)
         function mcqParseTextMode(trimmedInput, skippedLog) {
             const blocks = mcqSplitIntoQuestionBlocks(trimmedInput);
             const out = [];
@@ -601,7 +583,6 @@
             return { headers, rows: bodyRows.length ? bodyRows : [] };
         }
 
-        // ---------------- Shared helpers ----------------
         function mcqToBilingual(value, fallback) {
             if (value && typeof value === "object" && !Array.isArray(value)) {
                 const en = value.en !== undefined ? String(value.en) : fallback;
@@ -619,10 +600,6 @@
             return null;
         }
 
-        // 🆕 FIXED: ab yeh function teen shapes ke alawa ek chautha (4th) shape bhi
-        // samajhta hai — COLUMN-ORIENTED DICT: { "month": [...], "showroom_x": [...] }
-        // Isse pehle yeh format silently null ho jaata tha aur DI tables save hone
-        // ke baad exam page par ghayab ho jaate the.
         function mcqNormalizeTable(rawTable) {
             if (!rawTable) return null;
             if (!Array.isArray(rawTable) && rawTable.headers && rawTable.rows) {
@@ -638,7 +615,6 @@
                 return { headers, rows };
             }
 
-            // 🆕 COLUMN-ORIENTED DICT FORMAT: { "col1": [v1,v2,...], "col2": [v1,v2,...] }
             if (!Array.isArray(rawTable) && typeof rawTable === "object") {
                 const keys = Object.keys(rawTable);
                 if (keys.length && Array.isArray(rawTable[keys[0]])) {
@@ -716,7 +692,6 @@
             return "q_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
         }
 
-        // 🖼️ NEW DYNAMIC IMAGE DROPZONE MATRIX INITIALIZER
         document.addEventListener("DOMContentLoaded", () => {
             const dropzone = document.getElementById('image-dropzone');
             const fileInput = document.getElementById('hidden-image-input');
@@ -752,7 +727,6 @@
             if (previewContainer) previewContainer.classList.add('hidden');
         }
 
-        // 🛡️ [AUTHENTICATION GATEWAY SYNC]
         window.onload = function() {
             const userEmail = localStorage.getItem('userEmail');
             const userRole = localStorage.getItem('userRole');
@@ -766,12 +740,6 @@
             syncMasterDashboardControls();
         };
       
-        // =====================================================================
-        // 🔴 GO LIVE MODULE — launches a real-time proctored exam session by
-        // snapshotting an existing exam's questions into `live_exam_sessions`.
-        // Students join via dashboard.html → live-exam.html; admin monitors
-        // via live-scoreboard.html (realtime + polling fallback).
-        // =====================================================================
         async function populateLiveLaunchExamSelector() {
             const selector = document.getElementById('live-launch-exam-select');
             if (!selector) return;
@@ -880,6 +848,7 @@
                                 <div class="flex items-center justify-center gap-2">
                                     <button onclick="window.open('live-scoreboard.html?session=${s.id}', '_blank')" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition font-mono text-[9px] font-black px-2 py-1 rounded-md uppercase">View Scoreboard</button>
                                     ${isActive ? `<button onclick="endLiveSessionFromList(${s.id})" class="bg-red-600/20 text-red-400 border border-red-500/30 hover:bg-red-600 hover:text-white transition font-mono text-[9px] font-black px-2 py-1 rounded-md uppercase">End Now</button>` : ""}
+                                    <button onclick="clearLiveDataForSession(${s.id})" class="bg-slate-800 text-slate-300 border border-white/10 hover:bg-orange-600/80 hover:text-white hover:border-orange-500/40 transition font-mono text-[9px] font-black px-2 py-1 rounded-md uppercase">🧹 Clear Data</button>
                                 </div>
                             </td>
                         </tr>`;
@@ -903,7 +872,36 @@
             }
         }
 
-        // 🆕 CREATE A NEW CATEGORY (button was wired in HTML but function was missing)
+        // =====================================================================
+        // 🧹 CLEAR LIVE DATA — wipes rows from live_exam_participants once the
+        // admin has checked results / PDFs are done. Calls a SECURITY DEFINER
+        // Postgres function (clear_live_exam_data) since DELETE is revoked
+        // directly on live_exam_participants for the authenticated role.
+        // =====================================================================
+        async function clearLiveDataForSession(sessionId) {
+            if (!confirm("Clear all live participant data for this session? This cannot be undone — make sure PDFs/results have already been generated.")) return;
+            try {
+                const { data, error } = await supabaseClient.rpc('clear_live_exam_data', { p_session_id: sessionId });
+                if (error) throw error;
+                alert(`🧹 Cleared ${data?.cleared ?? 0} live participant record(s) for this session.`);
+                fetchActiveLiveSessions();
+            } catch (e) {
+                alert("Failed to clear live data: " + e.message);
+            }
+        }
+
+        async function clearAllLiveExamData() {
+            if (!confirm("Clear ALL live exam participant data across every session? This cannot be undone — make sure PDFs/results have already been generated for anyone you still need records for.")) return;
+            try {
+                const { data, error } = await supabaseClient.rpc('clear_live_exam_data', { p_session_id: null });
+                if (error) throw error;
+                alert(`🧹 Cleared ${data?.cleared ?? 0} live participant record(s) across all sessions.`);
+                fetchActiveLiveSessions();
+            } catch (e) {
+                alert("Failed to clear live data: " + e.message);
+            }
+        }
+
         async function createNewCategory() {
             const input = document.getElementById('new-cat-name');
             const name = input.value.trim();
@@ -935,7 +933,6 @@
             }
         }
 
-        // 🆕 SAVE INLINE TIME EDIT FROM THE EXAM LOG TABLE (button was wired in HTML but function was missing)
         async function updateExamTimingDirect(encodedSubject) {
             const decodedSubject = decodeURIComponent(encodedSubject);
             const inputEl = document.getElementById(`inline-time-${encodedSubject}`);
@@ -956,7 +953,6 @@
             }
         }
 
-        // 🔄 SYNC ALL DROPDOWNS MATRICES DEFINITIONS
         async function syncMasterDashboardControls() {
             try {
                 const { data: categories, error: catErr } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
@@ -1402,8 +1398,6 @@
 
             let formattedJsonPayload = window.autoFormatRawTextToJSON(rawTextData);
 
-            // 🖼️ Dropzone se attach ki gayi image pehle question par lagti hai
-            // (sirf tab, jab uss question mein pehle se koi image na ho)
             if (currentBase64ImageData !== "" && formattedJsonPayload.length > 0 && !formattedJsonPayload[0].question_image) {
                 formattedJsonPayload[0].question_image = currentBase64ImageData;
             }
@@ -1566,8 +1560,6 @@
                 }
             }
 
-            // 🖼️ Dropzone se attach ki gayi image pehle question par lagti hai
-            // (sirf tab, jab uss question mein pehle se koi image na ho)
             if (currentBase64ImageData !== "" && parsedQuestions.length > 0 && !parsedQuestions[0].question_image) {
                 parsedQuestions[0].question_image = currentBase64ImageData;
             }
