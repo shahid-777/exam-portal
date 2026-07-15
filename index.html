@@ -10,18 +10,18 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: 'IBM Plex Sans', sans-serif; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
-        .font-serif { font-family: 'Fraunces', serif; }
+        body { font-family: 'Inter', sans-serif; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+        .font-serif { font-family: 'Poppins', sans-serif; }
         .font-mono { font-family: 'IBM Plex Mono', monospace; }
-        .modal-blur-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; }
+        .modal-blur-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; }
         .modal-blur-overlay.active { opacity: 1; pointer-events: auto; }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
         /* Interactive 10 MCQ Navigation Slider Utilities */
         .quiz-item { display: none; }
         .quiz-item.active-question { display: block; animation: fadeIn .3s ease-in-out; }
@@ -39,66 +39,68 @@
         });
     </script>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased selection:bg-amber-500 selection:text-slate-950">
+<body class="bg-white text-slate-900 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased selection:bg-blue-600 selection:text-white">
 
     <!-- ---------- RESPONSIVE NAVIGATION BAR ---------- -->
-    <header class="w-full bg-slate-950/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 transition-all">
+    <header class="w-full bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
             <div class="flex items-center space-x-3.5 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-                <div class="bg-white/95 p-1 rounded-xl shadow-md shrink-0">
+                <div class="bg-slate-50 p-1 rounded-xl shadow-sm border border-slate-200 shrink-0">
                     <img src="logo.png" alt="Logo" class="h-12 sm:h-16 w-auto object-contain transition duration-200 hover:scale-102">
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-sm sm:text-base font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-amber-200 uppercase leading-none font-serif">EXAM PORTAL</span>
-                    <span class="text-[8px] sm:text-[9px] font-mono font-black text-slate-500 tracking-widest mt-1 uppercase">Computer Science Dept</span>
+                    <span class="text-sm sm:text-base font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 uppercase leading-none font-serif">EXAM PORTAL</span>
+                    <span class="text-[8px] sm:text-[9px] font-mono font-black text-slate-400 tracking-widest mt-1 uppercase">Computer Science Dept</span>
                 </div>
             </div>
-            
-            <div class="hidden md:flex items-center space-x-8 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                <a href="#exams-hub" class="hover:text-amber-400 transition">Sarkari Mocks</a>
-                <a href="#live-demo-test" class="hover:text-amber-400 transition">Interactive Demo</a>
-                <a href="#features-hub" class="hover:text-amber-400 transition">Platform Features</a>
+
+            <div class="hidden md:flex items-center space-x-8 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <a href="#exams-hub" class="hover:text-blue-600 transition">Sarkari Mocks</a>
+                <a href="#live-demo-test" class="hover:text-blue-600 transition">Interactive Demo</a>
+                <a href="#features-hub" class="hover:text-blue-600 transition">Platform Features</a>
             </div>
             <div class="flex items-center space-x-3 sm:space-x-4">
-                <button onclick="openGatedAuthModal()" class="text-xs sm:text-sm font-bold text-slate-300 hover:text-white transition px-4 py-2 border border-white/10 rounded-xl bg-white/5">Aspirant Gateway</button>
+                <button onclick="openGatedAuthModal()" class="text-xs sm:text-sm font-bold text-white transition px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20">Aspirant Gateway</button>
             </div>
         </div>
     </header>
 
-    <!-- ---------- HERO SECTION WITH INTEGRATED BACKGROUND IMAGE ---------- -->
-    <section class="relative min-h-[640px] lg:min-h-[680px] flex items-center py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-b border-white/5 overflow-hidden">
+    <!-- ---------- HERO SECTION WITH FULL BACKGROUND IMAGE ---------- -->
+    <section class="relative min-h-[640px] lg:min-h-[680px] flex items-center py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-b border-slate-200 overflow-hidden">
         <!-- Background Asset Image Node Stack -->
         <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1741699428220-65f37f3fbbcb?auto=format&fit=crop&w=1800&q=80" alt="Student studying in library backend environment" class="w-full h-full object-cover object-position-[center_30%]">
-            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/85 lg:via-slate-950/75 to-slate-900/40"></div>
+            <img src="https://images.unsplash.com/photo-1741699428220-65f37f3fbbcb?auto=format&fit=crop&w=1800&q=80" alt="Student studying in library" class="w-full h-full object-cover object-[center_30%]">
+            <div class="absolute inset-0 bg-gradient-to-r from-white via-white/92 lg:via-white/88 to-white/55"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-white/70"></div>
         </div>
 
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 w-full">
             <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-                <span class="font-mono text-[10px] sm:text-xs tracking-widest text-amber-400 bg-amber-400/10 border border-amber-500/20 px-3.5 py-1.5 rounded-full uppercase inline-block font-bold">🚀 Live Simulated Testing Repositories</span>
-                
-                <div class="flex flex-col items-center lg:items-start gap-5">
-                    <img src="logo.png" alt="Branding Header Identity" class="h-24 sm:h-28 w-auto block filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)]">
-                    <h1 class="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-tight">Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">Sarkari &amp; Private</span> Exam Prep, Simplified.</h1>
-                </div>
+                <span class="font-mono text-[10px] sm:text-xs tracking-widest text-blue-700 bg-blue-100 border border-blue-200 px-3.5 py-1.5 rounded-full uppercase inline-block font-bold">🚀 Live Simulated Testing Repositories</span>
 
-                <p class="text-slate-300 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">Access premium full-length mocks, real-time index matrices, and previous-year question banks engineered for GATE CSE, UGC NET, and state competitive assessments.</p>
+                <h1 class="font-serif font-bold text-3xl sm:text-5xl lg:text-[3.4rem] text-slate-900 tracking-tight leading-[1.1]">Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">Sarkari &amp; Private</span> Exam Prep, Simplified.</h1>
+
+                <p class="text-slate-600 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium bg-white/40 lg:bg-transparent rounded-lg">Access premium full-length mocks, real-time index matrices, and previous-year question banks engineered for GATE CSE, UGC NET, and state competitive assessments.</p>
                 <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
-                    <button onclick="openGatedAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest shadow-xl shadow-amber-500/20 transition transform active:scale-95 cursor-pointer">Start Free Mock Test</button>
-                    <a href="#live-demo-test" class="border border-white/20 hover:border-white/40 bg-slate-950/40 backdrop-blur text-white font-bold px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition">Try Live Demo Test ↓</a>
+                    <button onclick="openGatedAuthModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-black px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest shadow-xl shadow-orange-500/25 transition transform active:scale-95 cursor-pointer">Start Free Mock Test</button>
+                    <a href="#live-demo-test" class="border border-slate-300 hover:border-blue-400 bg-white text-slate-700 hover:text-blue-700 font-bold px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition shadow-sm">Try Live Demo Test ↓</a>
+                </div>
+                <div class="flex items-center justify-center lg:justify-start gap-6 pt-4 text-slate-600">
+                    <div class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span><span class="text-xs font-semibold">Verified Question Banks</span></div>
+                    <div class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span><span class="text-xs font-semibold">100% Free to Start</span></div>
                 </div>
             </div>
             <div class="lg:col-span-5 w-full max-w-md mx-auto">
-                <div class="bg-slate-950/70 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-md overflow-hidden">
-                    <div class="bg-slate-950/90 px-5 py-4 border-b border-white/5 flex items-center justify-between">
-                        <span class="font-mono text-[10px] tracking-wider text-slate-400 uppercase font-bold">Live Stream Tracker</span>
-                        <div class="flex items-center space-x-2 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/10"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span><span class="text-[9px] font-mono font-black text-emerald-400 uppercase">Active</span></div>
+                <div class="bg-white/90 backdrop-blur border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
+                    <div class="bg-slate-50 px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+                        <span class="font-mono text-[10px] tracking-wider text-slate-500 uppercase font-bold">Live Stream Tracker</span>
+                        <div class="flex items-center space-x-2 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span><span class="text-[9px] font-mono font-black text-emerald-600 uppercase">Active</span></div>
                     </div>
-                    <div class="divide-y divide-white/5 text-xs font-medium font-mono">
-                        <div class="p-4 flex items-center justify-between hover:bg-white/[0.02] transition"><span class="text-slate-200 tracking-wide uppercase font-bold text-[11px]">RAS Patwari · Mock 09</span><span class="text-amber-400 text-[10px]">06:00 PM</span></div>
-                        <div class="p-4 flex items-center justify-between hover:bg-white/[0.02] transition"><span class="text-slate-200 tracking-wide uppercase font-bold text-[11px]">GATE CSE · Algorithms</span><span class="text-amber-400 text-[10px]">08:30 PM</span></div>
-                        <div class="p-4 flex items-center justify-between hover:bg-white/[0.02] transition"><span class="text-slate-200 tracking-wide uppercase font-bold text-[11px]">UGC NET · Paper I Base</span><span class="text-slate-500 text-[10px]">TOMORROW</span></div>
-                        <div class="p-4 flex items-center justify-between hover:bg-white/[0.02] transition"><span class="text-slate-200 tracking-wide uppercase font-bold text-[11px]">REET · Level 2 Core</span><span class="text-slate-500 text-[10px]">TOMORROW</span></div>
+                    <div class="divide-y divide-slate-100 text-xs font-medium font-mono">
+                        <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition"><span class="text-slate-700 tracking-wide uppercase font-bold text-[11px]">RAS Patwari · Mock 09</span><span class="text-orange-500 text-[10px]">06:00 PM</span></div>
+                        <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition"><span class="text-slate-700 tracking-wide uppercase font-bold text-[11px]">GATE CSE · Algorithms</span><span class="text-orange-500 text-[10px]">08:30 PM</span></div>
+                        <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition"><span class="text-slate-700 tracking-wide uppercase font-bold text-[11px]">UGC NET · Paper I Base</span><span class="text-slate-400 text-[10px]">TOMORROW</span></div>
+                        <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition"><span class="text-slate-700 tracking-wide uppercase font-bold text-[11px]">REET · Level 2 Core</span><span class="text-slate-400 text-[10px]">TOMORROW</span></div>
                     </div>
                 </div>
             </div>
@@ -106,311 +108,333 @@
     </section>
 
     <!-- ---------- VALUE PROPOSITION METRIC STRIP ---------- -->
-    <div class="bg-slate-950/40 border-b border-white/5 py-6 sm:py-8 px-4 sm:px-6">
+    <div class="bg-white border-b border-slate-200 py-6 sm:py-8 px-4 sm:px-6">
         <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div><div class="font-serif font-bold text-xl sm:text-2xl text-amber-400">⚡ Live Engine</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Real-time Exam Timer</div></div>
-            <div><div class="font-serif font-bold text-xl sm:text-2xl text-blue-400">🎯 100% Aligned</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Latest Syllabus Matrix</div></div>
-            <div><div class="font-serif font-bold text-xl sm:text-2xl text-purple-400">📉 Negative Mark</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Standard Scoring System</div></div>
-            <div><div class="font-serif font-bold text-xl sm:text-2xl text-emerald-400">🛡️ Secure Auth</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Verified Student Nodes</div></div>
+            <div><div class="font-serif font-bold text-xl sm:text-2xl text-blue-600">⚡ Live Engine</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Real-time Exam Timer</div></div>
+            <div><div class="font-serif font-bold text-xl sm:text-2xl text-orange-500">🎯 100% Aligned</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Latest Syllabus Matrix</div></div>
+            <div><div class="font-serif font-bold text-xl sm:text-2xl text-violet-600">📉 Negative Mark</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Standard Scoring System</div></div>
+            <div><div class="font-serif font-bold text-xl sm:text-2xl text-emerald-600">🛡️ Secure Auth</div><div class="text-[9px] sm:text-[10px] font-medium font-mono text-slate-500 uppercase tracking-wider mt-1">Verified Student Nodes</div></div>
         </div>
     </div>
 
-    <!-- ---------- HOW IT WORKS ---------- -->
-    <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
-        <div class="max-w-2xl mx-auto text-center space-y-2">
-            <span class="font-mono text-[10px] text-amber-500 uppercase tracking-widest font-bold">// execution flow</span>
-            <h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Three Steps to Exam Readiness</h2>
+    <!-- ---------- HOW IT WORKS WITH FULL BACKGROUND IMAGE ---------- -->
+    <section class="relative w-full py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1800&q=80" alt="Students collaborating" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-white/93"></div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-3">
-                <div class="w-10 h-10 rounded-full bg-slate-950 text-amber-400 flex items-center justify-center font-mono font-bold border border-white/10">1</div>
-                <h3 class="font-serif text-lg font-bold text-white">Select Your Stream</h3>
-                <p class="text-slate-400 text-xs leading-relaxed font-medium">Identify your target assessment tracking line across corporate placements or technical state syllabus tracks.</p>
+        <div class="max-w-7xl mx-auto space-y-12 relative z-10">
+            <div class="max-w-2xl mx-auto text-center space-y-2">
+                <span class="font-mono text-[10px] text-blue-600 uppercase tracking-widest font-bold">// execution flow</span>
+                <h2 class="font-serif font-bold text-2xl sm:text-4xl text-slate-900">Three Steps to Exam Readiness</h2>
             </div>
-            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-3">
-                <div class="w-10 h-10 rounded-full bg-slate-950 text-amber-400 flex items-center justify-center font-mono font-bold border border-white/10">2</div>
-                <h3 class="font-serif text-lg font-bold text-white">Simulate Testing Fields</h3>
-                <p class="text-slate-400 text-xs leading-relaxed font-medium">Experience complete real exam timer conditions with authentic grading schemes and navigation limits.</p>
-            </div>
-            <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 space-y-3">
-                <div class="w-10 h-10 rounded-full bg-slate-950 text-amber-400 flex items-center justify-center font-mono font-bold border border-white/10">3</div>
-                <h3 class="font-serif text-lg font-bold text-white">Analyze Analytics Sheet</h3>
-                <p class="text-slate-400 text-xs leading-relaxed font-medium">Uncover deep micro-data profiles pinpointing logical performance gaps and target revision areas.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-sm hover:shadow-md transition">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-mono font-bold">1</div>
+                    <h3 class="font-serif text-lg font-bold text-slate-900">Select Your Stream</h3>
+                    <p class="text-slate-500 text-xs leading-relaxed font-medium">Identify your target assessment tracking line across corporate placements or technical state syllabus tracks.</p>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-sm hover:shadow-md transition">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-mono font-bold">2</div>
+                    <h3 class="font-serif text-lg font-bold text-slate-900">Simulate Testing Fields</h3>
+                    <p class="text-slate-500 text-xs leading-relaxed font-medium">Experience complete real exam timer conditions with authentic grading schemes and navigation limits.</p>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-sm hover:shadow-md transition">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-mono font-bold">3</div>
+                    <h3 class="font-serif text-lg font-bold text-slate-900">Analyze Analytics Sheet</h3>
+                    <p class="text-slate-500 text-xs leading-relaxed font-medium">Uncover deep micro-data profiles pinpointing logical performance gaps and target revision areas.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- ---------- SARKARI EXAM CATEGORY MATRIX ---------- -->
-    <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12" id="exams-hub">
-        <div class="max-w-2xl mx-auto text-center space-y-2"><span class="font-mono text-[10px] text-amber-500 uppercase tracking-widest font-bold">Comprehensive Repository Matrix</span><h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Targeted Examination Streams</h2><p class="text-slate-400 text-xs sm:text-sm font-medium">Select a core structure down below to unlock specific verified question models and diagnostics.</p></div>
+    <!-- ---------- SARKARI EXAM CATEGORY MATRIX WITH BACKGROUND IMAGE ---------- -->
+    <section class="relative w-full py-16 px-4 sm:px-6 lg:px-8 overflow-hidden" id="exams-hub">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1800&q=80" alt="Books and study background" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-white/95"></div>
+        </div>
+        <div class="max-w-7xl mx-auto space-y-12 relative z-10">
+        <div class="max-w-2xl mx-auto text-center space-y-2"><span class="font-mono text-[10px] text-blue-600 uppercase tracking-widest font-bold">Comprehensive Repository Matrix</span><h2 class="font-serif font-bold text-2xl sm:text-4xl text-slate-900">Targeted Examination Streams</h2><p class="text-slate-500 text-xs sm:text-sm font-medium">Select a core structure down below to unlock specific verified question models and diagnostics.</p></div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
-                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">IIT GATE Base</span><img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80" alt="GATE" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+            <div class="bg-white border border-slate-200 hover:border-blue-400 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
+                <div class="w-full h-44 bg-slate-100 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur border border-slate-200 text-slate-700 text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">IIT GATE Base</span><img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80" alt="GATE" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
                 <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">GATE CS & IT Matrix</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Core Engineering Algorithms, Architecture Theory & Data Structure Subsets.</p></div>
-                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-slate-900 group-hover:text-blue-600 transition">GATE CS & IT Matrix</h3><p class="text-slate-500 text-xs leading-relaxed font-medium">Core Engineering Algorithms, Architecture Theory & Data Structure Subsets.</p></div>
+                    <span class="text-xs font-bold text-blue-600 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
                 </div>
             </div>
-            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
-                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">NTA Network</span><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=600&q=80" alt="UGC NET" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+            <div class="bg-white border border-slate-200 hover:border-blue-400 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
+                <div class="w-full h-44 bg-slate-100 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur border border-slate-200 text-slate-700 text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">NTA Network</span><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=600&q=80" alt="UGC NET" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
                 <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">UGC NET Paper I & II</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Research Methodologies, General Aptitude Vectors, and Computing Diagnostics.</p></div>
-                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-slate-900 group-hover:text-blue-600 transition">UGC NET Paper I & II</h3><p class="text-slate-500 text-xs leading-relaxed font-medium">Research Methodologies, General Aptitude Vectors, and Computing Diagnostics.</p></div>
+                    <span class="text-xs font-bold text-blue-600 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
                 </div>
             </div>
-            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/30 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
-                <div class="w-full h-44 bg-slate-900 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur border border-white/10 text-white text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">Sarkari Jobs Base</span><img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?q=80&w=600&auto=format&fit=crop" alt="Patwari" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
+            <div class="bg-white border border-slate-200 hover:border-blue-400 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition group flex flex-col justify-between cursor-pointer" onclick="openGatedAuthModal()">
+                <div class="w-full h-44 bg-slate-100 relative overflow-hidden"><span class="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur border border-slate-200 text-slate-700 text-[9px] font-mono px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">Sarkari Jobs Base</span><img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?q=80&w=600&auto=format&fit=crop" alt="Patwari" class="w-full h-full object-cover transition duration-300 group-hover:scale-105"></div>
                 <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-400 transition">Sarkari Patwari Compilations</h3><p class="text-slate-400 text-xs leading-relaxed font-medium">Complete Cultural History, Mental Aptitude & Language Parameters.</p></div>
-                    <span class="text-xs font-bold text-blue-400 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
+                    <div class="space-y-1.5"><h3 class="font-serif text-lg sm:text-xl font-bold text-slate-900 group-hover:text-blue-600 transition">Sarkari Patwari Compilations</h3><p class="text-slate-500 text-xs leading-relaxed font-medium">Complete Cultural History, Mental Aptitude & Language Parameters.</p></div>
+                    <span class="text-xs font-bold text-blue-600 inline-flex items-center gap-1 group-hover:gap-2 transition font-mono">Access Pipeline &rarr;</span>
                 </div>
             </div>
         </div>
+        </div>
     </section>
 
-    <!-- ---------- PROGRESSIVE 10 MCQ EXAM WIZARD SECTION ---------- -->
-    <section class="w-full bg-slate-950/40 border-y border-white/5 py-16 px-4 sm:px-6 lg:px-8" id="live-demo-test">
-        <div class="max-w-3xl mx-auto space-y-8">
+    <!-- ---------- PROGRESSIVE 10 MCQ EXAM WIZARD SECTION WITH BACKGROUND IMAGE ---------- -->
+    <section class="relative w-full border-y border-slate-200 py-16 px-4 sm:px-6 lg:px-8 overflow-hidden" id="live-demo-test">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=80" alt="Exam desk background" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-slate-50/95"></div>
+        </div>
+        <div class="max-w-3xl mx-auto space-y-8 relative z-10">
             <div class="text-center space-y-2">
-                <span class="font-mono text-[10px] text-amber-500 uppercase tracking-widest font-bold">// progressive evaluation</span>
-                <h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Mixed Mini Mock Exam (C, Java &amp; DBMS)</h2>
-                <p class="text-slate-400 text-xs sm:text-sm font-medium">Test your baseline capabilities below. Answers compute client-side immediately upon final submission node.</p>
+                <span class="font-mono text-[10px] text-blue-600 uppercase tracking-widest font-bold">// progressive evaluation</span>
+                <h2 class="font-serif font-bold text-2xl sm:text-4xl text-slate-900">Mixed Mini Mock Exam (C, Java &amp; DBMS)</h2>
+                <p class="text-slate-500 text-xs sm:text-sm font-medium">Test your baseline capabilities below. Answers compute client-side immediately upon final submission node.</p>
             </div>
 
-            <div class="bg-slate-900/90 border border-white/10 rounded-2xl p-6 sm:p-10 shadow-2xl">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-10 shadow-lg">
                 <form id="demoMockForm" onsubmit="evaluateMockTest(event)">
-                    
+
                     <!-- Q1 -->
                     <div class="quiz-item active-question" data-qindex="1">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-mono font-bold text-amber-400">Question 01 of 10</span>
-                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">C Language</span>
+                            <span class="text-xs font-mono font-bold text-blue-600">Question 01 of 10</span>
+                            <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">C Language</span>
                         </div>
-                        <p class="text-slate-200 text-base font-semibold mb-6">What will be the output of the expression <code class="bg-slate-950 text-amber-400 px-1.5 py-0.5 rounded font-mono text-sm">sizeof('A')</code> in a standard C compiler?</p>
-                        <div class="flex flex-col gap-3">
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q1" value="A" class="accent-amber-500"> <span>1 Byte</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q1" value="B"> <span>Depends on character set architecture</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q1" value="C"> <span>Size equivalent to an integer (typically 4 Bytes)</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q1" value="D"> <span>Compilation Error</span></label>
+                        <p class="text-slate-800 text-base font-semibold mb-6">What will be the output of the expression <code class="bg-slate-100 text-blue-700 px-1.5 py-0.5 rounded font-mono text-sm">sizeof('A')</code> in a standard C compiler?</p>
+                        <div class="flex flex-col gap-3 quiz-options-group">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q1" value="A" class="accent-blue-600"> <span>1 Byte</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q1" value="B" class="accent-blue-600"> <span>Depends on character set architecture</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q1" value="C" class="accent-blue-600"> <span>Size equivalent to an integer (typically 4 Bytes)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q1" value="D" class="accent-blue-600"> <span>Compilation Error</span></label>
                         </div>
                     </div>
 
                     <!-- Q2 -->
                     <div class="quiz-item" data-qindex="2">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-mono font-bold text-amber-400">Question 02 of 10</span>
-                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">Java Runtime</span>
+                            <span class="text-xs font-mono font-bold text-blue-600">Question 02 of 10</span>
+                            <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">Java Runtime</span>
                         </div>
-                        <p class="text-slate-200 text-base font-semibold mb-6">Which memory management area in Java holds method names, field data, and static variables?</p>
-                        <div class="flex flex-col gap-3">
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q2" value="A"> <span>Heap Memory</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q2" value="B"> <span>Java Stack Area</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q2" value="C"> <span>Program Counter (PC) Register</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q2" value="D"> <span>Method Area</span></label>
+                        <p class="text-slate-800 text-base font-semibold mb-6">Which memory management area in Java holds method names, field data, and static variables?</p>
+                        <div class="flex flex-col gap-3 quiz-options-group">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q2" value="A" class="accent-blue-600"> <span>Heap Memory</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q2" value="B" class="accent-blue-600"> <span>Java Stack Area</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q2" value="C" class="accent-blue-600"> <span>Program Counter (PC) Register</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q2" value="D" class="accent-blue-600"> <span>Method Area</span></label>
                         </div>
                     </div>
 
                     <!-- Q3 -->
                     <div class="quiz-item" data-qindex="3">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-mono font-bold text-amber-400">Question 03 of 10</span>
-                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">DBMS Core</span>
+                            <span class="text-xs font-mono font-bold text-blue-600">Question 03 of 10</span>
+                            <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">DBMS Core</span>
                         </div>
-                        <p class="text-slate-200 text-base font-semibold mb-6">Which property of ACID rules ensures that a database remains transaction-resilient even in the event of an abrupt system power loss?</p>
-                        <div class="flex flex-col gap-3">
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q3" value="A"> <span>Atomicity</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q3" value="B"> <span>Consistency</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q3" value="C"> <span>Isolation</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q3" value="D"> <span>Durability</span></label>
+                        <p class="text-slate-800 text-base font-semibold mb-6">Which property of ACID rules ensures that a database remains transaction-resilient even in the event of an abrupt system power loss?</p>
+                        <div class="flex flex-col gap-3 quiz-options-group">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q3" value="A" class="accent-blue-600"> <span>Atomicity</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q3" value="B" class="accent-blue-600"> <span>Consistency</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q3" value="C" class="accent-blue-600"> <span>Isolation</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q3" value="D" class="accent-blue-600"> <span>Durability</span></label>
                         </div>
                     </div>
 
                     <!-- Q4 -->
                     <div class="quiz-item" data-qindex="4">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-mono font-bold text-amber-400">Question 04 of 10</span>
-                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">C Language</span>
+                            <span class="text-xs font-mono font-bold text-blue-600">Question 04 of 10</span>
+                            <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">C Language</span>
                         </div>
-                        <p class="text-slate-200 text-base font-semibold mb-6">What is the default storage class initialization value of a local variable in C if left explicitly unassigned?</p>
-                        <div class="flex flex-col gap-3">
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q4" value="A"> <span>Zero (0)</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q4" value="B"> <span>Undefined Garbage Value</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q4" value="C"> <span>Null pointer flag</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q4" value="D"> <span>Infinite memory loop</span></label>
+                        <p class="text-slate-800 text-base font-semibold mb-6">What is the default storage class initialization value of a local variable in C if left explicitly unassigned?</p>
+                        <div class="flex flex-col gap-3 quiz-options-group">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q4" value="A" class="accent-blue-600"> <span>Zero (0)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q4" value="B" class="accent-blue-600"> <span>Undefined Garbage Value</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q4" value="C" class="accent-blue-600"> <span>Null pointer flag</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q4" value="D" class="accent-blue-600"> <span>Infinite memory loop</span></label>
                         </div>
                     </div>
 
                     <!-- Q5 -->
                     <div class="quiz-item" data-qindex="5">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-mono font-bold text-amber-400">Question 05 of 10</span>
-                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">Java Core</span>
+                            <span class="text-xs font-mono font-bold text-blue-600">Question 05 of 10</span>
+                            <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">Java Core</span>
                         </div>
-                        <p class="text-slate-200 text-base font-semibold mb-6">Why is the String class defined as Immutable within standard Java framework implementations?</p>
-                        <div class="flex flex-col gap-3">
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q5" value="A"> <span>To accommodate security, synchronization, and optimization pools</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q5" value="B"> <span>Java does not support mutable string reference models</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q5" value="C"> <span>To prevent runtime memory allocation procedures</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q5" value="D"> <span>Because it belongs directly to the primitive keyword matrix</span></label>
+                        <p class="text-slate-800 text-base font-semibold mb-6">Why is the String class defined as Immutable within standard Java framework implementations?</p>
+                        <div class="flex flex-col gap-3 quiz-options-group">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q5" value="A" class="accent-blue-600"> <span>To accommodate security, synchronization, and optimization pools</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q5" value="B" class="accent-blue-600"> <span>Java does not support mutable string reference models</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q5" value="C" class="accent-blue-600"> <span>To prevent runtime memory allocation procedures</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q5" value="D" class="accent-blue-600"> <span>Because it belongs directly to the primitive keyword matrix</span></label>
                         </div>
                     </div>
 
                     <!-- Q6 -->
                     <div class="quiz-item" data-qindex="6">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-mono font-bold text-amber-400">Question 06 of 10</span>
-                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">DBMS Architecture</span>
+                            <span class="text-xs font-mono font-bold text-blue-600">Question 06 of 10</span>
+                            <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">DBMS Architecture</span>
                         </div>
-                        <p class="text-slate-200 text-base font-semibold mb-6">In relational database algebra, which normal form explicitly addresses anomalies stemming from transitive functional dependencies?</p>
-                        <div class="flex flex-col gap-3">
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q6" value="A"> <span>First Normal Form (1NF)</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q6" value="B"> <span>Second Normal Form (2NF)</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q6" value="C"> <span>Third Normal Form (3NF)</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q6" value="D"> <span>Boyce-Codd Normal Form (BCNF)</span></label>
+                        <p class="text-slate-800 text-base font-semibold mb-6">In relational database algebra, which normal form explicitly addresses anomalies stemming from transitive functional dependencies?</p>
+                        <div class="flex flex-col gap-3 quiz-options-group">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q6" value="A" class="accent-blue-600"> <span>First Normal Form (1NF)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q6" value="B" class="accent-blue-600"> <span>Second Normal Form (2NF)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q6" value="C" class="accent-blue-600"> <span>Third Normal Form (3NF)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q6" value="D" class="accent-blue-600"> <span>Boyce-Codd Normal Form (BCNF)</span></label>
                         </div>
                     </div>
 
                     <!-- Q7 -->
                     <div class="quiz-item" data-qindex="7">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-mono font-bold text-amber-400">Question 07 of 10</span>
-                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">C Language</span>
+                            <span class="text-xs font-mono font-bold text-blue-600">Question 07 of 10</span>
+                            <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">C Language</span>
                         </div>
-                        <p class="text-slate-200 text-base font-semibold mb-6">Which standard dynamic memory library function in C initializes allocated memory blocks to zero automatically?</p>
-                        <div class="flex flex-col gap-3">
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q7" value="A"> <span>malloc()</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q7" value="B"> <span>calloc()</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q7" value="C"> <span>realloc()</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q7" value="D"> <span>alloc()</span></label>
+                        <p class="text-slate-800 text-base font-semibold mb-6">Which standard dynamic memory library function in C initializes allocated memory blocks to zero automatically?</p>
+                        <div class="flex flex-col gap-3 quiz-options-group">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q7" value="A" class="accent-blue-600"> <span>malloc()</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q7" value="B" class="accent-blue-600"> <span>calloc()</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q7" value="C" class="accent-blue-600"> <span>realloc()</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q7" value="D" class="accent-blue-600"> <span>alloc()</span></label>
                         </div>
                     </div>
 
                     <!-- Q8 -->
                     <div class="quiz-item" data-qindex="8">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-mono font-bold text-amber-400">Question 08 of 10</span>
-                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">Java OOP</span>
+                            <span class="text-xs font-mono font-bold text-blue-600">Question 08 of 10</span>
+                            <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">Java OOP</span>
                         </div>
-                        <p class="text-slate-200 text-base font-semibold mb-6">Which mechanism prevents a class from being subclassed or inherited within a Java structure?</p>
-                        <div class="flex flex-col gap-3">
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q8" value="A"> <span>Declaring the class as static</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q8" value="B"> <span>Declaring the class as abstract</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q8" value="C"> <span>Declaring the class as final</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q8" value="D"> <span>Securing the main entry constructor</span></label>
+                        <p class="text-slate-800 text-base font-semibold mb-6">Which mechanism prevents a class from being subclassed or inherited within a Java structure?</p>
+                        <div class="flex flex-col gap-3 quiz-options-group">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q8" value="A" class="accent-blue-600"> <span>Declaring the class as static</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q8" value="B" class="accent-blue-600"> <span>Declaring the class as abstract</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q8" value="C" class="accent-blue-600"> <span>Declaring the class as final</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q8" value="D" class="accent-blue-600"> <span>Securing the main entry constructor</span></label>
                         </div>
                     </div>
 
                     <!-- Q9 -->
                     <div class="quiz-item" data-qindex="9">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-mono font-bold text-amber-400">Question 09 of 10</span>
-                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">DBMS Structure</span>
+                            <span class="text-xs font-mono font-bold text-blue-600">Question 09 of 10</span>
+                            <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">DBMS Structure</span>
                         </div>
-                        <p class="text-slate-200 text-base font-semibold mb-6">What type of structural command constraint does the statement 'DROP TABLE' represent in SQL architecture?</p>
-                        <div class="flex flex-col gap-3">
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q9" value="A"> <span>Data Manipulation Language (DML)</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q9" value="B"> <span>Data Definition Language (DDL)</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q9" value="C"> <span>Data Control Language (DCL)</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q9" value="D"> <span>Transaction Control Language (TCL)</span></label>
+                        <p class="text-slate-800 text-base font-semibold mb-6">What type of structural command constraint does the statement 'DROP TABLE' represent in SQL architecture?</p>
+                        <div class="flex flex-col gap-3 quiz-options-group">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q9" value="A" class="accent-blue-600"> <span>Data Manipulation Language (DML)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q9" value="B" class="accent-blue-600"> <span>Data Definition Language (DDL)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q9" value="C" class="accent-blue-600"> <span>Data Control Language (DCL)</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q9" value="D" class="accent-blue-600"> <span>Transaction Control Language (TCL)</span></label>
                         </div>
                     </div>
 
                     <!-- Q10 -->
                     <div class="quiz-item" data-qindex="10">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-mono font-bold text-amber-400">Question 10 of 10</span>
-                            <span class="bg-slate-950 text-slate-400 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-white/5">Architecture</span>
+                            <span class="text-xs font-mono font-bold text-blue-600">Question 10 of 10</span>
+                            <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">Architecture</span>
                         </div>
-                        <p class="text-slate-200 text-base font-semibold mb-6">In object-oriented languages like Java, what structural principle maps directly to a schema definition inside a relational database system?</p>
-                        <div class="flex flex-col gap-3">
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q10" value="A"> <span>An Object instance</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q10" value="B"> <span>A Class blueprint declaration</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q10" value="C"> <span>A Method override block</span></label>
-                            <label class="quiz-opt flex items-center gap-3 p-4 border border-white/5 rounded-xl cursor-pointer hover:bg-white/[0.02] transition"><input type="radio" name="q10" value="D"> <span>Encapsulated array list packets</span></label>
+                        <p class="text-slate-800 text-base font-semibold mb-6">In object-oriented languages like Java, what structural principle maps directly to a schema definition inside a relational database system?</p>
+                        <div class="flex flex-col gap-3 quiz-options-group">
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q10" value="A" class="accent-blue-600"> <span>An Object instance</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q10" value="B" class="accent-blue-600"> <span>A Class blueprint declaration</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q10" value="C" class="accent-blue-600"> <span>A Method override block</span></label>
+                            <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q10" value="D" class="accent-blue-600"> <span>Encapsulated array list packets</span></label>
                         </div>
                     </div>
 
                     <!-- Wizard Stepper Controls Layout -->
-                    <div class="flex justify-between items-center mt-8 pt-6 border-t border-white/5 gap-4">
-                        <button type="button" class="border border-white/10 text-slate-300 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-white/5 hover:bg-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed" id="prevQuizBtn" onclick="shiftQuestion(-1)" disabled>Previous</button>
-                        <span class="text-xs font-mono text-slate-500 font-bold tracking-wide" id="quizNavProgressText">Question 1 of 10</span>
-                        <button type="button" class="border border-amber-500 text-amber-400 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-amber-500/5 hover:bg-amber-500/10 transition" id="nextQuizBtn" onclick="shiftQuestion(1)">Next</button>
-                        <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs uppercase tracking-widest transition" id="submitQuizBtn" style="display:none;">Submit Mock Exam</button>
+                    <div class="flex justify-between items-center mt-8 pt-6 border-t border-slate-200 gap-4">
+                        <button type="button" class="border border-slate-300 text-slate-600 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-white hover:bg-slate-50 transition disabled:opacity-30 disabled:cursor-not-allowed" id="prevQuizBtn" onclick="shiftQuestion(-1)" disabled>Previous</button>
+                        <span class="text-xs font-mono text-slate-400 font-bold tracking-wide" id="quizNavProgressText">Question 1 of 10</span>
+                        <button type="button" class="border border-blue-600 text-blue-600 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-blue-50 hover:bg-blue-100 transition" id="nextQuizBtn" onclick="shiftQuestion(1)">Next</button>
+                        <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white font-black px-5 py-2.5 rounded-xl text-xs uppercase tracking-widest transition" id="submitQuizBtn" style="display:none;">Submit Mock Exam</button>
                     </div>
                 </form>
 
                 <!-- Live Client-Side Rendered Scorecard Dashboard -->
-                <div id="quizResultsSheet" class="mt-8 p-6 bg-slate-950/40 border border-emerald-500/30 rounded-2xl space-y-6 hidden">
+                <div id="quizResultsSheet" class="mt-8 p-6 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-6 hidden">
                     <div class="text-center">
-                        <h3 class="font-serif text-xl font-bold text-emerald-400 uppercase tracking-wide">Evaluation Complete! 🎉</h3>
-                        <div class="text-4xl font-mono font-black text-white mt-3"><span id="rawCorrectCount" class="text-amber-400">0</span> / 10</div>
+                        <h3 class="font-serif text-xl font-bold text-emerald-600 uppercase tracking-wide">Evaluation Complete! 🎉</h3>
+                        <div class="text-4xl font-mono font-black text-slate-900 mt-3"><span id="rawCorrectCount" class="text-blue-600">0</span> / 10</div>
                     </div>
-                    <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                    <div class="w-full bg-emerald-100 h-2.5 rounded-full overflow-hidden">
                         <div id="resultPercentBar" class="bg-emerald-500 h-full w-0 transition-all duration-1000"></div>
                     </div>
-                    <p id="customQuizFeedback" class="text-xs text-slate-400 font-medium text-center leading-relaxed px-2"></p>
-                    
-                    <div class="p-5 bg-slate-950/80 border-l-4 border-amber-500 rounded-xl text-center space-y-3">
-                        <h4 class="font-serif text-sm font-bold text-white uppercase tracking-wide">Unlock Hundreds of Full-Length Mock Exams!</h4>
-                        <p class="text-[11px] text-slate-400 leading-relaxed font-medium">To access highly targeted tests with detailed answers, real-time analytics, and student matrices, join our main portal system.</p>
-                        <button onclick="openGatedAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-[10px] uppercase tracking-widest transition">Explore More Mock Tests</button>
+                    <p id="customQuizFeedback" class="text-xs text-slate-500 font-medium text-center leading-relaxed px-2"></p>
+
+                    <div class="p-5 bg-white border-l-4 border-orange-500 rounded-xl text-center space-y-3 shadow-sm">
+                        <h4 class="font-serif text-sm font-bold text-slate-900 uppercase tracking-wide">Unlock Hundreds of Full-Length Mock Exams!</h4>
+                        <p class="text-[11px] text-slate-500 leading-relaxed font-medium">To access highly targeted tests with detailed answers, real-time analytics, and student matrices, join our main portal system.</p>
+                        <button onclick="openGatedAuthModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-black px-4 py-2.5 rounded-xl text-[10px] uppercase tracking-widest transition">Explore More Mock Tests</button>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ---------- HIGH VALUE HOVER FEATURE HIGHLIGHTS GRID ---------- -->
-    <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12" id="features-hub">
+    <!-- ---------- HIGH VALUE HOVER FEATURE HIGHLIGHTS GRID WITH BACKGROUND IMAGE ---------- -->
+    <section class="relative w-full py-16 px-4 sm:px-6 lg:px-8 overflow-hidden" id="features-hub">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1800&q=80" alt="Analytics workspace background" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-white/95"></div>
+        </div>
+        <div class="max-w-7xl mx-auto space-y-12 relative z-10">
         <div class="max-w-2xl mx-auto text-center space-y-2">
-            <span class="font-mono text-[10px] text-amber-500 uppercase tracking-widest font-bold">Advanced Testing Matrix</span>
-            <h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Engineered for Peak Student Output</h2>
-            <p class="text-slate-400 text-xs sm:text-sm font-medium">Get access to elite structural training mechanisms carefully optimized to maximize core learning capability.</p>
+            <span class="font-mono text-[10px] text-blue-600 uppercase tracking-widest font-bold">Advanced Testing Matrix</span>
+            <h2 class="font-serif font-bold text-2xl sm:text-4xl text-slate-900">Engineered for Peak Student Output</h2>
+            <p class="text-slate-500 text-xs sm:text-sm font-medium">Get access to elite structural training mechanisms carefully optimized to maximize core learning capability.</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/20 rounded-2xl overflow-hidden p-6 space-y-4 shadow-xl group transition-all duration-300 transform hover:-translate-y-1">
-                <div class="w-full h-40 rounded-xl overflow-hidden bg-slate-900">
+            <div class="bg-white border border-slate-200 hover:border-blue-300 rounded-2xl overflow-hidden p-6 space-y-4 shadow-sm hover:shadow-lg group transition-all duration-300 transform hover:-translate-y-1">
+                <div class="w-full h-40 rounded-xl overflow-hidden bg-slate-100">
                     <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80" alt="Analytics" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-serif text-lg font-bold text-white group-hover:text-amber-400 transition">Real-Time Dashboards</h3>
-                <p class="text-slate-400 text-xs leading-relaxed font-medium">Isolate your weaknesses immediately. Our internal assessment layer tracks accuracy paths and processing metrics after every submission node.</p>
+                <h3 class="font-serif text-lg font-bold text-slate-900 group-hover:text-blue-600 transition">Real-Time Dashboards</h3>
+                <p class="text-slate-500 text-xs leading-relaxed font-medium">Isolate your weaknesses immediately. Our internal assessment layer tracks accuracy paths and processing metrics after every submission node.</p>
             </div>
-            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/20 rounded-2xl overflow-hidden p-6 space-y-4 shadow-xl group transition-all duration-300 transform hover:-translate-y-1">
-                <div class="w-full h-40 rounded-xl overflow-hidden bg-slate-900">
+            <div class="bg-white border border-slate-200 hover:border-blue-300 rounded-2xl overflow-hidden p-6 space-y-4 shadow-sm hover:shadow-lg group transition-all duration-300 transform hover:-translate-y-1">
+                <div class="w-full h-40 rounded-xl overflow-hidden bg-slate-100">
                     <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80" alt="Syllabus" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-serif text-lg font-bold text-white group-hover:text-amber-400 transition">Adaptive Question Banking</h3>
-                <p class="text-slate-400 text-xs leading-relaxed font-medium">Access thousands of calibrated challenges spanning computer architecture parameters, advanced discrete structures, and algorithmic calculations.</p>
+                <h3 class="font-serif text-lg font-bold text-slate-900 group-hover:text-blue-600 transition">Adaptive Question Banking</h3>
+                <p class="text-slate-500 text-xs leading-relaxed font-medium">Access thousands of calibrated challenges spanning computer architecture parameters, advanced discrete structures, and algorithmic calculations.</p>
             </div>
-            <div class="bg-slate-950/40 border border-white/5 hover:border-amber-500/20 rounded-2xl overflow-hidden p-6 space-y-4 shadow-xl group transition-all duration-300 transform hover:-translate-y-1">
-                <div class="w-full h-40 rounded-xl overflow-hidden bg-slate-900">
+            <div class="bg-white border border-slate-200 hover:border-blue-300 rounded-2xl overflow-hidden p-6 space-y-4 shadow-sm hover:shadow-lg group transition-all duration-300 transform hover:-translate-y-1">
+                <div class="w-full h-40 rounded-xl overflow-hidden bg-slate-100">
                     <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&q=80" alt="Study" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-serif text-lg font-bold text-white group-hover:text-amber-400 transition">Conceptual Logic Blueprints</h3>
-                <p class="text-slate-400 text-xs leading-relaxed font-medium">Understand the underlying execution logic steps. Every simulated test track contains comprehensive answers optimized to assist intermediate and advanced learners.</p>
+                <h3 class="font-serif text-lg font-bold text-slate-900 group-hover:text-blue-600 transition">Conceptual Logic Blueprints</h3>
+                <p class="text-slate-500 text-xs leading-relaxed font-medium">Understand the underlying execution logic steps. Every simulated test track contains comprehensive answers optimized to assist intermediate and advanced learners.</p>
             </div>
+        </div>
         </div>
     </section>
 
     <!-- ---------- SINGLE SIGN-ON AUTHENTICATION GATEWAY ---------- -->
     <div id="gated-auth-modal" class="modal-blur-overlay flex items-center justify-center p-4">
-        <div class="bg-slate-900/90 border border-white/10 w-full max-w-sm p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6 relative overflow-hidden">
-            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400"></div>
-            <button onclick="closeGatedAuthModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white font-mono font-bold text-lg cursor-pointer transition">&times;</button>
-            
+        <div class="bg-white border border-slate-200 w-full max-w-sm p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6 relative overflow-hidden">
+            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-600 via-sky-500 to-orange-400"></div>
+            <button onclick="closeGatedAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 font-mono font-bold text-lg cursor-pointer transition">&times;</button>
+
             <div class="space-y-1 text-center">
-                <h2 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-amber-400 uppercase tracking-wide font-serif">IDENTITY GATEWAY</h2>
-                <p class="text-[11px] text-slate-400 font-medium leading-relaxed">Secure instant authorization using single-sign-on validation node.</p>
+                <h2 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-orange-500 uppercase tracking-wide font-serif">IDENTITY GATEWAY</h2>
+                <p class="text-[11px] text-slate-500 font-medium leading-relaxed">Secure instant authorization using single-sign-on validation node.</p>
             </div>
-            
-            <div class="py-4 flex flex-col items-center justify-center space-y-4 bg-slate-950/30 border border-white/5 rounded-2xl p-4">
-                <span class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest block mb-2">Verified Aspirant SSO Channel</span>
+
+            <div class="py-4 flex flex-col items-center justify-center space-y-4 bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-2">Verified Aspirant SSO Channel</span>
                 <div class="flex justify-center transition hover:scale-[1.01] w-full max-w-full overflow-hidden">
                     <div id="google-auth-element-root" class="w-full flex justify-center"></div>
                 </div>
             </div>
 
-            <div class="text-center text-[10px] font-mono font-bold text-slate-600 uppercase tracking-wider">
+            <div class="text-center text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
                 🔒 System secured by Google Cloud Single Sign-On
             </div>
         </div>
@@ -418,17 +442,17 @@
 
     <!-- ---------- CLOSING CALL-TO-ACTION WITH INTEGRATED BACKGROUND IMAGE ---------- -->
     <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div class="relative bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 border border-white/5 text-center py-14 px-6 rounded-3xl space-y-4 shadow-xl overflow-hidden min-h-[340px] flex flex-col justify-center items-center">
+        <div class="relative bg-gradient-to-r from-blue-800 via-blue-700 to-sky-700 border border-blue-900/10 text-center py-14 px-6 rounded-3xl space-y-4 shadow-xl overflow-hidden min-h-[340px] flex flex-col justify-center items-center">
             <!-- Background Image Node for CTA Footer -->
             <div class="absolute inset-0 z-0">
-                <img src="https://images.unsplash.com/photo-1652305500057-0fcb348b62aa?auto=format&fit=crop&w=1800&q=80" alt="Students cooperating on system checks" class="w-full h-full object-cover object-position-[center_25%]">
-                <div class="absolute inset-0 bg-gradient-to-b from-slate-950/60 to-slate-950/94"></div>
+                <img src="https://images.unsplash.com/photo-1652305500057-0fcb348b62aa?auto=format&fit=crop&w=1800&q=80" alt="Students cooperating on system checks" class="w-full h-full object-cover object-position-[center_25%] opacity-25">
+                <div class="absolute inset-0 bg-gradient-to-b from-blue-800/70 to-blue-900/90"></div>
             </div>
-            
+
             <div class="relative z-10 space-y-4">
                 <h2 class="font-serif font-bold text-2xl sm:text-4xl text-white">Your next attempt boundary starts here.</h2>
-                <p class="text-slate-300 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">Link your account profile node to instantly initialize highly scalable, simulated mock examination conditions.</p>
-                <button onclick="openGatedAuthModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition shadow-lg shadow-amber-500/10 cursor-pointer">
+                <p class="text-blue-100 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">Link your account profile node to instantly initialize highly scalable, simulated mock examination conditions.</p>
+                <button onclick="openGatedAuthModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-black px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition shadow-lg shadow-orange-500/20 cursor-pointer">
                     Establish Free Profile
                 </button>
             </div>
@@ -436,13 +460,13 @@
     </section>
 
     <!-- ---------- FOOTER MATRICES TERMINAL ---------- -->
-    <footer class="w-full text-center py-5 border-t border-white/5 bg-slate-950/40 text-[9px] sm:text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest shrink-0">&copy; Computer Science Management System Terminal</footer>
+    <footer class="w-full text-center py-5 border-t border-slate-200 bg-slate-50 text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest shrink-0">&copy; Computer Science Management System Terminal</footer>
 
     <!-- ---------- INTEGRATED JAVASCRIPT SYSTEM ENGINE MODULES ---------- -->
     <script>
         const _u = "https://lelvinusfxniqrmfufql.supabase.co";
         const _k = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
-        
+
         const supabaseClient = supabase.createClient(_u, _k, {
             auth: {
                 persistSession: true,
@@ -464,8 +488,8 @@
         document.querySelectorAll('.quiz-opt').forEach(opt => {
             opt.addEventListener('click', function() {
                 const group = this.closest('.quiz-options-group');
-                group.querySelectorAll('.quiz-opt').forEach(item => item.classList.remove('bg-amber-500/10', 'border-amber-500/30', 'text-amber-400'));
-                this.classList.add('bg-amber-500/10', 'border-amber-500/30', 'text-amber-400');
+                group.querySelectorAll('.quiz-opt').forEach(item => item.classList.remove('bg-blue-50', 'border-blue-400', 'text-blue-700'));
+                this.classList.add('bg-blue-50', 'border-blue-400', 'text-blue-700');
                 const radio = this.querySelector('input[type="radio"]');
                 if (radio) radio.checked = true;
             });
@@ -478,16 +502,16 @@
         function shiftQuestion(direction) {
             const list = document.querySelectorAll('.quiz-item');
             list[activeQuestionNum - 1].classList.remove('active-question');
-            
+
             activeQuestionNum += direction;
             if (activeQuestionNum < 1) activeQuestionNum = 1;
             if (activeQuestionNum > totalQuestionsCount) activeQuestionNum = totalQuestionsCount;
-            
+
             list[activeQuestionNum - 1].classList.add('active-question');
-            
+
             document.getElementById('quizNavProgressText').innerText = `Question ${activeQuestionNum} of ${totalQuestionsCount}`;
             document.getElementById('prevQuizBtn').disabled = (activeQuestionNum === 1);
-            
+
             if (activeQuestionNum === totalQuestionsCount) {
                 document.getElementById('nextQuizBtn').style.display = "none";
                 document.getElementById('submitQuizBtn').style.display = "inline-block";
@@ -502,7 +526,7 @@
             event.preventDefault();
 
             const solutionKeys = {
-                q1: "C", q2: "D", q3: "D", q4: "B", q5: "A", 
+                q1: "C", q2: "D", q3: "D", q4: "B", q5: "A",
                 q6: "C", q7: "B", q8: "C", q9: "B", q10: "B"
             };
 
@@ -537,7 +561,7 @@
         // Google One-Tap Initializer Node
         window.onload = function () {
             google.accounts.id.initialize({
-                client_id: "313377576458-c198ssj598dcg6c58c3kmtvtg5sf9m84.apps.googleusercontent.com", 
+                client_id: "313377576458-c198ssj598dcg6c58c3kmtvtg5sf9m84.apps.googleusercontent.com",
                 callback: handleGoogleAuthCallbackResponse,
                 auto_select: false
             });
@@ -581,20 +605,20 @@
                             password: 'OAUTH_GOOGLE_NODE',
                             last_login: currentTimestamp
                         }]);
-                    
+
                     localStorage.setItem('userRole', googleEmail === 'examportalcse@gmail.com' ? 'admin' : 'student');
                 } else {
                     await supabaseClient
                         .from('portal_users')
                         .update({ last_login: currentTimestamp })
                         .eq('email', googleEmail);
-                    
+
                     localStorage.setItem('userRole', dbUser.role);
                 }
 
                 localStorage.setItem('userEmail', googleEmail);
                 localStorage.setItem('sessionLoginTime', Date.now().toString());
-                
+
                 window.location.replace("dashboard.html");
 
             } catch (err) {
