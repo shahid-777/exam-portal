@@ -207,6 +207,50 @@
             </div>
         </div>
 
+        <div class="bg-slate-950/40 border border-red-500/20 rounded-2xl p-6 space-y-4 shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-red-600 to-orange-500"></div>
+            <h3 class="text-xs font-mono font-black text-red-400 uppercase tracking-widest flex items-center gap-2">
+                <span class="flex h-2 w-2 rounded-full bg-red-500 animate-ping"></span>
+                🔴 Go Live: Launch Real-Time Proctored Exam
+            </h3>
+            <p class="text-[11px] text-slate-400 font-sans leading-relaxed">Snapshot an existing exam into a live session. Students see a shared countdown and live-updating leaderboard; switching tabs or minimizing instantly disqualifies them with score 0.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
+                <div class="md:col-span-2">
+                    <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Select Exam to Go Live</label>
+                    <select id="live-launch-exam-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white font-bold outline-none">
+                        <option value="">-- Loading exams... --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-mono text-slate-400 uppercase mb-1">Duration (Minutes)</label>
+                    <input type="number" id="live-launch-duration-input" value="30" min="1" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none font-mono text-amber-400 font-bold">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="startLiveExamSession()" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-2.5 px-4 rounded-xl text-[11px] tracking-wider uppercase transition cursor-pointer">🔴 Start Live Session</button>
+                </div>
+            </div>
+
+            <div class="border-t border-white/5 pt-4 mt-2 space-y-3">
+                <h4 class="text-[11px] font-mono font-black text-slate-400 uppercase tracking-widest">Active & Recent Live Sessions</h4>
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-white/5 text-slate-400 font-mono uppercase tracking-wider text-[10px]">
+                                <th class="py-2 px-3">Subject</th>
+                                <th class="py-2 px-3">Status</th>
+                                <th class="py-2 px-3">Ends At</th>
+                                <th class="py-2 px-3 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="live-sessions-tbody" class="divide-y divide-white/5 font-medium text-slate-300">
+                            <tr><td colspan="4" class="text-center py-4 font-mono text-slate-500 animate-pulse">Syncing live sessions...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 shadow-xl relative">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-3 gap-3">
@@ -722,6 +766,143 @@
             syncMasterDashboardControls();
         };
       
+        // =====================================================================
+        // 🔴 GO LIVE MODULE — launches a real-time proctored exam session by
+        // snapshotting an existing exam's questions into `live_exam_sessions`.
+        // Students join via dashboard.html → live-exam.html; admin monitors
+        // via live-scoreboard.html (realtime + polling fallback).
+        // =====================================================================
+        async function populateLiveLaunchExamSelector() {
+            const selector = document.getElementById('live-launch-exam-select');
+            if (!selector) return;
+            try {
+                const { data: exams, error } = await supabaseClient
+                    .from('exams')
+                    .select('subject, duration_minutes')
+                    .order('subject', { ascending: true });
+                if (error) throw error;
+
+                selector.innerHTML = `<option value="">-- Select Exam Subject --</option>`;
+                (exams || []).forEach(ex => {
+                    selector.innerHTML += `<option value="${encodeURIComponent(ex.subject)}" data-duration="${ex.duration_minutes || 30}">${ex.subject.toUpperCase()}</option>`;
+                });
+
+                selector.onchange = function () {
+                    const opt = selector.options[selector.selectedIndex];
+                    const dur = opt ? opt.getAttribute('data-duration') : null;
+                    if (dur) document.getElementById('live-launch-duration-input').value = dur;
+                };
+            } catch (e) {
+                console.error("Failed to populate live launch selector:", e);
+                selector.innerHTML = `<option value="">-- Failed to load exams --</option>`;
+            }
+        }
+
+        async function startLiveExamSession() {
+            const encodedSubject = document.getElementById('live-launch-exam-select').value;
+            const durationMinutes = parseInt(document.getElementById('live-launch-duration-input').value) || 30;
+
+            if (!encodedSubject) { alert("Please select an exam to go live with."); return; }
+            const subjectName = decodeURIComponent(encodedSubject);
+
+            if (!confirm(`Start a LIVE proctored session for [ ${subjectName.toUpperCase()} ], running ${durationMinutes} minutes? Students will be able to join immediately.`)) return;
+
+            try {
+                const { data: examRow, error: fetchErr } = await supabaseClient
+                    .from('exams')
+                    .select('*')
+                    .eq('subject', subjectName)
+                    .limit(1)
+                    .maybeSingle();
+
+                if (fetchErr || !examRow) throw new Error("Could not load the selected exam's question data.");
+
+                const startedAt = new Date();
+                const endsAt = new Date(startedAt.getTime() + durationMinutes * 60000);
+
+                const { data: session, error: insertErr } = await supabaseClient
+                    .from('live_exam_sessions')
+                    .insert([{
+                        subject: examRow.subject,
+                        questions_json: examRow.questions_json,
+                        duration_minutes: durationMinutes,
+                        negative_marking: examRow.negative_marking || 0,
+                        status: 'active',
+                        started_at: startedAt.toISOString(),
+                        ends_at: endsAt.toISOString(),
+                        created_by: localStorage.getItem('userEmail') || 'admin'
+                    }])
+                    .select()
+                    .single();
+
+                if (insertErr) throw insertErr;
+
+                alert(`🔴 Live session started for [ ${subjectName.toUpperCase()} ]! Opening the live scoreboard monitor now.`);
+                window.open(`live-scoreboard.html?session=${session.id}`, '_blank');
+                fetchActiveLiveSessions();
+
+            } catch (e) {
+                alert("Failed to start live session: " + e.message);
+            }
+        }
+
+        async function fetchActiveLiveSessions() {
+            const tbody = document.getElementById('live-sessions-tbody');
+            if (!tbody) return;
+            try {
+                const { data: sessions, error } = await supabaseClient
+                    .from('live_exam_sessions')
+                    .select('*')
+                    .order('started_at', { ascending: false })
+                    .limit(15);
+
+                if (error) throw error;
+
+                if (!sessions || sessions.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 font-mono text-slate-500 uppercase">No live sessions launched yet.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = "";
+                sessions.forEach(s => {
+                    const isActive = s.status === 'active' && new Date(s.ends_at) > new Date();
+                    const statusBadge = isActive
+                        ? `<span class="px-2 py-0.5 text-[9px] font-black bg-red-500/10 text-red-400 border border-red-500/20 rounded uppercase animate-pulse">🔴 Live</span>`
+                        : `<span class="px-2 py-0.5 text-[9px] font-black bg-slate-800 text-slate-400 border border-white/10 rounded uppercase">Ended</span>`;
+                    const endsAtStr = new Date(s.ends_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: 'numeric', minute: '2-digit' });
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/5 transition">
+                            <td class="py-2.5 px-3 font-bold text-slate-200 uppercase">${s.subject}</td>
+                            <td class="py-2.5 px-3">${statusBadge}</td>
+                            <td class="py-2.5 px-3 text-slate-400 font-mono text-[11px]">${endsAtStr}</td>
+                            <td class="py-2.5 px-3 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <button onclick="window.open('live-scoreboard.html?session=${s.id}', '_blank')" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition font-mono text-[9px] font-black px-2 py-1 rounded-md uppercase">View Scoreboard</button>
+                                    ${isActive ? `<button onclick="endLiveSessionFromList(${s.id})" class="bg-red-600/20 text-red-400 border border-red-500/30 hover:bg-red-600 hover:text-white transition font-mono text-[9px] font-black px-2 py-1 rounded-md uppercase">End Now</button>` : ""}
+                                </div>
+                            </td>
+                        </tr>`;
+                });
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Sync Error: ${e.message}</td></tr>`;
+            }
+        }
+
+        async function endLiveSessionFromList(sessionId) {
+            if (!confirm("End this live session immediately for all participants?")) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('live_exam_sessions')
+                    .update({ status: 'ended', ends_at: new Date().toISOString() })
+                    .eq('id', sessionId);
+                if (error) throw error;
+                fetchActiveLiveSessions();
+            } catch (e) {
+                alert("Failed to end session: " + e.message);
+            }
+        }
+
         // 🆕 CREATE A NEW CATEGORY (button was wired in HTML but function was missing)
         async function createNewCategory() {
             const input = document.getElementById('new-cat-name');
@@ -813,6 +994,8 @@
 
                 fetchExamsOnAdminSide();
                 fetchGlobalStudentResults(); 
+                populateLiveLaunchExamSelector();
+                fetchActiveLiveSessions();
 
             } catch(e) { console.error("Initialization Sync Crash:", e); }
         }
