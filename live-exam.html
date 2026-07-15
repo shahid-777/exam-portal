@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="logo.png">
+    <title>Live Exam — Real-Time Assessment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 font-sans min-h-screen text-slate-200 flex flex-col justify-between select-none">
+
+    <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-white/5 py-3 px-4 flex items-center justify-between shadow-lg fixed top-0 left-0 right-0 z-50">
+        <div class="flex items-center space-x-2 min-w-0">
+            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse shrink-0"></span>
+            <div class="flex flex-col truncate">
+                <span id="live-subject-title" class="text-[10px] sm:text-xs font-black tracking-widest text-red-400 uppercase leading-none truncate">LOADING LIVE SESSION...</span>
+                <span class="text-[7px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">LIVE PROCTORED EXAM</span>
+            </div>
+        </div>
+        <div class="bg-red-500/10 border border-red-500/20 px-2.5 sm:px-4 py-1.5 rounded-xl flex items-center space-x-1.5 shrink-0">
+            <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+            <span id="time-counter-clock" class="text-[11px] sm:text-xs font-mono font-black text-red-400 tracking-widest">00:00</span>
+        </div>
+    </header>
+
+    <section class="w-full bg-slate-900/30 border-b border-white/5 py-3 px-6 sticky top-[65px] z-40 backdrop-blur-sm">
+        <div class="max-w-4xl mx-auto flex flex-wrap gap-4 items-center justify-between text-xs font-mono">
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                <div>Total: <span id="stat-total" class="text-blue-400 font-bold">0</span></div>
+                <div>Attempted: <span id="stat-attempted" class="text-green-400 font-bold">0</span></div>
+                <div>Unattempted: <span id="stat-left" class="text-slate-400 font-bold">0</span></div>
+            </div>
+            <div class="text-amber-400 font-bold text-[10px] uppercase tracking-wider">⚠️ Do not switch tabs or minimize — instant disqualification</div>
+        </div>
+    </section>
+
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-8 mt-24 space-y-6">
+        <div id="live-exam-body">
+            <div class="text-center text-slate-500 font-mono text-xs py-12 animate-pulse uppercase">Connecting to live session...</div>
+        </div>
+    </main>
+
+    <!-- Disqualification overlay -->
+    <div id="disqualify-overlay" class="fixed inset-0 bg-red-950/95 backdrop-blur-md z-[200] hidden flex items-center justify-center p-6">
+        <div class="max-w-md text-center space-y-4">
+            <div class="text-5xl">🚫</div>
+            <h2 class="text-xl font-black text-red-400 uppercase tracking-widest">Disqualified</h2>
+            <p class="text-sm text-slate-300 font-medium" id="disqualify-reason-text">You switched away from the exam tab/window. This live exam has strict proctoring — your score has been recorded as 0.</p>
+            <button onclick="window.location.replace('dashboard.html')" class="bg-red-600 hover:bg-red-500 text-white font-black py-3 px-6 rounded-xl uppercase text-xs tracking-widest transition">Return to Dashboard</button>
+        </div>
+    </div>
+
+    <!-- Final submitted screen -->
+    <div id="submitted-overlay" class="fixed inset-0 bg-emerald-950/95 backdrop-blur-md z-[200] hidden flex items-center justify-center p-6">
+        <div class="max-w-md text-center space-y-4">
+            <div class="text-5xl">✅</div>
+            <h2 class="text-xl font-black text-emerald-400 uppercase tracking-widest">Submitted</h2>
+            <p class="text-sm text-slate-300 font-medium">Your live exam has been submitted successfully.</p>
+            <div class="bg-slate-900/60 border border-white/10 rounded-2xl p-5 space-y-1">
+                <div class="text-3xl font-mono font-black text-blue-400" id="final-score-display">0 / 0</div>
+                <div class="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Final Score</div>
+            </div>
+            <button onclick="window.location.replace('dashboard.html')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-6 rounded-xl uppercase text-xs tracking-widest transition">Return to Dashboard</button>
+        </div>
+    </div>
+
+    <footer class="w-full text-center py-3 border-t border-white/5 bg-slate-900/40 text-[9px] font-mono text-slate-600 uppercase tracking-widest mt-6">
+        &copy; Live Proctored Examination Engine
+    </footer>
+
+    <script>
+        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let sessionData = null;
+        let participantRow = null;
+        let questions = [];
+        let userResponses = {};
+        let studentEmail = "";
+        let timerInterval = null;
+        let examLocked = false; // true once disqualified or submitted — blocks further writes
+
+        function escapeHtmlForDisplay(text) {
+            if (text === undefined || text === null) return "";
+            return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function resolveBilingualText(value, fallback) {
+            if (value === undefined || value === null) return fallback || "";
+            if (typeof value === "object") return value.en !== undefined ? String(value.en) : (fallback || "");
+            return String(value);
+        }
+
+        function resolveOptionText(opt) {
+            if (opt === undefined || opt === null) return "";
+            if (typeof opt === "object") return opt.en !== undefined ? String(opt.en) : "Option Node";
+            return String(opt);
+        }
+
+        window.onload = function () {
+            studentEmail = localStorage.getItem('userEmail');
+            if (!studentEmail) {
+                window.location.replace("index.html");
+                return;
+            }
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session');
+            if (!sessionId) {
+                window.location.replace("dashboard.html");
+                return;
+            }
+            initializeLiveSession(sessionId);
+        };
+
+        async function initializeLiveSession(sessionId) {
+            const body = document.getElementById('live-exam-body');
+            try {
+                const { data: session, error: sessErr } = await supabaseClient
+                    .from('live_exam_sessions')
+                    .select('*')
+                    .eq('id', sessionId)
+                    .maybeSingle();
+
+                if (sessErr || !session) throw new Error("Live session not found.");
+
+                if (session.status !== 'active' || new Date(session.ends_at) <= new Date()) {
+                    body.innerHTML = `<div class="text-center font-mono text-xs text-red-400 border border-red-500/10 p-8 rounded-2xl bg-red-500/5 uppercase">This live exam session has ended.</div>`;
+                    return;
+                }
+
+                sessionData = session;
+                questions = typeof session.questions_json === 'string' ? JSON.parse(session.questions_json) : session.questions_json;
+
+                document.getElementById('live-subject-title').innerText = `🔴 LIVE: ${session.subject.toUpperCase()}`;
+
+                // Check for an existing participant row (resume / already finished)
+                const { data: existing } = await supabaseClient
+                    .from('live_exam_participants')
+                    .select('*')
+                    .eq('session_id', sessionId)
+                    .eq('email', studentEmail.toLowerCase())
+                    .maybeSingle();
+
+                if (existing && existing.status === 'disqualified') {
+                    showDisqualifyOverlay(existing.disqualify_reason || "You were disqualified from this live session.");
+                    return;
+                }
+                if (existing && existing.status === 'submitted') {
+                    showSubmittedOverlay(existing.score, existing.total_questions);
+                    return;
+                }
+
+                if (existing) {
+                    participantRow = existing;
+                    userResponses = existing.responses || {};
+                } else {
+                    const name = studentEmail.split('@')[0];
+                    const { data: created, error: insertErr } = await supabaseClient
+                        .from('live_exam_participants')
+                        .insert([{
+                            session_id: parseInt(sessionId),
+                            email: studentEmail.toLowerCase(),
+                            name: name,
+                            responses: {},
+                            total_questions: questions.length,
+                            unattempted_count: questions.length,
+                            status: 'active'
+                        }])
+                        .select()
+                        .single();
+
+                    if (insertErr) throw insertErr;
+                    participantRow = created;
+                }
+
+                renderQuestions();
+                updateLiveStatusCounters();
+                startCountdown(session.ends_at);
+                attachAntiCheatListeners();
+
+            } catch (err) {
+                console.error(err);
+                body.innerHTML = `<div class="text-center font-mono text-xs text-red-400 border border-red-500/10 p-8 rounded-2xl bg-red-500/5 uppercase">Failed to load live session: ${err.message}</div>`;
+            }
+        }
+
+        function renderQuestions() {
+            const body = document.getElementById('live-exam-body');
+            let html = "";
+
+            questions.forEach((q, index) => {
+                let tableHtml = "";
+                if (q.table && q.table.headers && q.table.rows) {
+                    tableHtml = `<div class="overflow-x-auto my-3 rounded-xl border border-white/10 bg-slate-900/80 p-2"><table class="w-full text-[10px] text-left border-collapse text-white"><thead class="bg-slate-800 uppercase"><tr>`;
+                    q.table.headers.forEach(h => tableHtml += `<th class="p-2 border border-white/10">${escapeHtmlForDisplay(h)}</th>`);
+                    tableHtml += `</tr></thead><tbody class="text-slate-300">`;
+                    q.table.rows.forEach(row => {
+                        tableHtml += `<tr>`;
+                        row.forEach(cell => tableHtml += `<td class="p-2 border border-white/10">${escapeHtmlForDisplay(cell)}</td>`);
+                        tableHtml += `</tr>`;
+                    });
+                    tableHtml += `</tbody></table></div>`;
+                }
+
+                let optionsHtml = "";
+                (q.options || []).forEach((opt, optIdx) => {
+                    const optText = escapeHtmlForDisplay(resolveOptionText(opt));
+                    optionsHtml += `
+                        <label class="flex items-center space-x-3 bg-slate-900/60 p-3 rounded-xl cursor-pointer hover:bg-slate-800 transition">
+                            <input type="radio" name="live-q-${index}" value="${optIdx}" onchange="registerLiveResponse(${index}, ${optIdx})" ${userResponses[index] == optIdx ? 'checked' : ''}>
+                            <span class="text-xs">${optText}</span>
+                        </label>`;
+                });
+
+                const qImg = q.question_image || q.q_image;
+
+                html += `
+                    <div class="bg-slate-900/20 border border-white/5 p-5 rounded-2xl space-y-4 shadow-xl">
+                        <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
+                        <h4 class="text-sm font-bold text-slate-100">${escapeHtmlForDisplay(resolveBilingualText(q.question, q.title || 'Objective Question'))}</h4>
+                        ${qImg ? `<img src="${qImg}" class="max-h-64 rounded-xl border border-white/10 object-contain">` : ""}
+                        ${tableHtml}
+                        <div class="grid grid-cols-1 gap-2">${optionsHtml}</div>
+                    </div>`;
+            });
+
+            html += `
+                <div class="pt-4 flex justify-end">
+                    <button onclick="submitLiveExam(false)" class="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-3 px-8 rounded-xl shadow-xl uppercase text-xs tracking-widest transition">
+                        Submit Live Exam
+                    </button>
+                </div>`;
+
+            body.innerHTML = html;
+        }
+
+        async function registerLiveResponse(qIdx, optIdx) {
+            if (examLocked) return;
+            userResponses[qIdx] = optIdx;
+            updateLiveStatusCounters();
+            await pushLiveUpdate();
+        }
+
+        function updateLiveStatusCounters() {
+            const total = questions.length;
+            const attempted = Object.keys(userResponses).length;
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-attempted').innerText = attempted;
+            document.getElementById('stat-left').innerText = total - attempted;
+        }
+
+        function computeTally() {
+            let correct = 0, wrong = 0;
+            questions.forEach((q, index) => {
+                const sel = userResponses[index];
+                if (sel !== undefined && sel !== null) {
+                    if (parseInt(sel) === parseInt(q.correct)) correct++;
+                    else wrong++;
+                }
+            });
+            const attempted = correct + wrong;
+            const unattempted = questions.length - attempted;
+            const negMarking = parseFloat(sessionData.negative_marking) || 0;
+            const score = parseFloat((correct - wrong * negMarking).toFixed(2));
+            return { correct, wrong, attempted, unattempted, score };
+        }
+
+        async function pushLiveUpdate() {
+            if (examLocked || !participantRow) return;
+            const tally = computeTally();
+            try {
+                await supabaseClient
+                    .from('live_exam_participants')
+                    .update({
+                        responses: userResponses,
+                        attempted_count: tally.attempted,
+                        unattempted_count: tally.unattempted,
+                        correct_count: tally.correct,
+                        wrong_count: tally.wrong,
+                        score: tally.score,
+                        last_update: new Date().toISOString()
+                    })
+                    .eq('id', participantRow.id);
+            } catch (e) {
+                console.error("Live push failed:", e.message);
+            }
+        }
+
+        function startCountdown(endsAt) {
+            const clock = document.getElementById('time-counter-clock');
+            if (timerInterval) clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                const remainingMs = new Date(endsAt).getTime() - Date.now();
+                if (remainingMs <= 0) {
+                    clearInterval(timerInterval);
+                    clock.innerText = "00:00";
+                    submitLiveExam(true);
+                    return;
+                }
+                const totalSec = Math.floor(remainingMs / 1000);
+                const min = Math.floor(totalSec / 60);
+                const sec = totalSec % 60;
+                clock.innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // 🛡️ ANTI-CHEAT: tab switch / window blur / minimize detection
+        function attachAntiCheatListeners() {
+            document.addEventListener('visibilitychange', handleVisibilityOrBlur);
+            window.addEventListener('blur', handleVisibilityOrBlur);
+        }
+
+        function detachAntiCheatListeners() {
+            document.removeEventListener('visibilitychange', handleVisibilityOrBlur);
+            window.removeEventListener('blur', handleVisibilityOrBlur);
+        }
+
+        function handleVisibilityOrBlur() {
+            if (examLocked) return;
+            if (document.hidden || document.visibilityState === 'hidden') {
+                disqualifyStudent("Switched away from the exam tab or minimized the window.");
+            } else {
+                // window blur without tab hidden (e.g. alt-tabbed to another app)
+                disqualifyStudent("Switched to another window or application.");
+            }
+        }
+
+        async function disqualifyStudent(reason) {
+            if (examLocked) return;
+            examLocked = true;
+            clearInterval(timerInterval);
+            detachAntiCheatListeners();
+
+            try {
+                if (participantRow) {
+                    await supabaseClient
+                        .from('live_exam_participants')
+                        .update({
+                            status: 'disqualified',
+                            disqualify_reason: reason,
+                            score: 0,
+                            responses: userResponses,
+                            last_update: new Date().toISOString()
+                        })
+                        .eq('id', participantRow.id);
+                }
+            } catch (e) {
+                console.error("Disqualify push failed:", e.message);
+            }
+
+            showDisqualifyOverlay(reason);
+        }
+
+        function showDisqualifyOverlay(reason) {
+            document.getElementById('disqualify-reason-text').innerText = reason || "You have been disqualified from this live exam. Your score has been recorded as 0.";
+            document.getElementById('disqualify-overlay').classList.remove('hidden');
+        }
+
+        function showSubmittedOverlay(score, total) {
+            document.getElementById('final-score-display').innerText = `${score} / ${total}`;
+            document.getElementById('submitted-overlay').classList.remove('hidden');
+        }
+
+        async function submitLiveExam(autoSubmittedByTimer) {
+            if (examLocked) return;
+            examLocked = true;
+            clearInterval(timerInterval);
+            detachAntiCheatListeners();
+
+            const tally = computeTally();
+            try {
+                if (participantRow) {
+                    await supabaseClient
+                        .from('live_exam_participants')
+                        .update({
+                            responses: userResponses,
+                            attempted_count: tally.attempted,
+                            unattempted_count: tally.unattempted,
+                            correct_count: tally.correct,
+                            wrong_count: tally.wrong,
+                            score: tally.score,
+                            status: 'submitted',
+                            submitted_at: new Date().toISOString(),
+                            last_update: new Date().toISOString()
+                        })
+                        .eq('id', participantRow.id);
+                }
+            } catch (e) {
+                console.error("Final submit push failed:", e.message);
+            }
+
+            showSubmittedOverlay(tally.score, questions.length);
+        }
+    </script>
+</body>
+</html>
