@@ -20,7 +20,7 @@
         </div>
         <div class="flex items-center gap-3">
             <div class="bg-slate-900 border border-white/10 px-3 py-1.5 rounded-xl text-xs font-mono font-black text-amber-400" id="board-countdown">--:--</div>
-            <button onclick="endLiveSessionNow()" class="bg-red-600 hover:bg-red-500 text-white font-black py-2 px-4 rounded-xl text-xs uppercase tracking-widest transition">End Session Now</button>
+            <button onclick="endLiveSessionNow()" id="btn-end-session" class="bg-red-600 hover:bg-red-500 text-white font-black py-2 px-4 rounded-xl text-xs uppercase tracking-widest transition">End Session Now</button>
             <button onclick="window.location.replace('admin.html')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 px-4 rounded-xl text-xs transition">&larr; Admin Console</button>
         </div>
     </header>
@@ -252,18 +252,27 @@
 
         async function endLiveSessionNow() {
             if (!confirm("End this live session immediately for all participants? They will be auto-submitted at their current progress next time their page syncs.")) return;
+
+            const btn = document.getElementById('btn-end-session');
+            if (btn) { btn.disabled = true; btn.innerText = "Ending..."; btn.classList.add('opacity-60', 'cursor-not-allowed'); }
+
             try {
                 const { error } = await supabaseClient
                     .from('live_exam_sessions')
                     .update({ status: 'ended', ends_at: new Date().toISOString() })
                     .eq('id', sessionId);
                 if (error) throw error;
-                alert("Live session ended.");
+
                 if (sessionRow) sessionRow.status = 'ended';
                 document.getElementById('board-countdown').innerText = "ENDED";
                 if (countdownInterval) clearInterval(countdownInterval);
+
+                alert("Live session ended. Returning to the Admin Console.");
+                window.location.replace("admin.html");
+
             } catch (e) {
                 alert("Failed to end session: " + e.message);
+                if (btn) { btn.disabled = false; btn.innerText = "End Session Now"; btn.classList.remove('opacity-60', 'cursor-not-allowed'); }
             }
         }
     </script>
