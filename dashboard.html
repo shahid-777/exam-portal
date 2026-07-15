@@ -48,6 +48,18 @@
             </p>
         </div>
 
+        <div id="live-exams-section-wrapper" class="space-y-4 hidden">
+            <h4 class="text-xs font-mono font-black text-red-400 uppercase tracking-widest flex items-center gap-2">
+                <span class="flex h-2 w-2 rounded-full bg-red-500 animate-ping"></span>
+                🔴 Live Exams Happening Now
+            </h4>
+            <div id="student-live-exams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="text-center font-mono text-[11px] text-slate-600 border border-dashed border-white/5 py-6 rounded-2xl uppercase">
+                    Checking for live sessions...
+                </div>
+            </div>
+        </div>
+
         <div id="combo-exams-section-wrapper" class="space-y-4">
             <h4 class="text-xs font-mono font-black text-pink-400 uppercase tracking-widest flex items-center gap-2">
                 <span class="flex h-2 w-2 rounded-full bg-pink-500 animate-ping"></span>
@@ -128,8 +140,70 @@
             // Initializing Telemetry Streams
             loadCategoriesView();
             renderStudentComboExamLinks(); // लाइव कंबाइंड कॉम्बो लिंक्स लोड करें
+            renderStudentLiveExamLinks(); // 🔴 लाइव प्रॉक्टर्ड एग्जाम सेशन लिंक्स लोड करें
             fetchStudentPastExamHistory();
         };
+
+        // 🔴 NEW ENGINE: FETCH ACTIVE LIVE EXAM SESSIONS FOR STUDENTS TO JOIN
+        async function renderStudentLiveExamLinks() {
+            const wrapper = document.getElementById('live-exams-section-wrapper');
+            const grid = document.getElementById('student-live-exams-grid');
+            if (!wrapper || !grid) return;
+
+            try {
+                const { data: liveSessions, error } = await supabaseClient
+                    .from('live_exam_sessions')
+                    .select('*')
+                    .eq('status', 'active')
+                    .gt('ends_at', new Date().toISOString())
+                    .order('started_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!liveSessions || liveSessions.length === 0) {
+                    wrapper.classList.add('hidden');
+                    return;
+                }
+
+                wrapper.classList.remove('hidden');
+                grid.innerHTML = "";
+
+                liveSessions.forEach(session => {
+                    let totalQuestionsCount = 0;
+                    try {
+                        const parsed = typeof session.questions_json === 'string' ? JSON.parse(session.questions_json) : session.questions_json;
+                        totalQuestionsCount = parsed ? parsed.length : 0;
+                    } catch (e) { totalQuestionsCount = 0; }
+
+                    const remainingMin = Math.max(0, Math.round((new Date(session.ends_at).getTime() - Date.now()) / 60000));
+
+                    grid.innerHTML += `
+                        <div class="bg-slate-900/40 border border-red-500/10 hover:border-red-500/30 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-xl transition transform hover:scale-[1.005] group">
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-0.5 text-[8px] font-black bg-red-500/10 text-red-400 border border-red-500/20 rounded font-mono tracking-widest uppercase animate-pulse">🔴 LIVE NOW</span>
+                                    <span class="text-[9px] font-mono text-amber-400 font-bold uppercase">~${remainingMin} min left</span>
+                                </div>
+                                <h3 class="font-black text-sm text-slate-100 uppercase tracking-wide group-hover:text-red-400 transition leading-snug pt-1">${session.subject}</h3>
+                                <p class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Questions: ${totalQuestionsCount}</p>
+                            </div>
+                            <button onclick="launchLiveExamSession('${session.id}')" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition cursor-pointer">
+                                Join Live Exam ↗
+                            </button>
+                        </div>`;
+                });
+
+            } catch (e) {
+                console.error("Live session fetch crash:", e);
+                wrapper.classList.add('hidden');
+            }
+        }
+
+        function launchLiveExamSession(sessionId) {
+            if (confirm("Strict Notice: This is a live proctored exam. Switching tabs, minimizing, or leaving this window at any point will INSTANTLY disqualify you with a score of 0. Continue?")) {
+                window.location.href = `live-exam.html?session=${sessionId}`;
+            }
+        }
 
         // 🚀 NEW ENGINE addition: FETCH COMBINED COMBO CHANNELS REAL-TIME FROM DATABASE
         async function renderStudentComboExamLinks() {
