@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="logo.png">
+    <title>Live Exam Scoreboard — Admin Monitor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 font-sans min-h-screen text-slate-200 flex flex-col justify-between">
+
+    <header class="w-full bg-slate-900/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+            <div class="flex flex-col">
+                <span id="board-subject-title" class="text-sm font-black tracking-widest text-red-400 uppercase leading-none">LOADING LIVE SESSION...</span>
+                <span class="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">LIVE SCOREBOARD MONITOR</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="bg-slate-900 border border-white/10 px-3 py-1.5 rounded-xl text-xs font-mono font-black text-amber-400" id="board-countdown">--:--</div>
+            <button onclick="endLiveSessionNow()" class="bg-red-600 hover:bg-red-500 text-white font-black py-2 px-4 rounded-xl text-xs uppercase tracking-widest transition">End Session Now</button>
+            <button onclick="window.location.replace('admin.html')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 px-4 rounded-xl text-xs transition">&larr; Admin Console</button>
+        </div>
+    </header>
+
+    <section class="max-w-6xl w-full mx-auto px-4 sm:px-6 pt-6 grid grid-cols-2 sm:grid-cols-5 gap-4">
+        <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl text-center">
+            <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Participants</div>
+            <div id="metric-total-participants" class="text-xl font-black text-blue-400 mt-1">0</div>
+        </div>
+        <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl text-center">
+            <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Active</div>
+            <div id="metric-active" class="text-xl font-black text-emerald-400 mt-1">0</div>
+        </div>
+        <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl text-center">
+            <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Submitted</div>
+            <div id="metric-submitted" class="text-xl font-black text-sky-400 mt-1">0</div>
+        </div>
+        <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl text-center">
+            <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Disqualified</div>
+            <div id="metric-disqualified" class="text-xl font-black text-red-400 mt-1">0</div>
+        </div>
+        <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl text-center">
+            <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Avg Score</div>
+            <div id="metric-avg-score" class="text-xl font-black text-amber-400 mt-1">0</div>
+        </div>
+    </section>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 space-y-4">
+        <div class="flex items-center justify-between">
+            <h3 class="text-sm font-black tracking-wider text-slate-200 uppercase">Live Rankings</h3>
+            <div class="flex items-center gap-4 text-[10px] font-mono uppercase tracking-wider text-slate-400">
+                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500"></span> High (≥70%)</div>
+                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-500"></span> Average (40-69%)</div>
+                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-red-500"></span> Low / Disqualified</div>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-2xl border border-white/5">
+            <table class="w-full text-left text-xs">
+                <thead>
+                    <tr class="border-b border-white/5 text-slate-400 font-mono uppercase tracking-wider text-[10px] bg-slate-900/60">
+                        <th class="py-3 px-4">Rank</th>
+                        <th class="py-3 px-4">Email</th>
+                        <th class="py-3 px-4 text-center">Attempted</th>
+                        <th class="py-3 px-4 text-center">Unattempted</th>
+                        <th class="py-3 px-4 text-center">Correct</th>
+                        <th class="py-3 px-4 text-center">Wrong</th>
+                        <th class="py-3 px-4 text-center">Score</th>
+                        <th class="py-3 px-4 text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="scoreboard-tbody" class="divide-y divide-white/5 font-medium">
+                    <tr><td colspan="8" class="text-center py-8 font-mono text-slate-500 animate-pulse uppercase">Connecting to live telemetry stream...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest">
+        &copy; Live Proctoring Monitor
+    </footer>
+
+    <script>
+        const SUPABASE_URL = "https://lelvinusfxniqrmfufql.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_jQSp32AKdo2vkHFvNHbLWg_pEq8TBRG";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let sessionId = null;
+        let sessionRow = null;
+        let realtimeChannel = null;
+        let countdownInterval = null;
+
+        window.onload = function () {
+            const userEmail = localStorage.getItem('userEmail');
+            const userRole = localStorage.getItem('userRole');
+            const adminAuthenticated = localStorage.getItem('adminAuthenticated');
+            if (!userEmail || userRole !== 'admin' || adminAuthenticated !== 'true' || userEmail !== 'examportalcse@gmail.com') {
+                window.location.replace("admin-login.html");
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            sessionId = urlParams.get('session');
+            if (!sessionId) {
+                window.location.replace("admin.html");
+                return;
+            }
+
+            initializeScoreboard();
+        };
+
+        function escapeHtmlForDisplay(text) {
+            if (text === undefined || text === null) return "";
+            return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        async function initializeScoreboard() {
+            try {
+                const { data: session, error } = await supabaseClient
+                    .from('live_exam_sessions')
+                    .select('*')
+                    .eq('id', sessionId)
+                    .maybeSingle();
+
+                if (error || !session) throw new Error("Live session not found.");
+                sessionRow = session;
+
+                document.getElementById('board-subject-title').innerText = `🔴 LIVE: ${session.subject.toUpperCase()}`;
+                startCountdown(session.ends_at, session.status);
+
+                await refreshScoreboard();
+                subscribeToLiveUpdates();
+
+            } catch (err) {
+                document.getElementById('scoreboard-tbody').innerHTML = `<tr><td colspan="8" class="text-center py-8 font-mono text-red-400 uppercase">${err.message}</td></tr>`;
+            }
+        }
+
+        function subscribeToLiveUpdates() {
+            realtimeChannel = supabaseClient
+                .channel(`live-scoreboard-${sessionId}`)
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'live_exam_participants',
+                    filter: `session_id=eq.${sessionId}`
+                }, () => {
+                    refreshScoreboard();
+                })
+                .subscribe();
+
+            // Fallback polling every 5s in case realtime replication isn't enabled
+            setInterval(refreshScoreboard, 5000);
+        }
+
+        function startCountdown(endsAt, status) {
+            const clock = document.getElementById('board-countdown');
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(() => {
+                if (status === 'ended') { clock.innerText = "ENDED"; clearInterval(countdownInterval); return; }
+                const remainingMs = new Date(endsAt).getTime() - Date.now();
+                if (remainingMs <= 0) { clock.innerText = "00:00"; clearInterval(countdownInterval); return; }
+                const totalSec = Math.floor(remainingMs / 1000);
+                const min = Math.floor(totalSec / 60);
+                const sec = totalSec % 60;
+                clock.innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        async function refreshScoreboard() {
+            try {
+                const { data: participants, error } = await supabaseClient
+                    .from('live_exam_participants')
+                    .select('*')
+                    .eq('session_id', sessionId);
+
+                if (error) throw error;
+                renderScoreboard(participants || []);
+            } catch (err) {
+                console.error("Scoreboard refresh failed:", err.message);
+            }
+        }
+
+        function renderScoreboard(participants) {
+            const totalQuestions = sessionRow ? (JSON.parse(JSON.stringify(sessionRow.questions_json || [])).length || 0) : 0;
+
+            // Sort: score desc, then fewer wrong answers first
+            const sorted = [...participants].sort((a, b) => {
+                if (b.score !== a.score) return b.score - a.score;
+                return (a.wrong_count || 0) - (b.wrong_count || 0);
+            });
+
+            document.getElementById('metric-total-participants').innerText = participants.length;
+            document.getElementById('metric-active').innerText = participants.filter(p => p.status === 'active').length;
+            document.getElementById('metric-submitted').innerText = participants.filter(p => p.status === 'submitted').length;
+            document.getElementById('metric-disqualified').innerText = participants.filter(p => p.status === 'disqualified').length;
+            const avgScore = participants.length ? (participants.reduce((s, p) => s + (parseFloat(p.score) || 0), 0) / participants.length).toFixed(1) : "0";
+            document.getElementById('metric-avg-score').innerText = avgScore;
+
+            const tbody = document.getElementById('scoreboard-tbody');
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 font-mono text-slate-500 uppercase">No participants have joined yet.</td></tr>`;
+                return;
+            }
+
+            let html = "";
+            sorted.forEach((p, idx) => {
+                const total = p.total_questions || totalQuestions || 1;
+                const pct = (parseFloat(p.score) / total) * 100;
+
+                let rowClass = "bg-red-500/10 border-l-4 border-red-500";
+                let statusBadge = `<span class="px-2 py-0.5 text-[9px] font-black bg-slate-700 text-slate-300 rounded uppercase">${p.status}</span>`;
+
+                if (p.status === 'disqualified') {
+                    rowClass = "bg-red-600/20 border-l-4 border-red-600";
+                    statusBadge = `<span class="px-2 py-0.5 text-[9px] font-black bg-red-600 text-white rounded uppercase">Disqualified</span>`;
+                } else if (pct >= 70) {
+                    rowClass = "bg-emerald-500/10 border-l-4 border-emerald-500";
+                    statusBadge = p.status === 'submitted'
+                        ? `<span class="px-2 py-0.5 text-[9px] font-black bg-emerald-600 text-white rounded uppercase">Submitted</span>`
+                        : `<span class="px-2 py-0.5 text-[9px] font-black bg-emerald-500/20 text-emerald-400 rounded uppercase">Active</span>`;
+                } else if (pct >= 40) {
+                    rowClass = "bg-amber-500/10 border-l-4 border-amber-500";
+                    statusBadge = p.status === 'submitted'
+                        ? `<span class="px-2 py-0.5 text-[9px] font-black bg-amber-600 text-white rounded uppercase">Submitted</span>`
+                        : `<span class="px-2 py-0.5 text-[9px] font-black bg-amber-500/20 text-amber-400 rounded uppercase">Active</span>`;
+                } else {
+                    statusBadge = p.status === 'submitted'
+                        ? `<span class="px-2 py-0.5 text-[9px] font-black bg-red-600 text-white rounded uppercase">Submitted</span>`
+                        : `<span class="px-2 py-0.5 text-[9px] font-black bg-red-500/20 text-red-400 rounded uppercase">Active</span>`;
+                }
+
+                html += `
+                    <tr class="${rowClass} transition">
+                        <td class="py-3 px-4 font-mono font-black text-slate-200">#${idx + 1}</td>
+                        <td class="py-3 px-4 font-sans lowercase text-slate-200">${escapeHtmlForDisplay(p.email)}</td>
+                        <td class="py-3 px-4 text-center font-mono text-emerald-400">${p.attempted_count || 0}</td>
+                        <td class="py-3 px-4 text-center font-mono text-slate-400">${p.unattempted_count || 0}</td>
+                        <td class="py-3 px-4 text-center font-mono text-emerald-400">${p.correct_count || 0}</td>
+                        <td class="py-3 px-4 text-center font-mono text-red-400">${p.wrong_count || 0}</td>
+                        <td class="py-3 px-4 text-center font-mono font-black text-slate-100">${p.score}</td>
+                        <td class="py-3 px-4 text-center">${statusBadge}</td>
+                    </tr>`;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        async function endLiveSessionNow() {
+            if (!confirm("End this live session immediately for all participants? They will be auto-submitted at their current progress next time their page syncs.")) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('live_exam_sessions')
+                    .update({ status: 'ended', ends_at: new Date().toISOString() })
+                    .eq('id', sessionId);
+                if (error) throw error;
+                alert("Live session ended.");
+                if (sessionRow) sessionRow.status = 'ended';
+                document.getElementById('board-countdown').innerText = "ENDED";
+                if (countdownInterval) clearInterval(countdownInterval);
+            } catch (e) {
+                alert("Failed to end session: " + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
