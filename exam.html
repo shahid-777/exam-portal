@@ -112,7 +112,7 @@
     </main>
 
     <footer class="w-full text-center py-3 border-t border-slate-200 bg-white text-[9px] font-mono text-slate-400 uppercase tracking-widest mt-6">
-        &copy; CS Management System Terminal
+        &copy; JECRC University CS Management System Terminal
     </footer>
 
     <script>
@@ -599,6 +599,7 @@
 
             } catch (err) {
                 console.error("Detailed Database Error:", err);
+                alert("⚠️ Could not save/open your result analysis.\n\nReason: " + (err.message || JSON.stringify(err)) + "\n\nYour attempt may still be saved — check My Performance Repository on the dashboard.");
                 window.location.replace("dashboard.html");
             }
         }
