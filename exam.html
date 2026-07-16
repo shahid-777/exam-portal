@@ -594,8 +594,7 @@
                     alert(`📢 Test Evaluation Compiled Successfully.\nTotal Score: ${finalCombinedScore} / ${totalMaxMarks} Marks.\nRequired Cutoff was: ${targetCutoffPct}% (${cutOffPassingMarks} Mks).\nStatus: Keep Practicing to clear Cutoff!`);
                 }
 
-                const generatedId = data[0].id;
-                window.location.replace(`result-analysis.html?id=${generatedId}`);
+                window.location.replace("dashboard.html");
 
             } catch (err) {
                 console.error("Detailed Database Error:", err);
