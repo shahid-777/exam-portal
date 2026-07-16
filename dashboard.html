@@ -8,145 +8,129 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
     <style>
-        :root{
-            --void:#05070d;
-            --panel-line:rgba(148,163,255,0.06);
-            --glow-indigo:rgba(99,102,241,0.16);
-            --glow-emerald:rgba(16,185,129,0.10);
-            --glow-amber:rgba(245,158,11,0.08);
-        }
-        body{
-            font-family:'Inter',sans-serif;
-            background-color:var(--void);
-            background-image:
-                radial-gradient(ellipse 900px 500px at 8% -5%, var(--glow-indigo), transparent 60%),
-                radial-gradient(ellipse 700px 500px at 95% 15%, var(--glow-emerald), transparent 55%),
-                radial-gradient(ellipse 800px 600px at 50% 110%, var(--glow-amber), transparent 60%),
-                repeating-linear-gradient(0deg, var(--panel-line) 0px, transparent 1px, transparent 42px, var(--panel-line) 43px),
-                repeating-linear-gradient(90deg, var(--panel-line) 0px, transparent 1px, transparent 42px, var(--panel-line) 43px);
-            background-attachment:fixed;
-        }
-        .font-mono{ font-family:'JetBrains Mono', monospace; }
-        h1,h2,h3,.font-display{ font-family:'Space Grotesk', sans-serif; letter-spacing:-0.01em; }
-        ::selection{ background:rgba(99,102,241,0.35); }
-        .dir-path::before{ content:'~/exams/'; opacity:0.55; }
+        body{ font-family:'Inter',sans-serif; background-color:#f8fafc; }
+        .font-serif{ font-family:'Poppins',sans-serif; }
+        .font-mono{ font-family:'IBM Plex Mono',monospace; }
+        ::-webkit-scrollbar{ width:6px; }
+        ::-webkit-scrollbar-track{ background:#f1f5f9; }
+        ::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:4px; }
+        .dir-path::before{ content:'~/exams/'; opacity:0.5; }
     </style>
 </head>
-<body class="font-sans min-h-screen text-slate-200 flex flex-col justify-between">
+<body class="text-slate-900 min-h-screen flex flex-col justify-between antialiased">
 
-    <header class="w-full bg-slate-950/70 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50 relative">
-        <div class="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent"></div>
+    <header class="w-full bg-white/90 backdrop-blur-md border-b border-slate-200 py-4 px-4 sm:px-6 flex items-center justify-between shadow-sm sticky top-0 z-50">
         <div class="flex items-center space-x-3">
-            <div class="bg-white/95 p-1 rounded-xl">
-                <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain">
+            <div class="bg-slate-50 p-1 rounded-xl shadow-sm border border-slate-200">
+                <img src="logo.png" alt="Logo" class="h-9 w-auto object-contain">
             </div>
             <div class="flex flex-col">
-                <span class="text-sm font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 uppercase leading-none font-display">STUDENT HUB</span>
-                <span class="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">EXAM CATEGORY EXPLORER</span>
+                <span class="text-sm font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-sky-500 uppercase leading-none font-serif">Student Hub</span>
+                <span class="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-wider mt-0.5">Exam Category Explorer</span>
             </div>
         </div>
-        
-        <div class="flex items-center space-x-4">
-            <span id="user-display-email" class="text-xs font-mono text-slate-400 hidden sm:inline-block">student@gmail.com</span>
-            <button onclick="handleUserLogout()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-1.5 px-4 rounded-xl text-xs transition">
+
+        <div class="flex items-center space-x-3 sm:space-x-4">
+            <span id="user-display-email" class="text-xs font-mono text-slate-500 hidden sm:inline-block bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">student@gmail.com</span>
+            <button onclick="handleUserLogout()" class="border border-slate-300 hover:border-red-300 hover:bg-red-50 hover:text-red-600 text-slate-600 font-bold py-2 px-4 rounded-xl text-xs transition">
                 Logout
             </button>
         </div>
     </header>
 
-    <section class="w-full bg-slate-900/20 border-b border-white/5 py-3 px-6">
-        <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs font-mono text-slate-400">
-            <button onclick="loadCategoriesView()" class="hover:text-blue-400 font-bold transition">Root Clusters</button>
-            <span id="breadcrumb-arrow" class="hidden">&rarr;</span>
-            <span id="breadcrumb-current-category" class="text-blue-400 font-bold hidden">Selected Category</span>
+    <section class="w-full bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
+        <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs font-mono text-slate-500">
+            <button onclick="loadCategoriesView()" class="hover:text-blue-600 font-bold transition">Root Clusters</button>
+            <span id="breadcrumb-arrow" class="hidden text-slate-300">&rarr;</span>
+            <span id="breadcrumb-current-category" class="text-blue-600 font-bold hidden">Selected Category</span>
         </div>
     </section>
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-12">
-        
-        <div class="space-y-1.5">
-            <span class="text-[10px] font-mono text-indigo-400 uppercase tracking-widest">$ ls ~/exams --active</span>
-            <h3 id="workspace-title" class="text-2xl font-bold text-slate-100 tracking-wide font-display">
+
+        <div class="space-y-2">
+            <span class="text-[10px] font-mono text-blue-600 uppercase tracking-widest font-bold">// active exam streams</span>
+            <h3 id="workspace-title" class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight font-serif">
                 Available Exam Streams
             </h3>
-            <p id="workspace-desc" class="text-xs text-slate-400 max-w-2xl">
+            <p id="workspace-desc" class="text-xs sm:text-sm text-slate-500 max-w-2xl font-medium">
                 Select an academic stream or recruitment category folder to access active examination test papers.
             </p>
         </div>
 
         <div id="live-exams-section-wrapper" class="space-y-4 hidden">
-            <h4 class="text-xs font-mono font-black text-red-400 uppercase tracking-widest flex items-center gap-2">
+            <h4 class="text-xs font-mono font-black text-red-500 uppercase tracking-widest flex items-center gap-2">
                 <span class="flex h-2 w-2 rounded-full bg-red-500 animate-ping"></span>
                 🔴 Live Exams Happening Now
             </h4>
             <div id="student-live-exams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="text-center font-mono text-[11px] text-slate-600 border border-dashed border-white/5 py-6 rounded-2xl uppercase">
+                <div class="text-center font-mono text-[11px] text-slate-400 border border-dashed border-slate-300 py-6 rounded-2xl uppercase bg-white">
                     Checking for live sessions...
                 </div>
             </div>
         </div>
 
         <div id="combo-exams-section-wrapper" class="space-y-4">
-            <h4 class="text-xs font-mono font-black text-pink-400 uppercase tracking-widest flex items-center gap-2">
-                <span class="flex h-2 w-2 rounded-full bg-pink-500 animate-ping"></span>
+            <h4 class="text-xs font-mono font-black text-orange-500 uppercase tracking-widest flex items-center gap-2">
+                <span class="flex h-2 w-2 rounded-full bg-orange-500 animate-ping"></span>
                 🏆 Active Combined Assessment Clusters (Paper-1 + Paper-2 Package)
             </h4>
             <div id="student-combo-exams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="text-center font-mono text-[11px] text-slate-600 border border-dashed border-white/5 py-6 rounded-2xl uppercase">
+                <div class="text-center font-mono text-[11px] text-slate-400 border border-dashed border-slate-300 py-6 rounded-2xl uppercase bg-white">
                     Syncing live combined exam nodes pipeline...
                 </div>
             </div>
         </div>
 
         <div class="space-y-4">
-            <h4 id="single-exams-header-title" class="text-xs font-mono font-black text-blue-400 uppercase tracking-widest">
+            <h4 id="single-exams-header-title" class="text-xs font-mono font-black text-blue-600 uppercase tracking-widest">
                 📂 Standard Categorized Subject Folders
             </h4>
             <div id="portal-dynamic-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="text-center font-mono text-xs text-slate-500 py-12 animate-pulse uppercase col-span-full">
+                <div class="text-center font-mono text-xs text-slate-400 py-12 animate-pulse uppercase col-span-full">
                     Initializing Portal Schema Matrices...
                 </div>
             </div>
         </div>
 
-        <div class="bg-slate-900/40 border border-white/5 rounded-3xl p-6 space-y-6 shadow-xl pt-6">
-            <div class="flex items-center space-x-3 border-b border-white/5 pb-4">
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 space-y-6 shadow-md">
+            <div class="flex items-center space-x-3 border-b border-slate-100 pb-4">
                 <span class="text-xl">🏆</span>
                 <div>
-                    <h2 class="text-sm font-black text-white uppercase tracking-widest font-mono">My Performance Repository Terminal</h2>
-                    <p class="text-[11px] text-slate-400 font-sans mt-0.5">Review your past simulated exam history metrics, solutions, and scorecard analysis anytime.</p>
+                    <h2 class="text-sm font-black text-slate-900 uppercase tracking-widest font-mono">My Performance Repository</h2>
+                    <p class="text-[11px] text-slate-500 font-medium mt-0.5">Review your past simulated exam history metrics, solutions, and scorecard analysis anytime.</p>
                 </div>
             </div>
 
             <div id="past-results-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="text-center py-6 font-mono text-[11px] text-slate-500 animate-pulse uppercase col-span-full">Syncing exam telemetry history nodes...</div>
+                <div class="text-center py-6 font-mono text-[11px] text-slate-400 animate-pulse uppercase col-span-full">Syncing exam telemetry history nodes...</div>
             </div>
         </div>
 
     </main>
 
-    <div id="result-review-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-2 sm:p-4 hidden">
-        <div class="bg-slate-900 border border-white/10 w-full max-w-4xl h-[90vh] sm:h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-            
-            <div class="bg-slate-950/80 border-b border-white/5 p-4 flex items-center justify-between shrink-0">
+    <div id="result-review-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-2 sm:p-4 hidden">
+        <div class="bg-white border border-slate-200 w-full max-w-4xl h-[90vh] sm:h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+
+            <div class="bg-slate-50 border-b border-slate-200 p-4 flex items-center justify-between shrink-0">
                 <div class="flex items-center space-x-3">
-                    <div class="h-2.5 w-2.5 rounded-full bg-amber-500 animate-pulse"></div>
+                    <div class="h-2.5 w-2.5 rounded-full bg-orange-500 animate-pulse"></div>
                     <div>
-                        <h2 id="modal-review-title" class="text-xs sm:text-sm font-black text-white font-mono uppercase tracking-widest">EXAM PERFORMANCE MATRIX</h2>
-                        <p class="text-[9px] text-slate-500 font-mono uppercase tracking-wider mt-0.5">Testbook Deductive Analytics Architecture</p>
+                        <h2 id="modal-review-title" class="text-xs sm:text-sm font-black text-slate-900 font-mono uppercase tracking-widest">EXAM PERFORMANCE MATRIX</h2>
+                        <p class="text-[9px] text-slate-400 font-mono uppercase tracking-wider mt-0.5">Detailed Answer Analytics</p>
                     </div>
                 </div>
-                <button onclick="closeReviewModal()" class="text-[10px] font-mono font-black text-slate-400 hover:text-white bg-white/5 hover:bg-red-500/20 border border-white/10 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider">Close Panel [ESC]</button>
+                <button onclick="closeReviewModal()" class="text-[10px] font-mono font-black text-slate-500 hover:text-red-600 bg-slate-100 hover:bg-red-50 border border-slate-200 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider">Close Panel [ESC]</button>
             </div>
 
-            <div id="modal-review-stats-summary" class="bg-slate-950/30 border-b border-white/5 px-6 py-3 grid grid-cols-2 sm:grid-cols-4 gap-4 shrink-0 text-center font-mono text-[10px]"></div>
-            <div id="modal-review-body" class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-8 bg-slate-950/10"></div>
+            <div id="modal-review-stats-summary" class="bg-slate-50 border-b border-slate-200 px-6 py-3 grid grid-cols-2 sm:grid-cols-4 gap-4 shrink-0 text-center font-mono text-[10px]"></div>
+            <div id="modal-review-body" class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-8 bg-slate-50/50"></div>
         </div>
     </div>
 
-    <footer class="w-full text-center py-4 border-t border-white/5 bg-slate-950/40 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest">
+    <footer class="w-full text-center py-4 border-t border-slate-200 bg-white text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
         &copy; Computer Science Department
     </footer>
 
@@ -164,7 +148,7 @@
                 return;
             }
             document.getElementById('user-display-email').innerText = activeUserEmail;
-            
+
             // Initializing Telemetry Streams
             loadCategoriesView();
             renderStudentComboExamLinks(); // लाइव कंबाइंड कॉम्बो लिंक्स लोड करें
@@ -206,16 +190,16 @@
                     const remainingMin = Math.max(0, Math.round((new Date(session.ends_at).getTime() - Date.now()) / 60000));
 
                     grid.innerHTML += `
-                        <div class="bg-slate-900/40 border border-red-500/10 hover:border-red-500/30 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-xl transition transform hover:scale-[1.005] group">
+                        <div class="bg-white border border-slate-200 hover:border-red-300 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 group">
                             <div class="space-y-2">
                                 <div class="flex items-center justify-between">
-                                    <span class="px-2 py-0.5 text-[8px] font-black bg-red-500/10 text-red-400 border border-red-500/20 rounded font-mono tracking-widest uppercase animate-pulse">🔴 LIVE NOW</span>
-                                    <span class="text-[9px] font-mono text-amber-400 font-bold uppercase">~${remainingMin} min left</span>
+                                    <span class="px-2 py-0.5 text-[8px] font-black bg-red-50 text-red-500 border border-red-200 rounded font-mono tracking-widest uppercase animate-pulse">🔴 LIVE NOW</span>
+                                    <span class="text-[9px] font-mono text-orange-500 font-bold uppercase">~${remainingMin} min left</span>
                                 </div>
-                                <h3 class="font-black text-sm text-slate-100 uppercase tracking-wide group-hover:text-red-400 transition leading-snug pt-1">${session.subject}</h3>
-                                <p class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Questions: ${totalQuestionsCount}</p>
+                                <h3 class="font-black text-sm text-slate-900 uppercase tracking-wide group-hover:text-red-500 transition leading-snug pt-1 font-serif">${session.subject}</h3>
+                                <p class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">Questions: ${totalQuestionsCount}</p>
                             </div>
-                            <button onclick="launchLiveExamSession('${session.id}')" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition cursor-pointer">
+                            <button onclick="launchLiveExamSession('${session.id}')" class="w-full bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-500 hover:to-orange-400 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition cursor-pointer">
                                 Join Live Exam ↗
                             </button>
                         </div>`;
@@ -248,33 +232,33 @@
 
                 if (!comboExams || comboExams.length === 0) {
                     comboContainer.innerHTML = `
-                        <div class="col-span-full border border-dashed border-white/5 text-center p-6 rounded-xl text-slate-600 font-mono text-[11px] uppercase uppercase tracking-wider">
+                        <div class="col-span-full border border-dashed border-slate-300 text-center p-6 rounded-xl text-slate-400 font-mono text-[11px] uppercase tracking-wider bg-white">
                             No Combined Mega Exams allocated by Administration.
                         </div>`;
                     return;
                 }
 
-                comboContainer.innerHTML = ""; 
+                comboContainer.innerHTML = "";
 
                 comboExams.forEach(combo => {
                     // 🎯 [STRICT TIMING REINFORCEMENT CORRIDOR]: पेपर-2 का सिंटैक्स छिपाकर केवल वन-वे यूआरएल रूट पास किया गया है
                     comboContainer.innerHTML += `
-                        <div class="bg-slate-900/40 border border-white/5 hover:border-pink-500/20 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-xl transition transform hover:scale-[1.005] group">
+                        <div class="bg-white border border-slate-200 hover:border-orange-300 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 group">
                             <div class="space-y-2">
                                 <div class="flex items-center justify-between">
-                                    <span class="px-2 py-0.5 text-[8px] font-black bg-pink-500/10 text-pink-400 border border-pink-500/20 rounded font-mono tracking-widest uppercase">COMBO ASSESSMENT</span>
-                                    <span class="text-[9px] font-mono text-emerald-400 font-bold uppercase">● Stage 1 Locked</span>
+                                    <span class="px-2 py-0.5 text-[8px] font-black bg-orange-50 text-orange-500 border border-orange-200 rounded font-mono tracking-widest uppercase">COMBO ASSESSMENT</span>
+                                    <span class="text-[9px] font-mono text-emerald-600 font-bold uppercase">● Stage 1 Locked</span>
                                 </div>
-                                <h3 class="font-black text-sm text-slate-100 uppercase tracking-wide group-hover:text-pink-400 transition leading-snug pt-1">${combo.combo_title}</h3>
-                                <p class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Initial Target: ${combo.paper1_subject.toUpperCase()}</p>
-                            </div>
-                            
-                            <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1.5 border-t border-white/5">
-                                <div>Combined Evaluation Node</div>
-                                <div>Cutoff: <span class="text-amber-400 font-bold">${combo.required_cutoff_percentage}%</span></div>
+                                <h3 class="font-black text-sm text-slate-900 uppercase tracking-wide group-hover:text-orange-500 transition leading-snug pt-1 font-serif">${combo.combo_title}</h3>
+                                <p class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">Initial Target: ${combo.paper1_subject.toUpperCase()}</p>
                             </div>
 
-                            <button onclick="launchSecureComboPipeline('${combo.id}')" class="w-full bg-gradient-to-r from-pink-600 to-red-600 hover:from-pink-500 hover:to-red-500 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition cursor-pointer">
+                            <div class="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1.5 border-t border-slate-100">
+                                <div>Combined Evaluation Node</div>
+                                <div>Cutoff: <span class="text-orange-500 font-bold">${combo.required_cutoff_percentage}%</span></div>
+                            </div>
+
+                            <button onclick="launchSecureComboPipeline('${combo.id}')" class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-400 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition cursor-pointer">
                                 Launch Combined Test ↗
                             </button>
                         </div>`;
@@ -299,7 +283,7 @@
 
             const sets = {
                 bank: {
-                    accent: "amber",
+                    accent: "orange",
                     svg: `<path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M4 21V10m16 11V10M4 10l8-6 8 6M7 10v11M11 10v11M13 10v11M17 10v11"/>`
                 },
                 govt: {
@@ -311,11 +295,11 @@
                     svg: `<rect x="7" y="7" width="10" height="10" rx="1.5" stroke-linecap="round" stroke-linejoin="round"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 3v3M14 3v3M10 18v3M14 18v3M3 10h3M3 14h3M18 10h3M18 14h3"/>`
                 },
                 teach: {
-                    accent: "purple",
+                    accent: "violet",
                     svg: `<path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5C4 5.7 4.7 5 5.5 5H12v14H5.5A1.5 1.5 0 0 1 4 17.5v-11ZM20 6.5c0-.8-.7-1.5-1.5-1.5H12v14h6.5a1.5 1.5 0 0 0 1.5-1.5v-11Z"/>`
                 },
                 folder: {
-                    accent: "indigo",
+                    accent: "sky",
                     svg: `<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h1.5A2.25 2.25 0 0 0 8.25 8.5h3.053c.421 0 .824.168 1.121.467l2.137 2.138a2.25 2.25 0 0 1 .659 1.592v1.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25Z"/>`
                 }
             };
@@ -327,11 +311,11 @@
             else if (/teach|ctet|tet|education|professor|lecturer/.test(name)) key = "teach";
 
             const accentClasses = {
-                amber: { bg: "bg-amber-500/10", text: "text-amber-400", hoverText: "group-hover:text-amber-400", hoverBorder: "hover:border-amber-500/30", hoverBg: "group-hover:bg-amber-500/20" },
-                blue: { bg: "bg-blue-500/10", text: "text-blue-400", hoverText: "group-hover:text-blue-400", hoverBorder: "hover:border-blue-500/30", hoverBg: "group-hover:bg-blue-500/20" },
-                emerald: { bg: "bg-emerald-500/10", text: "text-emerald-400", hoverText: "group-hover:text-emerald-400", hoverBorder: "hover:border-emerald-500/30", hoverBg: "group-hover:bg-emerald-500/20" },
-                purple: { bg: "bg-purple-500/10", text: "text-purple-400", hoverText: "group-hover:text-purple-400", hoverBorder: "hover:border-purple-500/30", hoverBg: "group-hover:bg-purple-500/20" },
-                indigo: { bg: "bg-indigo-500/10", text: "text-indigo-400", hoverText: "group-hover:text-indigo-400", hoverBorder: "hover:border-indigo-500/30", hoverBg: "group-hover:bg-indigo-500/20" }
+                orange: { bg: "bg-orange-50", text: "text-orange-500", hoverText: "group-hover:text-orange-600", hoverBorder: "hover:border-orange-300", hoverBg: "group-hover:bg-orange-100" },
+                blue: { bg: "bg-blue-50", text: "text-blue-600", hoverText: "group-hover:text-blue-600", hoverBorder: "hover:border-blue-300", hoverBg: "group-hover:bg-blue-100" },
+                emerald: { bg: "bg-emerald-50", text: "text-emerald-600", hoverText: "group-hover:text-emerald-600", hoverBorder: "hover:border-emerald-300", hoverBg: "group-hover:bg-emerald-100" },
+                violet: { bg: "bg-violet-50", text: "text-violet-600", hoverText: "group-hover:text-violet-600", hoverBorder: "hover:border-violet-300", hoverBg: "group-hover:bg-violet-100" },
+                sky: { bg: "bg-sky-50", text: "text-sky-600", hoverText: "group-hover:text-sky-600", hoverBorder: "hover:border-sky-300", hoverBg: "group-hover:bg-sky-100" }
             };
 
             const meta = sets[key];
@@ -347,7 +331,7 @@
             document.getElementById('single-exams-header-title').innerText = "📂 Standard Categorized Subject Folders";
 
             const gridContainer = document.getElementById('portal-dynamic-grid');
-            gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase col-span-full">Mapping Active Categories...</div>`;
+            gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-600 py-12 animate-pulse uppercase col-span-full">Mapping Active Categories...</div>`;
 
             try {
                 const { data: examsData, error: examsErr } = await supabaseClient
@@ -360,7 +344,7 @@
 
                 if (activeCategoryIds.length === 0) {
                     gridContainer.innerHTML = `
-                        <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
+                        <div class="text-center font-mono text-xs text-slate-500 border border-slate-200 p-8 rounded-2xl bg-white col-span-full uppercase">
                             No active exam streams found. Waiting for Admin allocations.
                         </div>`;
                     return;
@@ -375,7 +359,7 @@
 
                 if (!categoriesData || categoriesData.length === 0) {
                     gridContainer.innerHTML = `
-                        <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
+                        <div class="text-center font-mono text-xs text-slate-500 border border-slate-200 p-8 rounded-2xl bg-white col-span-full uppercase">
                             No matching category data configured in system master nodes.
                         </div>`;
                     return;
@@ -388,16 +372,16 @@
                     const slug = displayTitle.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
                     htmlContent += `
-                        <div onclick="loadExamsSubView('${cat.id}', '${encodeURIComponent(displayTitle)}')" class="bg-slate-900/40 border border-white/5 ${iconMeta.hoverBorder} p-6 rounded-2xl shadow-xl hover:bg-slate-900/80 transition transform hover:scale-[1.01] cursor-pointer group relative overflow-hidden flex flex-col justify-between">
+                        <div onclick="loadExamsSubView('${cat.id}', '${encodeURIComponent(displayTitle)}')" class="bg-white border border-slate-200 ${iconMeta.hoverBorder} p-6 rounded-2xl shadow-sm hover:shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer group relative overflow-hidden flex flex-col justify-between">
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">
                                     <div class="p-2.5 ${iconMeta.bg} rounded-xl ${iconMeta.text} ${iconMeta.hoverBg} transition">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-6 h-6">${iconMeta.svgPath}</svg>
                                     </div>
-                                    <span class="text-[10px] font-mono text-slate-500 font-bold uppercase tracking-wider ${iconMeta.hoverText} transition">Open Folder &rarr;</span>
+                                    <span class="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider ${iconMeta.hoverText} transition">Open Folder &rarr;</span>
                                 </div>
-                                <h4 class="text-sm font-bold tracking-wide text-slate-100 ${iconMeta.hoverText} transition uppercase font-display">${displayTitle}</h4>
-                                <p class="dir-path text-[10px] font-mono text-slate-600 truncate">${slug}/</p>
+                                <h4 class="text-sm font-bold tracking-wide text-slate-900 ${iconMeta.hoverText} transition uppercase font-serif">${displayTitle}</h4>
+                                <p class="dir-path text-[10px] font-mono text-slate-400 truncate">${slug}/</p>
                             </div>
                         </div>`;
                 });
@@ -406,7 +390,7 @@
 
             } catch (err) {
                 console.error(err);
-                gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-400 col-span-full">Database parsing cluster connection fault: ${err.message || err}</div>`;
+                gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-500 col-span-full">Database parsing cluster connection fault: ${err.message || err}</div>`;
             }
         }
 
@@ -414,11 +398,11 @@
        // 📝 STEP 2: LOAD EXAMS FILTERED BY CATEGORY (🏆 UPGRADED: HIDES COMBO SUBS)
 async function loadExamsSubView(categoryId, encodedCatName) {
     const categoryName = decodeURIComponent(encodedCatName);
-    
+
     document.getElementById('workspace-title').innerText = `${categoryName.toUpperCase()} — ACTIVE PAPERS`;
     document.getElementById('workspace-desc').innerText = "Select an available test paper below to initialize live terminal examination runtime.";
     document.getElementById('single-exams-header-title').innerText = "📋 Standalone Available Question Matrix Subjects";
-    
+
     const bArrow = document.getElementById('breadcrumb-arrow');
     const bCurrent = document.getElementById('breadcrumb-current-category');
     if(bArrow) bArrow.classList.remove('hidden');
@@ -428,7 +412,7 @@ async function loadExamsSubView(categoryId, encodedCatName) {
     }
 
     const gridContainer = document.getElementById('portal-dynamic-grid');
-    gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase col-span-full">Filtering Test Clusters...</div>`;
+    gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-600 py-12 animate-pulse uppercase col-span-full">Filtering Test Clusters...</div>`;
 
     try {
         // 🔒 १. सबसे पहले 'combo_exams' टेबल से उन सभी पेपर्स के नाम निकालें जो कॉम्बो में बुक हैं
@@ -463,7 +447,7 @@ async function loadExamsSubView(categoryId, encodedCatName) {
 
         if (filteredExamsList.length === 0) {
             gridContainer.innerHTML = `
-                <div class="text-center font-mono text-xs text-slate-500 border border-white/5 p-8 rounded-2xl bg-white/5 col-span-full uppercase">
+                <div class="text-center font-mono text-xs text-slate-500 border border-slate-200 p-8 rounded-2xl bg-white col-span-full uppercase">
                     No standalone single papers active inside this folder.
                 </div>`;
             return;
@@ -478,18 +462,18 @@ async function loadExamsSubView(categoryId, encodedCatName) {
             } catch(e) { totalQuestionsCount = 0; }
 
             htmlContent += `
-                <div class="bg-slate-900/20 border border-white/5 hover:border-emerald-500/20 p-5 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
+                <div class="bg-white border border-slate-200 hover:border-emerald-300 p-5 sm:p-6 rounded-2xl shadow-sm hover:shadow-lg transition flex flex-col justify-between space-y-4">
                     <div class="space-y-1.5">
-                        <span class="text-[9px] font-mono font-black text-slate-500 bg-white/5 px-2 py-0.5 rounded uppercase tracking-wider">Active Evaluation Node</span>
-                        <h4 class="text-sm font-black text-slate-200 tracking-wide leading-snug uppercase pt-1">${exam.subject}</h4>
-                    </div>
-                    
-                    <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1 border-t border-white/5">
-                        <div>Questions: <span class="text-emerald-400 font-bold">${totalQuestionsCount}</span></div>
-                        <div>Duration: <span class="text-blue-400 font-bold">${exam.duration_minutes} Min</span></div>
+                        <span class="text-[9px] font-mono font-black text-slate-400 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider">Active Evaluation Node</span>
+                        <h4 class="text-sm font-black text-slate-900 tracking-wide leading-snug uppercase pt-1 font-serif">${exam.subject}</h4>
                     </div>
 
-                    <button onclick="initializeAssessmentRuntime('${encodeURIComponent(exam.subject)}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition transform active:scale-[0.98] cursor-pointer">
+                    <div class="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-100">
+                        <div>Questions: <span class="text-emerald-600 font-bold">${totalQuestionsCount}</span></div>
+                        <div>Duration: <span class="text-blue-600 font-bold">${exam.duration_minutes} Min</span></div>
+                    </div>
+
+                    <button onclick="initializeAssessmentRuntime('${encodeURIComponent(exam.subject)}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition transform active:scale-[0.98] cursor-pointer">
                         Launch Live Engine
                     </button>
                 </div>`;
@@ -499,7 +483,7 @@ async function loadExamsSubView(categoryId, encodedCatName) {
 
     } catch (err) {
         console.error(err);
-        gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-400 col-span-full">Failed to compile category elements matrix list.</div>`;
+        gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-500 col-span-full">Failed to compile category elements matrix list.</div>`;
     }
 }
         function initializeAssessmentRuntime(encodedSubject) {
@@ -525,29 +509,29 @@ async function loadExamsSubView(categoryId, encodedCatName) {
 
             try {
                 const { data: attempts, error } = await supabaseClient
-                    .from('results') 
+                    .from('results')
                     .select('*')
-                    .eq('email', studentEmail.toLowerCase()) 
-                    .order('submitted_at', { ascending: false }); 
+                    .eq('email', studentEmail.toLowerCase())
+                    .order('submitted_at', { ascending: false });
 
                 if (error) throw error;
 
                 if (!attempts || attempts.length === 0) {
                     container.innerHTML = `
-                        <div class="col-span-full border border-dashed border-white/5 text-center p-8 rounded-2xl text-slate-500 font-mono text-[11px] uppercase tracking-wider bg-slate-950/20">
+                        <div class="col-span-full border border-dashed border-slate-300 text-center p-8 rounded-2xl text-slate-400 font-mono text-[11px] uppercase tracking-wider bg-slate-50">
                             No conducted mock exams detected in your student log cluster.
                         </div>`;
                     return;
                 }
 
                 container.innerHTML = "";
-                window.globalAttemptsCache = attempts; 
+                window.globalAttemptsCache = attempts;
 
                 attempts.forEach((attempt, index) => {
-                    const dateStr = attempt.submitted_at 
+                    const dateStr = attempt.submitted_at
                         ? new Date(attempt.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
                         : "N/A CORRIDOR";
-                    
+
                     const subjectName = attempt.subject || "Objective Evaluation Node";
                     const finalScore = attempt.score !== undefined ? attempt.score : 0;
                     const totalQs = attempt.total_questions || 0;
@@ -555,25 +539,25 @@ async function loadExamsSubView(categoryId, encodedCatName) {
                     const wrongQs = attempt.wrong_answers || 0;
 
                     container.innerHTML += `
-                        <div class="bg-slate-900/60 border border-white/5 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:border-amber-500/20 transition shadow-xl relative overflow-hidden group">
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:border-orange-300 transition shadow-sm hover:shadow-lg relative overflow-hidden group">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <span class="text-[9px] font-mono font-black bg-white/5 border border-white/10 text-slate-400 px-2 py-0.5 rounded uppercase tracking-wider">${dateStr}</span>
-                                    <h3 class="font-bold text-sm text-slate-100 uppercase tracking-wide mt-2.5 leading-snug group-hover:text-amber-400 transition">${subjectName}</h3>
+                                    <span class="text-[9px] font-mono font-black bg-slate-100 border border-slate-200 text-slate-500 px-2 py-0.5 rounded uppercase tracking-wider">${dateStr}</span>
+                                    <h3 class="font-bold text-sm text-slate-900 uppercase tracking-wide mt-2.5 leading-snug group-hover:text-orange-500 transition font-serif">${subjectName}</h3>
                                 </div>
                                 <div class="text-right shrink-0">
-                                    <span class="text-lg font-black text-amber-400 font-mono">${finalScore}</span>
-                                    <span class="text-[8px] font-mono text-slate-500 block uppercase font-bold tracking-tighter mt-0.5">Score</span>
+                                    <span class="text-lg font-black text-orange-500 font-mono">${finalScore}</span>
+                                    <span class="text-[8px] font-mono text-slate-400 block uppercase font-bold tracking-tighter mt-0.5">Score</span>
                                 </div>
                             </div>
-                            
-                            <div class="grid grid-cols-3 gap-2 bg-slate-950/40 p-2.5 rounded-xl text-center font-mono text-[10px] border border-white/[0.02]">
-                                <div><div class="text-slate-400 font-bold">${totalQs}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Total Qs</div></div>
-                                <div><div class="text-emerald-400 font-bold">+${correctQs}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Correct</div></div>
-                                <div><div class="text-red-400 font-bold">-${wrongQs}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Wrong</div></div>
+
+                            <div class="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-xl text-center font-mono text-[10px] border border-slate-100">
+                                <div><div class="text-slate-600 font-bold">${totalQs}</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Total Qs</div></div>
+                                <div><div class="text-emerald-600 font-bold">+${correctQs}</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Correct</div></div>
+                                <div><div class="text-red-500 font-bold">-${wrongQs}</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Wrong</div></div>
                             </div>
 
-                            <button onclick="viewDetailedExamAnalysis(${index})" class="w-full bg-white/5 hover:bg-amber-500/10 text-amber-400 border border-white/10 font-black py-2 px-3 rounded-xl text-[10px] uppercase tracking-widest transition font-mono cursor-pointer shadow-md">
+                            <button onclick="viewDetailedExamAnalysis(${index})" class="w-full bg-slate-50 hover:bg-orange-50 text-orange-600 border border-slate-200 hover:border-orange-200 font-black py-2 px-3 rounded-xl text-[10px] uppercase tracking-widest transition font-mono cursor-pointer">
                                 Analyze Answer Sheet &rarr;
                             </button>
                         </div>`;
@@ -591,25 +575,25 @@ async function loadExamsSubView(categoryId, encodedCatName) {
 
             const subjectName = attempt.subject ? String(attempt.subject) : "EXAMINATION MOCK NODE";
             const subjectNameUpper = subjectName.toUpperCase();
-            
+
             const modalTitleElement = document.getElementById('modal-review-title');
             if (modalTitleElement) {
                 modalTitleElement.innerText = `${subjectNameUpper} — SOLUTIONS & ANALYSIS`;
             }
-            
+
             const totalQ = attempt.total_questions || 0;
             const correctQ = attempt.correct_answers || 0;
             const accuracy = totalQ > 0 ? ((correctQ / totalQ) * 100).toFixed(1) : 0;
             const finalScore = attempt.score !== undefined ? attempt.score : 0;
             const wrongAnswersCount = attempt.wrong_answers !== undefined ? attempt.wrong_answers : 0;
-            
+
             const statsSummary = document.getElementById('modal-review-stats-summary');
             if (statsSummary) {
                 statsSummary.innerHTML = `
-                    <div class="border-r border-white/5"><div class="text-slate-200 font-black text-xs">${accuracy}%</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Your Accuracy</div></div>
-                    <div class="border-r border-white/5"><div class="text-emerald-400 font-black text-xs">${correctQ} / ${totalQ}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Correct Breakdown</div></div>
-                    <div class="border-r border-white/5"><div class="text-red-400 font-black text-xs">${wrongAnswersCount}</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Wrong Selection</div></div>
-                    <div><div class="text-blue-400 font-black text-xs">${finalScore} Mks</div><div class="text-[8px] text-slate-500 uppercase mt-0.5">Net Score Matrix</div></div>
+                    <div class="border-r border-slate-200"><div class="text-slate-900 font-black text-xs">${accuracy}%</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Your Accuracy</div></div>
+                    <div class="border-r border-slate-200"><div class="text-emerald-600 font-black text-xs">${correctQ} / ${totalQ}</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Correct Breakdown</div></div>
+                    <div class="border-r border-slate-200"><div class="text-red-500 font-black text-xs">${wrongAnswersCount}</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Wrong Selection</div></div>
+                    <div><div class="text-blue-600 font-black text-xs">${finalScore} Mks</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Net Score Matrix</div></div>
                 `;
             }
 
@@ -638,15 +622,15 @@ async function loadExamsSubView(categoryId, encodedCatName) {
 
             if (isComboPayload) {
                 // रेंडर पेपर 1 हेडर
-                reviewBody.innerHTML += `<div class="col-span-full border-b border-pink-500/20 pb-2 text-pink-400 font-mono text-xs font-black uppercase tracking-widest pt-4">📋 SECTION A : PAPER 1 ANALYSIS</div>`;
+                reviewBody.innerHTML += `<div class="col-span-full border-b border-orange-200 pb-2 text-orange-500 font-mono text-xs font-black uppercase tracking-widest pt-4">📋 SECTION A : PAPER 1 ANALYSIS</div>`;
                 renderReviewCardsGrid(p1Questions, p1Responses, subjectNameUpper);
-                
+
                 // रेंडर पेपर 2 हेडर
-                reviewBody.innerHTML += `<div class="col-span-full border-b border-blue-500/20 pb-2 text-blue-400 font-mono text-xs font-black uppercase tracking-widest pt-8">📋 SECTION B : PAPER 2 ANALYSIS</div>`;
+                reviewBody.innerHTML += `<div class="col-span-full border-b border-blue-200 pb-2 text-blue-600 font-mono text-xs font-black uppercase tracking-widest pt-8">📋 SECTION B : PAPER 2 ANALYSIS</div>`;
                 renderReviewCardsGrid(p2Questions, p2Responses, subjectNameUpper);
             } else {
                 if (!questionsArray || !Array.isArray(questionsArray)) {
-                    reviewBody.innerHTML = `<div class="text-center py-8 text-red-400 font-mono text-xs uppercase">Snapshots dataset format is not an uncompressed array structure.</div>`;
+                    reviewBody.innerHTML = `<div class="text-center py-8 text-red-500 font-mono text-xs uppercase">Snapshots dataset format is not an uncompressed array structure.</div>`;
                     return;
                 }
                 renderReviewCardsGrid(questionsArray, responsesArray, subjectNameUpper);
@@ -658,45 +642,45 @@ async function loadExamsSubView(categoryId, encodedCatName) {
         // सहायक रिज़ॉर्ट रेंडरर फ़ंक्शन (कॉम्बो संगतता)
         function renderReviewCardsGrid(questions, responses, subjectNameUpper) {
             const reviewBody = document.getElementById('modal-review-body');
-            
+
             questions.forEach((q, idx) => {
                 const studentSelectedIdx = (responses && responses[idx] !== undefined) ? parseInt(responses[idx]) : (q.selected !== undefined ? q.selected : -1);
                 const correctIdx = q.correct !== undefined ? parseInt(q.correct) : 0;
 
                 const isCorrect = studentSelectedIdx === correctIdx;
                 const isSkipped = studentSelectedIdx === null || studentSelectedIdx === undefined || studentSelectedIdx === -1;
-                
-                let borderStyle = 'border-red-500/20 bg-red-500/[0.01]';
-                let statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-red-500/10 text-red-400 border border-red-500/20 rounded-md uppercase tracking-widest font-mono">𐄂 INCORRECT</span>';
-                
+
+                let borderStyle = 'border-red-200 bg-red-50/40';
+                let statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-red-50 text-red-500 border border-red-200 rounded-md uppercase tracking-widest font-mono">𐄂 INCORRECT</span>';
+
                 if (isCorrect) {
-                    borderStyle = 'border-emerald-500/20 bg-emerald-500/[0.01]';
-                    statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-md uppercase tracking-widest font-mono">✓ CORRECT</span>';
+                    borderStyle = 'border-emerald-200 bg-emerald-50/40';
+                    statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-md uppercase tracking-widest font-mono">✓ CORRECT</span>';
                 } else if (isSkipped) {
-                    borderStyle = 'border-slate-700/40 bg-slate-800/[0.02]';
-                    statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-slate-800 border border-white/10 text-slate-400 rounded-md uppercase tracking-widest font-mono">⚠️ SKIPPED</span>';
+                    borderStyle = 'border-slate-200 bg-slate-50';
+                    statusBadge = '<span class="px-2 py-0.5 text-[8px] font-black bg-slate-100 border border-slate-200 text-slate-500 rounded-md uppercase tracking-widest font-mono">⚠️ SKIPPED</span>';
                 }
 
-                const peerCorrect = Math.floor(Math.random() * (85 - 35) + 35); 
+                const peerCorrect = Math.floor(Math.random() * (85 - 35) + 35);
                 const avgTime = Math.floor(Math.random() * (75 - 20) + 20);
 
                 let optionsHtml = "";
                 const rawOptions = q.options || ["Option A", "Option B", "Option C", "Option D"];
-                
+
                 rawOptions.forEach((opt, optIdx) => {
                     const optChar = String.fromCharCode(65 + optIdx);
-                    let optStyle = "bg-slate-900 border-white/5 text-slate-300";
+                    let optStyle = "bg-white border-slate-200 text-slate-700";
                     let indicatorIcon = "";
-                    let optionCharStyle = "bg-white/5 border border-white/10 text-slate-400 font-bold";
-                    
+                    let optionCharStyle = "bg-slate-100 border border-slate-200 text-slate-500 font-bold";
+
                     if (optIdx === correctIdx) {
-                        optStyle = "bg-emerald-950/40 border-emerald-500/40 text-emerald-400 font-bold ring-1 ring-emerald-500/10";
-                        optionCharStyle = "bg-emerald-500 text-slate-950 font-black";
-                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-emerald-400 ml-auto uppercase tracking-wider">Correct Option</span>`;
+                        optStyle = "bg-emerald-50 border-emerald-300 text-emerald-700 font-bold ring-1 ring-emerald-100";
+                        optionCharStyle = "bg-emerald-500 text-white font-black";
+                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-emerald-600 ml-auto uppercase tracking-wider">Correct Option</span>`;
                     } else if (optIdx === studentSelectedIdx && !isCorrect) {
-                        optStyle = "bg-red-950/40 border-red-500/40 text-red-400 font-bold ring-1 ring-red-500/10";
+                        optStyle = "bg-red-50 border-red-300 text-red-700 font-bold ring-1 ring-red-100";
                         optionCharStyle = "bg-red-500 text-white font-black";
-                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-red-400 ml-auto uppercase tracking-wider">Your Selection</span>`;
+                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-red-500 ml-auto uppercase tracking-wider">Your Selection</span>`;
                     }
 
                     optionsHtml += `
@@ -709,22 +693,22 @@ async function loadExamsSubView(categoryId, encodedCatName) {
 
                 const correctChar = String.fromCharCode(65 + correctIdx);
                 const questionText = q.question || q.title || q.text || "Objective Assessment Query Node";
-                
+
                 reviewBody.innerHTML += `
-                    <div class="border rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl transition relative ${borderStyle} mt-4">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-2.5">
+                    <div class="border rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm transition relative ${borderStyle} mt-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/70 pb-2.5">
                             <div class="flex items-center space-x-2 text-[9px] font-mono text-slate-500 uppercase tracking-wider font-bold">
                                 <span>Question Unit Stack Node #${idx + 1}</span>
                                 <span>•</span>
-                                <span class="text-slate-400">Avg Time taken: ${avgTime}s</span>
+                                <span class="text-slate-500">Avg Time taken: ${avgTime}s</span>
                                 <span>•</span>
-                                <span class="text-blue-400">Correctly Answered by ${peerCorrect}% peers</span>
+                                <span class="text-blue-600">Correctly Answered by ${peerCorrect}% peers</span>
                             </div>
                             <div class="ml-auto sm:ml-0">${statusBadge}</div>
                         </div>
 
-                        <h4 class="text-sm font-bold text-white font-sans leading-relaxed">
-                            <span class="font-mono text-slate-500 bg-white/5 px-2 py-0.5 rounded text-[11px] mr-1">Q${idx + 1}</span> 
+                        <h4 class="text-sm font-bold text-slate-900 font-sans leading-relaxed">
+                            <span class="font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded text-[11px] mr-1">Q${idx + 1}</span>
                             ${questionText}
                         </h4>
 
@@ -732,18 +716,18 @@ async function loadExamsSubView(categoryId, encodedCatName) {
                             ${optionsHtml}
                         </div>
 
-                        <div class="bg-slate-950/60 border border-white/5 rounded-xl p-4 mt-3 space-y-2 font-sans">
-                            <div class="flex items-center space-x-2 text-amber-400 font-mono text-[10px] font-black uppercase tracking-widest">
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mt-3 space-y-2 font-sans">
+                            <div class="flex items-center space-x-2 text-orange-500 font-mono text-[10px] font-black uppercase tracking-widest">
                                 <span>💡</span>
                                 <span>Official Solutions & Deduction Framework</span>
                             </div>
-                            <p class="text-xs text-slate-300 leading-relaxed font-medium">
-                                The correct matching evaluation node responds to choice <strong class="text-emerald-400 font-mono text-xs font-black bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">${correctChar}</strong>. 
+                            <p class="text-xs text-slate-600 leading-relaxed font-medium">
+                                The correct matching evaluation node responds to choice <strong class="text-emerald-600 font-mono text-xs font-black bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">${correctChar}</strong>.
                                 Standard academic computer science paradigms rule out competing configurations because Option ${correctChar} models the requested core criteria optimally.
                             </p>
-                            <div class="pt-2 text-[9px] font-mono text-slate-500 uppercase font-bold tracking-wider flex items-center gap-1">
+                            <div class="pt-2 text-[9px] font-mono text-slate-400 uppercase font-bold tracking-wider flex items-center gap-1">
                                 <span>🔍 Core Segment Matrix:</span>
-                                <span class="text-purple-400">${subjectNameUpper} Evaluated Contexts</span>
+                                <span class="text-violet-600">${subjectNameUpper} Evaluated Contexts</span>
                             </div>
                         </div>
                     </div>`;
