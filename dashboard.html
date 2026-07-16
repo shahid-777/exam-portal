@@ -7,16 +7,43 @@
     <title>Student Portal Dashboard — Categories</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --void:#05070d;
+            --panel-line:rgba(148,163,255,0.06);
+            --glow-indigo:rgba(99,102,241,0.16);
+            --glow-emerald:rgba(16,185,129,0.10);
+            --glow-amber:rgba(245,158,11,0.08);
+        }
+        body{
+            font-family:'Inter',sans-serif;
+            background-color:var(--void);
+            background-image:
+                radial-gradient(ellipse 900px 500px at 8% -5%, var(--glow-indigo), transparent 60%),
+                radial-gradient(ellipse 700px 500px at 95% 15%, var(--glow-emerald), transparent 55%),
+                radial-gradient(ellipse 800px 600px at 50% 110%, var(--glow-amber), transparent 60%),
+                repeating-linear-gradient(0deg, var(--panel-line) 0px, transparent 1px, transparent 42px, var(--panel-line) 43px),
+                repeating-linear-gradient(90deg, var(--panel-line) 0px, transparent 1px, transparent 42px, var(--panel-line) 43px);
+            background-attachment:fixed;
+        }
+        .font-mono{ font-family:'JetBrains Mono', monospace; }
+        h1,h2,h3,.font-display{ font-family:'Space Grotesk', sans-serif; letter-spacing:-0.01em; }
+        ::selection{ background:rgba(99,102,241,0.35); }
+        .dir-path::before{ content:'~/exams/'; opacity:0.55; }
+    </style>
 </head>
-<body class="bg-slate-950 font-sans min-h-screen text-slate-200 flex flex-col justify-between">
+<body class="font-sans min-h-screen text-slate-200 flex flex-col justify-between">
 
-    <header class="w-full bg-slate-900/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50">
+    <header class="w-full bg-slate-950/70 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50 relative">
+        <div class="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent"></div>
         <div class="flex items-center space-x-3">
             <div class="bg-white/95 p-1 rounded-xl">
                 <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain">
             </div>
             <div class="flex flex-col">
-                <span class="text-sm font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 uppercase leading-none">STUDENT HUB</span>
+                <span class="text-sm font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300 uppercase leading-none font-display">STUDENT HUB</span>
                 <span class="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">EXAM CATEGORY EXPLORER</span>
             </div>
         </div>
@@ -39,11 +66,12 @@
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-12">
         
-        <div class="space-y-1">
-            <h3 id="workspace-title" class="text-xl font-black text-slate-100 uppercase tracking-wider">
+        <div class="space-y-1.5">
+            <span class="text-[10px] font-mono text-indigo-400 uppercase tracking-widest">$ ls ~/exams --active</span>
+            <h3 id="workspace-title" class="text-2xl font-bold text-slate-100 tracking-wide font-display">
                 Available Exam Streams
             </h3>
-            <p id="workspace-desc" class="text-xs text-slate-400">
+            <p id="workspace-desc" class="text-xs text-slate-400 max-w-2xl">
                 Select an academic stream or recruitment category folder to access active examination test papers.
             </p>
         </div>
@@ -264,6 +292,52 @@
             }
         }
 
+        // 🎨 CATEGORY ICON MATRIX: keyword-based icon + accent selection so each
+        // exam category folder gets a visual identity instead of one generic icon.
+        function getCategoryIconMeta(rawName) {
+            const name = (rawName || "").toLowerCase();
+
+            const sets = {
+                bank: {
+                    accent: "amber",
+                    svg: `<path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M4 21V10m16 11V10M4 10l8-6 8 6M7 10v11M11 10v11M13 10v11M17 10v11"/>`
+                },
+                govt: {
+                    accent: "blue",
+                    svg: `<path stroke-linecap="round" stroke-linejoin="round" d="M12 3l9 5-9 5-9-5 9-5Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 10.5V17c0 1 3 2.5 7 2.5s7-1.5 7-2.5v-6.5"/>`
+                },
+                tech: {
+                    accent: "emerald",
+                    svg: `<rect x="7" y="7" width="10" height="10" rx="1.5" stroke-linecap="round" stroke-linejoin="round"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 3v3M14 3v3M10 18v3M14 18v3M3 10h3M3 14h3M18 10h3M18 14h3"/>`
+                },
+                teach: {
+                    accent: "purple",
+                    svg: `<path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5C4 5.7 4.7 5 5.5 5H12v14H5.5A1.5 1.5 0 0 1 4 17.5v-11ZM20 6.5c0-.8-.7-1.5-1.5-1.5H12v14h6.5a1.5 1.5 0 0 0 1.5-1.5v-11Z"/>`
+                },
+                folder: {
+                    accent: "indigo",
+                    svg: `<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h1.5A2.25 2.25 0 0 0 8.25 8.5h3.053c.421 0 .824.168 1.121.467l2.137 2.138a2.25 2.25 0 0 1 .659 1.592v1.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25Z"/>`
+                }
+            };
+
+            let key = "folder";
+            if (/bank|ibps|sbi|finance/.test(name)) key = "bank";
+            else if (/ssc|railway|police|defence|army|navy|patwari|reet|psc|govt|government|upsc/.test(name)) key = "govt";
+            else if (/gate|cse|computer|it |software|coding|programming|tech/.test(name)) key = "tech";
+            else if (/teach|ctet|tet|education|professor|lecturer/.test(name)) key = "teach";
+
+            const accentClasses = {
+                amber: { bg: "bg-amber-500/10", text: "text-amber-400", hoverText: "group-hover:text-amber-400", hoverBorder: "hover:border-amber-500/30", hoverBg: "group-hover:bg-amber-500/20" },
+                blue: { bg: "bg-blue-500/10", text: "text-blue-400", hoverText: "group-hover:text-blue-400", hoverBorder: "hover:border-blue-500/30", hoverBg: "group-hover:bg-blue-500/20" },
+                emerald: { bg: "bg-emerald-500/10", text: "text-emerald-400", hoverText: "group-hover:text-emerald-400", hoverBorder: "hover:border-emerald-500/30", hoverBg: "group-hover:bg-emerald-500/20" },
+                purple: { bg: "bg-purple-500/10", text: "text-purple-400", hoverText: "group-hover:text-purple-400", hoverBorder: "hover:border-purple-500/30", hoverBg: "group-hover:bg-purple-500/20" },
+                indigo: { bg: "bg-indigo-500/10", text: "text-indigo-400", hoverText: "group-hover:text-indigo-400", hoverBorder: "hover:border-indigo-500/30", hoverBg: "group-hover:bg-indigo-500/20" }
+            };
+
+            const meta = sets[key];
+            return { svgPath: meta.svg, ...accentClasses[meta.accent] };
+        }
+
         // 📁 STEP 1: LOAD MAIN EXAM CATEGORIES (FOLDERS)
         async function loadCategoriesView() {
             document.getElementById('workspace-title').innerText = "Available Exam Streams";
@@ -310,17 +384,20 @@
                 let htmlContent = "";
                 categoriesData.forEach(cat => {
                     const displayTitle = cat.category_name || `Category #${cat.id}`;
+                    const iconMeta = getCategoryIconMeta(displayTitle);
+                    const slug = displayTitle.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
                     htmlContent += `
-                        <div onclick="loadExamsSubView('${cat.id}', '${encodeURIComponent(displayTitle)}')" class="bg-slate-900/40 border border-white/5 hover:border-blue-500/30 p-6 rounded-2xl shadow-xl hover:bg-slate-900/80 transition transform hover:scale-[1.01] cursor-pointer group relative overflow-hidden flex flex-col justify-between">
+                        <div onclick="loadExamsSubView('${cat.id}', '${encodeURIComponent(displayTitle)}')" class="bg-slate-900/40 border border-white/5 ${iconMeta.hoverBorder} p-6 rounded-2xl shadow-xl hover:bg-slate-900/80 transition transform hover:scale-[1.01] cursor-pointer group relative overflow-hidden flex flex-col justify-between">
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">
-                                    <div class="p-2.5 bg-blue-500/10 rounded-xl text-blue-400 group-hover:bg-blue-500/20 transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h1.5A2.25 2.25 0 0 0 8.25 8.5h3.053c.421 0 .824.168 1.121.467l2.137 2.138a2.25 2.25 0 0 1 .659 1.592v1.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25Z" /></svg>
+                                    <div class="p-2.5 ${iconMeta.bg} rounded-xl ${iconMeta.text} ${iconMeta.hoverBg} transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-6 h-6">${iconMeta.svgPath}</svg>
                                     </div>
-                                    <span class="text-[10px] font-mono text-slate-500 font-bold uppercase tracking-wider group-hover:text-blue-400/60 transition">Open Folder &rarr;</span>
+                                    <span class="text-[10px] font-mono text-slate-500 font-bold uppercase tracking-wider ${iconMeta.hoverText} transition">Open Folder &rarr;</span>
                                 </div>
-                                <h4 class="text-sm font-black tracking-wide text-slate-100 group-hover:text-blue-400 transition uppercase">${displayTitle}</h4>
+                                <h4 class="text-sm font-bold tracking-wide text-slate-100 ${iconMeta.hoverText} transition uppercase font-display">${displayTitle}</h4>
+                                <p class="dir-path text-[10px] font-mono text-slate-600 truncate">${slug}/</p>
                             </div>
                         </div>`;
                 });
