@@ -80,6 +80,16 @@
                 </div>
             </div>
 
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-sm">
+                <button type="button" id="prev-question-btn" onclick="navigateQuestion(-1)" class="border border-slate-300 text-slate-600 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-white hover:bg-slate-50 transition disabled:opacity-30 disabled:cursor-not-allowed">
+                    &larr; Previous
+                </button>
+                <span id="question-progress-text" class="text-xs font-mono text-slate-500 font-bold tracking-wide">Question 1 of 0</span>
+                <button type="button" id="next-question-btn" onclick="navigateQuestion(1)" class="border border-blue-600 text-blue-600 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-blue-50 hover:bg-blue-100 transition disabled:opacity-30 disabled:cursor-not-allowed">
+                    Next &rarr;
+                </button>
+            </div>
+
             <div class="pt-4 border-t border-slate-200 flex justify-end">
                 <button onclick="terminateAssessmentProcess()" class="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-400 text-white font-black py-3 px-8 rounded-xl shadow-lg uppercase text-xs tracking-widest transition transform active:scale-[0.99] cursor-pointer">
                     Submit Test Evaluation
@@ -112,7 +122,7 @@
     </main>
 
     <footer class="w-full text-center py-3 border-t border-slate-200 bg-white text-[9px] font-mono text-slate-400 uppercase tracking-widest mt-6">
-        &copy; CS Management System Terminal
+        &copy; JECRC University CS Management System Terminal
     </footer>
 
     <script>
@@ -137,6 +147,8 @@
         let comboPaper1Responses = {};
         let comboPaper1Snapshot = [];
         let comboPaper1NegativeMarking = 0;
+
+        let currentQuestionIndex = 0;
 
         function toggleMobilePalette(shouldShow) {
             const sidebar = document.getElementById('palette-sidebar');
@@ -219,6 +231,7 @@
                 globalNegativeMarking = parseFloat(data.negative_marking) || 0;
 
                 globalLoadedQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
+                currentQuestionIndex = 0;
 
                 renderNavigationPalette(globalLoadedQuestions.length);
                 updateLiveStatusCounters();
@@ -246,6 +259,7 @@
                 globalNegativeMarking = parseFloat(data.negative_marking) || 0;
 
                 globalLoadedQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
+                currentQuestionIndex = 0;
 
                 renderNavigationPalette(globalLoadedQuestions.length);
                 updateLiveStatusCounters();
@@ -376,9 +390,9 @@
                                         </label>`;
                                 });
 
-                                // मुख्य प्रश्न कार्ड
+                                // मुख्य प्रश्न कार्ड (अब एक बार में एक ही कार्ड दिखेगा — "hidden" डिफ़ॉल्ट क्लास)
                                 finalHtml += `
-                                    <div id="question-card-${index}" class="bg-white border border-slate-200 p-5 rounded-2xl space-y-4 shadow-sm scroll-mt-36">
+                                    <div id="question-card-${index}" class="exam-question-slide hidden bg-white border border-slate-200 p-5 rounded-2xl space-y-4 shadow-sm">
                                         <div class="flex items-start justify-between">
                                             <span class="text-xs font-mono font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
                                             <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-slate-200 px-2.5 py-1 rounded-lg text-slate-500 hover:text-red-500 hover:border-red-200 transition">Mark Review</button>
@@ -405,7 +419,49 @@
                                     imgCont.classList.remove('hidden');
                                 }
                             });
+
+                            // सिर्फ मौजूदा प्रश्न दिखाएँ, बाकी सब छुपे रहें (Next/Previous पेजिनेशन)
+                            showQuestionSlide(currentQuestionIndex);
                         }
+
+        // 🧭 PAGINATION ENGINE: एक बार में एक ही प्रश्न दिखाना — स्क्रॉल की जगह Next/Previous
+        function showQuestionSlide(idx) {
+            const totalQ = globalLoadedQuestions.length;
+            if (totalQ === 0) return;
+
+            if (idx < 0) idx = 0;
+            if (idx > totalQ - 1) idx = totalQ - 1;
+            currentQuestionIndex = idx;
+
+            document.querySelectorAll('.exam-question-slide').forEach(el => el.classList.add('hidden'));
+            const activeSlide = document.getElementById(`question-card-${idx}`);
+            if (activeSlide) activeSlide.classList.remove('hidden');
+
+            const progressText = document.getElementById('question-progress-text');
+            if (progressText) progressText.innerText = `Question ${idx + 1} of ${totalQ}`;
+
+            const prevBtn = document.getElementById('prev-question-btn');
+            const nextBtn = document.getElementById('next-question-btn');
+            if (prevBtn) prevBtn.disabled = (idx === 0);
+            if (nextBtn) nextBtn.disabled = (idx === totalQ - 1);
+
+            highlightActivePaletteButton(idx);
+
+            // मोबाइल पर पेज बदलते समय ऊपर स्क्रॉल कर दें ताकि नया प्रश्न सबसे ऊपर दिखे
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function navigateQuestion(direction) {
+            showQuestionSlide(currentQuestionIndex + direction);
+        }
+
+        function highlightActivePaletteButton(idx) {
+            document.querySelectorAll('#palette-grid-buttons button').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-offset-1', 'ring-blue-500');
+            });
+            const activeBtn = document.getElementById(`palette-btn-${idx}`);
+            if (activeBtn) activeBtn.classList.add('ring-2', 'ring-offset-1', 'ring-blue-500');
+        }
 
         function switchAssessmentLanguage(selectedLang) {
             currentSelectedLanguage = selectedLang;
@@ -428,15 +484,7 @@
             if (window.innerWidth < 1024) {
                 toggleMobilePalette(false);
             }
-
-            const el = document.getElementById(`question-card-${qIdx}`);
-            if(el) {
-                el.scrollIntoView({ behavior: 'smooth' });
-                el.classList.add('border-blue-400', 'bg-blue-50/40');
-                setTimeout(() => {
-                    el.classList.remove('border-blue-400', 'bg-blue-50/40');
-                }, 1500);
-            }
+            showQuestionSlide(qIdx);
         }
 
         function registerRadioResponse(qIdx, optIdx) {
