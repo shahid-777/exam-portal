@@ -9,68 +9,50 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
     <style>
-        :root{
-            --void:#05070d;
-            --panel-line:rgba(148,163,255,0.05);
-            --glow-indigo:rgba(99,102,241,0.14);
-            --glow-emerald:rgba(16,185,129,0.09);
-            --glow-red:rgba(239,68,68,0.07);
-        }
-        body{
-            font-family:'Inter',sans-serif;
-            background-color:var(--void);
-            background-image:
-                radial-gradient(ellipse 800px 500px at 90% -5%, var(--glow-indigo), transparent 60%),
-                radial-gradient(ellipse 700px 450px at 5% 20%, var(--glow-emerald), transparent 55%),
-                radial-gradient(ellipse 900px 500px at 50% 100%, var(--glow-red), transparent 60%),
-                repeating-linear-gradient(0deg, var(--panel-line) 0px, transparent 1px, transparent 42px, var(--panel-line) 43px),
-                repeating-linear-gradient(90deg, var(--panel-line) 0px, transparent 1px, transparent 42px, var(--panel-line) 43px);
-            background-attachment:fixed;
-        }
-        .font-mono{ font-family:'JetBrains Mono', monospace; }
-        h1,h2,h3,h4,.font-display{ font-family:'Space Grotesk', sans-serif; letter-spacing:-0.01em; }
+        body{ font-family:'Inter',sans-serif; background-color:#f8fafc; }
+        .font-serif{ font-family:'Poppins',sans-serif; }
+        .font-mono{ font-family:'IBM Plex Mono',monospace; }
 
-        /* Custom scrollbar matching dark theme */
+        /* Custom scrollbar matching light theme */
         #palette-grid-buttons::-webkit-scrollbar {
             width: 4px;
         }
         #palette-grid-buttons::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
+            background: #cbd5e1;
             border-radius: 10px;
         }
     </style>
 </head>
-<body class="font-sans min-h-screen text-slate-200 flex flex-col justify-between select-none">
+<body class="font-sans min-h-screen text-slate-900 flex flex-col justify-between select-none antialiased">
 
-    <header class="w-full bg-slate-950/85 backdrop-blur-md border-b border-white/5 py-3 px-4 flex items-center justify-between shadow-lg fixed top-0 left-0 right-0 z-50 relative">
-        <div class="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent"></div>
+    <header class="w-full bg-white/90 backdrop-blur-md border-b border-slate-200 py-3 px-4 flex items-center justify-between shadow-sm fixed top-0 left-0 right-0 z-50">
         <div class="flex items-center space-x-2 max-w-[50%] min-w-0">
-            <div class="bg-white/95 p-1 rounded-xl shrink-0">
+            <div class="bg-slate-50 p-1 rounded-xl shadow-sm border border-slate-200 shrink-0">
                 <img src="logo.png" alt="Logo" class="h-7 w-auto object-contain" onerror="this.style.display='none'">
             </div>
             <div class="flex flex-col truncate">
-                <span id="live-subject-title" class="text-[10px] sm:text-xs font-black tracking-widest text-blue-400 uppercase leading-none truncate">LOADING ASSESSMENT...</span>
-                <span class="text-[7px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5 truncate">SECURE RUNTIME MONITOR</span>
+                <span id="live-subject-title" class="text-[10px] sm:text-xs font-black tracking-widest text-blue-600 uppercase leading-none truncate">LOADING ASSESSMENT...</span>
+                <span class="text-[7px] font-mono font-bold text-slate-400 uppercase tracking-wider mt-0.5 truncate">Secure Runtime Monitor</span>
             </div>
         </div>
-        
+
         <div class="flex items-center space-x-2 sm:space-x-4 shrink-0">
-            <div class="flex items-center space-x-1.5 bg-slate-950 border border-white/10 px-2 py-1 rounded-xl">
+            <div class="flex items-center space-x-1.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded-xl">
                 <label class="text-[9px] font-mono text-slate-400 uppercase hidden sm:inline">Lang:</label>
-                <select id="global-lang-selector" onchange="switchAssessmentLanguage(this.value)" class="bg-transparent text-[11px] font-bold text-white outline-none cursor-pointer">
-                    <option value="en" class="bg-slate-900">EN (English)</option>
-                    <option value="hi" class="bg-slate-900">HI (हिन्दी)</option>
+                <select id="global-lang-selector" onchange="switchAssessmentLanguage(this.value)" class="bg-transparent text-[11px] font-bold text-slate-800 outline-none cursor-pointer">
+                    <option value="en">EN (English)</option>
+                    <option value="hi">HI (हिन्दी)</option>
                 </select>
             </div>
 
-            <div class="bg-red-500/10 border border-red-500/20 px-2.5 sm:px-4 py-1.5 rounded-xl flex items-center space-x-1.5">
+            <div class="bg-red-50 border border-red-200 px-2.5 sm:px-4 py-1.5 rounded-xl flex items-center space-x-1.5">
                 <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
-                <span id="time-counter-clock" class="text-[11px] sm:text-xs font-mono font-black text-red-400 tracking-widest">00:00</span>
+                <span id="time-counter-clock" class="text-[11px] sm:text-xs font-mono font-black text-red-500 tracking-widest">00:00</span>
             </div>
 
-            <button onclick="toggleMobilePalette(true)" class="lg:hidden p-2 text-slate-400 hover:text-white hover:bg-white/5 border border-white/10 rounded-xl transition cursor-pointer" aria-label="Open Menu">
+            <button onclick="toggleMobilePalette(true)" class="lg:hidden p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 rounded-xl transition cursor-pointer" aria-label="Open Menu">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
@@ -78,58 +60,58 @@
         </div>
     </header>
 
-    <section class="w-full bg-slate-900/30 border-b border-white/5 py-3 px-6 sticky top-[65px] z-40 backdrop-blur-sm">
+    <section class="w-full bg-white border-b border-slate-200 py-3 px-6 sticky top-[65px] z-40 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto flex flex-wrap gap-4 items-center justify-between text-xs font-mono">
             <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-                <div>Total Questions: <span id="stat-total" class="text-blue-400 font-bold">0</span></div>
-                <div>Attempted: <span id="stat-attempted" class="text-green-400 font-bold">0</span></div>
-                <div>Marked for Review: <span id="stat-marked" class="text-red-400 font-bold">0</span></div>
-                <div>Unattempted: <span id="stat-left" class="text-slate-400 font-bold">0</span></div>
+                <div>Total Questions: <span id="stat-total" class="text-blue-600 font-bold">0</span></div>
+                <div>Attempted: <span id="stat-attempted" class="text-emerald-600 font-bold">0</span></div>
+                <div>Marked for Review: <span id="stat-marked" class="text-red-500 font-bold">0</span></div>
+                <div>Unattempted: <span id="stat-left" class="text-slate-500 font-bold">0</span></div>
             </div>
         </div>
     </section>
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 mt-24 flex flex-col lg:flex-row gap-6 relative">
-        
+
         <div class="flex-1 space-y-6">
             <div id="questions-pipeline-wrapper" class="space-y-6">
-                <div class="text-center text-slate-500 font-mono text-xs py-12 animate-pulse uppercase">
+                <div class="text-center text-slate-400 font-mono text-xs py-12 animate-pulse uppercase">
                     Compiling Objective Array Matrices...
                 </div>
             </div>
 
-            <div class="pt-4 border-t border-white/5 flex justify-end">
-                <button onclick="terminateAssessmentProcess()" class="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-3 px-8 rounded-xl shadow-xl uppercase text-xs tracking-widest transition transform active:scale-[0.99] cursor-pointer">
+            <div class="pt-4 border-t border-slate-200 flex justify-end">
+                <button onclick="terminateAssessmentProcess()" class="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-400 text-white font-black py-3 px-8 rounded-xl shadow-lg uppercase text-xs tracking-widest transition transform active:scale-[0.99] cursor-pointer">
                     Submit Test Evaluation
                 </button>
             </div>
         </div>
 
-        <div id="palette-sidebar" class="fixed inset-y-0 right-0 z-50 w-80 max-w-[85vw] bg-slate-950 border-l border-white/10 p-5 h-screen transform translate-x-full lg:translate-x-0 lg:sticky lg:h-[calc(100vh-150px)] lg:top-[140px] lg:w-80 lg:bg-slate-900/40 lg:border lg:border-white/5 lg:rounded-2xl transition-transform duration-300 ease-in-out flex flex-col justify-start shadow-2xl">
-            
+        <div id="palette-sidebar" class="fixed inset-y-0 right-0 z-50 w-80 max-w-[85vw] bg-white border-l border-slate-200 p-5 h-screen transform translate-x-full lg:translate-x-0 lg:sticky lg:h-[calc(100vh-150px)] lg:top-[140px] lg:w-80 lg:bg-white lg:border lg:border-slate-200 lg:rounded-2xl transition-transform duration-300 ease-in-out flex flex-col justify-start shadow-xl lg:shadow-sm">
+
             <div class="space-y-4 flex flex-col min-h-0 justify-start w-full">
-                <div class="border-b border-white/5 pb-2 flex items-center justify-between">
+                <div class="border-b border-slate-200 pb-2 flex items-center justify-between">
                     <div>
-                        <h4 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest font-display">Question Palette</h4>
-                        <p class="text-[9px] text-slate-500 font-mono mt-0.5">Random Navigation Grid Mapping</p>
+                        <h4 class="text-xs font-mono font-black text-slate-500 uppercase tracking-widest font-serif">Question Palette</h4>
+                        <p class="text-[9px] text-slate-400 font-mono mt-0.5">Navigation Grid Mapping</p>
                     </div>
-                    <button onclick="toggleMobilePalette(false)" class="lg:hidden text-slate-400 hover:text-white font-mono text-[11px] border border-white/10 px-2 py-1 rounded-md bg-white/5 transition cursor-pointer">
+                    <button onclick="toggleMobilePalette(false)" class="lg:hidden text-slate-500 hover:text-slate-900 font-mono text-[11px] border border-slate-200 px-2 py-1 rounded-md bg-slate-50 transition cursor-pointer">
                         ✕ Close
                     </button>
                 </div>
-                
+
                 <div id="palette-grid-buttons" class="grid grid-cols-5 gap-2 overflow-y-auto pr-1 max-h-[60vh] lg:max-h-[380px] items-start content-start"></div>
             </div>
 
-            <div class="pt-3 mt-auto border-t border-white/5 space-y-1.5 text-[10px] font-mono text-slate-400 shrink-0">
-                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-slate-800 border border-white/10 rounded"></span> <span>Unattempted (Slate)</span></div>
-                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-green-600 rounded"></span> <span>Attempted (Green)</span></div>
-                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-red-600 rounded"></span> <span>Marked for Review (Red)</span></div>
+            <div class="pt-3 mt-auto border-t border-slate-200 space-y-1.5 text-[10px] font-mono text-slate-500 shrink-0">
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-slate-100 border border-slate-300 rounded"></span> <span>Unattempted (Slate)</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-emerald-500 rounded"></span> <span>Attempted (Green)</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-red-500 rounded"></span> <span>Marked for Review (Red)</span></div>
             </div>
         </div>
     </main>
 
-    <footer class="w-full text-center py-3 border-t border-white/5 bg-slate-900/40 text-[9px] font-mono text-slate-600 uppercase tracking-widest mt-6">
+    <footer class="w-full text-center py-3 border-t border-slate-200 bg-white text-[9px] font-mono text-slate-400 uppercase tracking-widest mt-6">
         &copy; JECRC University CS Management System Terminal
     </footer>
 
@@ -139,19 +121,19 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let globalLoadedQuestions = [];
-        let currentSelectedLanguage = "en"; 
+        let currentSelectedLanguage = "en";
         let networkTimerInterval = null;
-        
-        let userResponses = {}; 
+
+        let userResponses = {};
         let markedForReviewSet = new Set();
-        let globalNegativeMarking = 0; 
-        
+        let globalNegativeMarking = 0;
+
         let hindiTranslationsCachePool = null;
 
         let isComboExamMode = false;
-        let comboMasterConfig = null; 
-        let currentComboStage = 1; 
-        
+        let comboMasterConfig = null;
+        let currentComboStage = 1;
+
         let comboPaper1Responses = {};
         let comboPaper1Snapshot = [];
         let comboPaper1NegativeMarking = 0;
@@ -182,18 +164,18 @@
             const studentSession = localStorage.getItem('userEmail');
             const adminSession = localStorage.getItem('adminEmail');
 
-            if(!studentSession && !adminSession) { 
-                window.location.replace("index.html"); 
-                return; 
+            if(!studentSession && !adminSession) {
+                window.location.replace("index.html");
+                return;
             }
 
             const urlParams = new URLSearchParams(window.location.search);
-            const comboId = urlParams.get('combo_id'); 
+            const comboId = urlParams.get('combo_id');
             const targetSubject = urlParams.get('subject');
 
             if (comboId) {
                 isComboExamMode = true;
-                currentComboStage = 1; 
+                currentComboStage = 1;
                 initializeComboAssessmentPipeline(comboId);
             } else if (targetSubject) {
                 isComboExamMode = false;
@@ -235,14 +217,14 @@
 
                 document.getElementById('live-subject-title').innerText = `[STAGE-${currentComboStage}/2] ` + data.subject.toUpperCase();
                 globalNegativeMarking = parseFloat(data.negative_marking) || 0;
-                
+
                 globalLoadedQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
-                
+
                 renderNavigationPalette(globalLoadedQuestions.length);
                 updateLiveStatusCounters();
                 initializeRuntimeClock(parseInt(data.duration_minutes) || 60);
-                
-                renderAssessmentLayout(); 
+
+                renderAssessmentLayout();
 
             } catch (err) {
                 alert("Data Pipeline Failure: " + err.message);
@@ -262,18 +244,18 @@
 
                 document.getElementById('live-subject-title').innerText = data.subject.toUpperCase();
                 globalNegativeMarking = parseFloat(data.negative_marking) || 0;
-                
+
                 globalLoadedQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
-                
+
                 renderNavigationPalette(globalLoadedQuestions.length);
                 updateLiveStatusCounters();
                 initializeRuntimeClock(parseInt(data.duration_minutes) || 60);
-                
-                renderAssessmentLayout(); 
+
+                renderAssessmentLayout();
 
             } catch (err) {
                 document.getElementById('questions-pipeline-wrapper').innerHTML = `
-                    <div class="text-center font-mono text-xs text-red-400 border border-red-500/10 p-6 rounded-2xl bg-red-500/5">
+                    <div class="text-center font-mono text-xs text-red-500 border border-red-200 p-6 rounded-2xl bg-red-50">
                         Failed to render test objects from 'questions_json'.
                     </div>`;
             }
@@ -282,7 +264,7 @@
         // 🌍 🚀 ADVANCED STRUCTURED TRANSLATION ENGINE (INDEXING DESYNC PROOF)
         async function translateBulkQuestions(questions, targetLang) {
             if (!questions || questions.length === 0 || targetLang === "en") return null;
-            if (hindiTranslationsCachePool) return hindiTranslationsCachePool; 
+            if (hindiTranslationsCachePool) return hindiTranslationsCachePool;
 
             // 🎯 [BILINGUAL JSON BYPASS]: यदि पहला प्रश्न पहले से प्रीडिफाइंड ऑब्जेक्ट संरचना में है, तो अनुवाद इंजन को छोड़ दें
             if (questions[0] && questions[0].is_json_uploaded === true) {
@@ -292,15 +274,15 @@
             try {
                 const container = document.getElementById('questions-pipeline-wrapper');
                 let translatedPool = JSON.parse(JSON.stringify(questions));
-                
+
                 for (let index = 0; index < translatedPool.length; index++) {
                     if (container && index % 10 === 0) {
-                        container.innerHTML = `<div class="text-center font-mono text-xs text-orange-400 py-12 animate-pulse uppercase">Processing Translation Packet Block (${index}/${translatedPool.length})...</div>`;
+                        container.innerHTML = `<div class="text-center font-mono text-xs text-orange-500 py-12 animate-pulse uppercase">Processing Translation Packet Block (${index}/${translatedPool.length})...</div>`;
                     }
 
                     const q = translatedPool[index];
                     let qText = q.question || q.title || q.text || 'Objective Question';
-                    
+
                     let rawOptions = q.options || q.choices || q.options_json || [];
                     if (typeof rawOptions === 'string') {
                         try { rawOptions = JSON.parse(rawOptions); } catch(e) { rawOptions = rawOptions.replace(/[\[\]"']/g, '').split(',').map(s => s.trim()); }
@@ -311,12 +293,12 @@
 
                     const separator = " [xyz] ";
                     let chunkPayloadText = qText + separator + rawOptions.join(separator);
-                    
+
                     const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(chunkPayloadText)}`;
-                    
+
                     const res = await fetch(url, { method: "GET" });
-                    if (!res.ok) continue; 
-                    
+                    if (!res.ok) continue;
+
                     const json = await res.json();
                     let translatedChunkString = "";
                     if (json && json[0]) {
@@ -324,10 +306,10 @@
                     }
 
                     const translatedSegments = translatedChunkString.split(/\[\s*xyz\s*\]/i).map(s => s.trim());
-                    
+
                     if (translatedSegments.length > 0) {
                         q.question = translatedSegments[0] || qText;
-                        
+
                         let optArray = [];
                         for (let oIdx = 1; oIdx <= rawOptions.length; oIdx++) {
                             optArray.push(translatedSegments[oIdx] || rawOptions[oIdx - 1]);
@@ -336,51 +318,51 @@
                     }
                 }
 
-                hindiTranslationsCachePool = translatedPool; 
+                hindiTranslationsCachePool = translatedPool;
                 return hindiTranslationsCachePool;
 
             } catch (e) {
                 console.error("Structured translation core drop:", e);
-                return null; 
+                return null;
             }
         }
                 // 🚀 UNIFIED RENDERING ENGINE: HANDLES TABLES, IMAGES, BILINGUAL TEXT & JSON
                         async function renderAssessmentLayout() {
                             const container = document.getElementById('questions-pipeline-wrapper');
                             if (!container) return;
-                            
-                            container.innerHTML = `<div class="text-center font-mono text-xs text-blue-400 py-12 animate-pulse uppercase">Syncing...</div>`;
-                        
+
+                            container.innerHTML = `<div class="text-center font-mono text-xs text-blue-600 py-12 animate-pulse uppercase">Syncing...</div>`;
+
                             // 1. अनुवाद पूल तैयार करें
                             let translatedObjectPool = null;
                             if (currentSelectedLanguage === "hi" && (!globalLoadedQuestions[0] || !globalLoadedQuestions[0].is_json_uploaded)) {
                                 translatedObjectPool = await translateBulkQuestions(globalLoadedQuestions, "hi");
                             }
-                        
+
                             let finalHtml = "";
-                        
+
                             // 2. एकल लूप में रेंडरिंग
                             globalLoadedQuestions.forEach((q, index) => {
                                 const targetDataSource = (currentSelectedLanguage === "hi" && translatedObjectPool) ? translatedObjectPool[index] : q;
-                                
+
                                 // टेबल रेंडरिंग लॉजिक (DI Tables) — अब {headers, rows} शेप एक्सपेक्ट करता है
                                 // (admin.html का normalizer हर table को इसी शेप में सेव करता है)
                                 let tableHtml = "";
                                 if (q.table && q.table.headers && q.table.rows) {
-                                    tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-white/10 bg-slate-900/80 p-2">
-                                                    <table class="w-full text-[10px] text-left border-collapse text-white">
-                                                        <thead class="bg-slate-800 uppercase"><tr>`;
-                                    q.table.headers.forEach(h => tableHtml += `<th class="p-2 border border-white/10">${escapeHtmlForDisplay(h)}</th>`);
-                                    tableHtml += `</tr></thead><tbody class="text-slate-300">`;
+                                    tableHtml = `<div class="overflow-x-auto my-4 rounded-xl border border-slate-200 bg-slate-50 p-2">
+                                                    <table class="w-full text-[10px] text-left border-collapse text-slate-800">
+                                                        <thead class="bg-slate-100 uppercase"><tr>`;
+                                    q.table.headers.forEach(h => tableHtml += `<th class="p-2 border border-slate-200">${escapeHtmlForDisplay(h)}</th>`);
+                                    tableHtml += `</tr></thead><tbody class="text-slate-600">`;
 
                                     q.table.rows.forEach(row => {
                                         tableHtml += `<tr>`;
-                                        row.forEach(cell => tableHtml += `<td class="p-2 border border-white/10">${escapeHtmlForDisplay(cell)}</td>`);
+                                        row.forEach(cell => tableHtml += `<td class="p-2 border border-slate-200">${escapeHtmlForDisplay(cell)}</td>`);
                                         tableHtml += `</tr>`;
                                     });
                                     tableHtml += `</tbody></table></div>`;
                                 }
-                        
+
                                 // विकल्प (Options) रेंडरिंग
                                 let optionsHtml = "";
                                 let rawOptions = targetDataSource.options || [];
@@ -388,30 +370,30 @@
                                     const optTextRaw = typeof opt === 'object' ? (opt[currentSelectedLanguage] || opt.en || String(opt)) : String(opt);
                                     const optText = escapeHtmlForDisplay(optTextRaw);
                                     optionsHtml += `
-                                        <label class="flex items-center space-x-3 bg-slate-900/60 p-3 rounded-xl cursor-pointer hover:bg-slate-800 transition">
-                                            <input type="radio" name="question-${index}" value="${optIdx}" onchange="registerRadioResponse(${index}, ${optIdx})" ${userResponses[index] == optIdx ? 'checked' : ''}>
-                                            <span class="text-xs">${optText}</span>
+                                        <label class="flex items-center space-x-3 bg-slate-50 border border-slate-200 p-3 rounded-xl cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition">
+                                            <input type="radio" name="question-${index}" value="${optIdx}" onchange="registerRadioResponse(${index}, ${optIdx})" class="accent-blue-600" ${userResponses[index] == optIdx ? 'checked' : ''}>
+                                            <span class="text-xs text-slate-700">${optText}</span>
                                         </label>`;
                                 });
-                        
+
                                 // मुख्य प्रश्न कार्ड
                                 finalHtml += `
-                                    <div id="question-card-${index}" class="bg-slate-900/20 border border-white/5 p-5 rounded-2xl space-y-4 shadow-xl scroll-mt-36">
+                                    <div id="question-card-${index}" class="bg-white border border-slate-200 p-5 rounded-2xl space-y-4 shadow-sm scroll-mt-36">
                                         <div class="flex items-start justify-between">
-                                            <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
-                                            <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-white/10 px-2.5 py-1 rounded-lg text-slate-400 hover:text-red-400 transition">Mark Review</button>
+                                            <span class="text-xs font-mono font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
+                                            <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-slate-200 px-2.5 py-1 rounded-lg text-slate-500 hover:text-red-500 hover:border-red-200 transition">Mark Review</button>
                                         </div>
-                                        <h4 class="text-sm font-bold text-slate-100">${escapeHtmlForDisplay(targetDataSource.question[currentSelectedLanguage] || targetDataSource.question.en || targetDataSource.question)}</h4>
+                                        <h4 class="text-sm font-bold text-slate-900">${escapeHtmlForDisplay(targetDataSource.question[currentSelectedLanguage] || targetDataSource.question.en || targetDataSource.question)}</h4>
                                         ${tableHtml}
-                                        <div class="live-q-image-container hidden w-full mt-2 rounded-xl border border-white/10 p-1">
+                                        <div class="live-q-image-container hidden w-full mt-2 rounded-xl border border-slate-200 p-1">
                                             <img src="" alt="Resource" class="w-full h-auto object-contain max-h-[320px] rounded-lg">
                                         </div>
                                         <div class="grid grid-cols-1 gap-2">${optionsHtml}</div>
                                     </div>`;
                             });
-                        
+
                             container.innerHTML = finalHtml;
-                        
+
                             // इमेज अगर है तो रेंडर करें
                             globalLoadedQuestions.forEach((q, index) => {
                                 const activeImgUrl = q.q_image || q.image_url || q.image;
@@ -427,7 +409,7 @@
 
         function switchAssessmentLanguage(selectedLang) {
             currentSelectedLanguage = selectedLang;
-            renderAssessmentLayout(); 
+            renderAssessmentLayout();
         }
 
         function renderNavigationPalette(totalCount) {
@@ -436,7 +418,7 @@
             grid.innerHTML = "";
             for (let i = 0; i < totalCount; i++) {
                 grid.innerHTML += `
-                    <button onclick="scrollToQuestion(${i})" id="palette-btn-${i}" class="bg-slate-800 border border-white/10 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg hover:bg-slate-700 transition cursor-pointer text-center">
+                    <button onclick="scrollToQuestion(${i})" id="palette-btn-${i}" class="bg-slate-100 border border-slate-200 text-slate-500 font-mono text-xs font-bold py-2 rounded-lg hover:bg-slate-200 transition cursor-pointer text-center">
                         ${i + 1}
                     </button>`;
             }
@@ -450,9 +432,9 @@
             const el = document.getElementById(`question-card-${qIdx}`);
             if(el) {
                 el.scrollIntoView({ behavior: 'smooth' });
-                el.classList.add('border-blue-500/40', 'bg-slate-900/40');
+                el.classList.add('border-blue-400', 'bg-blue-50/40');
                 setTimeout(() => {
-                    el.classList.remove('border-blue-500/40', 'bg-slate-900/40');
+                    el.classList.remove('border-blue-400', 'bg-blue-50/40');
                 }, 1500);
             }
         }
@@ -460,34 +442,34 @@
         function registerRadioResponse(qIdx, optIdx) {
             userResponses[qIdx] = optIdx;
             updateLiveStatusCounters();
-            
+
             const pBtn = document.getElementById(`palette-btn-${qIdx}`);
             if(pBtn && !markedForReviewSet.has(qIdx)) {
-                pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+                pBtn.className = "bg-emerald-500 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
             }
         }
 
         function toggleMarkForReview(qIdx) {
             const mBtn = document.getElementById(`mark-btn-${qIdx}`);
             const pBtn = document.getElementById(`palette-btn-${qIdx}`);
-            
+
             if (!mBtn || !pBtn) return;
 
             if (markedForReviewSet.has(qIdx)) {
                 markedForReviewSet.delete(qIdx);
-                mBtn.classList.remove("border-red-500/50", "text-red-400", "bg-red-500/10");
+                mBtn.classList.remove("border-red-300", "text-red-500", "bg-red-50");
                 mBtn.innerText = "Mark Review";
-                
+
                 if (userResponses[qIdx] !== undefined) {
-                    pBtn.className = "bg-green-600 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+                    pBtn.className = "bg-emerald-500 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
                 } else {
-                    pBtn.className = "bg-slate-800 border border-white/10 text-slate-400 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+                    pBtn.className = "bg-slate-100 border border-slate-200 text-slate-500 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
                 }
             } else {
                 markedForReviewSet.add(qIdx);
-                mBtn.classList.add("border-red-500/50", "text-red-400", "bg-red-500/10");
+                mBtn.classList.add("border-red-300", "text-red-500", "bg-red-50");
                 mBtn.innerText = "🔴 Marked";
-                pBtn.className = "bg-red-600 text-white font-mono text-xs font-black py-2 rounded-lg transition text-center cursor-pointer";
+                pBtn.className = "bg-red-500 text-white font-mono text-xs font-black py-2 rounded-lg transition text-center cursor-pointer";
             }
             updateLiveStatusCounters();
         }
@@ -521,7 +503,7 @@
                 if (clock) {
                     clock.innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
                 }
-                
+
                 if (totalSeconds <= 0) {
                     clearInterval(networkTimerInterval);
                     terminateAssessmentProcess();
@@ -532,18 +514,18 @@
 
         async function terminateAssessmentProcess() {
             clearInterval(networkTimerInterval);
-            
+
             if (isComboExamMode && currentComboStage === 1) {
                 comboPaper1Responses = JSON.parse(JSON.stringify(userResponses));
                 comboPaper1Snapshot = JSON.parse(JSON.stringify(globalLoadedQuestions));
                 comboPaper1NegativeMarking = globalNegativeMarking;
 
                 alert(`📝 STAGE-1 (Paper-1) Locked Successfully!\nInitializing STAGE-2 (Paper-2) Terminal Matrix Instantly. You cannot return to Paper-1.`);
-                
+
                 currentComboStage = 2;
-                userResponses = {}; 
+                userResponses = {};
                 markedForReviewSet.clear();
-                hindiTranslationsCachePool = null; 
+                hindiTranslationsCachePool = null;
 
                 await loadStageQuestionDataset(comboMasterConfig.paper2_subject);
                 return;
@@ -576,13 +558,13 @@
             finalCombinedScore = parseFloat(finalCombinedScore.toFixed(2));
 
             let totalQuestionsCount = isComboExamMode ? (comboPaper1Snapshot.length + globalLoadedQuestions.length) : globalLoadedQuestions.length;
-            let totalMaxMarks = totalQuestionsCount; 
+            let totalMaxMarks = totalQuestionsCount;
 
             let targetCutoffPct = isComboExamMode ? parseFloat(comboMasterConfig.required_cutoff_percentage) : 40.0;
             let cutOffPassingMarks = (totalMaxMarks * targetCutoffPct) / 100;
 
             const studentEmail = localStorage.getItem('userEmail') || 'anonymous@portal.com';
-            const studentName = studentEmail.split('@')[0].toUpperCase(); 
+            const studentName = studentEmail.split('@')[0].toUpperCase();
             const currentSubject = isComboExamMode ? `COMBO: ${comboMasterConfig.combo_title}` : document.getElementById('live-subject-title').innerText;
 
             try {
@@ -590,22 +572,22 @@
                     .from('results')
                     .insert([{
                         email: studentEmail.toLowerCase(),
-                        name: studentName,                       
+                        name: studentName,
                         subject: currentSubject,
-                        score: finalCombinedScore,   
+                        score: finalCombinedScore,
                         total_questions: totalQuestionsCount,
                         correct_answers: (p1Correct + p2Correct),
                         wrong_answers: (p1Wrong + p2Wrong),
                         unattempted: totalQuestionsCount - ((p1Correct + p2Correct) + (p1Wrong + p2Wrong)),
-                        user_responses_json: JSON.stringify(isComboExamMode ? { paper1: comboPaper1Responses, paper2: userResponses } : userResponses), 
-                        questions_snapshot_json: JSON.stringify(isComboExamMode ? { paper1: comboPaper1Snapshot, paper2: globalLoadedQuestions } : globalLoadedQuestions), 
+                        user_responses_json: JSON.stringify(isComboExamMode ? { paper1: comboPaper1Responses, paper2: userResponses } : userResponses),
+                        questions_snapshot_json: JSON.stringify(isComboExamMode ? { paper1: comboPaper1Snapshot, paper2: globalLoadedQuestions } : globalLoadedQuestions),
                         created_at: new Date().toISOString(),
                         submitted_at: new Date().toISOString()
                     }])
                     .select();
 
                 if (error) throw error;
-                
+
                 if (finalCombinedScore >= cutOffPassingMarks) {
                     alert(`🎉 CONGRATULATIONS!\nYou have cleared the Exam.\nTotal Score: ${finalCombinedScore} / ${totalMaxMarks} Marks.\nRequired Cutoff was: ${targetCutoffPct}% (${cutOffPassingMarks} Mks).`);
                 } else {
