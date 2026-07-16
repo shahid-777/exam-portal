@@ -8,7 +8,30 @@
     <title>Live Examination Engine — Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root{
+            --void:#05070d;
+            --panel-line:rgba(148,163,255,0.05);
+            --glow-indigo:rgba(99,102,241,0.14);
+            --glow-emerald:rgba(16,185,129,0.09);
+            --glow-red:rgba(239,68,68,0.07);
+        }
+        body{
+            font-family:'Inter',sans-serif;
+            background-color:var(--void);
+            background-image:
+                radial-gradient(ellipse 800px 500px at 90% -5%, var(--glow-indigo), transparent 60%),
+                radial-gradient(ellipse 700px 450px at 5% 20%, var(--glow-emerald), transparent 55%),
+                radial-gradient(ellipse 900px 500px at 50% 100%, var(--glow-red), transparent 60%),
+                repeating-linear-gradient(0deg, var(--panel-line) 0px, transparent 1px, transparent 42px, var(--panel-line) 43px),
+                repeating-linear-gradient(90deg, var(--panel-line) 0px, transparent 1px, transparent 42px, var(--panel-line) 43px);
+            background-attachment:fixed;
+        }
+        .font-mono{ font-family:'JetBrains Mono', monospace; }
+        h1,h2,h3,h4,.font-display{ font-family:'Space Grotesk', sans-serif; letter-spacing:-0.01em; }
+
         /* Custom scrollbar matching dark theme */
         #palette-grid-buttons::-webkit-scrollbar {
             width: 4px;
@@ -19,9 +42,10 @@
         }
     </style>
 </head>
-<body class="bg-slate-950 font-sans min-h-screen text-slate-200 flex flex-col justify-between select-none">
+<body class="font-sans min-h-screen text-slate-200 flex flex-col justify-between select-none">
 
-    <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-white/5 py-3 px-4 flex items-center justify-between shadow-lg fixed top-0 left-0 right-0 z-50">
+    <header class="w-full bg-slate-950/85 backdrop-blur-md border-b border-white/5 py-3 px-4 flex items-center justify-between shadow-lg fixed top-0 left-0 right-0 z-50 relative">
+        <div class="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent"></div>
         <div class="flex items-center space-x-2 max-w-[50%] min-w-0">
             <div class="bg-white/95 p-1 rounded-xl shrink-0">
                 <img src="logo.png" alt="Logo" class="h-7 w-auto object-contain" onerror="this.style.display='none'">
@@ -86,7 +110,7 @@
             <div class="space-y-4 flex flex-col min-h-0 justify-start w-full">
                 <div class="border-b border-white/5 pb-2 flex items-center justify-between">
                     <div>
-                        <h4 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest">Question Palette</h4>
+                        <h4 class="text-xs font-mono font-black text-slate-400 uppercase tracking-widest font-display">Question Palette</h4>
                         <p class="text-[9px] text-slate-500 font-mono mt-0.5">Random Navigation Grid Mapping</p>
                     </div>
                     <button onclick="toggleMobilePalette(false)" class="lg:hidden text-slate-400 hover:text-white font-mono text-[11px] border border-white/10 px-2 py-1 rounded-md bg-white/5 transition cursor-pointer">
