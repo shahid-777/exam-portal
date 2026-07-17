@@ -446,9 +446,6 @@
             if (nextBtn) nextBtn.disabled = (idx === totalQ - 1);
 
             highlightActivePaletteButton(idx);
-
-            // मोबाइल पर पेज बदलते समय ऊपर स्क्रॉल कर दें ताकि नया प्रश्न सबसे ऊपर दिखे
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function navigateQuestion(direction) {
