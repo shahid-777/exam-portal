@@ -385,7 +385,7 @@
                                     const optText = escapeHtmlForDisplay(optTextRaw);
                                     optionsHtml += `
                                         <label class="flex items-center space-x-3 bg-slate-50 border border-slate-200 p-3 rounded-xl cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition">
-                                            <input type="radio" name="question-${index}" value="${optIdx}" onchange="registerRadioResponse(${index}, ${optIdx})" class="accent-blue-600" ${userResponses[index] == optIdx ? 'checked' : ''}>
+                                            <input type="radio" name="question-${index}" value="${optIdx}" onclick="registerRadioResponse(${index}, ${optIdx})" class="accent-blue-600" ${userResponses[index] == optIdx ? 'checked' : ''}>
                                             <span class="text-xs text-slate-700">${optText}</span>
                                         </label>`;
                                 });
@@ -485,12 +485,30 @@
         }
 
         function registerRadioResponse(qIdx, optIdx) {
-            userResponses[qIdx] = optIdx;
+            // 🆕 TOGGLE FIX: agar student usi option par dubara click kare jo
+            // pehle se selected tha, to use unselect kar do (radio native
+            // behaviour mein yeh possible nahi hota, isliye manually handle
+            // kiya gaya hai). Warna normal tareeke se select karo.
+            const wasAlreadySelected = userResponses[qIdx] === optIdx;
+
+            if (wasAlreadySelected) {
+                delete userResponses[qIdx];
+                const inputEl = document.querySelector(`input[name="question-${qIdx}"][value="${optIdx}"]`);
+                if (inputEl) inputEl.checked = false;
+            } else {
+                userResponses[qIdx] = optIdx;
+            }
+
             updateLiveStatusCounters();
 
             const pBtn = document.getElementById(`palette-btn-${qIdx}`);
-            if(pBtn && !markedForReviewSet.has(qIdx)) {
-                pBtn.className = "bg-emerald-500 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+            if (pBtn && !markedForReviewSet.has(qIdx)) {
+                if (wasAlreadySelected) {
+                    // wapas "unattempted" style par le aao
+                    pBtn.className = "bg-slate-100 border border-slate-200 text-slate-500 font-mono text-xs font-bold py-2 rounded-lg hover:bg-slate-200 transition cursor-pointer text-center";
+                } else {
+                    pBtn.className = "bg-emerald-500 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+                }
             }
         }
 
