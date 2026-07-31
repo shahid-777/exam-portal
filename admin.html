@@ -1048,12 +1048,14 @@
           try {
             const { data: exams, error } = await supabaseClient
               .from('exams')
-              .select('id, subject')
+              .select('id, subject, category_id')
               .order('subject', { ascending: true });
             if (error) throw error;
             sel.innerHTML = `<option value="">-- Select Exam Subject --</option>`;
             (exams || []).forEach(ex => {
-              sel.innerHTML += `<option value="${ex.id}">${ex.subject.toUpperCase()}</option>`;
+              const matchedCat = (globalCategoriesArray || []).find(c => c.id == ex.category_id);
+              const catLabel = matchedCat ? matchedCat.category_name.toUpperCase() : "UNMAPPED";
+              sel.innerHTML += `<option value="${ex.id}">${ex.subject.toUpperCase()} (${catLabel})</option>`;
             });
           } catch (e) {
             console.error("iq exam selector load failed:", e);
