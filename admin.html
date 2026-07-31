@@ -256,6 +256,91 @@
             </div>
         </div>
 
+        <div class="bg-slate-950/40 border border-cyan-500/20 rounded-2xl p-6 space-y-5 shadow-xl relative overflow-hidden">
+          <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-cyan-500 to-blue-500"></div>
+          <div>
+            <h3 class="text-xs font-mono font-black text-cyan-400 uppercase tracking-widest">🌸 4. Instant Quiz Mode (Telegram-Style Per-Question Feedback)</h3>
+            <p class="text-[11px] text-slate-400 font-sans leading-relaxed mt-1">Kisi bhi existing exam ko is mode mein daalein — students ko har sawal ka jawab turant milega (green + flowers = sahi, red = galat), aur end mein time / score / rank dikhega. Har attempt mein questions/options shuffle ho sakte hain taaki sab students ke liye same na ho.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">👈 Select Exam to Configure</label>
+              <select id="iq-exam-select" onchange="loadInstantQuizConfig(this.value)" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white font-bold outline-none">
+                <option value="">-- Loading exams... --</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">Mode</label>
+              <select id="iq-mode-select" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-slate-300 font-bold outline-none cursor-pointer">
+                <option value="standard">Standard (current behaviour — result shown at end)</option>
+                <option value="instant">Instant (Telegram-style — feedback on every click)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">Questions per attempt</label>
+              <input type="number" id="iq-questions-per-attempt" min="1" placeholder="blank = use all" class="w-full border border-white/10 p-2.5 text-xs rounded-xl bg-slate-900 text-white outline-none font-mono">
+              <p class="text-[9px] text-slate-500 font-mono mt-1">e.g. 20 — a random 20 are drawn from the pool per attempt, so users don't all get the same set.</p>
+            </div>
+            <div class="flex items-end gap-6 pb-1">
+              <label class="flex items-center gap-2 text-[11px] font-mono text-slate-300 cursor-pointer">
+                <input type="checkbox" id="iq-shuffle-questions" class="h-4 w-4 accent-cyan-500" checked>
+                Shuffle question order
+              </label>
+              <label class="flex items-center gap-2 text-[11px] font-mono text-slate-300 cursor-pointer">
+                <input type="checkbox" id="iq-shuffle-options" class="h-4 w-4 accent-cyan-500" checked>
+                Shuffle option order
+              </label>
+            </div>
+
+            <button onclick="saveInstantQuizConfig()" class="md:col-span-2 w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black py-3 px-4 rounded-xl text-xs tracking-widest uppercase shadow-lg transition cursor-pointer">
+              Save Instant Quiz Config
+            </button>
+          </div>
+
+          <div class="border-t border-white/5 pt-4 mt-2 space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <h4 class="text-[11px] font-mono font-black text-slate-400 uppercase tracking-widest">Exams currently in Instant Mode</h4>
+              <button onclick="fetchInstantQuizExamsTable()" class="bg-slate-800 hover:bg-cyan-600/80 text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500/40 transition font-mono text-[10px] font-black px-3 py-2 rounded-xl uppercase tracking-wider cursor-pointer">🔄 Refresh</button>
+            </div>
+            <div class="overflow-x-auto w-full">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-white/5 text-slate-400 font-mono uppercase tracking-wider text-[10px]">
+                    <th class="py-2 px-3">Subject</th>
+                    <th class="py-2 px-3">Q / Attempt</th>
+                    <th class="py-2 px-3">Shuffle</th>
+                    <th class="py-2 px-3 text-center">Leaderboard</th>
+                  </tr>
+                </thead>
+                <tbody id="iq-exams-tbody" class="divide-y divide-white/5 font-medium text-slate-300">
+                  <tr><td colspan="4" class="text-center py-4 font-mono text-slate-500 animate-pulse">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="iq-leaderboard-panel" class="hidden border-t border-white/5 pt-4 mt-2 space-y-3">
+            <h4 class="text-[11px] font-mono font-black text-cyan-400 uppercase tracking-widest">🏆 Leaderboard — <span id="iq-leaderboard-subject"></span></h4>
+            <div class="overflow-x-auto w-full">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-white/5 text-slate-400 font-mono uppercase tracking-wider text-[10px]">
+                    <th class="py-2 px-3">Rank</th>
+                    <th class="py-2 px-3">Student</th>
+                    <th class="py-2 px-3 text-center">Score</th>
+                    <th class="py-2 px-3 text-center">Correct</th>
+                    <th class="py-2 px-3 text-center">Wrong</th>
+                    <th class="py-2 px-3 text-center">Time</th>
+                  </tr>
+                </thead>
+                <tbody id="iq-leaderboard-tbody" class="divide-y divide-white/5 font-medium text-slate-300"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <div class="bg-slate-950/40 border border-white/5 rounded-2xl p-6 shadow-xl relative">
             <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-purple-500 to-pink-500"></div>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/5 pb-3 gap-3">
@@ -953,6 +1038,140 @@
             }
         }
 
+        // ============================================================
+        // INSTANT QUIZ MODE — admin JS
+        // ============================================================
+
+        async function populateInstantQuizExamSelectors() {
+          const sel = document.getElementById('iq-exam-select');
+          if (!sel) return;
+          try {
+            const { data: exams, error } = await supabaseClient
+              .from('exams')
+              .select('id, subject')
+              .order('subject', { ascending: true });
+            if (error) throw error;
+            sel.innerHTML = `<option value="">-- Select Exam Subject --</option>`;
+            (exams || []).forEach(ex => {
+              sel.innerHTML += `<option value="${ex.id}">${ex.subject.toUpperCase()}</option>`;
+            });
+          } catch (e) {
+            console.error("iq exam selector load failed:", e);
+            sel.innerHTML = `<option value="">-- Failed to load --</option>`;
+          }
+        }
+
+        async function loadInstantQuizConfig(examId) {
+          if (!examId) return;
+          const { data: ex, error } = await supabaseClient
+            .from('exams')
+            .select('mode, shuffle_questions, shuffle_options, questions_per_attempt')
+            .eq('id', examId)
+            .maybeSingle();
+          if (error || !ex) { console.error(error); return; }
+          document.getElementById('iq-mode-select').value = ex.mode || 'standard';
+          document.getElementById('iq-shuffle-questions').checked = ex.shuffle_questions !== false;
+          document.getElementById('iq-shuffle-options').checked = ex.shuffle_options !== false;
+          document.getElementById('iq-questions-per-attempt').value = ex.questions_per_attempt || '';
+        }
+
+        async function saveInstantQuizConfig() {
+          const examId = document.getElementById('iq-exam-select').value;
+          if (!examId) { alert("Pehle ek exam select karein."); return; }
+          const mode = document.getElementById('iq-mode-select').value;
+          const shuffleQ = document.getElementById('iq-shuffle-questions').checked;
+          const shuffleO = document.getElementById('iq-shuffle-options').checked;
+          const perAttemptRaw = document.getElementById('iq-questions-per-attempt').value;
+          const perAttempt = perAttemptRaw ? parseInt(perAttemptRaw, 10) : null;
+
+          try {
+            const { error } = await supabaseClient
+              .from('exams')
+              .update({
+                mode,
+                shuffle_questions: shuffleQ,
+                shuffle_options: shuffleO,
+                questions_per_attempt: perAttempt
+              })
+              .eq('id', examId);
+            if (error) throw error;
+            alert(`🎉 Saved. This exam is now in "${mode.toUpperCase()}" mode.`);
+            fetchInstantQuizExamsTable();
+          } catch (e) {
+            alert("Save failed: " + e.message);
+          }
+        }
+
+        async function fetchInstantQuizExamsTable() {
+          const tbody = document.getElementById('iq-exams-tbody');
+          if (!tbody) return;
+          try {
+            const { data: exams, error } = await supabaseClient
+              .from('exams')
+              .select('id, subject, questions_per_attempt, shuffle_questions, shuffle_options')
+              .eq('mode', 'instant')
+              .order('subject', { ascending: true });
+            if (error) throw error;
+            if (!exams || exams.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 font-mono text-slate-500 uppercase">No exams in Instant Mode yet.</td></tr>`;
+              return;
+            }
+            tbody.innerHTML = "";
+            exams.forEach(ex => {
+              tbody.innerHTML += `
+                <tr class="hover:bg-white/5 transition">
+                  <td class="py-2.5 px-3 font-bold text-slate-200 uppercase">${ex.subject}</td>
+                  <td class="py-2.5 px-3 font-mono text-cyan-400">${ex.questions_per_attempt || 'All'}</td>
+                  <td class="py-2.5 px-3 font-mono text-[10px] text-slate-400">${ex.shuffle_questions ? 'Q ' : ''}${ex.shuffle_options ? 'Opts' : ''}</td>
+                  <td class="py-2.5 px-3 text-center">
+                    <button onclick="viewInstantQuizLeaderboard(${ex.id}, '${ex.subject.replace(/'/g, "\\'")}')" class="bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-600 hover:text-white transition font-mono text-[9px] font-black px-2 py-1 rounded-md uppercase">View Ranks</button>
+                  </td>
+                </tr>`;
+            });
+          } catch (e) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-400 font-mono">Sync Error: ${e.message}</td></tr>`;
+          }
+        }
+
+        async function viewInstantQuizLeaderboard(examId, subject) {
+          const panel = document.getElementById('iq-leaderboard-panel');
+          const tbody = document.getElementById('iq-leaderboard-tbody');
+          document.getElementById('iq-leaderboard-subject').textContent = subject.toUpperCase();
+          panel.classList.remove('hidden');
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 font-mono text-slate-500 animate-pulse">Loading leaderboard...</td></tr>`;
+          try {
+            // quiz_leaderboard is a view over your existing `results` table
+            // (ranked by score desc, time_taken_seconds asc, partitioned by subject).
+            const { data, error } = await supabaseClient
+              .from('quiz_leaderboard')
+              .select('*')
+              .eq('exam_id', examId)
+              .order('rank', { ascending: true })
+              .limit(100);
+            if (error) throw error;
+            if (!data || data.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 font-mono text-slate-500 uppercase">No attempts yet.</td></tr>`;
+              return;
+            }
+            tbody.innerHTML = "";
+            data.forEach(row => {
+              const mins = Math.floor((row.time_taken_seconds || 0) / 60);
+              const secs = (row.time_taken_seconds || 0) % 60;
+              tbody.innerHTML += `
+                <tr class="hover:bg-white/5 transition">
+                  <td class="py-2 px-3 font-mono font-black ${row.rank <= 3 ? 'text-amber-400' : 'text-slate-400'}">#${row.rank}</td>
+                  <td class="py-2 px-3 text-slate-200">${row.name || row.email}</td>
+                  <td class="py-2 px-3 text-center font-mono text-emerald-400 font-bold">${row.score}</td>
+                  <td class="py-2 px-3 text-center font-mono text-emerald-400">${row.correct_answers}</td>
+                  <td class="py-2 px-3 text-center font-mono text-red-400">${row.wrong_answers}</td>
+                  <td class="py-2 px-3 text-center font-mono text-slate-400">${mins}m ${secs}s</td>
+                </tr>`;
+            });
+          } catch (e) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-red-400 font-mono">Error: ${e.message}</td></tr>`;
+          }
+        }
+
         async function syncMasterDashboardControls() {
             try {
                 const { data: categories, error: catErr } = await supabaseClient.from('exam_categories').select('*').order('id', {ascending: true});
@@ -992,6 +1211,8 @@
                 fetchGlobalStudentResults(); 
                 populateLiveLaunchExamSelector();
                 fetchActiveLiveSessions();
+                populateInstantQuizExamSelectors();
+                fetchInstantQuizExamsTable();
 
             } catch(e) { console.error("Initialization Sync Crash:", e); }
         }
