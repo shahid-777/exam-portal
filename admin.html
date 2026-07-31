@@ -456,7 +456,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let globalCategoriesArray = [];
-        let currentBase64ImageData = ""; // 🖼️ 🎯 FIXED: GLOBAL REPOSITORY IMAGE BUFFER REGISTER DEFINED HERE NATIVELY
+        let currentBase64ImageData = "";
 
         window.escapeHtmlTags = function (text) {
             if (!text) return "";
@@ -957,12 +957,6 @@
             }
         }
 
-        // =====================================================================
-        // 🧹 CLEAR LIVE DATA — wipes rows from live_exam_participants once the
-        // admin has checked results / PDFs are done. Calls a SECURITY DEFINER
-        // Postgres function (clear_live_exam_data) since DELETE is revoked
-        // directly on live_exam_participants for the authenticated role.
-        // =====================================================================
         async function clearLiveDataForSession(sessionId) {
             if (!confirm("Clear all live participant data for this session? This cannot be undone — make sure PDFs/results have already been generated.")) return;
             try {
@@ -1037,10 +1031,6 @@
                 alert("Time update failed: " + e.message);
             }
         }
-
-        // ============================================================
-        // INSTANT QUIZ MODE — admin JS
-        // ============================================================
 
         async function populateInstantQuizExamSelectors() {
           const sel = document.getElementById('iq-exam-select');
@@ -1142,8 +1132,6 @@
           panel.classList.remove('hidden');
           tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 font-mono text-slate-500 animate-pulse">Loading leaderboard...</td></tr>`;
           try {
-            // quiz_leaderboard is a view over your existing `results` table
-            // (ranked by score desc, time_taken_seconds asc, partitioned by subject).
             const { data, error } = await supabaseClient
               .from('quiz_leaderboard')
               .select('*')
@@ -1851,5 +1839,6 @@
         }
 
         function logout() { localStorage.clear(); window.location.replace("admin-login.html"); }
-    </script></body>
+    </script>
+</body>
 </html>
