@@ -22,6 +22,20 @@
             background: #cbd5e1;
             border-radius: 10px;
         }
+
+        /* 🌸 Green Flower Rain Floating Animation Styles */
+        @keyframes floatDown {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .falling-flower {
+            position: fixed;
+            top: -30px;
+            z-index: 99999;
+            pointer-events: none;
+            font-size: 24px;
+            animation: floatDown linear forwards;
+        }
     </style>
 </head>
 <body class="font-sans min-h-screen text-slate-900 flex flex-col justify-between select-none antialiased">
@@ -149,7 +163,6 @@
 
         let currentQuestionIndex = 0;
 
-        // Instant Quiz Mode configuration variables
         let examMode = 'standard';
         let shuffleQuestionsActive = false;
         let shuffleOptionsActive = false;
@@ -169,6 +182,26 @@
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;");
+        }
+
+        // 🌸 Trigger Green Flowers Rain Animation
+        function triggerGreenFlowerRain() {
+            const flowerEmojis = ['🟢', '🌿', '🍃', '💚', '🍏', '🍀', '🌳', '🌱'];
+            const count = 35; // Number of floating icons
+            for (let i = 0; i < count; i++) {
+                const flower = document.createElement('div');
+                flower.className = 'falling-flower';
+                flower.innerText = flowerEmojis[Math.floor(Math.random() * flowerEmojis.length)];
+                flower.style.left = Math.random() * 100 + 'vw';
+                flower.style.animationDuration = (Math.random() * 1.5 + 1.2) + 's'; // 1.2s to 2.7s duration
+                flower.style.fontSize = (Math.random() * 14 + 18) + 'px';
+                document.body.appendChild(flower);
+
+                // Remove element after animation completes
+                setTimeout(() => {
+                    flower.remove();
+                }, 3000);
+            }
         }
 
         window.onload = function() {
@@ -398,12 +431,7 @@
 
                 let optionsHtml = "";
                 let rawOptions = targetDataSource.options || [];
-                
-                // Shuffle options if requested and not already locked
                 let optionIndices = rawOptions.map((_, idx) => idx);
-                if (shuffleOptionsActive && examMode === 'instant') {
-                    // We can maintain a stable mapping or just shuffle per render if fixed
-                }
 
                 optionIndices.forEach((optIdx) => {
                     const opt = rawOptions[optIdx];
@@ -541,6 +569,11 @@
                         parentLabel.classList.add('bg-rose-100', 'border-rose-500', 'text-rose-900', 'font-bold');
                     }
                 });
+
+                // 🌸 Trigger Green Flowers Rain if the user selected the correct option!
+                if (optIdx === correctOptIdx) {
+                    triggerGreenFlowerRain();
+                }
 
                 updateLiveStatusCounters();
 
