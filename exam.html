@@ -9,18 +9,88 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,800&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
     <style>
-        body{ font-family:'Inter',sans-serif; background-color:#f8fafc; }
-        .font-serif{ font-family:'Poppins',sans-serif; }
+        :root {
+            --paper: #faf5e8;
+            --paper-deep: #f1e8d4;
+            --ink: #241c14;
+            --ink-soft: #6b6050;
+            --brass: #a9803f;
+            --brass-deep: #8a6a30;
+            --rule: rgba(36, 28, 20, 0.09);
+        }
+
+        body{ font-family:'Inter',sans-serif; background-color: var(--paper); color: var(--ink); }
+        .font-serif{ font-family:'Source Serif 4', Georgia, serif; }
         .font-mono{ font-family:'IBM Plex Mono',monospace; }
+
+        /* Ruled-paper texture, like faint notebook lines across the whole page */
+        body {
+            background-image: linear-gradient(var(--rule) 1px, transparent 1px);
+            background-size: 100% 28px;
+            background-attachment: local;
+        }
 
         #palette-grid-buttons::-webkit-scrollbar {
             width: 4px;
         }
         #palette-grid-buttons::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
+            background: var(--brass);
             border-radius: 10px;
+            opacity: 0.5;
+        }
+
+        /* Textbook chrome overrides — !important so they win regardless of Tailwind's load order */
+        .tb-header {
+            background-color: rgba(250, 245, 232, 0.94) !important;
+            border-bottom: 1px solid var(--rule) !important;
+        }
+        .tb-statbar {
+            background-color: var(--paper) !important;
+            border-bottom: 1px solid var(--rule) !important;
+            position: relative;
+        }
+        /* Admit-ticket perforation between header and stat bar */
+        .tb-statbar::before {
+            content: "";
+            position: absolute;
+            top: -1px; left: 0; right: 0;
+            height: 1px;
+            background-image: radial-gradient(circle, var(--paper) 2.5px, transparent 2.6px);
+            background-size: 14px 3px;
+            background-position: center top;
+        }
+        .tb-card {
+            background-color: #fffdf7 !important;
+            border-color: var(--rule) !important;
+        }
+        .tb-card::before {
+            content: "";
+            display: block;
+            height: 1px;
+            margin: -20px -20px 16px;
+            background-image: repeating-linear-gradient(90deg, var(--brass) 0 5px, transparent 5px 10px);
+            opacity: 0.55;
+        }
+        .tb-sidebar {
+            background-color: #fffdf7 !important;
+            border-color: var(--rule) !important;
+        }
+        .tb-footer {
+            background-color: var(--paper-deep) !important;
+            border-color: var(--rule) !important;
+            color: var(--ink-soft) !important;
+        }
+        .tb-well {
+            background-color: var(--paper) !important;
+            border-color: var(--rule) !important;
+        }
+        .tb-badge {
+            color: var(--brass-deep) !important;
+        }
+        .tb-title {
+            color: var(--brass-deep) !important;
         }
 
         /* 🌸 Green Flower Rain Floating Animation Styles */
@@ -36,23 +106,35 @@
             font-size: 24px;
             animation: floatDown linear forwards;
         }
+
+        #submit-section {
+            display: none;
+        }
+        #submit-section.is-visible {
+            display: flex;
+            animation: settleIn 0.35s ease;
+        }
+        @keyframes settleIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="font-sans min-h-screen text-slate-900 flex flex-col justify-between select-none antialiased">
 
-    <header class="w-full bg-white/90 backdrop-blur-md border-b border-slate-200 py-3 px-4 flex items-center justify-between shadow-sm fixed top-0 left-0 right-0 z-50">
+    <header class="tb-header w-full backdrop-blur-md py-3 px-4 flex items-center justify-between shadow-sm fixed top-0 left-0 right-0 z-50">
         <div class="flex items-center space-x-2 max-w-[50%] min-w-0">
             <div class="bg-slate-50 p-1 rounded-xl shadow-sm border border-slate-200 shrink-0">
                 <img src="logo.png" alt="Logo" class="h-7 w-auto object-contain" onerror="this.style.display='none'">
             </div>
             <div class="flex flex-col truncate">
-                <span id="live-subject-title" class="text-[10px] sm:text-xs font-black tracking-widest text-blue-600 uppercase leading-none truncate">LOADING ASSESSMENT...</span>
+                <span id="live-subject-title" class="tb-title text-[10px] sm:text-xs font-black tracking-widest uppercase leading-none truncate font-serif">LOADING ASSESSMENT...</span>
                 <span class="text-[7px] font-mono font-bold text-slate-400 uppercase tracking-wider mt-0.5 truncate">Secure Runtime Monitor</span>
             </div>
         </div>
 
         <div class="flex items-center space-x-2 sm:space-x-4 shrink-0">
-            <div class="flex items-center space-x-1.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded-xl">
+            <div class="tb-well flex items-center space-x-1.5 border px-2 py-1 rounded-xl">
                 <label class="text-[9px] font-mono text-slate-400 uppercase hidden sm:inline">Lang:</label>
                 <select id="global-lang-selector" onchange="switchAssessmentLanguage(this.value)" class="bg-transparent text-[11px] font-bold text-slate-800 outline-none cursor-pointer">
                     <option value="en">EN (English)</option>
@@ -73,10 +155,10 @@
         </div>
     </header>
 
-    <section class="w-full bg-white border-b border-slate-200 py-3 px-6 sticky top-[65px] z-40 backdrop-blur-sm">
+    <section class="tb-statbar w-full py-3 px-6 sticky top-[65px] z-40 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto flex flex-wrap gap-4 items-center justify-between text-xs font-mono">
             <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-                <div>Total Questions: <span id="stat-total" class="text-blue-600 font-bold">0</span></div>
+                <div>Total Questions: <span id="stat-total" class="tb-badge font-bold">0</span></div>
                 <div>Attempted: <span id="stat-attempted" class="text-emerald-600 font-bold">0</span></div>
                 <div>Marked for Review: <span id="stat-marked" class="text-red-500 font-bold">0</span></div>
                 <div>Unattempted: <span id="stat-left" class="text-slate-500 font-bold">0</span></div>
@@ -93,24 +175,25 @@
                 </div>
             </div>
 
-            <div class="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-sm">
+            <div class="tb-card bg-white border rounded-2xl p-4 flex items-center justify-between gap-3 shadow-sm">
                 <button type="button" id="prev-question-btn" onclick="navigateQuestion(-1)" class="border border-slate-300 text-slate-600 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-white hover:bg-slate-50 transition disabled:opacity-30 disabled:cursor-not-allowed">
                     &larr; Previous
                 </button>
                 <span id="question-progress-text" class="text-xs font-mono text-slate-500 font-bold tracking-wide">Question 1 of 0</span>
-                <button type="button" id="next-question-btn" onclick="navigateQuestion(1)" class="border border-blue-600 text-blue-600 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-blue-50 hover:bg-blue-100 transition disabled:opacity-30 disabled:cursor-not-allowed">
+                <button type="button" id="next-question-btn" onclick="navigateQuestion(1)" class="border border-amber-600 text-amber-700 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-amber-50 hover:bg-amber-100 transition disabled:opacity-30 disabled:cursor-not-allowed">
                     Next &rarr;
                 </button>
             </div>
 
-            <div class="pt-4 border-t border-slate-200 flex justify-end">
+            <div id="submit-section" class="pt-4 border-t border-slate-200 justify-end">
+                <div class="flex-1 text-[10px] font-mono text-slate-400 uppercase tracking-wider self-center hidden sm:block">Final question — ready to lock in your attempt</div>
                 <button onclick="terminateAssessmentProcess()" class="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-400 text-white font-black py-3 px-8 rounded-xl shadow-lg uppercase text-xs tracking-widest transition transform active:scale-[0.99] cursor-pointer">
                     Submit Test Evaluation
                 </button>
             </div>
         </div>
 
-        <div id="palette-sidebar" class="fixed inset-y-0 right-0 z-50 w-80 max-w-[85vw] bg-white border-l border-slate-200 p-5 h-screen transform translate-x-full lg:translate-x-0 lg:sticky lg:h-[calc(100vh-150px)] lg:top-[140px] lg:w-80 lg:bg-white lg:border lg:border-slate-200 lg:rounded-2xl transition-transform duration-300 ease-in-out flex flex-col justify-start shadow-xl lg:shadow-sm">
+        <div id="palette-sidebar" class="tb-sidebar fixed inset-y-0 right-0 z-50 w-80 max-w-[85vw] border-l p-5 h-screen transform translate-x-full lg:translate-x-0 lg:sticky lg:h-[calc(100vh-150px)] lg:top-[140px] lg:w-80 lg:border lg:rounded-2xl transition-transform duration-300 ease-in-out flex flex-col justify-start shadow-xl lg:shadow-sm">
 
             <div class="space-y-4 flex flex-col min-h-0 justify-start w-full">
                 <div class="border-b border-slate-200 pb-2 flex items-center justify-between">
@@ -127,14 +210,14 @@
             </div>
 
             <div class="pt-3 mt-auto border-t border-slate-200 space-y-1.5 text-[10px] font-mono text-slate-500 shrink-0">
-                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-slate-100 border border-slate-300 rounded"></span> <span>Unattempted (Slate)</span></div>
-                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-emerald-500 rounded"></span> <span>Attempted (Green)</span></div>
-                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-red-500 rounded"></span> <span>Marked for Review (Red)</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-amber-50 border border-amber-200 rounded"></span> <span>Unattempted</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-emerald-500 rounded"></span> <span>Attempted</span></div>
+                <div class="flex items-center space-x-2"><span class="w-3 h-3 bg-red-500 rounded"></span> <span>Marked for Review</span></div>
             </div>
         </div>
     </main>
 
-    <footer class="w-full text-center py-3 border-t border-slate-200 bg-white text-[9px] font-mono text-slate-400 uppercase tracking-widest mt-6">
+    <footer class="tb-footer w-full text-center py-3 border-t text-[9px] font-mono uppercase tracking-widest mt-6">
         &copy; gauri tech CS Management System Terminal
     </footer>
 
@@ -401,7 +484,7 @@
             const container = document.getElementById('questions-pipeline-wrapper');
             if (!container) return;
 
-            container.innerHTML = `<div class="text-center font-mono text-xs text-blue-600 py-12 animate-pulse uppercase">Syncing...</div>`;
+            container.innerHTML = `<div class="text-center font-mono text-xs text-amber-700 py-12 animate-pulse uppercase">Syncing...</div>`;
 
             let translatedObjectPool = null;
             if (currentSelectedLanguage === "hi" && (!globalLoadedQuestions[0] || !globalLoadedQuestions[0].is_json_uploaded)) {
@@ -437,8 +520,8 @@
                     const opt = rawOptions[optIdx];
                     const optTextRaw = typeof opt === 'object' ? (opt[currentSelectedLanguage] || opt.en || String(opt)) : String(opt);
                     const optText = escapeHtmlForDisplay(optTextRaw);
-                    
-                    let customStyle = "bg-slate-50 border-slate-200 hover:bg-blue-50 hover:border-blue-200";
+
+                    let customStyle = "bg-amber-50/40 border-slate-200 hover:bg-amber-50 hover:border-amber-200";
                     if (examMode === 'instant' && userResponses[index] !== undefined) {
                         const correctOptIdx = parseInt(q.correct);
                         if (optIdx === correctOptIdx) {
@@ -450,18 +533,18 @@
 
                     optionsHtml += `
                         <label class="flex items-center space-x-3 border p-3 rounded-xl cursor-pointer transition ${customStyle}">
-                            <input type="radio" name="question-${index}" value="${optIdx}" onclick="registerRadioResponse(${index}, ${optIdx})" class="accent-blue-600" ${userResponses[index] == optIdx ? 'checked' : ''} ${examMode === 'instant' && userResponses[index] !== undefined ? 'disabled' : ''}>
+                            <input type="radio" name="question-${index}" value="${optIdx}" onclick="registerRadioResponse(${index}, ${optIdx})" class="accent-amber-700" ${userResponses[index] == optIdx ? 'checked' : ''} ${examMode === 'instant' && userResponses[index] !== undefined ? 'disabled' : ''}>
                             <span class="text-xs">${optText}</span>
                         </label>`;
                 });
 
                 finalHtml += `
-                    <div id="question-card-${index}" class="exam-question-slide hidden bg-white border border-slate-200 p-5 rounded-2xl space-y-4 shadow-sm">
+                    <div id="question-card-${index}" class="tb-card exam-question-slide hidden bg-white border border-slate-200 p-5 rounded-2xl space-y-4 shadow-sm">
                         <div class="flex items-start justify-between">
-                            <span class="text-xs font-mono font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
+                            <span class="text-xs font-mono font-black text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
                             <button onclick="toggleMarkForReview(${index})" id="mark-btn-${index}" class="text-[10px] font-mono border border-slate-200 px-2.5 py-1 rounded-lg text-slate-500 hover:text-red-500 hover:border-red-200 transition">Mark Review</button>
                         </div>
-                        <h4 class="text-sm font-bold text-slate-900">${escapeHtmlForDisplay(targetDataSource.question[currentSelectedLanguage] || targetDataSource.question.en || targetDataSource.question)}</h4>
+                        <h4 class="text-sm font-bold text-slate-900 font-serif">${escapeHtmlForDisplay(targetDataSource.question[currentSelectedLanguage] || targetDataSource.question.en || targetDataSource.question)}</h4>
                         ${tableHtml}
                         <div class="live-q-image-container hidden w-full mt-2 rounded-xl border border-slate-200 p-1">
                             <img src="" alt="Resource" class="w-full h-auto object-contain max-h-[320px] rounded-lg">
@@ -506,6 +589,13 @@
             if (prevBtn) prevBtn.disabled = (idx === 0);
             if (nextBtn) nextBtn.disabled = (idx === totalQ - 1);
 
+            // Submit control only appears once the candidate reaches the final question
+            const submitSection = document.getElementById('submit-section');
+            if (submitSection) {
+                if (idx === totalQ - 1) submitSection.classList.add('is-visible');
+                else submitSection.classList.remove('is-visible');
+            }
+
             highlightActivePaletteButton(idx);
         }
 
@@ -515,10 +605,10 @@
 
         function highlightActivePaletteButton(idx) {
             document.querySelectorAll('#palette-grid-buttons button').forEach(btn => {
-                btn.classList.remove('ring-2', 'ring-offset-1', 'ring-blue-500');
+                btn.classList.remove('ring-2', 'ring-offset-1', 'ring-amber-600');
             });
             const activeBtn = document.getElementById(`palette-btn-${idx}`);
-            if (activeBtn) activeBtn.classList.add('ring-2', 'ring-offset-1', 'ring-blue-500');
+            if (activeBtn) activeBtn.classList.add('ring-2', 'ring-offset-1', 'ring-amber-600');
         }
 
         function switchAssessmentLanguage(selectedLang) {
@@ -532,7 +622,7 @@
             grid.innerHTML = "";
             for (let i = 0; i < totalCount; i++) {
                 grid.innerHTML += `
-                    <button onclick="scrollToQuestion(${i})" id="palette-btn-${i}" class="bg-slate-100 border border-slate-200 text-slate-500 font-mono text-xs font-bold py-2 rounded-lg hover:bg-slate-200 transition cursor-pointer text-center">
+                    <button onclick="scrollToQuestion(${i})" id="palette-btn-${i}" class="bg-amber-50/50 border border-amber-200 text-slate-500 font-mono text-xs font-bold py-2 rounded-lg hover:bg-amber-100 transition cursor-pointer text-center">
                         ${i + 1}
                     </button>`;
             }
@@ -562,10 +652,10 @@
                     parentLabel.style.pointerEvents = 'none';
 
                     if (idx === correctOptIdx) {
-                        parentLabel.classList.remove('bg-slate-50', 'border-slate-200', 'hover:bg-blue-50');
+                        parentLabel.classList.remove('bg-amber-50/40', 'border-slate-200', 'hover:bg-amber-50');
                         parentLabel.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900', 'font-bold');
                     } else if (idx === optIdx && idx !== correctOptIdx) {
-                        parentLabel.classList.remove('bg-slate-50', 'border-slate-200', 'hover:bg-blue-50');
+                        parentLabel.classList.remove('bg-amber-50/40', 'border-slate-200', 'hover:bg-amber-50');
                         parentLabel.classList.add('bg-rose-100', 'border-rose-500', 'text-rose-900', 'font-bold');
                     }
                 });
@@ -602,7 +692,7 @@
                 const pBtn = document.getElementById(`palette-btn-${qIdx}`);
                 if (pBtn && !markedForReviewSet.has(qIdx)) {
                     if (wasAlreadySelected) {
-                        pBtn.className = "bg-slate-100 border border-slate-200 text-slate-500 font-mono text-xs font-bold py-2 rounded-lg hover:bg-slate-200 transition cursor-pointer text-center";
+                        pBtn.className = "bg-amber-50/50 border border-amber-200 text-slate-500 font-mono text-xs font-bold py-2 rounded-lg hover:bg-amber-100 transition cursor-pointer text-center";
                     } else {
                         pBtn.className = "bg-emerald-500 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
                     }
@@ -624,7 +714,7 @@
                 if (userResponses[qIdx] !== undefined) {
                     pBtn.className = "bg-emerald-500 text-white font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
                 } else {
-                    pBtn.className = "bg-slate-100 border border-slate-200 text-slate-500 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
+                    pBtn.className = "bg-amber-50/50 border border-amber-200 text-slate-500 font-mono text-xs font-bold py-2 rounded-lg transition text-center cursor-pointer";
                 }
             } else {
                 markedForReviewSet.add(qIdx);
