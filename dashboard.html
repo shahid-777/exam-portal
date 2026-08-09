@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="logo.png">
-    <title>Student Portal Dashboard — Categories</title>
+    <title>Student Dashboard — Exam Portal CSE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,6 +17,8 @@
         ::-webkit-scrollbar-track{ background:#f1f5f9; }
         ::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:4px; }
         .dir-path::before{ content:'~/exams/'; opacity:0.5; }
+        .app-view{ display:none; }
+        .app-view.active{ display:block; }
     </style>
 </head>
 <body class="text-slate-900 min-h-screen flex flex-col justify-between antialiased">
@@ -32,17 +34,54 @@
             </div>
         </div>
 
-        <div class="flex items-center space-x-3 sm:space-x-4">
+        <div class="flex items-center space-x-2 sm:space-x-3">
             <span id="user-display-email" class="text-xs font-mono text-slate-500 hidden sm:inline-block bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">student@gmail.com</span>
+            <button onclick="showHistoryView()" class="hidden sm:inline-flex items-center gap-1.5 border border-slate-300 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 text-slate-600 font-bold py-2 px-4 rounded-xl text-xs transition">
+                🏆 Exam History
+            </button>
             <button onclick="handleUserLogout()" class="border border-slate-300 hover:border-red-300 hover:bg-red-50 hover:text-red-600 text-slate-600 font-bold py-2 px-4 rounded-xl text-xs transition">
                 Logout
+            </button>
+            <button onclick="openSideMenu()" aria-label="Open menu" class="flex flex-col justify-center items-center gap-1.5 w-10 h-10 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition shrink-0">
+                <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
+                <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
+                <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
             </button>
         </div>
     </header>
 
+    <!-- ---------- SLIDE-IN SIDE MENU ---------- -->
+    <div id="sideMenuOverlay" onclick="closeSideMenu()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[110] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+    <aside id="sideMenu" class="fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-white z-[120] shadow-2xl -translate-x-full transition-transform duration-300 ease-out flex flex-col">
+        <div class="flex items-center justify-between px-5 h-20 border-b border-slate-200">
+            <div class="flex items-center space-x-2.5">
+                <div class="bg-slate-50 p-1 rounded-lg border border-slate-200">
+                    <img src="logo.png" alt="Logo" class="h-9 w-auto object-contain">
+                </div>
+                <span class="text-sm font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-sky-500 uppercase font-serif">Exam Portal</span>
+            </div>
+            <button onclick="closeSideMenu()" aria-label="Close menu" class="text-slate-400 hover:text-slate-700 font-mono font-bold text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition">&times;</button>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 text-sm font-semibold text-slate-600">
+            <button onclick="closeSideMenu(); showCategoriesView();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🏠</span> Home</button>
+            <button onclick="closeSideMenu(); showCategoriesView();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">📝</span> Test Series</button>
+            <a href="index.html#courses" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🎓</span> Courses</a>
+            <a href="index.html#study-material" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">📘</span> Study Material</a>
+            <button onclick="closeSideMenu(); showHistoryView();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🏆</span> Exam History</button>
+            <a href="index.html#about-us" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">ℹ️</span> About Us</a>
+            <a href="index.html#contact-us" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">✉️</span> Contact Us</a>
+            <div class="pt-3 mt-3 border-t border-slate-100">
+                <button onclick="handleUserLogout()" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold transition"><span class="text-base">🚪</span> Logout</button>
+            </div>
+        </nav>
+        <div class="px-5 py-4 border-t border-slate-200 text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
+            &copy; Exam Portal CSE
+        </div>
+    </aside>
+
     <section class="w-full bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
         <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs font-mono text-slate-500">
-            <button onclick="loadCategoriesView()" class="hover:text-blue-600 font-bold transition">Root Clusters</button>
+            <button onclick="showCategoriesView()" class="hover:text-blue-600 font-bold transition">All Categories</button>
             <span id="breadcrumb-arrow" class="hidden text-slate-300">&rarr;</span>
             <span id="breadcrumb-current-category" class="text-blue-600 font-bold hidden">Selected Category</span>
         </div>
@@ -50,62 +89,102 @@
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-12">
 
-        <div class="space-y-2">
-            <span class="text-[10px] font-mono text-blue-600 uppercase tracking-widest font-bold">// active exam streams</span>
-            <h3 id="workspace-title" class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight font-serif">
-                Available Exam Streams
-            </h3>
-            <p id="workspace-desc" class="text-xs sm:text-sm text-slate-500 max-w-2xl font-medium">
-                Select an academic stream or recruitment category folder to access active examination test papers.
-            </p>
+        <!-- ================= VIEW 1: CATEGORIES (DEFAULT HOME VIEW) ================= -->
+        <div id="view-categories" class="app-view active space-y-12">
+
+            <div class="space-y-2">
+                <span class="text-[10px] font-mono text-blue-600 uppercase tracking-widest font-bold">// exam categories</span>
+                <h3 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight font-serif">
+                    Exam Categories
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-500 max-w-2xl font-medium">
+                    Choose a category below to see its available test papers.
+                </p>
+            </div>
+
+            <div id="live-exams-section-wrapper" class="space-y-4 hidden">
+                <h4 class="text-xs font-mono font-black text-red-500 uppercase tracking-widest flex items-center gap-2">
+                    <span class="flex h-2 w-2 rounded-full bg-red-500 animate-ping"></span>
+                    🔴 Live Exams Happening Now
+                </h4>
+                <div id="student-live-exams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="text-center font-mono text-[11px] text-slate-400 border border-dashed border-slate-300 py-6 rounded-2xl uppercase bg-white">
+                        Checking for live exams...
+                    </div>
+                </div>
+            </div>
+
+            <div id="combo-exams-section-wrapper" class="space-y-4">
+                <h4 class="text-xs font-mono font-black text-orange-500 uppercase tracking-widest flex items-center gap-2">
+                    <span class="flex h-2 w-2 rounded-full bg-orange-500 animate-ping"></span>
+                    🏆 Combined Exams (Paper 1 + Paper 2)
+                </h4>
+                <div id="student-combo-exams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="text-center font-mono text-[11px] text-slate-400 border border-dashed border-slate-300 py-6 rounded-2xl uppercase bg-white">
+                        Loading combined exams...
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h4 class="text-xs font-mono font-black text-blue-600 uppercase tracking-widest">
+                    📂 Browse by Category
+                </h4>
+                <div id="portal-dynamic-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="text-center font-mono text-xs text-slate-400 py-12 animate-pulse uppercase col-span-full">
+                        Loading categories...
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <div id="live-exams-section-wrapper" class="space-y-4 hidden">
-            <h4 class="text-xs font-mono font-black text-red-500 uppercase tracking-widest flex items-center gap-2">
-                <span class="flex h-2 w-2 rounded-full bg-red-500 animate-ping"></span>
-                🔴 Live Exams Happening Now
-            </h4>
-            <div id="student-live-exams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="text-center font-mono text-[11px] text-slate-400 border border-dashed border-slate-300 py-6 rounded-2xl uppercase bg-white">
-                    Checking for live sessions...
+        <!-- ================= VIEW 2: SINGLE CATEGORY DETAIL (SEPARATE PANEL) ================= -->
+        <div id="view-category-detail" class="app-view space-y-6">
+            <button onclick="showCategoriesView()" class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-blue-600 bg-white border border-slate-200 hover:border-blue-300 px-4 py-2.5 rounded-xl transition">
+                &larr; Back to All Categories
+            </button>
+
+            <div class="space-y-2">
+                <span class="text-[10px] font-mono text-blue-600 uppercase tracking-widest font-bold">// selected category</span>
+                <h3 id="workspace-title" class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight font-serif">
+                    Category Papers
+                </h3>
+                <p id="workspace-desc" class="text-xs sm:text-sm text-slate-500 max-w-2xl font-medium">
+                    Choose a test paper below to start your exam.
+                </p>
+            </div>
+
+            <div class="space-y-4">
+                <h4 id="single-exams-header-title" class="text-xs font-mono font-black text-blue-600 uppercase tracking-widest">
+                    📋 Available Test Papers
+                </h4>
+                <div id="category-exams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="text-center font-mono text-xs text-slate-400 py-12 animate-pulse uppercase col-span-full">
+                        Loading test papers...
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="combo-exams-section-wrapper" class="space-y-4">
-            <h4 class="text-xs font-mono font-black text-orange-500 uppercase tracking-widest flex items-center gap-2">
-                <span class="flex h-2 w-2 rounded-full bg-orange-500 animate-ping"></span>
-                🏆 Active Combined Assessment Clusters (Paper-1 + Paper-2 Package)
-            </h4>
-            <div id="student-combo-exams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="text-center font-mono text-[11px] text-slate-400 border border-dashed border-slate-300 py-6 rounded-2xl uppercase bg-white">
-                    Syncing live combined exam nodes pipeline...
-                </div>
-            </div>
-        </div>
+        <!-- ================= VIEW 3: EXAM HISTORY (SEPARATE PANEL) ================= -->
+        <div id="view-history" class="app-view space-y-6">
+            <button onclick="showCategoriesView()" class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-blue-600 bg-white border border-slate-200 hover:border-blue-300 px-4 py-2.5 rounded-xl transition">
+                &larr; Back to All Categories
+            </button>
 
-        <div class="space-y-4">
-            <h4 id="single-exams-header-title" class="text-xs font-mono font-black text-blue-600 uppercase tracking-widest">
-                📂 Standard Categorized Subject Folders
-            </h4>
-            <div id="portal-dynamic-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="text-center font-mono text-xs text-slate-400 py-12 animate-pulse uppercase col-span-full">
-                    Initializing Portal Schema Matrices...
+            <div class="bg-white border border-slate-200 rounded-3xl p-6 space-y-6 shadow-md">
+                <div class="flex items-center space-x-3 border-b border-slate-100 pb-4">
+                    <span class="text-xl">🏆</span>
+                    <div>
+                        <h2 class="text-sm font-black text-slate-900 uppercase tracking-widest font-mono">Exam History</h2>
+                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">Review your past test scores, answers, and detailed analysis anytime.</p>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="bg-white border border-slate-200 rounded-3xl p-6 space-y-6 shadow-md">
-            <div class="flex items-center space-x-3 border-b border-slate-100 pb-4">
-                <span class="text-xl">🏆</span>
-                <div>
-                    <h2 class="text-sm font-black text-slate-900 uppercase tracking-widest font-mono">My Performance Repository</h2>
-                    <p class="text-[11px] text-slate-500 font-medium mt-0.5">Review your past simulated exam history metrics, solutions, and scorecard analysis anytime.</p>
+                <div id="past-results-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="text-center py-6 font-mono text-[11px] text-slate-400 animate-pulse uppercase col-span-full">Loading your exam history...</div>
                 </div>
-            </div>
-
-            <div id="past-results-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="text-center py-6 font-mono text-[11px] text-slate-400 animate-pulse uppercase col-span-full">Syncing exam telemetry history nodes...</div>
             </div>
         </div>
 
@@ -118,11 +197,11 @@
                 <div class="flex items-center space-x-3">
                     <div class="h-2.5 w-2.5 rounded-full bg-orange-500 animate-pulse"></div>
                     <div>
-                        <h2 id="modal-review-title" class="text-xs sm:text-sm font-black text-slate-900 font-mono uppercase tracking-widest">EXAM PERFORMANCE MATRIX</h2>
-                        <p class="text-[9px] text-slate-400 font-mono uppercase tracking-wider mt-0.5">Detailed Answer Analytics</p>
+                        <h2 id="modal-review-title" class="text-xs sm:text-sm font-black text-slate-900 font-mono uppercase tracking-widest">EXAM REPORT</h2>
+                        <p class="text-[9px] text-slate-400 font-mono uppercase tracking-wider mt-0.5">Detailed Answer Review</p>
                     </div>
                 </div>
-                <button onclick="closeReviewModal()" class="text-[10px] font-mono font-black text-slate-500 hover:text-red-600 bg-slate-100 hover:bg-red-50 border border-slate-200 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider">Close Panel [ESC]</button>
+                <button onclick="closeReviewModal()" class="text-[10px] font-mono font-black text-slate-500 hover:text-red-600 bg-slate-100 hover:bg-red-50 border border-slate-200 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider">Close [ESC]</button>
             </div>
 
             <div id="modal-review-stats-summary" class="bg-slate-50 border-b border-slate-200 px-6 py-3 grid grid-cols-2 sm:grid-cols-4 gap-4 shrink-0 text-center font-mono text-[10px]"></div>
@@ -131,7 +210,7 @@
     </div>
 
     <footer class="w-full text-center py-4 border-t border-slate-200 bg-white text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
-        &copy; Computer Science Department
+        &copy; Exam Portal CSE — Computer Science Department
     </footer>
 
     <script>
@@ -140,6 +219,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let activeUserEmail = "";
+        let historyAlreadyLoaded = false;
 
         window.onload = function () {
             activeUserEmail = localStorage.getItem('userEmail');
@@ -149,14 +229,59 @@
             }
             document.getElementById('user-display-email').innerText = activeUserEmail;
 
-            // Initializing Telemetry Streams
+            // Load the default Home / Categories view
+            showCategoriesView();
             loadCategoriesView();
-            renderStudentComboExamLinks(); // लाइव कंबाइंड कॉम्बो लिंक्स लोड करें
-            renderStudentLiveExamLinks(); // 🔴 लाइव प्रॉक्टर्ड एग्जाम सेशन लिंक्स लोड करें
-            fetchStudentPastExamHistory();
+            renderStudentComboExamLinks();
+            renderStudentLiveExamLinks();
+            // Exam history is now fetched only when the user opens the History panel,
+            // not automatically on the dashboard — see showHistoryView().
         };
 
-        // 🔴 NEW ENGINE: FETCH ACTIVE LIVE EXAM SESSIONS FOR STUDENTS TO JOIN
+        // Side Menu Drawer Controller
+        function openSideMenu() {
+            document.getElementById('sideMenu').classList.remove('-translate-x-full');
+            const overlay = document.getElementById('sideMenuOverlay');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100', 'pointer-events-auto');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeSideMenu() {
+            document.getElementById('sideMenu').classList.add('-translate-x-full');
+            const overlay = document.getElementById('sideMenuOverlay');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            document.body.style.overflow = '';
+        }
+
+        // =========================================================================
+        // 🧭 VIEW SWITCHER — only one panel is visible at a time:
+        // Categories (home) / Single Category Detail / Exam History
+        // =========================================================================
+        function switchToView(viewId) {
+            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showCategoriesView() {
+            switchToView('view-categories');
+            document.getElementById('breadcrumb-arrow').classList.add('hidden');
+            document.getElementById('breadcrumb-current-category').classList.add('hidden');
+        }
+
+        function showHistoryView() {
+            switchToView('view-history');
+            document.getElementById('breadcrumb-arrow').classList.remove('hidden');
+            document.getElementById('breadcrumb-current-category').classList.remove('hidden');
+            document.getElementById('breadcrumb-current-category').innerText = "Exam History";
+            if (!historyAlreadyLoaded) {
+                fetchStudentPastExamHistory();
+                historyAlreadyLoaded = true;
+            }
+        }
+
+        // 🔴 FETCH ACTIVE LIVE EXAM SESSIONS FOR STUDENTS TO JOIN
         async function renderStudentLiveExamLinks() {
             const wrapper = document.getElementById('live-exams-section-wrapper');
             const grid = document.getElementById('student-live-exams-grid');
@@ -206,18 +331,18 @@
                 });
 
             } catch (e) {
-                console.error("Live session fetch crash:", e);
+                console.error("Live session fetch failed:", e);
                 wrapper.classList.add('hidden');
             }
         }
 
         function launchLiveExamSession(sessionId) {
-            if (confirm("Strict Notice: This is a live proctored exam. Switching tabs, minimizing, or leaving this window at any point will INSTANTLY disqualify you with a score of 0. Continue?")) {
+            if (confirm("This is a live proctored exam. Switching tabs, minimizing, or leaving this window will disqualify you with a score of 0. Continue?")) {
                 window.location.href = `live-exam.html?session=${sessionId}`;
             }
         }
 
-        // 🚀 NEW ENGINE addition: FETCH COMBINED COMBO CHANNELS REAL-TIME FROM DATABASE
+        // 🚀 FETCH COMBINED (PAPER-1 + PAPER-2) EXAMS
         async function renderStudentComboExamLinks() {
             const comboContainer = document.getElementById('student-combo-exams-grid');
             if (!comboContainer) return;
@@ -233,7 +358,7 @@
                 if (!comboExams || comboExams.length === 0) {
                     comboContainer.innerHTML = `
                         <div class="col-span-full border border-dashed border-slate-300 text-center p-6 rounded-xl text-slate-400 font-mono text-[11px] uppercase tracking-wider bg-white">
-                            No Combined Mega Exams allocated by Administration.
+                            No combined exams available right now.
                         </div>`;
                     return;
                 }
@@ -241,37 +366,37 @@
                 comboContainer.innerHTML = "";
 
                 comboExams.forEach(combo => {
-                    // 🎯 [STRICT TIMING REINFORCEMENT CORRIDOR]: पेपर-2 का सिंटैक्स छिपाकर केवल वन-वे यूआरएल रूट पास किया गया है
+                    // Only Paper 1's subject is shown up front; Paper 2 unlocks after Paper 1 is submitted.
                     comboContainer.innerHTML += `
                         <div class="bg-white border border-slate-200 hover:border-orange-300 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 group">
                             <div class="space-y-2">
                                 <div class="flex items-center justify-between">
-                                    <span class="px-2 py-0.5 text-[8px] font-black bg-orange-50 text-orange-500 border border-orange-200 rounded font-mono tracking-widest uppercase">COMBO ASSESSMENT</span>
-                                    <span class="text-[9px] font-mono text-emerald-600 font-bold uppercase">● Stage 1 Locked</span>
+                                    <span class="px-2 py-0.5 text-[8px] font-black bg-orange-50 text-orange-500 border border-orange-200 rounded font-mono tracking-widest uppercase">COMBINED EXAM</span>
+                                    <span class="text-[9px] font-mono text-emerald-600 font-bold uppercase">● Stage 1</span>
                                 </div>
                                 <h3 class="font-black text-sm text-slate-900 uppercase tracking-wide group-hover:text-orange-500 transition leading-snug pt-1 font-serif">${combo.combo_title}</h3>
-                                <p class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">Initial Target: ${combo.paper1_subject.toUpperCase()}</p>
+                                <p class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">Paper 1: ${combo.paper1_subject.toUpperCase()}</p>
                             </div>
 
                             <div class="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1.5 border-t border-slate-100">
-                                <div>Combined Evaluation Node</div>
+                                <div>Combined Test</div>
                                 <div>Cutoff: <span class="text-orange-500 font-bold">${combo.required_cutoff_percentage}%</span></div>
                             </div>
 
                             <button onclick="launchSecureComboPipeline('${combo.id}')" class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-400 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition cursor-pointer">
-                                Launch Combined Test ↗
+                                Start Combined Test ↗
                             </button>
                         </div>`;
                 });
 
             } catch (e) {
-                console.error("Combo linkage crash matrix handler:", e);
-                comboContainer.innerHTML = `<div class="col-span-full text-center font-mono text-xs text-red-500 uppercase">Combo Data Pipeline Disrupted.</div>`;
+                console.error("Combo exam fetch failed:", e);
+                comboContainer.innerHTML = `<div class="col-span-full text-center font-mono text-xs text-red-500 uppercase">Could not load combined exams.</div>`;
             }
         }
 
         function launchSecureComboPipeline(comboId) {
-            if(confirm("Strict Notice: You are initializing a Multi-Stage Combined Exam. After submitting Paper-1, Paper-2 will launch automatically. You cannot return to the first stage. Initialize session now?")) {
+            if(confirm("This is a two-stage combined exam. After you submit Paper 1, Paper 2 will start automatically and you cannot go back to Paper 1. Start now?")) {
                 window.location.href = `exam.html?combo_id=${comboId}`;
             }
         }
@@ -322,16 +447,10 @@
             return { svgPath: meta.svg, ...accentClasses[meta.accent] };
         }
 
-        // 📁 STEP 1: LOAD MAIN EXAM CATEGORIES (FOLDERS)
+        // 📁 STEP 1: LOAD MAIN EXAM CATEGORIES (FOLDERS) — shown only on the Categories (home) view
         async function loadCategoriesView() {
-            document.getElementById('workspace-title').innerText = "Available Exam Streams";
-            document.getElementById('workspace-desc').innerText = "Select a category below to explore its active examinations list.";
-            document.getElementById('breadcrumb-arrow').classList.add('hidden');
-            document.getElementById('breadcrumb-current-category').classList.add('hidden');
-            document.getElementById('single-exams-header-title').innerText = "📂 Standard Categorized Subject Folders";
-
             const gridContainer = document.getElementById('portal-dynamic-grid');
-            gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-600 py-12 animate-pulse uppercase col-span-full">Mapping Active Categories...</div>`;
+            gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-600 py-12 animate-pulse uppercase col-span-full">Loading categories...</div>`;
 
             try {
                 const { data: examsData, error: examsErr } = await supabaseClient
@@ -345,7 +464,7 @@
                 if (activeCategoryIds.length === 0) {
                     gridContainer.innerHTML = `
                         <div class="text-center font-mono text-xs text-slate-500 border border-slate-200 p-8 rounded-2xl bg-white col-span-full uppercase">
-                            No active exam streams found. Waiting for Admin allocations.
+                            No exam categories found yet. Please check back soon.
                         </div>`;
                     return;
                 }
@@ -360,7 +479,7 @@
                 if (!categoriesData || categoriesData.length === 0) {
                     gridContainer.innerHTML = `
                         <div class="text-center font-mono text-xs text-slate-500 border border-slate-200 p-8 rounded-2xl bg-white col-span-full uppercase">
-                            No matching category data configured in system master nodes.
+                            No category data has been configured yet.
                         </div>`;
                     return;
                 }
@@ -378,7 +497,7 @@
                                     <div class="p-2.5 ${iconMeta.bg} rounded-xl ${iconMeta.text} ${iconMeta.hoverBg} transition">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-6 h-6">${iconMeta.svgPath}</svg>
                                     </div>
-                                    <span class="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider ${iconMeta.hoverText} transition">Open Folder &rarr;</span>
+                                    <span class="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider ${iconMeta.hoverText} transition">Open &rarr;</span>
                                 </div>
                                 <h4 class="text-sm font-bold tracking-wide text-slate-900 ${iconMeta.hoverText} transition uppercase font-serif">${displayTitle}</h4>
                                 <p class="dir-path text-[10px] font-mono text-slate-400 truncate">${slug}/</p>
@@ -390,104 +509,105 @@
 
             } catch (err) {
                 console.error(err);
-                gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-500 col-span-full">Database parsing cluster connection fault: ${err.message || err}</div>`;
+                gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-500 col-span-full">Could not load categories: ${err.message || err}</div>`;
             }
         }
 
-        // 📝 STEP 2: LOAD EXAMS FILTERED BY SELECTED CATEGORY ID
-       // 📝 STEP 2: LOAD EXAMS FILTERED BY CATEGORY (🏆 UPGRADED: HIDES COMBO SUBS)
-async function loadExamsSubView(categoryId, encodedCatName) {
-    const categoryName = decodeURIComponent(encodedCatName);
+        // 📝 STEP 2: LOAD EXAMS FOR THE SELECTED CATEGORY — opens as its own panel and
+        // hides the categories view (live exams, combo exams, all other category folders).
+        async function loadExamsSubView(categoryId, encodedCatName) {
+            const categoryName = decodeURIComponent(encodedCatName);
 
-    document.getElementById('workspace-title').innerText = `${categoryName.toUpperCase()} — ACTIVE PAPERS`;
-    document.getElementById('workspace-desc').innerText = "Select an available test paper below to initialize live terminal examination runtime.";
-    document.getElementById('single-exams-header-title').innerText = "📋 Standalone Available Question Matrix Subjects";
+            switchToView('view-category-detail');
 
-    const bArrow = document.getElementById('breadcrumb-arrow');
-    const bCurrent = document.getElementById('breadcrumb-current-category');
-    if(bArrow) bArrow.classList.remove('hidden');
-    if(bCurrent) {
-        bCurrent.classList.remove('hidden');
-        bCurrent.innerText = categoryName;
-    }
+            document.getElementById('workspace-title').innerText = `${categoryName} — Test Papers`;
+            document.getElementById('workspace-desc').innerText = "Choose a test paper below to start your exam.";
+            document.getElementById('single-exams-header-title').innerText = "📋 Available Test Papers";
 
-    const gridContainer = document.getElementById('portal-dynamic-grid');
-    gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-600 py-12 animate-pulse uppercase col-span-full">Filtering Test Clusters...</div>`;
+            const bArrow = document.getElementById('breadcrumb-arrow');
+            const bCurrent = document.getElementById('breadcrumb-current-category');
+            if (bArrow) bArrow.classList.remove('hidden');
+            if (bCurrent) {
+                bCurrent.classList.remove('hidden');
+                bCurrent.innerText = categoryName;
+            }
 
-    try {
-        // 🔒 १. सबसे पहले 'combo_exams' टेबल से उन सभी पेपर्स के नाम निकालें जो कॉम्बो में बुक हैं
-        const { data: comboList, error: comboErr } = await supabaseClient
-            .from('combo_exams')
-            .select('paper1_subject, paper2_subject');
+            const gridContainer = document.getElementById('category-exams-grid');
+            gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-blue-600 py-12 animate-pulse uppercase col-span-full">Loading test papers...</div>`;
 
-        if (comboErr) throw comboErr;
-
-        // सभी बुक हो चुके विषयों का एक सेफ सेट (Set) बनाएं
-        let blockedComboSubjects = new Set();
-        if (comboList) {
-            comboList.forEach(c => {
-                if(c.paper1_subject) blockedComboSubjects.add(c.paper1_subject.trim().toLowerCase());
-                if(c.paper2_subject) blockedComboSubjects.add(c.paper2_subject.trim().toLowerCase());
-            });
-        }
-
-        // २. अब इस विशिष्ट कैटेगरी के सभी एग्जाम्स डेटाबेस से उठाएं
-        const { data: examsList, error } = await supabaseClient
-            .from('exams')
-            .select('subject, duration_minutes, questions_json')
-            .eq('category_id', categoryId);
-
-        if (error) throw error;
-
-        // 🔒 ३. [EXCLUSION FILTER]: केवल वही पेपर रखें जो कॉम्बो सेट (blockedComboSubjects) का हिस्सा नहीं हैं
-        const filteredExamsList = (examsList || []).filter(exam => {
-            const subjectKey = exam.subject ? exam.subject.trim().toLowerCase() : "";
-            return !blockedComboSubjects.has(subjectKey);
-        });
-
-        if (filteredExamsList.length === 0) {
-            gridContainer.innerHTML = `
-                <div class="text-center font-mono text-xs text-slate-500 border border-slate-200 p-8 rounded-2xl bg-white col-span-full uppercase">
-                    No standalone single papers active inside this folder.
-                </div>`;
-            return;
-        }
-
-        let htmlContent = "";
-        filteredExamsList.forEach(exam => {
-            let totalQuestionsCount = 0;
             try {
-                let parsedJson = typeof exam.questions_json === 'string' ? JSON.parse(exam.questions_json) : exam.questions_json;
-                totalQuestionsCount = parsedJson ? parsedJson.length : 0;
-            } catch(e) { totalQuestionsCount = 0; }
+                // Papers already booked inside a combined (Paper1+Paper2) exam are hidden here,
+                // since students access them through the Combined Exams card instead.
+                const { data: comboList, error: comboErr } = await supabaseClient
+                    .from('combo_exams')
+                    .select('paper1_subject, paper2_subject');
 
-            htmlContent += `
-                <div class="bg-white border border-slate-200 hover:border-emerald-300 p-5 sm:p-6 rounded-2xl shadow-sm hover:shadow-lg transition flex flex-col justify-between space-y-4">
-                    <div class="space-y-1.5">
-                        <span class="text-[9px] font-mono font-black text-slate-400 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider">Active Evaluation Node</span>
-                        <h4 class="text-sm font-black text-slate-900 tracking-wide leading-snug uppercase pt-1 font-serif">${exam.subject}</h4>
-                    </div>
+                if (comboErr) throw comboErr;
 
-                    <div class="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-100">
-                        <div>Questions: <span class="text-emerald-600 font-bold">${totalQuestionsCount}</span></div>
-                        <div>Duration: <span class="text-blue-600 font-bold">${exam.duration_minutes} Min</span></div>
-                    </div>
+                let blockedComboSubjects = new Set();
+                if (comboList) {
+                    comboList.forEach(c => {
+                        if (c.paper1_subject) blockedComboSubjects.add(c.paper1_subject.trim().toLowerCase());
+                        if (c.paper2_subject) blockedComboSubjects.add(c.paper2_subject.trim().toLowerCase());
+                    });
+                }
 
-                    <button onclick="initializeAssessmentRuntime('${encodeURIComponent(exam.subject)}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition transform active:scale-[0.98] cursor-pointer">
-                        Launch Live Engine
-                    </button>
-                </div>`;
-        });
+                const { data: examsList, error } = await supabaseClient
+                    .from('exams')
+                    .select('subject, duration_minutes, questions_json')
+                    .eq('category_id', categoryId);
 
-        gridContainer.innerHTML = htmlContent;
+                if (error) throw error;
 
-    } catch (err) {
-        console.error(err);
-        gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-500 col-span-full">Failed to compile category elements matrix list.</div>`;
-    }
-}
+                const filteredExamsList = (examsList || []).filter(exam => {
+                    const subjectKey = exam.subject ? exam.subject.trim().toLowerCase() : "";
+                    return !blockedComboSubjects.has(subjectKey);
+                });
+
+                if (filteredExamsList.length === 0) {
+                    gridContainer.innerHTML = `
+                        <div class="text-center font-mono text-xs text-slate-500 border border-slate-200 p-8 rounded-2xl bg-white col-span-full uppercase">
+                            No standalone test papers in this category yet.
+                        </div>`;
+                    return;
+                }
+
+                let htmlContent = "";
+                filteredExamsList.forEach(exam => {
+                    let totalQuestionsCount = 0;
+                    try {
+                        let parsedJson = typeof exam.questions_json === 'string' ? JSON.parse(exam.questions_json) : exam.questions_json;
+                        totalQuestionsCount = parsedJson ? parsedJson.length : 0;
+                    } catch (e) { totalQuestionsCount = 0; }
+
+                    htmlContent += `
+                        <div class="bg-white border border-slate-200 hover:border-emerald-300 p-5 sm:p-6 rounded-2xl shadow-sm hover:shadow-lg transition flex flex-col justify-between space-y-4">
+                            <div class="space-y-1.5">
+                                <span class="text-[9px] font-mono font-black text-slate-400 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider">Test Paper</span>
+                                <h4 class="text-sm font-black text-slate-900 tracking-wide leading-snug uppercase pt-1 font-serif">${exam.subject}</h4>
+                            </div>
+
+                            <div class="flex items-center justify-between text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-100">
+                                <div>Questions: <span class="text-emerald-600 font-bold">${totalQuestionsCount}</span></div>
+                                <div>Duration: <span class="text-blue-600 font-bold">${exam.duration_minutes} Min</span></div>
+                            </div>
+
+                            <button onclick="initializeAssessmentRuntime('${encodeURIComponent(exam.subject)}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition transform active:scale-[0.98] cursor-pointer">
+                                Start Test
+                            </button>
+                        </div>`;
+                });
+
+                gridContainer.innerHTML = htmlContent;
+
+            } catch (err) {
+                console.error(err);
+                gridContainer.innerHTML = `<div class="text-center font-mono text-xs text-red-500 col-span-full">Could not load test papers for this category.</div>`;
+            }
+        }
+
         function initializeAssessmentRuntime(encodedSubject) {
-            if(confirm("Confirm action: Do you want to initialize and authorize this secure exam session now?")) {
+            if (confirm("Do you want to start this exam now?")) {
                 window.location.href = `exam.html?subject=${encodedSubject}`;
             }
         }
@@ -498,7 +618,7 @@ async function loadExamsSubView(categoryId, encodedCatName) {
         }
 
         // =========================================================================
-        // 📊 🏆 🚀 CORE ENGINE: UPDATED TESTBOOK ANALYSIS SYNC WITH 'public.results'
+        // 📊 🏆 EXAM HISTORY — fetched only when the user opens the History panel
         // =========================================================================
 
         async function fetchStudentPastExamHistory() {
@@ -519,7 +639,7 @@ async function loadExamsSubView(categoryId, encodedCatName) {
                 if (!attempts || attempts.length === 0) {
                     container.innerHTML = `
                         <div class="col-span-full border border-dashed border-slate-300 text-center p-8 rounded-2xl text-slate-400 font-mono text-[11px] uppercase tracking-wider bg-slate-50">
-                            No conducted mock exams detected in your student log cluster.
+                            You haven't attempted any mock exams yet.
                         </div>`;
                     return;
                 }
@@ -530,9 +650,9 @@ async function loadExamsSubView(categoryId, encodedCatName) {
                 attempts.forEach((attempt, index) => {
                     const dateStr = attempt.submitted_at
                         ? new Date(attempt.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
-                        : "N/A CORRIDOR";
+                        : "N/A";
 
-                    const subjectName = attempt.subject || "Objective Evaluation Node";
+                    const subjectName = attempt.subject || "Mock Exam";
                     const finalScore = attempt.score !== undefined ? attempt.score : 0;
                     const totalQs = attempt.total_questions || 0;
                     const correctQs = attempt.correct_answers || 0;
@@ -558,14 +678,14 @@ async function loadExamsSubView(categoryId, encodedCatName) {
                             </div>
 
                             <button onclick="viewDetailedExamAnalysis(${index})" class="w-full bg-slate-50 hover:bg-orange-50 text-orange-600 border border-slate-200 hover:border-orange-200 font-black py-2 px-3 rounded-xl text-[10px] uppercase tracking-widest transition font-mono cursor-pointer">
-                                Analyze Answer Sheet &rarr;
+                                View Answer Sheet &rarr;
                             </button>
                         </div>`;
                 });
 
             } catch (err) {
-                console.error("Telemetry history pull breakdown:", err);
-                container.innerHTML = `<div class="col-span-full text-center text-red-500 font-mono text-xs uppercase">Telemetry Cluster Sync Error.</div>`;
+                console.error("Exam history fetch failed:", err);
+                container.innerHTML = `<div class="col-span-full text-center text-red-500 font-mono text-xs uppercase">Could not load your exam history.</div>`;
             }
         }
 
@@ -573,7 +693,7 @@ async function loadExamsSubView(categoryId, encodedCatName) {
             const attempt = window.globalAttemptsCache && window.globalAttemptsCache[cacheIndex];
             if (!attempt) return;
 
-            const subjectName = attempt.subject ? String(attempt.subject) : "EXAMINATION MOCK NODE";
+            const subjectName = attempt.subject ? String(attempt.subject) : "Mock Exam";
             const subjectNameUpper = subjectName.toUpperCase();
 
             const modalTitleElement = document.getElementById('modal-review-title');
@@ -590,10 +710,10 @@ async function loadExamsSubView(categoryId, encodedCatName) {
             const statsSummary = document.getElementById('modal-review-stats-summary');
             if (statsSummary) {
                 statsSummary.innerHTML = `
-                    <div class="border-r border-slate-200"><div class="text-slate-900 font-black text-xs">${accuracy}%</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Your Accuracy</div></div>
-                    <div class="border-r border-slate-200"><div class="text-emerald-600 font-black text-xs">${correctQ} / ${totalQ}</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Correct Breakdown</div></div>
-                    <div class="border-r border-slate-200"><div class="text-red-500 font-black text-xs">${wrongAnswersCount}</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Wrong Selection</div></div>
-                    <div><div class="text-blue-600 font-black text-xs">${finalScore} Mks</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Net Score Matrix</div></div>
+                    <div class="border-r border-slate-200"><div class="text-slate-900 font-black text-xs">${accuracy}%</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Accuracy</div></div>
+                    <div class="border-r border-slate-200"><div class="text-emerald-600 font-black text-xs">${correctQ} / ${totalQ}</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Correct Answers</div></div>
+                    <div class="border-r border-slate-200"><div class="text-red-500 font-black text-xs">${wrongAnswersCount}</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Wrong Answers</div></div>
+                    <div><div class="text-blue-600 font-black text-xs">${finalScore} Mks</div><div class="text-[8px] text-slate-400 uppercase mt-0.5">Total Score</div></div>
                 `;
             }
 
@@ -604,7 +724,7 @@ async function loadExamsSubView(categoryId, encodedCatName) {
             let questionsArray = attempt.questions_snapshot_json;
             let responsesArray = attempt.user_responses_json;
 
-            // 🚀 [CRITICAL COMBO HANDLING]: यदि कॉम्बो डेटा सबमिट हुआ है, तो दोनों पेपर्स को एक के नीचे एक जोड़कर दिखाएं
+            // If this was a combined (Paper1+Paper2) submission, show both papers stacked.
             let isComboPayload = false;
             let p1Questions = [], p2Questions = [];
             let p1Responses = {}, p2Responses = {};
@@ -621,16 +741,14 @@ async function loadExamsSubView(categoryId, encodedCatName) {
             }
 
             if (isComboPayload) {
-                // रेंडर पेपर 1 हेडर
-                reviewBody.innerHTML += `<div class="col-span-full border-b border-orange-200 pb-2 text-orange-500 font-mono text-xs font-black uppercase tracking-widest pt-4">📋 SECTION A : PAPER 1 ANALYSIS</div>`;
+                reviewBody.innerHTML += `<div class="col-span-full border-b border-orange-200 pb-2 text-orange-500 font-mono text-xs font-black uppercase tracking-widest pt-4">📋 PAPER 1</div>`;
                 renderReviewCardsGrid(p1Questions, p1Responses, subjectNameUpper);
 
-                // रेंडर पेपर 2 हेडर
-                reviewBody.innerHTML += `<div class="col-span-full border-b border-blue-200 pb-2 text-blue-600 font-mono text-xs font-black uppercase tracking-widest pt-8">📋 SECTION B : PAPER 2 ANALYSIS</div>`;
+                reviewBody.innerHTML += `<div class="col-span-full border-b border-blue-200 pb-2 text-blue-600 font-mono text-xs font-black uppercase tracking-widest pt-8">📋 PAPER 2</div>`;
                 renderReviewCardsGrid(p2Questions, p2Responses, subjectNameUpper);
             } else {
                 if (!questionsArray || !Array.isArray(questionsArray)) {
-                    reviewBody.innerHTML = `<div class="text-center py-8 text-red-500 font-mono text-xs uppercase">Snapshots dataset format is not an uncompressed array structure.</div>`;
+                    reviewBody.innerHTML = `<div class="text-center py-8 text-red-500 font-mono text-xs uppercase">This exam's saved data could not be read.</div>`;
                     return;
                 }
                 renderReviewCardsGrid(questionsArray, responsesArray, subjectNameUpper);
@@ -639,7 +757,6 @@ async function loadExamsSubView(categoryId, encodedCatName) {
             document.getElementById('result-review-modal').classList.remove('hidden');
         }
 
-        // सहायक रिज़ॉर्ट रेंडरर फ़ंक्शन (कॉम्बो संगतता)
         function renderReviewCardsGrid(questions, responses, subjectNameUpper) {
             const reviewBody = document.getElementById('modal-review-body');
 
@@ -676,11 +793,11 @@ async function loadExamsSubView(categoryId, encodedCatName) {
                     if (optIdx === correctIdx) {
                         optStyle = "bg-emerald-50 border-emerald-300 text-emerald-700 font-bold ring-1 ring-emerald-100";
                         optionCharStyle = "bg-emerald-500 text-white font-black";
-                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-emerald-600 ml-auto uppercase tracking-wider">Correct Option</span>`;
+                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-emerald-600 ml-auto uppercase tracking-wider">Correct Answer</span>`;
                     } else if (optIdx === studentSelectedIdx && !isCorrect) {
                         optStyle = "bg-red-50 border-red-300 text-red-700 font-bold ring-1 ring-red-100";
                         optionCharStyle = "bg-red-500 text-white font-black";
-                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-red-500 ml-auto uppercase tracking-wider">Your Selection</span>`;
+                        indicatorIcon = `<span class="text-[10px] font-mono font-black text-red-500 ml-auto uppercase tracking-wider">Your Answer</span>`;
                     }
 
                     optionsHtml += `
@@ -692,17 +809,17 @@ async function loadExamsSubView(categoryId, encodedCatName) {
                 });
 
                 const correctChar = String.fromCharCode(65 + correctIdx);
-                const questionText = q.question || q.title || q.text || "Objective Assessment Query Node";
+                const questionText = q.question || q.title || q.text || "Exam Question";
 
                 reviewBody.innerHTML += `
                     <div class="border rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm transition relative ${borderStyle} mt-4">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/70 pb-2.5">
                             <div class="flex items-center space-x-2 text-[9px] font-mono text-slate-500 uppercase tracking-wider font-bold">
-                                <span>Question Unit Stack Node #${idx + 1}</span>
+                                <span>Question ${idx + 1}</span>
                                 <span>•</span>
-                                <span class="text-slate-500">Avg Time taken: ${avgTime}s</span>
+                                <span class="text-slate-500">Avg time: ${avgTime}s</span>
                                 <span>•</span>
-                                <span class="text-blue-600">Correctly Answered by ${peerCorrect}% peers</span>
+                                <span class="text-blue-600">${peerCorrect}% of students got this right</span>
                             </div>
                             <div class="ml-auto sm:ml-0">${statusBadge}</div>
                         </div>
@@ -719,15 +836,14 @@ async function loadExamsSubView(categoryId, encodedCatName) {
                         <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mt-3 space-y-2 font-sans">
                             <div class="flex items-center space-x-2 text-orange-500 font-mono text-[10px] font-black uppercase tracking-widest">
                                 <span>💡</span>
-                                <span>Official Solutions & Deduction Framework</span>
+                                <span>Explanation</span>
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed font-medium">
-                                The correct matching evaluation node responds to choice <strong class="text-emerald-600 font-mono text-xs font-black bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">${correctChar}</strong>.
-                                Standard academic computer science paradigms rule out competing configurations because Option ${correctChar} models the requested core criteria optimally.
+                                The correct answer is option <strong class="text-emerald-600 font-mono text-xs font-black bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">${correctChar}</strong>.
                             </p>
                             <div class="pt-2 text-[9px] font-mono text-slate-400 uppercase font-bold tracking-wider flex items-center gap-1">
-                                <span>🔍 Core Segment Matrix:</span>
-                                <span class="text-violet-600">${subjectNameUpper} Evaluated Contexts</span>
+                                <span>🔍 Topic:</span>
+                                <span class="text-violet-600">${subjectNameUpper}</span>
                             </div>
                         </div>
                     </div>`;
