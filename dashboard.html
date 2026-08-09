@@ -34,14 +34,38 @@
             </div>
         </div>
 
-        <div class="flex items-center space-x-2 sm:space-x-3">
-            <span id="user-display-email" class="text-xs font-mono text-slate-500 hidden sm:inline-block bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">student@gmail.com</span>
+        <div class="flex items-center space-x-2 sm:space-x-3 relative">
             <button onclick="showHistoryView()" class="hidden sm:inline-flex items-center gap-1.5 border border-slate-300 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 text-slate-600 font-bold py-2 px-4 rounded-xl text-xs transition">
                 🏆 Exam History
             </button>
-            <button onclick="handleUserLogout()" class="border border-slate-300 hover:border-red-300 hover:bg-red-50 hover:text-red-600 text-slate-600 font-bold py-2 px-4 rounded-xl text-xs transition">
-                Logout
-            </button>
+
+            <!-- Profile Chip + Dropdown -->
+            <div class="relative">
+                <button onclick="toggleProfileDropdown()" id="profile-chip-btn" class="flex items-center gap-2 bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50 pl-2 pr-3 py-1.5 rounded-full transition">
+                    <span id="profile-avatar-initial" class="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-sky-500 text-white text-xs font-black flex items-center justify-center shrink-0 font-mono">S</span>
+                    <span id="profile-chip-name" class="hidden sm:inline text-xs font-bold text-slate-700 max-w-[110px] truncate">Student</span>
+                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+
+                <div id="profile-dropdown-panel" class="hidden absolute right-0 top-[calc(100%+10px)] w-64 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden z-50">
+                    <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center gap-3">
+                        <span id="profile-dropdown-avatar" class="w-11 h-11 rounded-full bg-gradient-to-br from-blue-600 to-sky-500 text-white text-sm font-black flex items-center justify-center shrink-0 font-mono">S</span>
+                        <div class="min-w-0">
+                            <div id="profile-dropdown-name" class="text-sm font-bold text-slate-900 truncate">Student</div>
+                            <div id="profile-dropdown-email" class="text-[10px] font-mono text-slate-500 truncate">student@gmail.com</div>
+                        </div>
+                    </div>
+                    <div class="py-2">
+                        <button onclick="closeProfileDropdown(); showProfileView();" class="w-full text-left flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition"><span>👤</span> My Profile</button>
+                        <button onclick="closeProfileDropdown(); showProfileView('library');" class="w-full text-left flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition"><span>📚</span> My Library</button>
+                        <button onclick="closeProfileDropdown(); showHistoryView();" class="w-full text-left flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition"><span>🏆</span> Exam History</button>
+                        <div class="border-t border-slate-100 mt-2 pt-2">
+                            <button onclick="handleUserLogout()" class="w-full text-left flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 transition"><span>🚪</span> Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <button onclick="openSideMenu()" aria-label="Open menu" class="flex flex-col justify-center items-center gap-1.5 w-10 h-10 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition shrink-0">
                 <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
                 <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
@@ -67,6 +91,8 @@
             <button onclick="closeSideMenu(); showCategoriesView();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">📝</span> Test Series</button>
             <a href="index.html#courses" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🎓</span> Courses</a>
             <a href="index.html#study-material" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">📘</span> Study Material</a>
+            <button onclick="closeSideMenu(); showProfileView();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">👤</span> My Profile</button>
+            <button onclick="closeSideMenu(); showProfileView('library');" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">📚</span> My Library</button>
             <button onclick="closeSideMenu(); showHistoryView();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🏆</span> Exam History</button>
             <a href="index.html#about-us" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">ℹ️</span> About Us</a>
             <a href="index.html#contact-us" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">✉️</span> Contact Us</a>
@@ -188,6 +214,46 @@
             </div>
         </div>
 
+        <!-- ================= VIEW 4: MY PROFILE & LIBRARY (SEPARATE PANEL) ================= -->
+        <div id="view-profile" class="app-view space-y-6">
+            <button onclick="showCategoriesView()" class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-blue-600 bg-white border border-slate-200 hover:border-blue-300 px-4 py-2.5 rounded-xl transition">
+                &larr; Back to All Categories
+            </button>
+
+            <!-- Profile Info Card -->
+            <div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-md">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-5">
+                    <span id="profile-page-avatar" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-sky-500 text-white text-2xl font-black flex items-center justify-center shrink-0 font-mono">S</span>
+                    <div class="flex-1 min-w-0 space-y-1.5">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h2 id="profile-page-name" class="text-lg sm:text-xl font-black text-slate-900 font-serif truncate">Student</h2>
+                            <span id="profile-page-role-badge" class="text-[9px] font-mono font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-50 text-blue-600 border border-blue-200">Student</span>
+                        </div>
+                        <p id="profile-page-email" class="text-xs font-mono text-slate-500 truncate">student@gmail.com</p>
+                        <p id="profile-page-lastlogin" class="text-[10px] font-mono text-slate-400 uppercase tracking-wide">Last login: —</p>
+                    </div>
+                    <button onclick="editProfileName()" class="shrink-0 border border-slate-300 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 text-slate-600 font-bold py-2.5 px-5 rounded-xl text-xs uppercase tracking-wider transition self-start sm:self-center">
+                        ✎ Edit Name
+                    </button>
+                </div>
+            </div>
+
+            <!-- My Library Section -->
+            <div id="library-section" class="bg-white border border-slate-200 rounded-3xl p-6 space-y-6 shadow-md">
+                <div class="flex items-center space-x-3 border-b border-slate-100 pb-4">
+                    <span class="text-xl">📚</span>
+                    <div>
+                        <h2 class="text-sm font-black text-slate-900 uppercase tracking-widest font-mono">My Library</h2>
+                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">Your purchased courses and test series, all in one place.</p>
+                    </div>
+                </div>
+
+                <div id="library-items-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="text-center py-6 font-mono text-[11px] text-slate-400 animate-pulse uppercase col-span-full">Loading your library...</div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <div id="result-review-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-2 sm:p-4 hidden">
@@ -220,6 +286,8 @@
 
         let activeUserEmail = "";
         let historyAlreadyLoaded = false;
+        let libraryAlreadyLoaded = false;
+        let currentUserProfile = { name: "", role: "student", last_login: null };
 
         window.onload = function () {
             activeUserEmail = localStorage.getItem('userEmail');
@@ -227,15 +295,24 @@
                 window.location.replace("index.html");
                 return;
             }
-            document.getElementById('user-display-email').innerText = activeUserEmail;
 
             // Load the default Home / Categories view
             showCategoriesView();
             loadCategoriesView();
             renderStudentComboExamLinks();
             renderStudentLiveExamLinks();
-            // Exam history is now fetched only when the user opens the History panel,
-            // not automatically on the dashboard — see showHistoryView().
+            loadUserProfileHeader();
+            // Exam history and My Library are fetched only when the user opens
+            // those panels, not automatically on the dashboard.
+
+            document.addEventListener('click', function (e) {
+                const panel = document.getElementById('profile-dropdown-panel');
+                const chip = document.getElementById('profile-chip-btn');
+                if (!panel || panel.classList.contains('hidden')) return;
+                if (!panel.contains(e.target) && !chip.contains(e.target)) {
+                    closeProfileDropdown();
+                }
+            });
         };
 
         // Side Menu Drawer Controller
@@ -254,9 +331,17 @@
             document.body.style.overflow = '';
         }
 
+        // Profile Dropdown Controller
+        function toggleProfileDropdown() {
+            document.getElementById('profile-dropdown-panel').classList.toggle('hidden');
+        }
+        function closeProfileDropdown() {
+            document.getElementById('profile-dropdown-panel').classList.add('hidden');
+        }
+
         // =========================================================================
         // 🧭 VIEW SWITCHER — only one panel is visible at a time:
-        // Categories (home) / Single Category Detail / Exam History
+        // Categories (home) / Single Category Detail / Exam History / My Profile & Library
         // =========================================================================
         function switchToView(viewId) {
             document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
@@ -279,6 +364,171 @@
                 fetchStudentPastExamHistory();
                 historyAlreadyLoaded = true;
             }
+        }
+
+        // jumpTo: pass 'library' to land directly on the My Library card within the profile view
+        function showProfileView(jumpTo) {
+            switchToView('view-profile');
+            document.getElementById('breadcrumb-arrow').classList.remove('hidden');
+            document.getElementById('breadcrumb-current-category').classList.remove('hidden');
+            document.getElementById('breadcrumb-current-category').innerText = "My Profile";
+
+            if (!libraryAlreadyLoaded) {
+                fetchUserLibrary();
+                libraryAlreadyLoaded = true;
+            }
+
+            if (jumpTo === 'library') {
+                setTimeout(() => {
+                    const el = document.getElementById('library-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 80);
+            }
+        }
+
+        // 👤 Loads the signed-in user's name/role/last-login from portal_users and
+        // paints the header chip, the dropdown header, and the profile page card.
+        async function loadUserProfileHeader() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('portal_users')
+                    .select('name, role, last_login')
+                    .eq('email', activeUserEmail.toLowerCase())
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                const displayName = (data && data.name) ? data.name : activeUserEmail.split('@')[0];
+                const role = (data && data.role) ? data.role : 'student';
+                const lastLogin = (data && data.last_login) ? new Date(data.last_login).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+
+                currentUserProfile = { name: displayName, role: role, last_login: lastLogin };
+                paintProfileUi();
+
+            } catch (err) {
+                console.error("Could not load profile info:", err);
+                currentUserProfile = { name: activeUserEmail.split('@')[0], role: 'student', last_login: '—' };
+                paintProfileUi();
+            }
+        }
+
+        function paintProfileUi() {
+            const initial = (currentUserProfile.name || activeUserEmail || "S").trim().charAt(0).toUpperCase();
+            const roleLabel = currentUserProfile.role === 'admin' ? 'Admin' : 'Student';
+
+            ['profile-avatar-initial', 'profile-dropdown-avatar', 'profile-page-avatar'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = initial;
+            });
+
+            const chipName = document.getElementById('profile-chip-name');
+            if (chipName) chipName.innerText = currentUserProfile.name;
+
+            const ddName = document.getElementById('profile-dropdown-name');
+            if (ddName) ddName.innerText = currentUserProfile.name;
+            const ddEmail = document.getElementById('profile-dropdown-email');
+            if (ddEmail) ddEmail.innerText = activeUserEmail;
+
+            const pageName = document.getElementById('profile-page-name');
+            if (pageName) pageName.innerText = currentUserProfile.name;
+            const pageEmail = document.getElementById('profile-page-email');
+            if (pageEmail) pageEmail.innerText = activeUserEmail;
+            const pageRoleBadge = document.getElementById('profile-page-role-badge');
+            if (pageRoleBadge) pageRoleBadge.innerText = roleLabel;
+            const pageLastLogin = document.getElementById('profile-page-lastlogin');
+            if (pageLastLogin) pageLastLogin.innerText = `Last login: ${currentUserProfile.last_login}`;
+        }
+
+        // ✎ Simple inline name edit — updates portal_users.name for this account
+        async function editProfileName() {
+            const newName = prompt("Enter your display name:", currentUserProfile.name || "");
+            if (!newName || !newName.trim()) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('portal_users')
+                    .update({ name: newName.trim() })
+                    .eq('email', activeUserEmail.toLowerCase());
+
+                if (error) throw error;
+
+                currentUserProfile.name = newName.trim();
+                paintProfileUi();
+            } catch (err) {
+                console.error("Could not update name:", err);
+                alert("We couldn't update your name right now. Please try again later.");
+            }
+        }
+
+        // 📚 MY LIBRARY — purchased courses & test series, fetched only when the
+        // user opens the My Profile / My Library panel. Reads from 'user_purchases';
+        // if that table isn't set up yet, we show a friendly "browse & get started"
+        // empty state instead of a raw error.
+        async function fetchUserLibrary() {
+            const container = document.getElementById('library-items-container');
+            if (!container || !activeUserEmail) return;
+
+            try {
+                const { data: items, error } = await supabaseClient
+                    .from('user_purchases')
+                    .select('*')
+                    .eq('email', activeUserEmail.toLowerCase())
+                    .order('purchased_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!items || items.length === 0) {
+                    renderEmptyLibraryState(container);
+                    return;
+                }
+
+                container.innerHTML = "";
+                items.forEach(item => {
+                    const isCourse = (item.item_type || '').toLowerCase() === 'course';
+                    const typeBadge = isCourse
+                        ? '<span class="px-2 py-0.5 text-[8px] font-black bg-violet-50 text-violet-600 border border-violet-200 rounded font-mono tracking-widest uppercase">Course</span>'
+                        : '<span class="px-2 py-0.5 text-[8px] font-black bg-blue-50 text-blue-600 border border-blue-200 rounded font-mono tracking-widest uppercase">Test Series</span>';
+
+                    const isExpired = item.valid_till ? (new Date(item.valid_till).getTime() < Date.now()) : false;
+                    const statusBadge = isExpired
+                        ? '<span class="text-[9px] font-mono text-slate-400 font-bold uppercase">Expired</span>'
+                        : '<span class="text-[9px] font-mono text-emerald-600 font-bold uppercase">● Active</span>';
+
+                    const purchasedStr = item.purchased_at
+                        ? new Date(item.purchased_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+                        : "N/A";
+
+                    container.innerHTML += `
+                        <div class="bg-white border border-slate-200 hover:border-blue-300 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-sm hover:shadow-lg transition">
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    ${typeBadge}
+                                    ${statusBadge}
+                                </div>
+                                <h3 class="font-black text-sm text-slate-900 uppercase tracking-wide leading-snug pt-1 font-serif">${item.item_name || 'Untitled Item'}</h3>
+                                <p class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">Purchased: ${purchasedStr}</p>
+                            </div>
+                            <button onclick="showCategoriesView()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 px-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition cursor-pointer">
+                                Continue &rarr;
+                            </button>
+                        </div>`;
+                });
+
+            } catch (err) {
+                console.error("My Library fetch failed (table may not exist yet):", err);
+                renderEmptyLibraryState(container);
+            }
+        }
+
+        function renderEmptyLibraryState(container) {
+            container.innerHTML = `
+                <div class="col-span-full border border-dashed border-slate-300 text-center p-8 rounded-2xl text-slate-500 font-mono text-[11px] uppercase tracking-wider bg-slate-50 space-y-4">
+                    <div>You haven't purchased any courses or test series yet.</div>
+                    <div class="flex items-center justify-center gap-3 flex-wrap normal-case font-sans">
+                        <a href="index.html#test-series" class="text-xs font-bold text-blue-600 hover:text-blue-700 border border-blue-200 hover:border-blue-300 bg-blue-50 px-4 py-2 rounded-xl transition">Browse Test Series</a>
+                        <a href="index.html#courses" class="text-xs font-bold text-orange-600 hover:text-orange-700 border border-orange-200 hover:border-orange-300 bg-orange-50 px-4 py-2 rounded-xl transition">Browse Courses</a>
+                    </div>
+                </div>`;
         }
 
         // 🔴 FETCH ACTIVE LIVE EXAM SESSIONS FOR STUDENTS TO JOIN
