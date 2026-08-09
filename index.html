@@ -27,10 +27,24 @@
         .quiz-item.active-question { display: block; animation: fadeIn .3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* News side panel */
-        #newsPanel { position: fixed; top: 50%; right: 0; transform: translateY(-50%) translateX(0); z-index: 90; transition: transform .35s cubic-bezier(0.4,0,0.2,1); }
-        #newsPanel.closed .news-card { transform: translateX(100%); }
-        #newsToggleTab { writing-mode: vertical-rl; text-orientation: mixed; }
+        /* News side panel
+           The row holding the tab button + the sliding card must NOT stretch
+           its children to match the card's height (that's what was blowing
+           the toggle button up into a full-height bar). Each child sizes to
+           its own content instead, and stays pinned to the vertical center. */
+        #newsPanel { position: fixed; top: 50%; right: 0; transform: translateY(-50%); z-index: 90; }
+        #newsPanel .news-panel-row { display: flex; align-items: center; }
+        #newsToggleTab { writing-mode: vertical-rl; text-orientation: mixed; flex-shrink: 0; }
+        .news-card {
+            transition: transform .35s cubic-bezier(0.4, 0, 0.2, 1), opacity .35s ease;
+            transform: translateX(0);
+            opacity: 1;
+        }
+        #newsPanel.closed .news-card {
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
     </style>
     <script>
         // 🛡️ Anti-Copy & Anti-Inspect Security Layer
@@ -654,9 +668,9 @@
 
     <!-- ---------- SIDE NEWS & UPDATES PANEL ---------- -->
     <div id="newsPanel" class="closed hidden lg:block">
-        <div class="flex items-stretch">
+        <div class="news-panel-row">
             <button id="newsToggleTab" onclick="toggleNewsPanel()" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-4 rounded-l-xl shadow-lg">News</button>
-            <div class="news-card w-72 bg-white border border-slate-200 border-r-0 rounded-l-2xl shadow-2xl transition-transform duration-300">
+            <div class="news-card w-72 bg-white border border-slate-200 border-r-0 rounded-l-2xl shadow-2xl">
                 <div class="px-4 py-3 border-b border-slate-200 bg-slate-50 rounded-tl-2xl flex items-center justify-between">
                     <span class="font-serif text-sm font-bold text-slate-900">Latest News &amp; Updates</span>
                     <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
