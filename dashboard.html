@@ -16,7 +16,7 @@
         ::-webkit-scrollbar{ width:6px; }
         ::-webkit-scrollbar-track{ background:#f1f5f9; }
         ::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:4px; }
-        .dir-path::before{ content:'~/exams/'; opacity:0.5; }
+        /* removed: fake ~/exams/ path prefix (was confusing, looked like a broken URL) */
         .app-view{ display:none; }
         .app-view.active{ display:block; }
     </style>
@@ -140,18 +140,6 @@
                 </div>
             </div>
 
-            <div id="combo-exams-section-wrapper" class="space-y-4">
-                <h4 class="text-xs font-mono font-black text-orange-500 uppercase tracking-widest flex items-center gap-2">
-                    <span class="flex h-2 w-2 rounded-full bg-orange-500 animate-ping"></span>
-                    🏆 Combined Exams (Paper 1 + Paper 2)
-                </h4>
-                <div id="student-combo-exams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="text-center font-mono text-[11px] text-slate-400 border border-dashed border-slate-300 py-6 rounded-2xl uppercase bg-white">
-                        Loading combined exams...
-                    </div>
-                </div>
-            </div>
-
             <div class="space-y-4">
                 <h4 class="text-xs font-mono font-black text-blue-600 uppercase tracking-widest">
                     📂 Browse by Category
@@ -179,6 +167,18 @@
                 <p id="workspace-desc" class="text-xs sm:text-sm text-slate-500 max-w-2xl font-medium">
                     Choose a test paper below to start your exam.
                 </p>
+            </div>
+
+            <div id="category-combo-exams-wrapper" class="space-y-4 hidden">
+                <h4 class="text-xs font-mono font-black text-orange-500 uppercase tracking-widest flex items-center gap-2">
+                    <span class="flex h-2 w-2 rounded-full bg-orange-500 animate-ping"></span>
+                    🏆 Combined Exams (Paper 1 + Paper 2)
+                </h4>
+                <div id="category-combo-exams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="text-center font-mono text-[11px] text-slate-400 border border-dashed border-slate-300 py-6 rounded-2xl uppercase bg-white">
+                        Loading combined exams...
+                    </div>
+                </div>
             </div>
 
             <div class="space-y-4">
@@ -299,7 +299,6 @@
             // Load the default Home / Categories view
             showCategoriesView();
             loadCategoriesView();
-            renderStudentComboExamLinks();
             renderStudentLiveExamLinks();
             loadUserProfileHeader();
             // Exam history and My Library are fetched only when the user opens
@@ -592,10 +591,13 @@
             }
         }
 
-        // 🚀 FETCH COMBINED (PAPER-1 + PAPER-2) EXAMS
-        async function renderStudentComboExamLinks() {
-            const comboContainer = document.getElementById('student-combo-exams-grid');
+        // 🚀 FETCH COMBINED (PAPER-1 + PAPER-2) EXAMS — used inside the Computer
+        // Instructor category detail panel, since combined exams only apply there.
+        async function renderComboExamCardsInto(gridId) {
+            const comboContainer = document.getElementById(gridId);
             if (!comboContainer) return;
+
+            comboContainer.innerHTML = `<div class="col-span-full text-center font-mono text-[11px] text-slate-400 border border-dashed border-slate-300 py-6 rounded-2xl uppercase bg-white">Loading combined exams...</div>`;
 
             try {
                 const { data: comboExams, error } = await supabaseClient
@@ -652,11 +654,17 @@
         }
 
         // 🎨 CATEGORY ICON MATRIX: keyword-based icon + accent selection so each
-        // exam category folder gets a visual identity instead of one generic icon.
+        // exam category folder gets a visual identity that actually matches the exam.
+        // More specific patterns (e.g. "computer instructor") are checked before
+        // generic ones (e.g. "computer"/"tech") so they don't get miscategorized.
         function getCategoryIconMeta(rawName) {
             const name = (rawName || "").toLowerCase();
 
             const sets = {
+                instructor: {
+                    accent: "teal",
+                    svg: `<rect x="3" y="4" width="14" height="10" rx="1.5" stroke-linecap="round" stroke-linejoin="round"/><path stroke-linecap="round" stroke-linejoin="round" d="M7 18h6M10 14v4"/><circle cx="19.5" cy="7" r="2.25" stroke-linecap="round" stroke-linejoin="round"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 15.5c0-1.8 1.4-3 3-3s3 1.2 3 3"/>`
+                },
                 bank: {
                     accent: "orange",
                     svg: `<path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M4 21V10m16 11V10M4 10l8-6 8 6M7 10v11M11 10v11M13 10v11M17 10v11"/>`
@@ -669,6 +677,10 @@
                     accent: "emerald",
                     svg: `<rect x="7" y="7" width="10" height="10" rx="1.5" stroke-linecap="round" stroke-linejoin="round"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 3v3M14 3v3M10 18v3M14 18v3M3 10h3M3 14h3M18 10h3M18 14h3"/>`
                 },
+                netexam: {
+                    accent: "indigo",
+                    svg: `<path stroke-linecap="round" stroke-linejoin="round" d="M12 3 2 8l10 5 10-5-10-5Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 10.5V16c0 1.1 2.7 3 6 3s6-1.9 6-3v-5.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M22 8v6"/>`
+                },
                 teach: {
                     accent: "violet",
                     svg: `<path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5C4 5.7 4.7 5 5.5 5H12v14H5.5A1.5 1.5 0 0 1 4 17.5v-11ZM20 6.5c0-.8-.7-1.5-1.5-1.5H12v14h6.5a1.5 1.5 0 0 0 1.5-1.5v-11Z"/>`
@@ -680,8 +692,10 @@
             };
 
             let key = "folder";
-            if (/bank|ibps|sbi|finance/.test(name)) key = "bank";
-            else if (/ssc|railway|police|defence|army|navy|patwari|reet|psc|govt|government|upsc/.test(name)) key = "govt";
+            if (/computer\s*instructor|comp(?:\.|uter)?\s*inst(?:ructor)?/.test(name)) key = "instructor";
+            else if (/bank|ibps|sbi|finance/.test(name)) key = "bank";
+            else if (/\bnet\b|ugc/.test(name)) key = "netexam";
+            else if (/\bras\b|\bvdo\b|ssc|railway|police|defence|army|navy|patwari|reet|psc|govt|government|upsc/.test(name)) key = "govt";
             else if (/gate|cse|computer|it |software|coding|programming|tech/.test(name)) key = "tech";
             else if (/teach|ctet|tet|education|professor|lecturer/.test(name)) key = "teach";
 
@@ -690,7 +704,9 @@
                 blue: { bg: "bg-blue-50", text: "text-blue-600", hoverText: "group-hover:text-blue-600", hoverBorder: "hover:border-blue-300", hoverBg: "group-hover:bg-blue-100" },
                 emerald: { bg: "bg-emerald-50", text: "text-emerald-600", hoverText: "group-hover:text-emerald-600", hoverBorder: "hover:border-emerald-300", hoverBg: "group-hover:bg-emerald-100" },
                 violet: { bg: "bg-violet-50", text: "text-violet-600", hoverText: "group-hover:text-violet-600", hoverBorder: "hover:border-violet-300", hoverBg: "group-hover:bg-violet-100" },
-                sky: { bg: "bg-sky-50", text: "text-sky-600", hoverText: "group-hover:text-sky-600", hoverBorder: "hover:border-sky-300", hoverBg: "group-hover:bg-sky-100" }
+                sky: { bg: "bg-sky-50", text: "text-sky-600", hoverText: "group-hover:text-sky-600", hoverBorder: "hover:border-sky-300", hoverBg: "group-hover:bg-sky-100" },
+                teal: { bg: "bg-teal-50", text: "text-teal-600", hoverText: "group-hover:text-teal-600", hoverBorder: "hover:border-teal-300", hoverBg: "group-hover:bg-teal-100" },
+                indigo: { bg: "bg-indigo-50", text: "text-indigo-600", hoverText: "group-hover:text-indigo-600", hoverBorder: "hover:border-indigo-300", hoverBg: "group-hover:bg-indigo-100" }
             };
 
             const meta = sets[key];
@@ -710,6 +726,14 @@
                 if (examsErr) throw examsErr;
 
                 const activeCategoryIds = [...new Set(examsData.map(item => item.category_id).filter(Boolean))];
+
+                // Count how many test papers exist per category, so cards can show a
+                // real, useful figure instead of a fake file-path string.
+                const categoryPaperCounts = {};
+                examsData.forEach(item => {
+                    if (!item.category_id) return;
+                    categoryPaperCounts[item.category_id] = (categoryPaperCounts[item.category_id] || 0) + 1;
+                });
 
                 if (activeCategoryIds.length === 0) {
                     gridContainer.innerHTML = `
@@ -738,19 +762,19 @@
                 categoriesData.forEach(cat => {
                     const displayTitle = cat.category_name || `Category #${cat.id}`;
                     const iconMeta = getCategoryIconMeta(displayTitle);
-                    const slug = displayTitle.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                    const paperCount = categoryPaperCounts[cat.id] || 0;
 
                     htmlContent += `
                         <div onclick="loadExamsSubView('${cat.id}', '${encodeURIComponent(displayTitle)}')" class="bg-white border border-slate-200 ${iconMeta.hoverBorder} p-6 rounded-2xl shadow-sm hover:shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer group relative overflow-hidden flex flex-col justify-between">
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">
-                                    <div class="p-2.5 ${iconMeta.bg} rounded-xl ${iconMeta.text} ${iconMeta.hoverBg} transition">
+                                    <div class="w-12 h-12 shrink-0 flex items-center justify-center ${iconMeta.bg} rounded-xl ${iconMeta.text} ${iconMeta.hoverBg} transition">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-6 h-6">${iconMeta.svgPath}</svg>
                                     </div>
                                     <span class="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider ${iconMeta.hoverText} transition">Open &rarr;</span>
                                 </div>
                                 <h4 class="text-sm font-bold tracking-wide text-slate-900 ${iconMeta.hoverText} transition uppercase font-serif">${displayTitle}</h4>
-                                <p class="dir-path text-[10px] font-mono text-slate-400 truncate">${slug}/</p>
+                                <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wide">${paperCount} Test Paper${paperCount === 1 ? '' : 's'} Available</p>
                             </div>
                         </div>`;
                 });
@@ -764,7 +788,8 @@
         }
 
         // 📝 STEP 2: LOAD EXAMS FOR THE SELECTED CATEGORY — opens as its own panel and
-        // hides the categories view (live exams, combo exams, all other category folders).
+        // hides the categories view (live exams, all other category folders). Combined
+        // (Paper 1 + Paper 2) exams are shown here too, only for Computer Instructor.
         async function loadExamsSubView(categoryId, encodedCatName) {
             const categoryName = decodeURIComponent(encodedCatName);
 
@@ -780,6 +805,17 @@
             if (bCurrent) {
                 bCurrent.classList.remove('hidden');
                 bCurrent.innerText = categoryName;
+            }
+
+            // Combined (Paper 1 + Paper 2) exams belong to the Computer Instructor
+            // category only — shown here, not as a separate section on the home view.
+            const comboWrapper = document.getElementById('category-combo-exams-wrapper');
+            const isComputerInstructorCategory = /computer\s*instructor/i.test(categoryName);
+            if (isComputerInstructorCategory) {
+                comboWrapper.classList.remove('hidden');
+                renderComboExamCardsInto('category-combo-exams-grid');
+            } else {
+                comboWrapper.classList.add('hidden');
             }
 
             const gridContainer = document.getElementById('category-exams-grid');
