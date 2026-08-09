@@ -63,14 +63,51 @@
                 <a href="#home" class="hover:text-blue-600 transition">Home</a>
                 <a href="#test-series" class="hover:text-blue-600 transition">Test Series</a>
                 <a href="#courses" class="hover:text-blue-600 transition">Courses</a>
-                <a href="#live-demo-test" class="hover:text-blue-600 transition">Free Demo Test</a>
+                <a href="#study-material" class="hover:text-blue-600 transition">Study Material</a>
                 <a href="#features-hub" class="hover:text-blue-600 transition">Features</a>
+                <a href="#about-us" class="hover:text-blue-600 transition">About Us</a>
+                <a href="#contact-us" class="hover:text-blue-600 transition">Contact Us</a>
             </div>
             <div class="flex items-center space-x-3 sm:space-x-4">
                 <button onclick="openGatedAuthModal()" class="text-xs sm:text-sm font-bold text-white transition px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20">Login / Sign Up</button>
+                <button onclick="openSideMenu()" aria-label="Open menu" class="flex flex-col justify-center items-center gap-1.5 w-10 h-10 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition shrink-0">
+                    <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
+                    <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
+                    <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- ---------- SLIDE-IN SIDE MENU ---------- -->
+    <div id="sideMenuOverlay" onclick="closeSideMenu()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[110] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+    <aside id="sideMenu" class="fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-white z-[120] shadow-2xl -translate-x-full transition-transform duration-300 ease-out flex flex-col">
+        <div class="flex items-center justify-between px-5 h-20 border-b border-slate-200">
+            <div class="flex items-center space-x-2.5">
+                <div class="bg-slate-50 p-1 rounded-lg border border-slate-200">
+                    <img src="logo.png" alt="Logo" class="h-9 w-auto object-contain">
+                </div>
+                <span class="text-sm font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-sky-500 uppercase font-serif">Exam Portal</span>
+            </div>
+            <button onclick="closeSideMenu()" aria-label="Close menu" class="text-slate-400 hover:text-slate-700 font-mono font-bold text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition">&times;</button>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 text-sm font-semibold text-slate-600">
+            <a href="#home" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🏠</span> Home</a>
+            <a href="#test-series" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">📝</span> Test Series</a>
+            <a href="#courses" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🎓</span> Courses</a>
+            <a href="#study-material" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">📘</span> Study Material</a>
+            <a href="#live-demo-test" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🧪</span> Free Demo Test</a>
+            <a href="#features-hub" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">⭐</span> Features</a>
+            <a href="#about-us" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">ℹ️</span> About Us</a>
+            <a href="#contact-us" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">✉️</span> Contact Us</a>
+            <div class="pt-3 mt-3 border-t border-slate-100">
+                <button onclick="closeSideMenu(); openGatedAuthModal();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition"><span class="text-base">🔐</span> Login / Sign Up</button>
+            </div>
+        </nav>
+        <div class="px-5 py-4 border-t border-slate-200 text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
+            &copy; Exam Portal CSE
+        </div>
+    </aside>
 
     <!-- ---------- HERO SECTION ---------- -->
     <section id="home" class="relative min-h-[600px] lg:min-h-[640px] flex items-center py-16 sm:py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200 bg-gradient-to-b from-blue-50 via-white to-white overflow-hidden">
@@ -178,6 +215,43 @@
         </div>
         <div class="text-center">
             <button onclick="openGatedAuthModal()" class="border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold px-6 py-3 rounded-xl text-xs uppercase tracking-widest transition">View All Test Series in Dashboard →</button>
+        </div>
+        </div>
+    </section>
+
+    <!-- ---------- STUDY MATERIAL SECTION ---------- -->
+    <section class="w-full py-16 px-4 sm:px-6 lg:px-8 bg-white border-b border-slate-200" id="study-material">
+        <div class="max-w-7xl mx-auto space-y-12">
+        <div class="max-w-2xl mx-auto text-center space-y-2">
+            <span class="font-mono text-xs text-blue-600 uppercase tracking-widest font-bold">Study Material</span>
+            <h2 class="font-serif font-bold text-2xl sm:text-4xl text-slate-900">Notes, PDFs &amp; Previous Papers</h2>
+            <p class="text-slate-500 text-xs sm:text-sm font-medium">Free study notes, topic-wise PDFs, and previous year question papers to support your test series.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="bg-white border border-slate-200 hover:border-blue-400 rounded-2xl p-5 shadow-sm hover:shadow-lg transition cursor-pointer group" onclick="openGatedAuthModal()">
+                <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-4">📄</div>
+                <h3 class="font-serif text-base font-bold text-slate-900 group-hover:text-blue-600 transition">Topic-wise Notes</h3>
+                <p class="text-slate-500 text-xs leading-relaxed font-medium mt-2">Short, exam-focused notes for C, Java, DBMS, and other core subjects.</p>
+                <span class="text-[11px] font-bold text-blue-600 inline-flex items-center gap-1 mt-4 font-mono">Download &rarr;</span>
+            </div>
+            <div class="bg-white border border-slate-200 hover:border-blue-400 rounded-2xl p-5 shadow-sm hover:shadow-lg transition cursor-pointer group" onclick="openGatedAuthModal()">
+                <div class="w-11 h-11 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center text-xl mb-4">🗞️</div>
+                <h3 class="font-serif text-base font-bold text-slate-900 group-hover:text-blue-600 transition">Previous Year Papers</h3>
+                <p class="text-slate-500 text-xs leading-relaxed font-medium mt-2">Solved question papers from past years for GATE, UGC NET, RAS, and Patwari.</p>
+                <span class="text-[11px] font-bold text-blue-600 inline-flex items-center gap-1 mt-4 font-mono">Download &rarr;</span>
+            </div>
+            <div class="bg-white border border-slate-200 hover:border-blue-400 rounded-2xl p-5 shadow-sm hover:shadow-lg transition cursor-pointer group" onclick="openGatedAuthModal()">
+                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4">📊</div>
+                <h3 class="font-serif text-base font-bold text-slate-900 group-hover:text-blue-600 transition">Syllabus &amp; Exam Pattern</h3>
+                <p class="text-slate-500 text-xs leading-relaxed font-medium mt-2">Up-to-date syllabus breakdowns and marking schemes for every exam.</p>
+                <span class="text-[11px] font-bold text-blue-600 inline-flex items-center gap-1 mt-4 font-mono">View &rarr;</span>
+            </div>
+            <div class="bg-white border border-slate-200 hover:border-blue-400 rounded-2xl p-5 shadow-sm hover:shadow-lg transition cursor-pointer group" onclick="openGatedAuthModal()">
+                <div class="w-11 h-11 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center text-xl mb-4">🎥</div>
+                <h3 class="font-serif text-base font-bold text-slate-900 group-hover:text-blue-600 transition">Video Lectures</h3>
+                <p class="text-slate-500 text-xs leading-relaxed font-medium mt-2">Short concept videos to help you revise quickly before your test.</p>
+                <span class="text-[11px] font-bold text-blue-600 inline-flex items-center gap-1 mt-4 font-mono">Watch &rarr;</span>
+            </div>
         </div>
         </div>
     </section>
@@ -415,7 +489,7 @@
                     </div>
 
                     <!-- Wizard Stepper Controls Layout -->
-                    <div class="flex justify-between items-center mt-8 pt-6 border-t border-slate-200 gap-4">
+                    <div id="quizWizardControls" class="flex justify-between items-center mt-8 pt-6 border-t border-slate-200 gap-4">
                         <button type="button" class="border border-slate-300 text-slate-600 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-white hover:bg-slate-50 transition disabled:opacity-30 disabled:cursor-not-allowed" id="prevQuizBtn" onclick="shiftQuestion(-1)" disabled>Previous</button>
                         <span class="text-xs font-mono text-slate-400 font-bold tracking-wide" id="quizNavProgressText">Question 1 of 10</span>
                         <button type="button" class="border border-blue-600 text-blue-600 font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider bg-blue-50 hover:bg-blue-100 transition" id="nextQuizBtn" onclick="shiftQuestion(1)">Next</button>
@@ -502,6 +576,66 @@
         </div>
     </div>
 
+    <!-- ---------- ABOUT US SECTION ---------- -->
+    <section class="w-full py-16 px-4 sm:px-6 lg:px-8 bg-white border-y border-slate-200" id="about-us">
+        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div class="space-y-4">
+                <span class="font-mono text-xs text-blue-600 uppercase tracking-widest font-bold">About Us</span>
+                <h2 class="font-serif font-bold text-2xl sm:text-3xl text-slate-900">Built by Educators, for Serious Aspirants</h2>
+                <p class="text-slate-500 text-sm leading-relaxed font-medium">Exam Portal CSE is run by the Computer Science Department to help students prepare for government and private job exams. We focus on accurate, up-to-date question banks, real exam conditions, and clear performance reports — so you always know what to study next.</p>
+                <div class="grid grid-cols-2 gap-4 pt-2">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <div class="font-serif font-bold text-xl text-blue-600">10,000+</div>
+                        <div class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wide mt-1">Students Helped</div>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <div class="font-serif font-bold text-xl text-orange-500">50+</div>
+                        <div class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wide mt-1">Test Series</div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full h-64 sm:h-80 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+                <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80" alt="Students studying together" class="w-full h-full object-cover">
+            </div>
+        </div>
+    </section>
+
+    <!-- ---------- CONTACT US SECTION ---------- -->
+    <section class="w-full py-16 px-4 sm:px-6 lg:px-8 bg-[#f5f8fd]" id="contact-us">
+        <div class="max-w-3xl mx-auto space-y-10">
+            <div class="max-w-2xl mx-auto text-center space-y-2">
+                <span class="font-mono text-xs text-blue-600 uppercase tracking-widest font-bold">Contact Us</span>
+                <h2 class="font-serif font-bold text-2xl sm:text-4xl text-slate-900">Get in Touch</h2>
+                <p class="text-slate-500 text-xs sm:text-sm font-medium">Have a question about a test series, a course, or your account? Reach out and we'll get back to you.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 text-center">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="text-2xl mb-2">📧</div>
+                    <div class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wide">Email</div>
+                    <a href="mailto:examportalcse@gmail.com" class="text-sm font-semibold text-blue-600 hover:underline break-all">examportalcse@gmail.com</a>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="text-2xl mb-2">📞</div>
+                    <div class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wide">Phone</div>
+                    <span class="text-sm font-semibold text-slate-700">+91 90000 00000</span>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="text-2xl mb-2">📍</div>
+                    <div class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wide">Location</div>
+                    <span class="text-sm font-semibold text-slate-700">Jaipur, Rajasthan, India</span>
+                </div>
+            </div>
+            <form class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm space-y-4" onsubmit="event.preventDefault(); alert('Thanks! We will get back to you soon.'); this.reset();">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <input type="text" required placeholder="Your Name" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400">
+                    <input type="email" required placeholder="Your Email" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400">
+                </div>
+                <textarea required placeholder="How can we help?" rows="4" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400"></textarea>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-xl text-xs uppercase tracking-widest transition">Send Message</button>
+            </form>
+        </div>
+    </section>
+
     <!-- ---------- CLOSING CALL-TO-ACTION ---------- -->
     <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-4">
         <div class="relative bg-gradient-to-r from-blue-700 to-sky-600 text-center py-14 px-6 rounded-3xl space-y-4 shadow-xl overflow-hidden min-h-[280px] flex flex-col justify-center items-center">
@@ -578,6 +712,23 @@
             document.getElementById('gated-auth-modal').classList.remove('active');
         }
 
+        // Side Menu Drawer Controller
+        function openSideMenu() {
+            document.getElementById('sideMenu').classList.remove('-translate-x-full');
+            const overlay = document.getElementById('sideMenuOverlay');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100', 'pointer-events-auto');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSideMenu() {
+            document.getElementById('sideMenu').classList.add('-translate-x-full');
+            const overlay = document.getElementById('sideMenuOverlay');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            document.body.style.overflow = '';
+        }
+
         // News side panel toggle
         function toggleNewsPanel() {
             document.getElementById('newsPanel').classList.toggle('closed');
@@ -651,6 +802,12 @@
             const calculatedPercentage = (studentScore / totalQuestionsCount) * 100;
             document.getElementById('resultPercentBar').style.width = calculatedPercentage + "%";
             document.getElementById('customQuizFeedback').innerText = feedbackPhrase;
+
+            // Fix: hide the question, Next/Previous, and Submit controls once the test
+            // has been submitted, so the Submit button no longer stays on screen.
+            document.querySelectorAll('.quiz-item').forEach(item => item.classList.remove('active-question'));
+            document.getElementById('quizWizardControls').style.display = 'none';
+            document.querySelectorAll('#demoMockForm input[type="radio"]').forEach(input => input.disabled = true);
 
             const sheet = document.getElementById('quizResultsSheet');
             sheet.classList.remove('hidden');
