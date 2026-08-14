@@ -720,7 +720,7 @@
 
             try {
                 const { data: examsData, error: examsErr } = await supabaseClient
-                    .from('exams')
+                    .from('exams_public')
                     .select('category_id');
 
                 if (examsErr) throw examsErr;
@@ -839,8 +839,8 @@
                 }
 
                 const { data: examsList, error } = await supabaseClient
-                    .from('exams')
-                    .select('subject, duration_minutes, questions_json')
+                    .from('exams_public')
+                    .select('subject, duration_minutes, question_count')
                     .eq('category_id', categoryId);
 
                 if (error) throw error;
@@ -860,11 +860,7 @@
 
                 let htmlContent = "";
                 filteredExamsList.forEach(exam => {
-                    let totalQuestionsCount = 0;
-                    try {
-                        let parsedJson = typeof exam.questions_json === 'string' ? JSON.parse(exam.questions_json) : exam.questions_json;
-                        totalQuestionsCount = parsedJson ? parsedJson.length : 0;
-                    } catch (e) { totalQuestionsCount = 0; }
+                    let totalQuestionsCount = exam.question_count || 0;
 
                     htmlContent += `
                         <div class="bg-white border border-slate-200 hover:border-emerald-300 p-5 sm:p-6 rounded-2xl shadow-sm hover:shadow-lg transition flex flex-col justify-between space-y-4">
