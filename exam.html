@@ -227,6 +227,8 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let globalLoadedQuestions = [];
+        let currentExamSubjectName = "";
+        let instantAnswerCache = {}; // qIdx -> correct_index, filled only AFTER student answers
         let currentSelectedLanguage = "en";
         let networkTimerInterval = null;
 
@@ -333,15 +335,13 @@
 
         async function loadStageQuestionDataset(subjectName) {
             try {
+                // 🔒 SECURE FETCH: correct answers are stripped server-side, never sent here
                 const { data, error } = await supabaseClient
-                    .from('exams')
-                    .select('subject, questions_json, duration_minutes, negative_marking, mode, shuffle_questions, shuffle_options, questions_per_attempt')
-                    .eq('subject', subjectName)
-                    .limit(1)
-                    .maybeSingle();
+                    .rpc('get_exam_for_attempt', { p_subject: subjectName });
 
                 if (error || !data) throw new Error("Stage data retrieval interruption.");
 
+                currentExamSubjectName = data.subject;
                 document.getElementById('live-subject-title').innerText = `[STAGE-${currentComboStage}/2] ` + data.subject.toUpperCase();
                 globalNegativeMarking = parseFloat(data.negative_marking) || 0;
                 examMode = data.mode || 'standard';
@@ -349,7 +349,7 @@
                 shuffleOptionsActive = data.shuffle_options === true;
                 questionsPerAttemptLimit = data.questions_per_attempt ? parseInt(data.questions_per_attempt) : null;
 
-                let rawQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
+                let rawQuestions = data.questions || [];
 
                 if (shuffleQuestionsActive && Array.isArray(rawQuestions)) {
                     rawQuestions.sort(() => Math.random() - 0.5);
@@ -374,15 +374,13 @@
 
         async function streamTargetExamJson(subjectName) {
             try {
+                // 🔒 SECURE FETCH: correct answers are stripped server-side, never sent here
                 const { data, error } = await supabaseClient
-                    .from('exams')
-                    .select('subject, questions_json, duration_minutes, negative_marking, mode, shuffle_questions, shuffle_options, questions_per_attempt')
-                    .eq('subject', subjectName)
-                    .limit(1)
-                    .maybeSingle();
+                    .rpc('get_exam_for_attempt', { p_subject: subjectName });
 
                 if (error || !data) throw new Error("Data retrieval interruption.");
 
+                currentExamSubjectName = data.subject;
                 document.getElementById('live-subject-title').innerText = data.subject.toUpperCase();
                 globalNegativeMarking = parseFloat(data.negative_marking) || 0;
                 examMode = data.mode || 'standard';
@@ -390,7 +388,7 @@
                 shuffleOptionsActive = data.shuffle_options === true;
                 questionsPerAttemptLimit = data.questions_per_attempt ? parseInt(data.questions_per_attempt) : null;
 
-                let rawQuestions = typeof data.questions_json === 'string' ? JSON.parse(data.questions_json) : data.questions_json;
+                let rawQuestions = data.questions || [];
 
                 if (shuffleQuestionsActive && Array.isArray(rawQuestions)) {
                     rawQuestions.sort(() => Math.random() - 0.5);
@@ -522,8 +520,8 @@
                     const optText = escapeHtmlForDisplay(optTextRaw);
 
                     let customStyle = "bg-amber-50/40 border-slate-200 hover:bg-amber-50 hover:border-amber-200";
-                    if (examMode === 'instant' && userResponses[index] !== undefined) {
-                        const correctOptIdx = parseInt(q.correct);
+                    if (examMode === 'instant' && userResponses[index] !== undefined && instantAnswerCache[index] !== undefined) {
+                        const correctOptIdx = instantAnswerCache[index];
                         if (optIdx === correctOptIdx) {
                             customStyle = "bg-emerald-100 border-emerald-500 text-emerald-900 font-bold";
                         } else if (optIdx === userResponses[index]) {
@@ -635,7 +633,7 @@
             showQuestionSlide(qIdx);
         }
 
-        function registerRadioResponse(qIdx, optIdx) {
+        async function registerRadioResponse(qIdx, optIdx) {
             const wasAlreadySelected = userResponses[qIdx] === optIdx;
 
             if (examMode === 'instant') {
@@ -643,7 +641,24 @@
 
                 userResponses[qIdx] = optIdx;
                 const currentQ = globalLoadedQuestions[qIdx];
-                const correctOptIdx = parseInt(currentQ.correct);
+
+                // 🔒 SECURE CHECK: ask the server which option is correct — the
+                // browser never holds the answer key before this point.
+                const { data: verdict, error: verdictErr } = await supabaseClient
+                    .rpc('check_instant_answer', {
+                        p_subject: currentExamSubjectName,
+                        p_q_index: currentQ.q_index,
+                        p_selected: optIdx
+                    });
+
+                if (verdictErr || !verdict) {
+                    alert("Could not verify answer securely. Please retry.");
+                    delete userResponses[qIdx];
+                    return;
+                }
+
+                const correctOptIdx = verdict.correct_index;
+                instantAnswerCache[qIdx] = correctOptIdx;
 
                 const optionLabels = document.querySelectorAll(`input[name="question-${qIdx}"]`);
                 
@@ -661,7 +676,7 @@
                 });
 
                 // 🌸 Trigger Green Flowers Rain if the user selected the correct option!
-                if (optIdx === correctOptIdx) {
+                if (verdict.is_correct) {
                     triggerGreenFlowerRain();
                 }
 
@@ -782,29 +797,56 @@
                 return;
             }
 
-            let p1Correct = 0, p1Wrong = 0;
-            let p2Correct = 0, p2Wrong = 0;
-
-            globalLoadedQuestions.forEach((q, index) => {
-                const selectedOpt = userResponses[index];
-                if (selectedOpt !== undefined) {
-                    if (parseInt(selectedOpt) === parseInt(q.correct)) p2Correct++;
-                    else p2Wrong++;
-                }
-            });
-
-            if (isComboExamMode) {
-                comboPaper1Snapshot.forEach((q, index) => {
-                    const selectedOpt = comboPaper1Responses[index];
-                    if (selectedOpt !== undefined) {
-                        if (parseInt(selectedOpt) === parseInt(q.correct)) p1Correct++;
-                        else p1Wrong++;
+            // 🔒 SECURE SCORING: send only the student's selections (by q_index) to
+            // the server; the server looks up correct answers itself and returns
+            // the tally. The answer key never lived in this browser tab.
+            function buildResponsesByQIndex(questionsSnapshot, responsesByPosition) {
+                const out = {};
+                questionsSnapshot.forEach((q, pos) => {
+                    if (responsesByPosition[pos] !== undefined) {
+                        out[q.q_index] = responsesByPosition[pos];
                     }
                 });
+                return out;
             }
 
-            let p1NetScore = p1Correct - (p1Wrong * comboPaper1NegativeMarking);
-            let p2NetScore = p2Correct - (p2Wrong * globalNegativeMarking);
+            let p1Correct = 0, p1Wrong = 0, p1Unattempted = 0, p1NetScore = 0;
+            let p2Correct = 0, p2Wrong = 0, p2Unattempted = 0, p2NetScore = 0;
+            let p2QuestionsWithAnswers = globalLoadedQuestions;
+            let p1QuestionsWithAnswers = comboPaper1Snapshot;
+
+            const p2Payload = buildResponsesByQIndex(globalLoadedQuestions, userResponses);
+            const { data: p2Result, error: p2Err } = await supabaseClient
+                .rpc('score_exam_subject', { p_subject: currentExamSubjectName, p_responses: p2Payload });
+
+            if (p2Err || !p2Result) {
+                alert("Could not securely score your attempt. Please contact support.\n" + (p2Err ? p2Err.message : ""));
+                return;
+            }
+
+            p2Correct = p2Result.correct_answers;
+            p2Wrong = p2Result.wrong_answers;
+            p2Unattempted = p2Result.unattempted;
+            p2NetScore = p2Result.score;
+            p2QuestionsWithAnswers = p2Result.questions_with_answers;
+
+            if (isComboExamMode) {
+                const p1Payload = buildResponsesByQIndex(comboPaper1Snapshot, comboPaper1Responses);
+                const { data: p1Result, error: p1Err } = await supabaseClient
+                    .rpc('score_exam_subject', { p_subject: comboMasterConfig.paper1_subject, p_responses: p1Payload });
+
+                if (p1Err || !p1Result) {
+                    alert("Could not securely score Paper-1. Please contact support.\n" + (p1Err ? p1Err.message : ""));
+                    return;
+                }
+
+                p1Correct = p1Result.correct_answers;
+                p1Wrong = p1Result.wrong_answers;
+                p1Unattempted = p1Result.unattempted;
+                p1NetScore = p1Result.score;
+                p1QuestionsWithAnswers = p1Result.questions_with_answers;
+            }
+
             let finalCombinedScore = isComboExamMode ? (p1NetScore + p2NetScore) : p2NetScore;
             finalCombinedScore = parseFloat(finalCombinedScore.toFixed(2));
 
@@ -831,7 +873,7 @@
                         wrong_answers: (p1Wrong + p2Wrong),
                         unattempted: totalQuestionsCount - ((p1Correct + p2Correct) + (p1Wrong + p2Wrong)),
                         user_responses_json: JSON.stringify(isComboExamMode ? { paper1: comboPaper1Responses, paper2: userResponses } : userResponses),
-                        questions_snapshot_json: JSON.stringify(isComboExamMode ? { paper1: comboPaper1Snapshot, paper2: globalLoadedQuestions } : globalLoadedQuestions),
+                        questions_snapshot_json: JSON.stringify(isComboExamMode ? { paper1: p1QuestionsWithAnswers, paper2: p2QuestionsWithAnswers } : p2QuestionsWithAnswers),
                         created_at: new Date().toISOString(),
                         submitted_at: new Date().toISOString()
                     }])
