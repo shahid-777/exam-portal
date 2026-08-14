@@ -75,8 +75,9 @@
                 }
 
                 // FILTERED FETCH: Sirf category_id se match khane wale exams hi load honge
+                // 🔒 Reads from exams_public (no answer key) instead of the locked base table
                 const { data: exams, error } = await supabaseClient
-                    .from('exams')
+                    .from('exams_public')
                     .select('id, subject, duration_minutes')
                     .eq('category_id', catId)
                     .order('id', { ascending: true });
