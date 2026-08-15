@@ -238,6 +238,7 @@ h1,h2,h3{font-family:var(--display); font-weight:700; margin:0;}
 }
 
 @media (max-width:820px){
+  .ep-backlink-fixed{top:10px !important;left:10px !important;font-size:.6rem !important;padding:5px 9px !important;}
   .spine{left:22px;}
   .card-row{grid-template-columns:1fr; gap:0; padding-left:52px;}
   .card-row:nth-child(odd) .event-card{grid-column:1; text-align:left; border-left:4px solid var(--accent,var(--gold)); border-right:none;}
@@ -376,7 +377,17 @@ footer a{color:var(--gold-bright); text-decoration:none;}
           document.body.style.overflow = '';
         }
       }
+      function isLikelyMobile(){
+        var coarse = false;
+        try{ coarse = window.matchMedia('(pointer:coarse)').matches; }catch(e){}
+        var touch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        return coarse || touch || window.innerWidth < 900;
+      }
       function check(){
+        if(isLikelyMobile()){
+          if(isOpen){ isOpen = false; hideWarn(); }
+          return;
+        }
         var open = (window.outerWidth - window.innerWidth > threshold) ||
                     (window.outerHeight - window.innerHeight > threshold);
         if(open && !isOpen){ isOpen = true; showWarn(); }
@@ -396,7 +407,7 @@ footer a{color:var(--gold-bright); text-decoration:none;}
             stroke="#c8922f" stroke-width="1.2" fill="none"/>
     </svg>
   </div>
-  <a href="../../index.html" style="position:fixed;top:16px;left:16px;z-index:500;font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.05em;color:var(--text-light);text-decoration:none;border:1px solid var(--gold);padding:7px 12px;border-radius:2px;background:rgba(22,16,9,0.7);backdrop-filter:blur(3px);">&larr; Exam Portal</a>
+  <a href="../../index.html" class="ep-backlink-fixed" style="position:fixed;top:16px;left:16px;z-index:500;font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.05em;color:var(--text-light);text-decoration:none;border:1px solid var(--gold);padding:7px 12px;border-radius:2px;background:rgba(22,16,9,0.7);backdrop-filter:blur(3px);">&larr; Exam Portal</a>
   <div class="hero-content">
     <span class="eyebrow">A Chronicle · 1700 – 1947</span>
     <h1>The Long Twilight<em>&amp; the Dawn</em></h1>

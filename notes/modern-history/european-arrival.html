@@ -383,7 +383,17 @@ footer p{margin:0;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:v
           document.body.style.overflow = '';
         }
       }
+      function isLikelyMobile(){
+        var coarse = false;
+        try{ coarse = window.matchMedia('(pointer:coarse)').matches; }catch(e){}
+        var touch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        return coarse || touch || window.innerWidth < 900;
+      }
       function check(){
+        if(isLikelyMobile()){
+          if(isOpen){ isOpen = false; hideWarn(); }
+          return;
+        }
         var open = (window.outerWidth - window.innerWidth > threshold) ||
                     (window.outerHeight - window.innerHeight > threshold);
         if(open && !isOpen){ isOpen = true; showWarn(); }
