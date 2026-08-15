@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>भारत छोड़ो आंदोलन एवं आज़ाद हिंद फौज | आधुनिक भारत का इतिहास</title>
+<meta name="description" content="आधुनिक भारत का इतिहास — यूरोपीय आगमन से स्वतंत्रता तक की संक्षिप्त, परीक्षा-उपयोगी अध्ययन सामग्री।">
+<style>
+/* =========================================================
+   आधुनिक भारत का इतिहास — "The Company Gazette" design system
+   Palette: aged paper, ledger indigo, seal-wax maroon, ochre
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --paper:      #f1e8d6;
+  --paper-2:    #e8dcbf;
+  --paper-3:    #ddccA2;
+  --ink:        #241c14;
+  --ink-soft:   #5b4e3d;
+  --indigo:     #1e3a5c;
+  --indigo-deep:#0f253d;
+  --ochre:      #b5721e;
+  --ochre-deep: #8a5615;
+  --maroon:     #7c2a2a;
+  --green:      #2f5233;
+  --rule:       #c9b99a;
+  --rule-soft:  #d9cca9;
+  --shadow: 0 10px 30px -12px rgba(36,28,20,.35);
+  --radius: 2px;
+  --maxw: 1180px;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Source Serif 4', Georgia, serif;
+  font-size:17px;
+  line-height:1.65;
+  background-image:
+    radial-gradient(circle at 15% 8%, rgba(30,58,92,.08), transparent 40%),
+    radial-gradient(circle at 90% 4%, rgba(181,114,30,.10), transparent 38%),
+    radial-gradient(circle at 90% 90%, rgba(124,42,42,.07), transparent 45%),
+    repeating-linear-gradient(0deg, rgba(36,28,20,.025) 0px, rgba(36,28,20,.025) 1px, transparent 1px, transparent 3px);
+  background-attachment:fixed;
+}
+
+::selection{background:var(--ochre);color:var(--paper)}
+
+a{color:inherit}
+img{max-width:100%;display:block}
+
+h1,h2,h3,h4{
+  font-family:'Fraunces', serif;
+  font-weight:600;
+  color:var(--ink);
+  margin:0 0 .4em;
+  letter-spacing:.01em;
+}
+
+.eyebrow{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:.72rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--maroon);
+  display:flex;
+  align-items:center;
+  gap:.6em;
+}
+.eyebrow::before{
+  content:"";
+  width:22px;height:1px;background:var(--maroon);display:inline-block;
+}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+
+/* ---------- texture / rules ---------- */
+.hairline{border:0;border-top:1px solid var(--rule);margin:2.5rem 0}
+.doubleline{border:0;border-top:3px double var(--ink-soft);margin:1.6rem 0}
+
+/* ---------- masthead / header ---------- */
+header.masthead{
+  position:sticky;top:0;z-index:40;
+  background:linear-gradient(var(--paper), var(--paper) 92%, transparent);
+  backdrop-filter:blur(2px);
+  border-bottom:1px solid var(--rule);
+}
+.masthead-inner{
+  max-width:var(--maxw);margin:0 auto;padding:14px 28px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.seal{
+  width:42px;height:42px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, var(--maroon), var(--indigo-deep) 78%);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--paper);font-family:'Fraunces',serif;font-weight:700;font-size:1.1rem;
+  border:2px solid var(--ink);
+  box-shadow:0 2px 0 rgba(0,0,0,.25) inset;
+  flex-shrink:0;
+}
+.brand-text .hi{font-family:'Fraunces',serif;font-weight:700;font-size:1.15rem;line-height:1.1;color:var(--ink)}
+.brand-text .en{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+
+.chapters-btn{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--indigo);color:var(--paper);
+  border:1px solid var(--ink);
+  padding:10px 18px;cursor:pointer;border-radius:var(--radius);
+  display:flex;align-items:center;gap:10px;
+  transition:transform .15s ease, background .2s ease;
+}
+.chapters-btn:hover{background:var(--indigo-deep);transform:translateY(-1px)}
+.chapters-btn .bars{display:inline-flex;flex-direction:column;gap:3px}
+.chapters-btn .bars span{width:16px;height:2px;background:var(--paper)}
+
+/* ---------- overlay chapter index (signature element) ---------- */
+.toc-overlay{
+  position:fixed;inset:0;z-index:80;background:rgba(15,10,6,.72);
+  display:none;align-items:flex-start;justify-content:center;
+  padding:6vh 20px;overflow-y:auto;
+}
+.toc-overlay.open{display:flex}
+.toc-panel{
+  background:var(--paper);max-width:1040px;width:100%;
+  border:1px solid var(--ink);box-shadow:var(--shadow);position:relative;
+  padding:34px 30px 40px;
+}
+.toc-panel::before{
+  content:"";position:absolute;inset:8px;border:1px solid var(--rule);pointer-events:none;
+}
+.toc-close{
+  position:absolute;top:14px;right:18px;background:none;border:none;
+  font-family:'IBM Plex Mono',monospace;font-size:.85rem;cursor:pointer;color:var(--maroon);
+  letter-spacing:.08em;text-transform:uppercase;
+}
+.toc-head{text-align:center;margin-bottom:22px}
+.toc-head h2{font-size:1.7rem;margin-bottom:.15em}
+.toc-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;
+}
+.toc-item{
+  display:flex;gap:14px;align-items:flex-start;
+  border:1px solid var(--rule);padding:14px 14px;text-decoration:none;color:var(--ink);
+  background:var(--paper-2);transition:background .15s ease, border-color .15s ease;
+}
+.toc-item:hover{background:var(--paper-3);border-color:var(--ink-soft)}
+.toc-num{
+  font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--maroon);font-size:.85rem;
+  min-width:28px;
+}
+.toc-item .t-hi{font-family:'Fraunces',serif;font-weight:600;font-size:1rem;line-height:1.25}
+.toc-item .t-yr{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ink-soft);letter-spacing:.05em;margin-top:3px}
+
+/* ---------- hero ---------- */
+.hero{padding:56px 0 40px;position:relative}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:center}
+.hero h1{font-size:clamp(2rem,4vw,3.2rem);line-height:1.1}
+.hero .dek{font-size:1.06rem;color:var(--ink-soft);max-width:56ch;margin-top:.7em}
+
+.chip-seal{
+  display:inline-flex;align-items:center;gap:10px;
+  border:1px solid var(--ink-soft);background:var(--paper-2);
+  padding:6px 14px 6px 6px;margin-bottom:16px;
+}
+.chip-seal .dot{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  background:radial-gradient(circle at 35% 30%, var(--maroon), var(--indigo-deep) 78%);
+  border:1px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--paper);font-family:'Fraunces',serif;font-weight:700;font-size:.78rem;
+}
+.chip-seal span.lbl{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+
+/* illustrated figure panel — the "signature" visual for every chapter */
+.hero-figure{
+  border:1px solid var(--ink);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(30,58,92,.07), transparent 55%),
+    var(--paper-2);
+  box-shadow:var(--shadow);
+  padding:22px 22px 14px;
+  position:relative;
+}
+.hero-figure::before{
+  content:"";position:absolute;inset:7px;border:1px solid var(--rule);pointer-events:none;
+}
+.hero-figure svg{width:100%;height:auto;display:block;overflow:visible}
+.hero-figure .cap{
+  font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink-soft);text-align:center;margin-top:12px;padding-top:10px;
+  border-top:1px dashed var(--rule);
+}
+
+/* small decorative motif reused inside content panels */
+.mini-motif{display:flex;justify-content:center;margin:6px 0 18px;opacity:.9}
+.mini-motif svg{width:64px;height:64px}
+
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:1.2rem}
+.tag{
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
+  border:1px solid var(--ink-soft);padding:5px 10px;color:var(--ink-soft);
+}
+
+/* ---------- content blocks ---------- */
+main{padding-bottom:70px}
+.panel{
+  background:var(--paper-2);border:1px solid var(--rule);
+  padding:30px 32px;margin:26px 0;position:relative;
+}
+.panel h2{font-size:1.5rem;display:flex;align-items:baseline;gap:12px}
+.panel h2 .no{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--maroon)}
+.panel h3{font-size:1.12rem;margin-top:1.4rem;color:var(--indigo-deep)}
+
+.cols-2{columns:2;column-gap:40px}
+.cols-2 li{break-inside:avoid}
+@media (max-width:760px){.cols-2{columns:1}}
+
+ul.notes{margin:.6em 0 0;padding-left:1.2em}
+ul.notes li{margin-bottom:.5em}
+ul.notes li::marker{color:var(--maroon)}
+
+.callout{
+  border-left:3px solid var(--maroon);
+  background:var(--paper-3);
+  padding:14px 18px;margin:18px 0;font-size:.98rem;color:var(--ink);
+}
+.callout b{color:var(--maroon)}
+
+table.data{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.95rem}
+table.data th, table.data td{border:1px solid var(--rule);padding:9px 12px;text-align:left;vertical-align:top}
+table.data th{background:var(--indigo);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+table.data tr:nth-child(even) td{background:var(--paper-3)}
+
+.figure{border:1px solid var(--ink);background:var(--paper);padding:6px}
+.figure img{width:100%;height:auto;filter:sepia(.22) contrast(1.02)}
+.figure figcaption{
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.03em;
+  color:var(--ink-soft);padding:8px 4px 2px;
+}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:760px){.grid-2{grid-template-columns:1fr}}
+
+/* ---------- home: chapter timeline ---------- */
+.timeline{position:relative;margin:40px 0;padding-left:26px;border-left:2px solid var(--ink-soft)}
+.tl-item{position:relative;padding-bottom:34px}
+.tl-item:last-child{padding-bottom:4px}
+.tl-item::before{
+  content:"";position:absolute;left:-32px;top:4px;width:12px;height:12px;
+  background:var(--maroon);border:2px solid var(--paper);border-radius:50%;
+  box-shadow:0 0 0 2px var(--ink-soft);
+}
+.tl-card{
+  display:flex;gap:20px;align-items:flex-start;text-decoration:none;color:var(--ink);
+  background:var(--paper-2);border:1px solid var(--rule);padding:16px 20px;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.tl-card:hover{transform:translateX(6px);box-shadow:var(--shadow);border-color:var(--ink-soft)}
+.tl-yr{font-family:'IBM Plex Mono',monospace;color:var(--maroon);font-size:.82rem;min-width:96px;padding-top:.2em}
+.tl-body h3{margin:0 0 .25em;font-size:1.12rem}
+.tl-body p{margin:0;color:var(--ink-soft);font-size:.92rem}
+
+/* ---------- home stats strip ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--ink-soft);border:1px solid var(--ink-soft);margin:30px 0}
+.stat{background:var(--paper);padding:22px 18px;text-align:center}
+.stat .num{font-family:'Fraunces',serif;font-weight:700;font-size:2.1rem;color:var(--indigo)}
+.stat .lbl{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+@media (max-width:760px){.stats{grid-template-columns:1fr 1fr}}
+
+/* ---------- prev/next ---------- */
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:44px}
+.pager a{
+  border:1px solid var(--ink-soft);padding:18px 20px;text-decoration:none;color:var(--ink);
+  display:flex;flex-direction:column;gap:6px;background:var(--paper-2);
+}
+.pager a:hover{background:var(--paper-3)}
+.pager .dir{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.pager .next{text-align:right;align-items:flex-end;grid-column:2}
+
+/* ---------- footer ---------- */
+footer{border-top:3px double var(--ink-soft);padding:34px 0;margin-top:40px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;align-items:center}
+footer p{margin:0;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--ink-soft);letter-spacing:.03em}
+
+@media (max-width:760px){
+  .ep-backlink{font-size:.6rem !important;padding:5px 7px !important}
+  .hero-grid{grid-template-columns:1fr}
+  .hero-figure{order:-1;margin-bottom:8px;max-width:280px}
+  .panel{padding:22px 18px}
+  .pager{grid-template-columns:1fr}
+  .pager .next{text-align:left;align-items:flex-start;grid-column:1}
+}
+
+</style>
+<!-- Exam Portal CSE :: content-protection + watermark layer -->
+<style>
+  body{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
+  #ep-watermark{
+    position:fixed; inset:0; z-index:9999; pointer-events:none;
+    background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='220'%3E%3Ctext x='0' y='110' transform='rotate(-30 170 110)' font-family='sans-serif' font-size='19' fill='rgba(36,28,20,0.09)'%3EEXAM PORTAL CSE%3C/text%3E%3C/svg%3E");
+    background-repeat:repeat;
+  }
+  @media print{ body{display:none !important} }
+</style>
+<script>
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  document.addEventListener('selectstart', function(e){ e.preventDefault(); });
+  document.addEventListener('dragstart', function(e){ e.preventDefault(); });
+  document.addEventListener('copy', function(e){ e.preventDefault(); });
+  document.addEventListener('cut', function(e){ e.preventDefault(); });
+  document.addEventListener('keydown', function(e){
+    var k = e.key ? e.key.toLowerCase() : '';
+    if (k === 'f12' ||
+        (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(k)) ||
+        (e.ctrlKey && ['u','c','s','p'].includes(k))) {
+      e.preventDefault();
+      return false;
+    }
+  });
+</script>
+
+</head>
+<body>
+  <div id="ep-watermark" aria-hidden="true"></div>
+  <div id="ep-lock-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(241,232,214,0.97);backdrop-filter:blur(6px);align-items:center;justify-content:center;text-align:center;padding:24px;">
+    <div style="max-width:380px;">
+      <div style="font-size:2.2rem;margin-bottom:10px;">🔒</div>
+      <h2 style="font-family:'Fraunces',serif;font-weight:700;font-size:1.25rem;margin:0 0 10px;color:#241c14;">लॉगिन आवश्यक · Login Required</h2>
+      <p style="font-family:'Source Serif 4',Georgia,serif;font-size:.92rem;color:#5b4e3d;margin:0 0 22px;line-height:1.55;">इन नोट्स को पढ़ने के लिए कृपया Exam Portal होमपेज से लॉगिन करें।<br>Please log in from the Exam Portal homepage to read these notes.</p>
+      <a href="../../index.html" style="display:inline-block;background:#1e3a5c;color:#f1e8d6;font-family:'IBM Plex Mono',monospace;font-size:.76rem;letter-spacing:.05em;padding:12px 24px;border-radius:4px;text-decoration:none;">लॉगिन करें → Go to Login</a>
+      <div style="margin-top:14px;"><a href="#" onclick="location.reload();return false;" style="font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:#8a5615;text-decoration:underline;">पहले से लॉगिन हैं? दोबारा जाँचें · Already logged in? Recheck</a></div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      function isLoggedIn(){
+        try{ return !!localStorage.getItem('userEmail'); }catch(e){ return false; }
+      }
+      function applyGate(){
+        var ov = document.getElementById('ep-lock-overlay');
+        if(!ov) return;
+        if(isLoggedIn()){
+          ov.style.display = 'none';
+          document.body.style.overflow = '';
+        }else{
+          ov.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+      }
+      applyGate();
+      // Defensive recheck in case storage wasn't readable on first paint
+      setTimeout(applyGate, 400);
+      window.addEventListener('storage', applyGate);
+    })();
+  </script>
+
+  <header class="masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="index.html">
+        <span class="seal">आ</span>
+        <span class="brand-text">
+          <span class="hi">आधुनिक भारत का इतिहास</span>
+          <span class="en">Modern India · 1498–1947 · Study Notes</span>
+        </span>
+      </a>
+      <a href="../../index.html" class="ep-backlink" style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.05em;color:var(--ink-soft);text-decoration:none;border:1px solid var(--rule);padding:6px 10px;border-radius:2px;margin-right:8px;white-space:nowrap;">&larr; Exam Portal</a>
+      <button class="chapters-btn" type="button">
+        <span class="bars"><span></span><span></span><span></span></span>
+        अध्याय सूची
+      </button>
+    </div>
+  </header>
+  
+  <div class="toc-overlay">
+    <div class="toc-panel">
+      <button class="toc-close">बंद करें ✕</button>
+      <div class="toc-head">
+        <div class="eyebrow" style="justify-content:center">विषय-सूची</div>
+        <h2>चौदह अध्याय · 1498–1947</h2>
+      </div>
+      <div class="toc-grid">
+        <a class="toc-item" href="european-arrival.html">
+              <span class="toc-num">I</span>
+              <span>
+                <span class="t-hi">यूरोपीय शक्तियों का आगमन</span>
+                <span class="t-yr">1498 – 1749</span>
+              </span>
+            </a>
+<a class="toc-item" href="company-bengal.html">
+              <span class="toc-num">II</span>
+              <span>
+                <span class="t-hi">बंगाल पर कंपनी का शासन</span>
+                <span class="t-yr">1757 – 1765</span>
+              </span>
+            </a>
+<a class="toc-item" href="administration.html">
+              <span class="toc-num">III</span>
+              <span>
+                <span class="t-hi">प्रशासनिक ढाँचा : गवर्नर जनरल व वायसराय</span>
+                <span class="t-yr">1774 – 1905</span>
+              </span>
+            </a>
+<a class="toc-item" href="regional-states.html">
+              <span class="toc-num">IV</span>
+              <span>
+                <span class="t-hi">क्षेत्रीय राज्य एवं आंग्ल युद्ध</span>
+                <span class="t-yr">1767 – 1849</span>
+              </span>
+            </a>
+<a class="toc-item" href="revolt-1857.html">
+              <span class="toc-num">V</span>
+              <span>
+                <span class="t-hi">1857 की क्रांति</span>
+                <span class="t-yr">1857 – 1858</span>
+              </span>
+            </a>
+<a class="toc-item" href="education-press.html">
+              <span class="toc-num">VI</span>
+              <span>
+                <span class="t-hi">शिक्षा एवं प्रेस का विकास</span>
+                <span class="t-yr">1780 – 1917</span>
+              </span>
+            </a>
+<a class="toc-item" href="social-religious-reform.html">
+              <span class="toc-num">VII</span>
+              <span>
+                <span class="t-hi">सामाजिक-धार्मिक सुधार आंदोलन</span>
+                <span class="t-yr">1815 – 1929</span>
+              </span>
+            </a>
+<a class="toc-item" href="early-associations-congress.html">
+              <span class="toc-num">VIII</span>
+              <span>
+                <span class="t-hi">प्रारंभिक संगठन एवं कांग्रेस की स्थापना</span>
+                <span class="t-yr">1838 – 1888</span>
+              </span>
+            </a>
+<a class="toc-item" href="swadeshi-revolutionaries.html">
+              <span class="toc-num">IX</span>
+              <span>
+                <span class="t-hi">बंगाल विभाजन, स्वदेशी एवं क्रांतिकारी आंदोलन</span>
+                <span class="t-yr">1905 – 1918</span>
+              </span>
+            </a>
+<a class="toc-item" href="gandhi-khilafat.html">
+              <span class="toc-num">X</span>
+              <span>
+                <span class="t-hi">गांधी युग का प्रारंभ, खिलाफत व असहयोग</span>
+                <span class="t-yr">1917 – 1922</span>
+              </span>
+            </a>
+<a class="toc-item" href="civil-disobedience-rtc.html">
+              <span class="toc-num">XI</span>
+              <span>
+                <span class="t-hi">सविनय अवज्ञा एवं गोलमेज़ सम्मेलन</span>
+                <span class="t-yr">1927 – 1932</span>
+              </span>
+            </a>
+<a class="toc-item" href="quit-india-ina.html">
+              <span class="toc-num">XII</span>
+              <span>
+                <span class="t-hi">भारत छोड़ो आंदोलन एवं आज़ाद हिंद फौज</span>
+                <span class="t-yr">1937 – 1946</span>
+              </span>
+            </a>
+<a class="toc-item" href="partition-independence.html">
+              <span class="toc-num">XIII</span>
+              <span>
+                <span class="t-hi">विभाजन एवं स्वतंत्रता</span>
+                <span class="t-yr">1946 – 1947</span>
+              </span>
+            </a>
+<a class="toc-item" href="miscellany.html">
+              <span class="toc-num">XIV</span>
+              <span>
+                <span class="t-hi">संदर्भ संग्रह : पुस्तकें, पत्र-पत्रिकाएँ एवं विविध तथ्य</span>
+                <span class="t-yr">संदर्भ</span>
+              </span>
+            </a>
+      </div>
+    </div>
+  </div>
+<main>
+    
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <span class="chip-seal"><span class="dot">XII</span><span class="lbl">अध्याय XII · 1937 – 1946</span></span>
+          <div class="eyebrow">Quit India & the INA</div>
+          <h1>भारत छोड़ो आंदोलन एवं आज़ाद हिंद फौज</h1>
+          <p class="dek">1937 के चुनाव, क्रिप्स मिशन, भारत छोड़ो आंदोलन, नेताजी सुभाष व आज़ाद हिंद फौज</p>
+          <div class="tags"><span class="tag">क्रिप्स मिशन</span><span class="tag">करो या मरो</span><span class="tag">आज़ाद हिंद फौज</span><span class="tag">1937 – 1946</span></div>
+        </div>
+        <figure class="hero-figure">
+          
+<svg viewBox="0 0 300 200">
+  <circle cx="150" cy="100" r="92" style="fill:var(--paper-3)"/>
+  <line x1="150" y1="170" x2="150" y2="46" style="stroke:var(--ink)" stroke-width="5"/>
+  <rect x="150" y="46" width="64" height="16" style="fill:var(--ochre)"/>
+  <rect x="150" y="62" width="64" height="16" style="fill:var(--paper)" stroke="var(--ink-soft)" stroke-width="1"/>
+  <rect x="150" y="78" width="64" height="16" style="fill:var(--green)"/>
+  <circle cx="182" cy="70" r="6" style="fill:none;stroke:var(--indigo)" stroke-width="2"/>
+  <path d="M96 170 L124 140 L152 170" style="fill:none;stroke:var(--maroon)" stroke-width="4"/>
+  <path d="M70 170 L98 140 L126 170" style="fill:none;stroke:var(--ochre-deep)" stroke-width="4" opacity=".6"/>
+</svg>
+          <figcaption class="cap">चित्रण — अध्याय XII · 1937 – 1946</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+    <div class="wrap">
+      <section class="panel">
+      <h2><span class="no">१</span> 1937 के प्रांतीय चुनाव व कांग्रेस मंत्रिमंडल</h2>
+      <ul class="notes"><li>1935 के भारत सरकार अधिनियम के आधार पर फरवरी 1937 के चुनावों में कांग्रेस ने 11 प्रांतों में से 5 में पूर्ण बहुमत प्राप्त किया; जुलाई 1937 तक कुल <b>8 प्रांतों</b> में कांग्रेस सरकारें बनीं।</li>
+<li>पंजाब में मुस्लिम लीग-यूनियनिस्ट पार्टी व बंगाल में कृषक प्रजा पार्टी-मुस्लिम लीग की संयुक्त सरकारें बनीं।</li>
+<li>द्वितीय विश्वयुद्ध में भारतीयों की सहमति के बिना भारत को शामिल किए जाने के विरोध में <b>22 अक्टूबर 1939</b> को सभी कांग्रेसी मंत्रिमंडलों ने त्यागपत्र दे दिया।</li></ul>
+    </section><section class="panel">
+      <h2><span class="no">२</span> कांग्रेस सोशलिस्ट पार्टी व त्रिपुरी संकट</h2>
+      <ul class="notes"><li><b>कांग्रेस सोशलिस्ट पार्टी (मई 1934, बंबई)</b> — जयप्रकाश नारायण, आचार्य नरेंद्र देव, मीनू मसानी द्वारा; कांग्रेस के भीतर रहकर लोकतांत्रिक समाजवाद हेतु कार्यरत।</li>
+<li>1938 के हरिपुरा अधिवेशन में <b>सुभाषचंद्र बोस</b> पहली बार कांग्रेस अध्यक्ष चुने गए; जवाहरलाल नेहरू की अध्यक्षता में 'राष्ट्रीय योजना समिति' का गठन हुआ।</li>
+<li>1939 के <b>त्रिपुरी संकट</b> में सुभाष बोस ने गांधी के पसंदीदा उम्मीदवार पट्टाभि सीतारमैया को पराजित कर दूसरी बार अध्यक्ष पद जीता; किंतु कार्यसमिति असहयोग के चलते अप्रैल 1939 में इस्तीफा देकर <b>फॉरवर्ड ब्लॉक</b> की स्थापना की — नई अध्यक्षता डॉ. राजेंद्र प्रसाद को मिली।</li></ul>
+    </section><section class="panel">
+      <h2><span class="no">३</span> क्रिप्स मिशन (1942) व भारत छोड़ो आंदोलन</h2>
+      <ul class="notes"><li><b>क्रिप्स मिशन</b> — 11 मार्च 1942 को घोषणा; प्रस्ताव — युद्धोपरांत डोमिनियन स्टेटस, संविधान निर्मात्री सभा का गठन; गांधी ने इसे <b>'उत्तर दिनांकित चेक'</b> कहा — मांगें न मानी जाने से मिशन असफल रहा।</li>
+<li><b>भारत छोड़ो आंदोलन</b> — 14 जुलाई 1942 वर्धा में कार्यसमिति द्वारा प्रस्ताव; <b>8 अगस्त 1942</b> बंबई के गोवालिया टैंक मैदान में अखिल भारतीय कांग्रेस कमेटी द्वारा स्वीकृत; आंदोलन <b>9 अगस्त 1942</b> से आरंभ।</li>
+<li>गांधी व प्रमुख नेता 'ऑपरेशन ज़ीरो आवर' के तहत गिरफ़्तार — गांधी को आगा खां पैलेस (पुणे) में रखा गया; कांग्रेस को गैर-कानूनी घोषित किया गया।</li>
+<li>नारा — <b>'करो या मरो'</b>; बलिया (उ.प्र.) में चित्तू पांडे, सतारा में वाई.वी. चह्वाण-नाना पाटिल तथा बंगाल के मेदिनीपुर में तामलुक जातीय सरकार जैसी <b>समानांतर सरकारें</b> स्थापित हुईं।</li>
+<li>जयप्रकाश नारायण हज़ारीबाग सेंट्रल जेल से फरार होकर भूमिगत कार्यवाही दल का गठन कर आंदोलन चलाते रहे।</li></ul>
+    </section><section class="panel">
+      <h2><span class="no">४</span> आज़ाद हिंद फौज और नेताजी सुभाष चंद्र बोस</h2>
+      <ul class="notes"><li>आज़ाद हिंद फौज का विचार सर्वप्रथम <b>मोहन सिंह</b> (ब्रिटिश भारतीय सेना अधिकारी) के मन में आया।</li>
+<li><b>4 जुलाई 1943</b> को रासबिहारी बोस ने आज़ाद हिंद फौज की कमान सुभाषचंद्र बोस को सौंपी; <b>21 अक्टूबर 1943</b> को सिंगापुर में स्वतंत्र भारत की अस्थायी सरकार का गठन — जर्मनी, जापान व मित्र देशों ने मान्यता दी।</li>
+<li>'रानी झांसी रेजिमेंट' — महिला रेजिमेंट; अन्य ब्रिगेड — सुभाष ब्रिगेड, नेहरू ब्रिगेड, गांधी ब्रिगेड।</li>
+<li>नारा — 'दिल्ली चलो' व 'तुम मुझे खून दो मैं तुम्हें आज़ादी दूँगा'; जापान ने अंडमान-निकोबार द्वीप सुभाष सरकार को सौंपा — नाम क्रमशः 'शहीद द्वीप' व 'स्वराज द्वीप'।</li>
+<li>रवीन्द्रनाथ टैगोर ने बोस को 'देश नायक' कहा; 12 नवंबर 1945 को 'आज़ाद हिंद फौज दिवस' मनाया गया।</li></ul>
+    </section><section class="panel">
+      <h2><span class="no">५</span> लाल किला मुकदमा, नौसेना विद्रोह व कैबिनेट मिशन</h2>
+      <ul class="notes"><li><b>लाल किला मुकदमा (नवंबर 1945)</b> — प्रेम सहगल, गुरुबख्श सिंह व शाहनवाज़ को फांसी की सज़ा तथा राशिद अली को 7 वर्ष कारावास; देशव्यापी विरोध पर लॉर्ड वेवेल ने दंड क्षमा किया; बचाव पक्ष की अगुवाई भूलाभाई देसाई, कैलाशनाथ काटजू व जवाहरलाल नेहरू ने की।</li>
+<li><b>शाही नौसेना विद्रोह (18–23 फरवरी 1946)</b> — बंबई में 'एच.एम.आई.एस. तलवार' के 1100 नाविकों की हड़ताल; नारे — इंकलाब ज़िंदाबाद, जय हिंद; वल्लभभाई पटेल के हस्तक्षेप पर आत्मसमर्पण।</li>
+<li><b>कैबिनेट मिशन (1946)</b> — सर स्टैफ़ोर्ड क्रिप्स, पैथिक लारेंस व ए.वी. अलेक्ज़ेंडर की त्रिसदस्यीय समिति; पृथक पाकिस्तान की मांग अस्वीकृत, प्रांतों को तीन समूहों में बाँटने व अंतरिम सरकार का प्रस्ताव; संविधान सभा हेतु प्रति 10 लाख जनसंख्या पर 1 सदस्य का अप्रत्यक्ष निर्वाचन स्वीकृत।</li></ul>
+    </section>
+      <div class="pager"><a href="civil-disobedience-rtc.html"><span class="dir">← पिछला अध्याय</span><strong>सविनय अवज्ञा एवं गोलमेज़ सम्मेलन</strong></a><a class="next" href="partition-independence.html"><span class="dir">अगला अध्याय →</span><strong>विभाजन एवं स्वतंत्रता</strong></a></div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>आधुनिक भारत का इतिहास — संक्षिप्त अध्ययन-सामग्री · परीक्षा-उपयोगी नोट्स</p>
+      <p><a href="index.html" style="text-decoration:none;color:var(--maroon)">← मुखपृष्ठ पर लौटें</a></p>
+    </div>
+  </footer>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.querySelector('.chapters-btn');
+  var overlay = document.querySelector('.toc-overlay');
+  var closeBtn = document.querySelector('.toc-close');
+  if (btn && overlay) {
+    btn.addEventListener('click', function () { overlay.classList.add('open'); });
+  }
+  if (closeBtn && overlay) {
+    closeBtn.addEventListener('click', function () { overlay.classList.remove('open'); });
+  }
+  if (overlay) {
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') overlay.classList.remove('open');
+    });
+  }
+});
+
+</script>
+</body>
+</html>
