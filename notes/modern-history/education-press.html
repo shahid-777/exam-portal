@@ -360,6 +360,39 @@ footer p{margin:0;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:v
       window.addEventListener('storage', applyGate);
     })();
   </script>
+  <div id="ep-devtools-warning" style="display:none;position:fixed;inset:0;z-index:10001;background:#0f0b07;align-items:center;justify-content:center;text-align:center;padding:24px;">
+    <div style="max-width:420px;">
+      <div style="font-size:2.2rem;margin-bottom:10px;">🛡️</div>
+      <h2 style="font-family:'Fraunces',serif;font-weight:700;font-size:1.2rem;margin:0 0 10px;color:#f1e8d6;">डेवलपर टूल्स बंद करें · Please Close Developer Tools</h2>
+      <p style="font-family:'Source Serif 4',Georgia,serif;font-size:.88rem;color:#ddccA2;margin:0;line-height:1.55;">यह सामग्री सुरक्षित है। कृपया Inspect / DevTools बंद करके पढ़ना जारी रखें।<br>This content is protected. Please close Developer Tools to keep reading.</p>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var threshold = 170;
+      var isOpen = false;
+      function showWarn(){
+        var el = document.getElementById('ep-devtools-warning');
+        if(el) el.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+      function hideWarn(){
+        var el = document.getElementById('ep-devtools-warning');
+        if(el) el.style.display = 'none';
+        if(!document.getElementById('ep-lock-overlay') || document.getElementById('ep-lock-overlay').style.display !== 'flex'){
+          document.body.style.overflow = '';
+        }
+      }
+      function check(){
+        var open = (window.outerWidth - window.innerWidth > threshold) ||
+                    (window.outerHeight - window.innerHeight > threshold);
+        if(open && !isOpen){ isOpen = true; showWarn(); }
+        if(!open && isOpen){ isOpen = false; hideWarn(); }
+      }
+      setInterval(check, 700);
+      window.addEventListener('resize', check);
+    })();
+  </script>
 
   <header class="masthead">
     <div class="masthead-inner">
