@@ -83,7 +83,7 @@
                 <a href="#contact-us" class="hover:text-blue-600 transition">Contact Us</a>
             </div>
             <div class="flex items-center space-x-3 sm:space-x-4">
-                <button onclick="openGatedAuthModal()" class="text-xs sm:text-sm font-bold text-white transition px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20">Login / Sign Up</button>
+                <button id="header-login-btn" onclick="openGatedAuthModal()" class="text-xs sm:text-sm font-bold text-white transition px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20">Login / Sign Up</button>
                 <button onclick="openSideMenu()" aria-label="Open menu" class="flex flex-col justify-center items-center gap-1.5 w-10 h-10 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition shrink-0">
                     <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
                     <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
@@ -115,7 +115,7 @@
             <a href="#about-us" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">ℹ️</span> About Us</a>
             <a href="#contact-us" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">✉️</span> Contact Us</a>
             <div class="pt-3 mt-3 border-t border-slate-100">
-                <button onclick="closeSideMenu(); openGatedAuthModal();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition"><span class="text-base">🔐</span> Login / Sign Up</button>
+                <button id="sidemenu-login-btn" onclick="closeSideMenu(); openGatedAuthModal();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition"><span class="text-base">🔐</span> Login / Sign Up</button>
             </div>
         </nav>
         <div class="px-5 py-4 border-t border-slate-200 text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
@@ -738,6 +738,38 @@
         function closeGatedAuthModal() {
             document.getElementById('gated-auth-modal').classList.remove('active');
         }
+
+        // Reflect real login state in the header/side-menu buttons on every page load,
+        // so a logged-in user never sees "Login / Sign Up" again.
+        function refreshHeaderAuthState() {
+            var loggedInEmail = null;
+            try { loggedInEmail = localStorage.getItem('userEmail'); } catch (e) {}
+
+            var headerBtn = document.getElementById('header-login-btn');
+            var sideBtn = document.getElementById('sidemenu-login-btn');
+
+            if (loggedInEmail) {
+                if (headerBtn) {
+                    headerBtn.textContent = 'My Dashboard';
+                    headerBtn.setAttribute('onclick', "window.location.href='dashboard.html'");
+                }
+                if (sideBtn) {
+                    sideBtn.innerHTML = '<span class="text-base">📊</span> My Dashboard';
+                    sideBtn.setAttribute('onclick', "closeSideMenu(); window.location.href='dashboard.html';");
+                }
+            } else {
+                if (headerBtn) {
+                    headerBtn.textContent = 'Login / Sign Up';
+                    headerBtn.setAttribute('onclick', 'openGatedAuthModal()');
+                }
+                if (sideBtn) {
+                    sideBtn.innerHTML = '<span class="text-base">🔐</span> Login / Sign Up';
+                    sideBtn.setAttribute('onclick', 'closeSideMenu(); openGatedAuthModal();');
+                }
+            }
+        }
+        refreshHeaderAuthState();
+        window.addEventListener('storage', refreshHeaderAuthState);
 
         // Side Menu Drawer Controller
         function openSideMenu() {
