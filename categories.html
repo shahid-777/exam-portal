@@ -127,7 +127,7 @@
             list.forEach(cat => {
                 const card = document.createElement('div');
                 card.className = "group bg-slate-900/40 hover:bg-slate-900/80 border border-white/5 hover:border-blue-500/30 p-5 rounded-2xl flex items-center justify-between cursor-pointer transition transform hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/5 duration-300 relative overflow-hidden";
-                card.onclick = () => window.location.href = `syllabus-view.html?category_id=${cat.id}`;
+                card.onclick = () => window.location.href = `/syllabus-view.html?category_id=${cat.id}`;
 
                 card.innerHTML = `
                     <div class="flex items-center space-x-4">

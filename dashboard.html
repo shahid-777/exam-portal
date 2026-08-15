@@ -587,7 +587,7 @@
 
         function launchLiveExamSession(sessionId) {
             if (confirm("This is a live proctored exam. Switching tabs, minimizing, or leaving this window will disqualify you with a score of 0. Continue?")) {
-                window.location.href = `live-exam.html?session=${sessionId}`;
+                window.location.href = `/live-exam.html?session=${sessionId}`;
             }
         }
 
@@ -649,7 +649,7 @@
 
         function launchSecureComboPipeline(comboId) {
             if(confirm("This is a two-stage combined exam. After you submit Paper 1, Paper 2 will start automatically and you cannot go back to Paper 1. Start now?")) {
-                window.location.href = `exam.html?combo_id=${comboId}`;
+                window.location.href = `/exam.html?combo_id=${comboId}`;
             }
         }
 
@@ -890,7 +890,7 @@
 
         function initializeAssessmentRuntime(encodedSubject) {
             if (confirm("Do you want to start this exam now?")) {
-                window.location.href = `exam.html?subject=${encodedSubject}`;
+                window.location.href = `/exam.html?subject=${encodedSubject}`;
             }
         }
 
