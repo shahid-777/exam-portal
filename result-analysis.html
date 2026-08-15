@@ -25,33 +25,46 @@
         </button>
     </header>
 
-    <section class="max-w-5xl w-full mx-auto px-6 pt-8 grid grid-cols-2 sm:grid-cols-5 gap-4">
-        <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl text-center">
-            <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Total Score</div>
-            <div id="metric-score" class="text-xl font-black text-blue-400 mt-1">0 / 0</div>
+    <section class="max-w-5xl w-full mx-auto px-6 pt-8">
+        <div class="bg-gradient-to-br from-slate-900 to-slate-900/40 border border-white/10 rounded-2xl p-6 shadow-xl mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <div class="text-[10px] font-mono text-slate-500 uppercase font-black tracking-widest">Overall Score</div>
+                <div id="metric-score" class="text-4xl font-black text-white mt-1">0 / 0</div>
+                <div id="metric-percentage" class="text-xs font-mono font-bold text-blue-400 mt-1">0% Accuracy</div>
+            </div>
+            <div class="bg-slate-950/60 border border-blue-500/20 px-6 py-3 rounded-xl flex flex-col items-center justify-center text-center shrink-0">
+                <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest font-black">Class Rank</span>
+                <span id="display-rank" class="text-2xl font-mono font-black text-blue-400 mt-1">Calculating...</span>
+            </div>
         </div>
-        <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl text-center">
-            <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Correct</div>
-            <div id="metric-correct" class="text-xl font-black text-emerald-400 mt-1">0</div>
-        </div>
-        <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl text-center">
-            <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Incorrect</div>
-            <div id="metric-wrong" class="text-xl font-black text-red-400 mt-1">0</div>
-        </div>
-        <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl text-center">
-            <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Skipped</div>
-            <div id="metric-skipped" class="text-xl font-black text-slate-400 mt-1">0</div>
-        </div>
-        <div class="bg-slate-900/60 border border-blue-500/20 p-4 rounded-xl flex flex-col items-center justify-center text-center">
-            <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest font-black">Class Rank</span>
-            <span id="display-rank" class="text-xl font-mono font-black text-blue-400 mt-1">Calculating...</span>
+        <div class="grid grid-cols-3 gap-4">
+            <div class="bg-slate-900/40 border border-emerald-500/10 p-4 rounded-xl text-center">
+                <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Correct</div>
+                <div id="metric-correct" class="text-2xl font-black text-emerald-400 mt-1">0</div>
+            </div>
+            <div class="bg-slate-900/40 border border-red-500/10 p-4 rounded-xl text-center">
+                <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Incorrect</div>
+                <div id="metric-wrong" class="text-2xl font-black text-red-400 mt-1">0</div>
+            </div>
+            <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl text-center">
+                <div class="text-[10px] font-mono text-slate-500 uppercase font-black">Skipped</div>
+                <div id="metric-skipped" class="text-2xl font-black text-slate-400 mt-1">0</div>
+            </div>
         </div>
     </section>
 
     <main class="flex-1 max-w-5xl w-full mx-auto px-6 py-8 space-y-6">
-        <div class="border-b border-white/5 pb-2">
-            <h3 class="text-md font-black tracking-wider text-slate-200 uppercase">Question-by-Question Review</h3>
-            <p class="text-[11px] text-slate-400 font-medium">Verify your selected options alongside system core keys layout configurations.</p>
+        <div class="border-b border-white/5 pb-3 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+            <div>
+                <h3 class="text-md font-black tracking-wider text-slate-200 uppercase">Question-by-Question Review</h3>
+                <p class="text-[11px] text-slate-400 font-medium">Verify your selected options alongside the correct answer for every question.</p>
+            </div>
+            <div id="review-filter-tabs" class="flex items-center gap-1.5 bg-slate-900/50 border border-white/5 rounded-xl p-1 shrink-0">
+                <button data-filter="all" class="review-filter-btn px-3 py-1.5 rounded-lg text-[10px] font-mono font-black uppercase tracking-wider transition bg-slate-700 text-white">All</button>
+                <button data-filter="correct" class="review-filter-btn px-3 py-1.5 rounded-lg text-[10px] font-mono font-black uppercase tracking-wider transition text-emerald-400 hover:bg-slate-800">Correct</button>
+                <button data-filter="incorrect" class="review-filter-btn px-3 py-1.5 rounded-lg text-[10px] font-mono font-black uppercase tracking-wider transition text-red-400 hover:bg-slate-800">Incorrect</button>
+                <button data-filter="skipped" class="review-filter-btn px-3 py-1.5 rounded-lg text-[10px] font-mono font-black uppercase tracking-wider transition text-slate-400 hover:bg-slate-800">Skipped</button>
+            </div>
         </div>
 
         <div id="analysis-pipeline-cards" class="space-y-6">
@@ -100,6 +113,10 @@
                 document.getElementById('metric-wrong').innerText = currentResult.wrong_answers;
                 document.getElementById('metric-skipped').innerText = currentResult.unattempted || 0;
 
+                const attemptedCount = (currentResult.correct_answers || 0) + (currentResult.wrong_answers || 0);
+                const accuracyPct = attemptedCount > 0 ? Math.round((currentResult.correct_answers / attemptedCount) * 100) : 0;
+                document.getElementById('metric-percentage').innerText = `${accuracyPct}% Accuracy (of attempted)`;
+
                 try {
                     await calculateRank(currentResult.subject, currentResult.score);
                 } catch (rankErr) {
@@ -125,11 +142,32 @@
                     renderReviewCardsHtmlMatrix(questionsSnapshot, userResponses, "", "single");
                 }
 
+                setupReviewFilterTabs();
+
             } catch (err) {
                 console.error("Main fetch error:", err);
                 document.getElementById('analysis-pipeline-cards').innerHTML = `<div class="text-center font-mono text-xs text-red-400">Error rendering scoreboard nodes matrix loop.</div>`;
                 if(document.getElementById('display-rank')) document.getElementById('display-rank').innerText = "Error";
             }
+        }
+
+        function setupReviewFilterTabs() {
+            const tabsWrap = document.getElementById('review-filter-tabs');
+            if (!tabsWrap) return;
+            const buttons = tabsWrap.querySelectorAll('.review-filter-btn');
+
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const filter = btn.dataset.filter;
+
+                    buttons.forEach(b => b.classList.remove('bg-slate-700', 'text-white'));
+                    btn.classList.add('bg-slate-700', 'text-white');
+
+                    document.querySelectorAll('#analysis-pipeline-cards > [data-status]').forEach(card => {
+                        card.classList.toggle('hidden', filter !== 'all' && card.dataset.status !== filter);
+                    });
+                });
+            });
         }
 
         async function calculateRank(subjectName, currentStudentScore) {
@@ -315,7 +353,9 @@
             }
 
             questionsArray.forEach((q, qIdx) => {
-                const userChoice = responsesMap[qIdx];
+                // q_index पहले (नए, शफ़ल-सेफ़ रिकॉर्ड्स) — fallback पुरानी पोज़िशनल एंट्रीज़ के लिए
+                const lookupKey = (q.q_index !== undefined && q.q_index !== null && responsesMap[q.q_index] !== undefined) ? q.q_index : qIdx;
+                const userChoice = responsesMap[lookupKey];
                 const systemCorrectKey = parseInt(q.correct);
                 
                 // रैंडम पीर डेटा सिमुलेशन
@@ -324,19 +364,24 @@
 
                 let questionStatusBadge = "";
                 let cardBorderClass = "border-white/5 bg-slate-900/10";
+                let statusKey = "skipped";
 
                 if (userChoice === undefined || userChoice === null || userChoice === -1) {
                     questionStatusBadge = `<span class="text-[9px] font-mono bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-bold uppercase tracking-wider">Skipped</span>`;
+                    statusKey = "skipped";
                 } else if (parseInt(userChoice) === systemCorrectKey) {
                     questionStatusBadge = `<span class="text-[9px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-bold uppercase tracking-wider">&check; Correct</span>`;
                     cardBorderClass = "border-emerald-500/20 bg-emerald-500/[0.01]";
+                    statusKey = "correct";
                 } else {
                     questionStatusBadge = `<span class="text-[9px] font-mono bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded font-bold uppercase tracking-wider">&times; Incorrect</span>`;
                     cardBorderClass = "border-red-500/20 bg-red-500/[0.01]";
+                    statusKey = "incorrect";
                 }
 
                 // कार्ड का शेल निर्माण (DOM Structure)
                 const cardNode = document.createElement('div');
+                cardNode.dataset.status = statusKey;
                 cardNode.className = `border ${cardBorderClass} p-5 sm:p-6 rounded-2xl space-y-4 shadow-xl transition mt-4`;
 
                 // 🆕 प्रश्न टेक्स्ट / इमेज / टेबल — bilingual {en,hi} object aur
