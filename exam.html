@@ -830,9 +830,8 @@
             p2NetScore = p2Result.score;
             p2QuestionsWithAnswers = p2Result.questions_with_answers;
 
-            let p1Payload = {};
             if (isComboExamMode) {
-                p1Payload = buildResponsesByQIndex(comboPaper1Snapshot, comboPaper1Responses);
+                const p1Payload = buildResponsesByQIndex(comboPaper1Snapshot, comboPaper1Responses);
                 const { data: p1Result, error: p1Err } = await supabaseClient
                     .rpc('score_exam_subject', { p_subject: comboMasterConfig.paper1_subject, p_responses: p1Payload });
 
@@ -873,7 +872,7 @@
                         correct_answers: (p1Correct + p2Correct),
                         wrong_answers: (p1Wrong + p2Wrong),
                         unattempted: totalQuestionsCount - ((p1Correct + p2Correct) + (p1Wrong + p2Wrong)),
-                        user_responses_json: JSON.stringify(isComboExamMode ? { paper1: p1Payload, paper2: p2Payload } : p2Payload),
+                        user_responses_json: JSON.stringify(isComboExamMode ? { paper1: comboPaper1Responses, paper2: userResponses } : userResponses),
                         questions_snapshot_json: JSON.stringify(isComboExamMode ? { paper1: p1QuestionsWithAnswers, paper2: p2QuestionsWithAnswers } : p2QuestionsWithAnswers),
                         created_at: new Date().toISOString(),
                         submitted_at: new Date().toISOString()

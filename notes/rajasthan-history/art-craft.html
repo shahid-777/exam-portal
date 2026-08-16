@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>चित्रकला एवं हस्तशिल्प — मरु विरासत</title>
+<meta name="description" content="चित्रकला एवं हस्तशिल्प — राजस्थान इतिहास एवं संस्कृति की परीक्षा-उपयोगी अध्ययन सामग्री।">
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Martel:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --sand:       #f4e8ce;
+  --sand-2:     #ecd8ac;
+  --sand-3:     #dfbf86;
+  --ink:        #3a2415;
+  --ink-soft:   #6e4d31;
+  --terracotta: #bf5730;
+  --terracotta-deep:#8f3f21;
+  --jodhpur:    #1f5c73;
+  --jodhpur-deep:#123e4d;
+  --marigold:   #dfa22b;
+  --maroon:     #7d2035;
+  --rule:       #cba876;
+  --rule-soft:  #ddc296;
+  --shadow: 0 12px 32px -14px rgba(58,36,21,.45);
+  --maxw: 1160px;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--sand);
+  color:var(--ink);
+  font-family:'Martel', Georgia, serif;
+  font-size:17px;
+  line-height:1.7;
+  background-image:
+    radial-gradient(circle at 10% 6%, rgba(191,87,48,.10), transparent 42%),
+    radial-gradient(circle at 92% 8%, rgba(31,92,115,.12), transparent 40%),
+    radial-gradient(circle at 88% 92%, rgba(125,32,53,.08), transparent 46%),
+    repeating-linear-gradient(45deg, rgba(58,36,21,.02) 0px, rgba(58,36,21,.02) 1px, transparent 1px, transparent 5px);
+  background-attachment:fixed;
+}
+
+::selection{background:var(--marigold);color:var(--ink)}
+a{color:inherit}
+img,svg{max-width:100%;display:block}
+
+h1,h2,h3,h4{
+  font-family:'Baloo 2', sans-serif;
+  font-weight:700;
+  color:var(--terracotta-deep);
+  margin:0 0 .4em;
+  letter-spacing:.005em;
+}
+
+.mono{font-family:'IBM Plex Mono',monospace}
+.eyebrow{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:.72rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--maroon);
+  display:flex;align-items:center;gap:.6em;
+}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--marigold);display:inline-block;border-radius:2px}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+/* scalloped divider — jharokha arch row */
+.scallop{
+  height:14px;width:100%;
+  background-image: radial-gradient(circle at 10px -4px, transparent 12px, var(--sand) 13px);
+  background-size:24px 16px;
+  background-repeat:repeat-x;
+  opacity:.55;
+}
+.hairline{border:0;border-top:1px solid var(--rule);margin:2.4rem 0}
+.doubleline{border:0;border-top:3px double var(--ink-soft);margin:1.5rem 0}
+
+/* ================= MASTHEAD (mobile-safe from the start) ================= */
+header.masthead{
+  position:sticky;top:0;z-index:40;
+  background:linear-gradient(var(--sand), var(--sand) 90%, transparent);
+  backdrop-filter:blur(2px);
+  border-bottom:2px solid var(--terracotta);
+}
+.masthead-inner{
+  max-width:var(--maxw);margin:0 auto;padding:12px 24px;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;
+}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.seal{
+  width:40px;height:40px;border-radius:50% 50% 50% 4px;
+  background:linear-gradient(135deg,var(--terracotta),var(--maroon));
+  color:var(--sand);display:flex;align-items:center;justify-content:center;
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;flex:0 0 auto;
+  box-shadow:0 3px 8px rgba(125,32,53,.35);
+}
+.brand-text{display:flex;flex-direction:column;line-height:1.25}
+.brand-text .hi{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.06rem;color:var(--ink)}
+.brand-text .en{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.06em;color:var(--ink-soft);text-transform:uppercase}
+.ep-backlink{
+  font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.04em;
+  color:var(--ink-soft);text-decoration:none;border:1px solid var(--rule);
+  padding:6px 10px;border-radius:20px;white-space:nowrap;order:2;
+}
+.chapters-btn{
+  order:3;margin-left:auto;
+  font-family:'IBM Plex Mono',monospace;font-size:.76rem;letter-spacing:.04em;
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--jodhpur);color:var(--sand);border:0;
+  padding:9px 16px;border-radius:20px;cursor:pointer;
+  box-shadow:0 4px 10px rgba(18,62,77,.3);
+}
+.chapters-btn .bars{display:inline-flex;flex-direction:column;gap:3px}
+.chapters-btn .bars span{width:15px;height:2px;background:var(--sand);display:block;border-radius:1px}
+@media (max-width:760px){
+  .brand{flex:1 1 100%;order:1}
+  .masthead-inner{padding:10px 16px;row-gap:8px}
+  .seal{width:34px;height:34px;font-size:.92rem}
+  .brand-text .hi{font-size:.96rem}
+  .brand-text .en{font-size:.56rem}
+  .chapters-btn{padding:8px 13px;font-size:.7rem}
+}
+
+/* ================= TOC OVERLAY ================= */
+.toc-overlay{
+  position:fixed;inset:0;z-index:9000;background:rgba(58,36,21,.55);
+  display:none;align-items:flex-start;justify-content:center;padding:6vh 20px;
+  overflow-y:auto;
+}
+.toc-overlay.open{display:flex}
+.toc-panel{
+  background:var(--sand);border:2px solid var(--terracotta);border-radius:18px;
+  max-width:900px;width:100%;padding:30px;box-shadow:var(--shadow);position:relative;
+}
+.toc-close{
+  position:absolute;top:18px;right:18px;background:none;border:0;cursor:pointer;
+  font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--maroon);
+}
+.toc-head{text-align:center;margin-bottom:22px}
+.toc-head h2{font-size:1.4rem;margin-top:.3rem}
+.toc-part-label{
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--jodhpur-deep);margin:20px 0 10px;
+  display:flex;align-items:center;gap:10px;
+}
+.toc-part-label::after{content:"";flex:1;height:1px;background:var(--rule)}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.toc-item{
+  display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--ink);
+  background:var(--sand-2);border:1px solid var(--rule);border-radius:12px;padding:12px 14px;
+  transition:transform .15s, border-color .15s;
+}
+.toc-item:hover{border-color:var(--terracotta);transform:translateY(-2px)}
+.toc-item.active{border-color:var(--terracotta);background:var(--sand-3)}
+.toc-num{
+  font-family:'Baloo 2',sans-serif;font-weight:800;color:var(--terracotta-deep);
+  font-size:1.1rem;flex:0 0 auto;width:28px;text-align:center;
+}
+.toc-item .t-hi{display:block;font-weight:600;font-size:.92rem}
+.toc-item .t-yr{display:block;font-family:'IBM Plex Mono',monospace;font-size:.66rem;color:var(--ink-soft);margin-top:2px}
+
+/* ================= HERO ================= */
+.hero{padding:44px 0 20px}
+.hero-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:36px;align-items:center}
+@media (max-width:760px){.hero-grid{grid-template-columns:1fr}}
+.hero-figure{order:0}
+.jharokha{
+  position:relative;background:var(--sand-2);border:2px solid var(--terracotta);
+  border-radius:120px 120px 14px 14px / 70px 70px 14px 14px;
+  padding:26px 20px 20px;box-shadow:var(--shadow);
+}
+.jharokha .cap{
+  margin-top:14px;text-align:center;font-family:'IBM Plex Mono',monospace;
+  font-size:.72rem;color:var(--ink-soft);letter-spacing:.03em;
+}
+.chapter-chip{
+  display:inline-flex;align-items:center;gap:10px;background:var(--sand-2);
+  border:1px solid var(--rule);border-radius:30px;padding:8px 16px 8px 8px;margin-bottom:16px;
+}
+.chapter-chip .num{
+  width:30px;height:30px;border-radius:50%;background:var(--maroon);color:var(--sand);
+  display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.82rem;
+}
+.chapter-chip span.label{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--ink-soft)}
+.hero h1{font-size:2.15rem;line-height:1.28;margin-bottom:.3rem}
+@media (max-width:760px){.hero h1{font-size:1.55rem}}
+.hero .dek{color:var(--ink-soft);font-size:1.02rem;max-width:60ch}
+.tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.tag{
+  font-family:'IBM Plex Mono',monospace;font-size:.7rem;border:1px solid var(--rule);
+  border-radius:20px;padding:5px 12px;color:var(--ink-soft);background:var(--sand-2);
+}
+
+/* ================= CONTENT PANELS ================= */
+.panel{
+  background:var(--sand-2);border:1px solid var(--rule);border-radius:16px;
+  padding:28px 30px;margin:22px 0;box-shadow:0 6px 16px -10px rgba(58,36,21,.3);
+}
+@media (max-width:760px){.panel{padding:20px 18px}}
+.panel h2{font-size:1.28rem;display:flex;align-items:center;gap:10px}
+.panel h2 .ico{
+  width:34px;height:34px;border-radius:8px;background:var(--terracotta);color:var(--sand);
+  display:flex;align-items:center;justify-content:center;font-size:1rem;flex:0 0 auto;
+}
+.panel h3{font-size:1.03rem;color:var(--maroon);margin-top:1.3em}
+.panel ul{margin:.5em 0 .8em;padding-left:1.3em}
+.panel li{margin:.32em 0}
+.panel li::marker{color:var(--terracotta)}
+.panel b, .panel strong{color:var(--terracotta-deep)}
+.note-box{
+  background:var(--sand-3);border-left:4px solid var(--maroon);border-radius:6px;
+  padding:14px 16px;margin:1em 0;font-size:.94rem;
+}
+.note-box .lbl{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.08em;color:var(--maroon);text-transform:uppercase;display:block;margin-bottom:4px}
+
+/* ruler / dynasty list */
+.ruler-list{list-style:none;margin:0;padding:0}
+.ruler-list li{
+  display:grid;grid-template-columns:110px 1fr;gap:14px;padding:12px 0;
+  border-bottom:1px dashed var(--rule);
+}
+.ruler-list li:last-child{border-bottom:0}
+.ruler-list .yrs{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--jodhpur-deep);font-weight:600}
+.ruler-list .rname{font-weight:700;color:var(--ink)}
+@media (max-width:600px){.ruler-list li{grid-template-columns:1fr}}
+
+/* tables (festival calendar / comparisons) */
+.tbl-wrap{overflow-x:auto;margin:1em 0;border-radius:10px;border:1px solid var(--rule)}
+table.rj-table{width:100%;border-collapse:collapse;font-size:.88rem;min-width:480px}
+table.rj-table th{
+  background:var(--terracotta);color:var(--sand);font-family:'Baloo 2',sans-serif;
+  text-align:left;padding:10px 12px;font-weight:600;
+}
+table.rj-table td{padding:9px 12px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+table.rj-table tr:nth-child(even) td{background:rgba(191,87,48,.05)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin:24px 0;border-radius:10px;overflow:hidden}
+.stats .cell{background:var(--sand-2);padding:16px 12px;text-align:center}
+.stats .cell b{display:block;font-family:'Baloo 2',sans-serif;font-size:1.2rem;color:var(--terracotta-deep)}
+.stats .cell span{font-size:.7rem;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace}
+@media (max-width:760px){.stats{grid-template-columns:1fr 1fr}}
+
+/* two-col */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:760px){.grid-2{grid-template-columns:1fr}}
+.cols-2{columns:2;column-gap:28px}
+@media (max-width:760px){.cols-2{columns:1}}
+
+/* pager */
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:36px 0 16px}
+@media (max-width:760px){.pager{grid-template-columns:1fr}}
+.pager a{
+  display:flex;flex-direction:column;gap:4px;text-decoration:none;color:var(--ink);
+  background:var(--sand-2);border:1px solid var(--rule);border-radius:12px;padding:14px 16px;
+}
+.pager a:hover{border-color:var(--terracotta)}
+.pager .lbl{font-family:'IBM Plex Mono',monospace;font-size:.66rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em}
+.pager .next{text-align:right;align-items:flex-end}
+@media (max-width:760px){.pager .next{text-align:left;align-items:flex-start;grid-column:1}}
+
+/* footer */
+footer.site-footer{
+  margin-top:50px;border-top:2px solid var(--terracotta);padding:26px 0 40px;
+  text-align:center;color:var(--ink-soft);font-size:.8rem;
+}
+
+@media print{ body{display:none !important} }
+
+/* index page — landing hero + chapter cards */
+.landing-hero{
+  padding:56px 0 30px;text-align:center;
+}
+.landing-hero h1{font-size:2.4rem}
+@media (max-width:760px){.landing-hero h1{font-size:1.7rem}}
+.landing-hero p{max-width:62ch;margin:14px auto 0;color:var(--ink-soft)}
+.motif-row{display:flex;justify-content:center;gap:26px;margin:26px 0 6px;opacity:.85}
+.chapter-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px;margin:26px 0}
+.chapter-card{
+  background:var(--sand-2);border:1px solid var(--rule);border-radius:16px;padding:20px;
+  text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:8px;
+  box-shadow:0 6px 16px -10px rgba(58,36,21,.25);transition:transform .15s,border-color .15s;
+}
+.chapter-card:hover{transform:translateY(-3px);border-color:var(--terracotta)}
+.chapter-card .cnum{font-family:'IBM Plex Mono',monospace;color:var(--maroon);font-size:.72rem;letter-spacing:.1em}
+.chapter-card h3{font-size:1.02rem;margin:2px 0 0}
+.chapter-card .cyr{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ink-soft)}
+.part-heading{
+  margin:44px 0 6px;text-align:center;
+}
+.part-heading .eyebrow{justify-content:center}
+.part-heading h2{font-size:1.5rem}
+
+</style>
+</head>
+<body>
+
+  <div id="ep-watermark" aria-hidden="true"></div>
+  <div id="ep-lock-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(244,232,206,0.97);backdrop-filter:blur(6px);align-items:center;justify-content:center;text-align:center;padding:24px;">
+    <div style="max-width:380px;">
+      <div style="font-size:2.2rem;margin-bottom:10px;">🔒</div>
+      <h2 style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.25rem;margin:0 0 10px;color:#3a2415;">लॉगिन आवश्यक · Login Required</h2>
+      <p style="font-family:'Martel',Georgia,serif;font-size:.92rem;color:#6e4d31;margin:0 0 22px;line-height:1.55;">इन नोट्स को पढ़ने के लिए कृपया Exam Portal होमपेज से लॉगिन करें।<br>Please log in from the Exam Portal homepage to read these notes.</p>
+      <a href="../../index.html" style="display:inline-block;background:#1f5c73;color:#f4e8ce;font-family:'IBM Plex Mono',monospace;font-size:.76rem;letter-spacing:.05em;padding:12px 24px;border-radius:20px;text-decoration:none;">लॉगिन करें → Go to Login</a>
+      <div style="margin-top:14px;"><a href="#" onclick="location.reload();return false;" style="font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:#bf5730;text-decoration:underline;">पहले से लॉगिन हैं? दोबारा जाँचें · Already logged in? Recheck</a></div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      function isLoggedIn(){
+        try{ return !!localStorage.getItem('userEmail'); }catch(e){ return false; }
+      }
+      function applyGate(){
+        var ov = document.getElementById('ep-lock-overlay');
+        if(!ov) return;
+        if(isLoggedIn()){
+          ov.style.display = 'none';
+          document.body.style.overflow = '';
+        }else{
+          ov.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+      }
+      applyGate();
+      setTimeout(applyGate, 400);
+      window.addEventListener('storage', applyGate);
+    })();
+  </script>
+  <div id="ep-devtools-warning" style="display:none;position:fixed;inset:0;z-index:10001;background:#231407;align-items:center;justify-content:center;text-align:center;padding:24px;">
+    <div style="max-width:420px;">
+      <div style="font-size:2.2rem;margin-bottom:10px;">🛡️</div>
+      <h2 style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.2rem;margin:0 0 10px;color:#f4e8ce;">डेवलपर टूल्स बंद करें · Please Close Developer Tools</h2>
+      <p style="font-family:'Martel',Georgia,serif;font-size:.88rem;color:#dfbf86;margin:0;line-height:1.55;">यह सामग्री सुरक्षित है। कृपया Inspect / DevTools बंद करके पढ़ना जारी रखें।<br>This content is protected. Please close Developer Tools to keep reading.</p>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var threshold = 170;
+      var isOpen = false;
+      function showWarn(){
+        var el = document.getElementById('ep-devtools-warning');
+        if(el) el.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+      function hideWarn(){
+        var el = document.getElementById('ep-devtools-warning');
+        if(el) el.style.display = 'none';
+        if(!document.getElementById('ep-lock-overlay') || document.getElementById('ep-lock-overlay').style.display !== 'flex'){
+          document.body.style.overflow = '';
+        }
+      }
+      function isLikelyMobile(){
+        var coarse = false;
+        try{ coarse = window.matchMedia('(pointer:coarse)').matches; }catch(e){}
+        var touch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        return coarse || touch || window.innerWidth < 900;
+      }
+      function check(){
+        if(isLikelyMobile()){
+          if(isOpen){ isOpen = false; hideWarn(); }
+          return;
+        }
+        var open = (window.outerWidth - window.innerWidth > threshold) ||
+                    (window.outerHeight - window.innerHeight > threshold);
+        if(open && !isOpen){ isOpen = true; showWarn(); }
+        if(!open && isOpen){ isOpen = false; hideWarn(); }
+      }
+      setInterval(check, 700);
+      window.addEventListener('resize', check);
+    })();
+  </script>
+
+  <header class="masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="index.html">
+        <span class="seal">रा</span>
+        <span class="brand-text">
+          <span class="hi">मरु विरासत</span>
+          <span class="en">Rajasthan History &amp; Culture · Study Notes</span>
+        </span>
+      </a>
+      <a href="../../index.html" class="ep-backlink">&larr; Exam Portal</a>
+      <button class="chapters-btn" type="button">
+        <span class="bars"><span></span><span></span><span></span></span>
+        अध्याय सूची
+      </button>
+    </div>
+  </header>
+
+  <div class="toc-overlay">
+    <div class="toc-panel">
+      <button class="toc-close">बंद करें ✕</button>
+      <div class="toc-head">
+        <div class="eyebrow" style="justify-content:center">विषय-सूची</div>
+        <h2>सोलह अध्याय · राजस्थान का इतिहास एवं संस्कृति</h2>
+      </div>
+      <div class="toc-part-label">भाग अ · राजनीतिक इतिहास</div><div class="toc-grid"><a class="toc-item" href="mewar.html">
+              <span class="toc-num">I</span>
+              <span>
+                <span class="t-hi">मेवाड़ का इतिहास</span>
+                <span class="t-yr">728 – 1615</span>
+              </span>
+            </a><a class="toc-item" href="marwar.html">
+              <span class="toc-num">II</span>
+              <span>
+                <span class="t-hi">मारवाड़ (जोधपुर) का इतिहास</span>
+                <span class="t-yr">1226 – 1707</span>
+              </span>
+            </a><a class="toc-item" href="bikaner-jaisalmer.html">
+              <span class="toc-num">III</span>
+              <span>
+                <span class="t-hi">बीकानेर एवं जैसलमेर का इतिहास</span>
+                <span class="t-yr">1156 – 1541</span>
+              </span>
+            </a><a class="toc-item" href="amber-jaipur.html">
+              <span class="toc-num">IV</span>
+              <span>
+                <span class="t-hi">आमेर–जयपुर का इतिहास</span>
+                <span class="t-yr">1128 – 1743</span>
+              </span>
+            </a><a class="toc-item" href="hadoti.html">
+              <span class="toc-num">V</span>
+              <span>
+                <span class="t-hi">हाड़ौती : कोटा, बूँदी एवं झालावाड़</span>
+                <span class="t-yr">1241 – 1838</span>
+              </span>
+            </a><a class="toc-item" href="vagad-states.html">
+              <span class="toc-num">VI</span>
+              <span>
+                <span class="t-hi">वागड़ एवं मेवाड़-अंचल की छोटी रियासतें</span>
+                <span class="t-yr">1197 – 1818</span>
+              </span>
+            </a><a class="toc-item" href="east-states.html">
+              <span class="toc-num">VII</span>
+              <span>
+                <span class="t-hi">पूर्वी राजस्थान : भरतपुर, अलवर, धौलपुर, करौली</span>
+                <span class="t-yr">1500 – 1826</span>
+              </span>
+            </a><a class="toc-item" href="1857-movements.html">
+              <span class="toc-num">VIII</span>
+              <span>
+                <span class="t-hi">1857 की क्रांति तथा किसान एवं जनजातीय आंदोलन</span>
+                <span class="t-yr">1857 – 1947</span>
+              </span>
+            </a><a class="toc-item" href="unification.html">
+              <span class="toc-num">IX</span>
+              <span>
+                <span class="t-hi">प्रजामंडल आंदोलन एवं राजस्थान का एकीकरण</span>
+                <span class="t-yr">1927 – 1956</span>
+              </span>
+            </a></div><div class="toc-part-label">भाग ब · कला एवं संस्कृति</div><div class="toc-grid"><a class="toc-item" href="fairs-festivals.html">
+              <span class="toc-num">X</span>
+              <span>
+                <span class="t-hi">मेले एवं त्यौहार — मासिक कैलेंडर</span>
+                <span class="t-yr">बारहमासी</span>
+              </span>
+            </a><a class="toc-item" href="saints-deities.html">
+              <span class="toc-num">XI</span>
+              <span>
+                <span class="t-hi">संत परंपरा एवं लोक देवता</span>
+                <span class="t-yr">भक्ति काल</span>
+              </span>
+            </a><a class="toc-item" href="language-literature.html">
+              <span class="toc-num">XII</span>
+              <span>
+                <span class="t-hi">भाषा, साहित्य एवं लोक गीत</span>
+                <span class="t-yr">साहित्यिक धरोहर</span>
+              </span>
+            </a><a class="toc-item" href="dance-drama.html">
+              <span class="toc-num">XIII</span>
+              <span>
+                <span class="t-hi">लोक नृत्य, लोक नाट्य एवं वाद्ययंत्र</span>
+                <span class="t-yr">प्रदर्शनकारी कला</span>
+              </span>
+            </a><a class="toc-item" href="tribes.html">
+              <span class="toc-num">XIV</span>
+              <span>
+                <span class="t-hi">राजस्थान की जनजातियाँ</span>
+                <span class="t-yr">जनजातीय समाज</span>
+              </span>
+            </a><a class="toc-item active" href="art-craft.html">
+              <span class="toc-num">XV</span>
+              <span>
+                <span class="t-hi">चित्रकला एवं हस्तशिल्प</span>
+                <span class="t-yr">कला परंपरा</span>
+              </span>
+            </a><a class="toc-item" href="archaeology-dialects.html">
+              <span class="toc-num">XVI</span>
+              <span>
+                <span class="t-hi">पुरातत्व स्थल एवं राजस्थानी बोलियाँ</span>
+                <span class="t-yr">सभ्यता व बोलियाँ</span>
+              </span>
+            </a></div>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="chapter-chip"><span class="num">XV</span><span class="label">अध्याय XV · कला परंपरा</span></div>
+        <div class="eyebrow">कला एवं संस्कृति</div>
+        <h1>चित्रकला एवं हस्तशिल्प</h1>
+        <p class="dek">मेवाड़, मारवाड़, ढूँढाड़ व हाड़ौती चित्रकला शैलियाँ तथा ब्लू पॉटरी, बंधेज, मीनाकारी व थेवा कला सहित प्रमुख हस्तशिल्प।</p>
+        <div class="tag-row"><span class="tag">किशनगढ़ शैली</span><span class="tag">ब्लू पॉटरी</span><span class="tag">बंधेज</span><span class="tag">मीनाकारी</span><span class="tag">थेवा कला</span></div>
+      </div>
+      <div class="hero-figure">
+        <div class="jharokha">
+          <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+<rect x="0" y="0" width="300" height="220" fill="#f4e8ce"/>
+<circle cx="150" cy="110" r="72" fill="none" stroke="#bf5730" stroke-width="6"/>
+<circle cx="150" cy="110" r="50" fill="none" stroke="#1f5c73" stroke-width="4"/>
+<circle cx="150" cy="110" r="28" fill="none" stroke="#dfa22b" stroke-width="4"/>
+<g stroke="#7d2035" stroke-width="3">
+<line x1="150" y1="38" x2="150" y2="182"/>
+<line x1="78" y1="110" x2="222" y2="110"/>
+<line x1="99" y1="59" x2="201" y2="161"/>
+<line x1="201" y1="59" x2="99" y2="161"/>
+</g>
+<path d="M0 200 h300 v20 h-300 z" fill="#dfbf86"/>
+</svg>
+          <div class="cap">चित्रण — अध्याय XV</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="wrap">
+    <hr class="hairline">
+    <div class="panel"><h2><span class="ico">🎨</span>राजस्थानी चित्रकला शैलियाँ</h2><div class="tbl-wrap"><table class="rj-table"><thead><tr><th>शैली</th><th>केंद्र</th><th>विशेषता</th></tr></thead><tbody><tr><td>मेवाड़ शैली</td><td>उदयपुर, नाथद्वारा, चावंड</td><td>गहरे लाल-पीले रंगों का प्रयोग; कृष्ण-लीला विषयक 'पिछवाई' चित्रण नाथद्वारा में प्रसिद्ध</td></tr><tr><td>मारवाड़ शैली</td><td>जोधपुर, नागौर, किशनगढ़</td><td>किशनगढ़ की 'बणी-ठणी' चित्र शैली विश्वप्रसिद्ध</td></tr><tr><td>ढूँढाड़ शैली</td><td>जयपुर, आमेर, उणियारा</td><td>राधा-कृष्ण व दरबारी दृश्यों का बारीक चित्रण</td></tr><tr><td>हाड़ौती शैली</td><td>कोटा, बूँदी</td><td>शिकार व वन्य-दृश्यों (शिकारगाह) के चित्रण हेतु विख्यात</td></tr></tbody></table></div></div><div class="panel"><h2><span class="ico">🧵</span>प्रमुख हस्तशिल्प</h2><ul><li><b>ब्लू पॉटरी</b> — जयपुर की प्रसिद्ध नीली मृदभांड कला, फारसी प्रभाव से विकसित।</li><li><b>बंधेज (बंधनी)</b> — कपड़े को बाँधकर रंगने की तकनीक; सांगानेर व जोधपुर प्रमुख केंद्र।</li><li><b>मीनाकारी</b> — धातु आभूषणों पर रंगीन तामचीनी कला; जयपुर विशेष रूप से प्रसिद्ध।</li><li><b>मौजड़ी (जूतियाँ)</b> — जोधपुर की पारम्परिक कशीदाकारी युक्त चमड़े की जूतियाँ।</li><li><b>कठपुतली</b> — राजस्थान की पारंपरिक धागा-कठपुतली नाट्य कला, लोककथाओं पर आधारित प्रस्तुतियाँ।</li><li><b>थेवा कला</b> — प्रतापगढ़ की विशिष्ट स्वर्ण-काँच आभूषण कला।</li></ul></div>
+    <div class="pager"><a href="tribes.html"><span class="lbl">&larr; पिछला अध्याय</span><span>राजस्थान की जनजातियाँ</span></a><a class="next" href="archaeology-dialects.html"><span class="lbl">अगला अध्याय &rarr;</span><span>पुरातत्व स्थल एवं राजस्थानी बोलियाँ</span></a></div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="scallop" style="margin-bottom:18px"></div>
+      मरु विरासत — राजस्थान का इतिहास एवं संस्कृति · Exam Portal Study Notes<br>
+      RAS · Patwari · REET · UGC NET परीक्षा हेतु संक्षिप्त अध्ययन सामग्री
+    </div>
+  </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.querySelector('.chapters-btn');
+  var overlay = document.querySelector('.toc-overlay');
+  var closeBtn = document.querySelector('.toc-close');
+  if (btn && overlay) {
+    btn.addEventListener('click', function () { overlay.classList.add('open'); });
+  }
+  if (closeBtn && overlay) {
+    closeBtn.addEventListener('click', function () { overlay.classList.remove('open'); });
+  }
+  if (overlay) {
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') overlay.classList.remove('open');
+    });
+  }
+});
+</script>
+</body></html>
