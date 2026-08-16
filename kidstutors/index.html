@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>अक्षर उड़ान | KidsTutors — Exam Portal CSE</title>
+<meta name="description" content="KidsTutors — Exam Portal CSE का किड्स लर्निंग पैनल, अक्षर उड़ान द्वारा। बच्चों के लिए हिंदी मात्राएँ, व्याकरण, English Grammar, गणित और अबेकस के मज़ेदार खेल।">
+<link rel="icon" type="image/png" href="/logo.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Baloo+Da+2:wght@500;600;700;800&family=Mukta:wght@400;500;600;700&display=swap');
+
+:root{
+  --sky-top:#BFE6FF;
+  --sky-bottom:#F3FBFF;
+  --marigold:#FFA630;
+  --marigold-dark:#E4890E;
+  --marigold-light:#FFE3B3;
+  --parrot:#33B27C;
+  --parrot-dark:#278F62;
+  --parrot-light:#CDF2E1;
+  --plum:#8A4FC4;
+  --plum-dark:#6B379D;
+  --plum-light:#EBDBFA;
+  --coral:#FF6B5B;
+  --coral-dark:#E24C3C;
+  --ink:#22283B;
+  --ink-soft:#5B6178;
+  --paper:#FFFDF9;
+  --line:#E4E1F5;
+  --coral-light:#FFD9D2;
+  --indigo-dark:#1F5F94;
+  --indigo-light:#D6ECFB;
+  --sky-deep:#2F7FC1;
+  --forest-deep:#0F3D2E;
+  --forest-mid:#1E6B4C;
+  --forest-light:#3F9E6E;
+  --forest-canopy:#2A7F58;
+  --trunk:#6B4226;
+  --firefly:#FFE58A;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  font-family:'Mukta',sans-serif;
+  background:linear-gradient(180deg,var(--sky-top) 0%, var(--sky-bottom) 38%, #EAF7EC 62%, #DCF0DE 100%);
+  color:var(--ink);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+/* ---------- Forest background decoration ---------- */
+.forest-bg{position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;}
+.forest-bg .layer{position:absolute; left:0; right:0; width:100%;}
+.forest-bg .hills-far{bottom:0; opacity:0.35;}
+.forest-bg .hills-near{bottom:0; opacity:0.55;}
+.forest-bg .vine-left, .forest-bg .vine-right{position:absolute; top:0; width:120px; height:340px; opacity:0.5;}
+.forest-bg .vine-left{left:-24px;}
+.forest-bg .vine-right{right:-24px; transform:scaleX(-1);}
+.leaf-float{position:absolute; opacity:0.55; animation:leafDrift linear infinite;}
+@keyframes leafDrift{
+  0%{transform:translateY(-40px) rotate(0deg); opacity:0;}
+  10%{opacity:0.55;}
+  90%{opacity:0.5;}
+  100%{transform:translateY(110vh) rotate(340deg); opacity:0;}
+}
+.firefly{position:absolute; width:6px; height:6px; border-radius:50%; background:var(--firefly);
+  box-shadow:0 0 8px 3px var(--firefly); animation:fireflyPulse 3.2s ease-in-out infinite;}
+@keyframes fireflyPulse{0%,100%{opacity:0.15; transform:scale(0.8);} 50%{opacity:0.9; transform:scale(1.15);}}
+#app{position:relative; z-index:1;}
+.hi{font-family:'Baloo Da 2',sans-serif;}
+.en{font-family:'Baloo 2',sans-serif;}
+button{font-family:inherit; cursor:pointer;}
+#app{max-width:720px; margin:0 auto; min-height:100vh; position:relative; padding-bottom:30px;}
+
+/* ---------- Top bar ---------- */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 18px 10px;
+}
+.brand{display:flex; align-items:center; gap:8px; cursor:pointer; border:none; background:none; padding:0;}
+.brand-kite{width:34px; height:34px;}
+.brand-name{font-family:'Baloo Da 2',sans-serif; font-weight:800; font-size:22px; color:var(--sky-deep); letter-spacing:0.2px;}
+.star-wallet{
+  display:flex; align-items:center; gap:6px;
+  background:var(--paper); border:2px solid var(--marigold-light);
+  padding:6px 14px; border-radius:999px; font-weight:700; color:var(--marigold-dark);
+  box-shadow:0 2px 0 rgba(0,0,0,0.04);
+}
+.portal-back{
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:'Mukta',sans-serif; font-size:12px; font-weight:700; color:var(--ink-soft);
+  background:var(--paper); border:1.5px solid var(--line); border-radius:999px;
+  padding:5px 12px; margin:2px 18px 0;
+}
+.portal-back:active{opacity:0.7;}
+
+/* ---------- Home ---------- */
+.hero{
+  text-align:center; padding:6px 24px 18px;
+}
+.hero h1{
+  font-family:'Baloo Da 2',sans-serif; font-size:30px; margin:6px 0 4px; color:var(--ink);
+}
+.hero p{
+  font-family:'Mukta',sans-serif; color:var(--ink-soft); font-size:15px; margin:0;
+}
+.subject-list{
+  display:flex; flex-direction:column; gap:16px; padding:10px 18px 20px;
+}
+.subject-card{
+  position:relative; overflow:hidden;
+  border:none; text-align:left; border-radius:22px;
+  padding:20px 20px 20px 96px; min-height:96px;
+  display:flex; flex-direction:column; justify-content:center;
+  box-shadow:0 6px 0 rgba(0,0,0,0.08);
+  transform:translateY(0); transition:transform .12s ease, box-shadow .12s ease;
+}
+.subject-card:active{ transform:translateY(4px); box-shadow:0 2px 0 rgba(0,0,0,0.08); }
+.subject-card::after{
+  content:"🌿"; position:absolute; right:10px; bottom:6px; font-size:26px; opacity:0.28;
+  transform:rotate(-12deg);
+}
+.subject-card.marigold{ background:linear-gradient(135deg,#FFC46B,var(--marigold)); }
+.subject-card.plum{ background:linear-gradient(135deg,#B888E8,var(--plum)); }
+.subject-card.parrot{ background:linear-gradient(135deg,#63D19E,var(--parrot)); }
+.subject-card.coral{ background:linear-gradient(135deg,#FF9B8F,var(--coral)); }
+.subject-card.indigo{ background:linear-gradient(135deg,#7EC1F0,var(--sky-deep)); }
+.subject-emoji{
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  width:64px; height:64px; border-radius:18px; background:rgba(255,255,255,0.35);
+  display:flex; align-items:center; justify-content:center; font-size:34px;
+}
+.subject-title{font-family:'Baloo Da 2',sans-serif; font-weight:800; font-size:21px; color:#fff; text-shadow:0 1px 0 rgba(0,0,0,0.08);}
+.subject-sub{font-family:'Mukta',sans-serif; font-size:13.5px; color:rgba(255,255,255,0.92); margin-top:2px;}
+.subject-progress{margin-top:8px; font-size:12.5px; color:rgba(255,255,255,0.95); font-weight:700;}
+
+/* ---------- Level map ---------- */
+.map-header{padding:14px 18px 4px; display:flex; align-items:center; gap:10px;}
+.back-btn{
+  border:none; background:var(--paper); width:38px; height:38px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center; box-shadow:0 3px 0 rgba(0,0,0,0.08);
+  font-size:18px; color:var(--ink);
+}
+.map-title{font-family:'Baloo Da 2',sans-serif; font-weight:800; font-size:20px;}
+.map-tagline{padding:0 18px 6px; color:var(--ink-soft); font-size:13.5px;}
+.level-path{position:relative; padding:30px 20px 40px; display:flex; flex-direction:column; gap:34px; align-items:center;}
+.level-path::before{
+  content:""; position:absolute; top:10px; bottom:10px; left:50%; width:5px;
+  transform:translateX(-50%);
+  background-image:linear-gradient(var(--string-color,#C9C4E8) 60%, transparent 0%);
+  background-size:5px 16px; background-repeat:repeat-y; border-radius:4px; opacity:0.7;
+}
+.level-node-wrap{position:relative; z-index:1; width:100%; display:flex;}
+.level-node-wrap.left{justify-content:flex-start; padding-left:8%;}
+.level-node-wrap.right{justify-content:flex-end; padding-right:8%;}
+.level-node-wrap.mid{justify-content:center;}
+.level-node{
+  border:none; width:96px; height:96px; border-radius:26px; position:relative;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  transform:rotate(45deg); box-shadow:0 5px 0 rgba(0,0,0,0.12);
+}
+.level-node .inner{transform:rotate(-45deg); display:flex; flex-direction:column; align-items:center;}
+.level-node .lvl-num{font-family:'Baloo 2',sans-serif; font-weight:800; font-size:26px; color:#fff;}
+.level-node.locked{background:#D8DAE8 !important; box-shadow:0 5px 0 rgba(0,0,0,0.06);}
+.level-node.locked .lvl-num{color:#9498B0;}
+.level-tail{position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); width:2px; height:22px; background:#C9C4E8;}
+.level-caption{margin-top:30px; text-align:center; font-size:12.5px; font-weight:700; color:var(--ink-soft); max-width:120px;}
+.level-stars-mini{display:flex; gap:2px; margin-top:2px;}
+.level-stars-mini span{font-size:12px;}
+
+/* ---------- Play screen ---------- */
+.play-wrap{padding:14px 18px 40px;}
+.play-top{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+.progress-track{flex:1; height:12px; background:#EAE7F7; border-radius:8px; overflow:hidden;}
+.progress-fill{height:100%; border-radius:8px; transition:width .3s ease;}
+.play-score{font-weight:800; font-size:14px; color:var(--marigold-dark); white-space:nowrap;}
+.mascot-row{display:flex; justify-content:center; align-items:flex-end; gap:10px; margin:6px 0 10px;}
+.mascot-row svg{width:72px; height:72px;}
+.mascot-row .buddy-svg{width:52px; height:52px;}
+.question-card{
+  background:var(--paper); border-radius:22px; padding:26px 20px; text-align:center;
+  box-shadow:0 6px 0 rgba(0,0,0,0.06); border:2px solid var(--line);
+}
+.question-label{font-size:12.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--ink-soft); margin-bottom:10px;}
+.question-text{font-family:'Baloo Da 2',sans-serif; font-size:26px; font-weight:700; line-height:1.5; color:var(--ink); word-break:break-word;}
+.question-text .blank{
+  display:inline-block; min-width:26px; border-bottom:4px solid var(--coral); margin:0 2px;
+}
+.question-text.en-q{font-family:'Baloo 2',sans-serif; font-size:19px; line-height:1.55;}
+.question-text.math-q{font-family:'Baloo 2',sans-serif; font-size:34px; font-weight:800; letter-spacing:0.5px;}
+.abacus-visual{max-width:260px; margin:14px auto 4px;}
+.abacus-visual svg{width:100%; height:auto; display:block;}
+.options-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px;}
+.options-grid.matra{grid-template-columns:repeat(4,1fr);}
+.opt-btn{
+  border:2px solid var(--line); background:#fff; border-radius:16px; padding:16px 10px;
+  font-size:17px; font-weight:700; color:var(--ink); box-shadow:0 4px 0 rgba(0,0,0,0.05);
+  transition:transform .08s ease;
+}
+.opt-btn.matra-opt{font-family:'Baloo Da 2',sans-serif; font-size:28px; padding:14px 6px;}
+.opt-btn:active{transform:translateY(2px);}
+.opt-btn.correct{background:var(--parrot-light); border-color:var(--parrot); color:var(--parrot-dark);}
+.opt-btn.wrong{background:#FFE1DC; border-color:var(--coral); color:var(--coral-dark);}
+.opt-btn.dim{opacity:0.45;}
+.feedback-box{
+  margin-top:16px; border-radius:16px; padding:12px 16px; font-size:14.5px; text-align:left;
+  display:none; font-weight:500; line-height:1.5;
+}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:var(--parrot-light); color:var(--parrot-dark);}
+.feedback-box.no{background:#FFE1DC; color:var(--coral-dark);}
+.feedback-word{
+  font-family:'Baloo Da 2',sans-serif; font-weight:800; font-size:32px;
+  text-align:center; margin-bottom:6px; letter-spacing:0.5px;
+}
+.feedback-word.en{font-family:'Baloo 2',sans-serif; font-size:24px;}
+.feedback-note{font-size:14.5px; text-align:center;}
+.next-btn{
+  margin-top:16px; width:100%; border:none; border-radius:16px; padding:15px;
+  background:var(--sky-deep); color:#fff; font-weight:800; font-size:16px;
+  box-shadow:0 4px 0 rgba(0,0,0,0.12); display:none;
+}
+.next-btn.show{display:block;}
+.dropdown-badge{
+  display:inline-block; margin-bottom:8px; padding:4px 12px; border-radius:999px;
+  background:var(--plum-light); color:var(--plum-dark); font-size:12px; font-weight:800;
+}
+.dropdown-wrap{margin-top:24px; display:flex; flex-direction:column; align-items:center; gap:14px;}
+.dropdown-select{
+  width:100%; max-width:260px; padding:14px 16px; font-size:17px; font-weight:700;
+  border:2px solid var(--line); border-radius:14px; background:#fff; color:var(--ink);
+  font-family:'Baloo Da 2','Baloo 2',sans-serif;
+}
+.dropdown-select.correct{border-color:var(--parrot); background:var(--parrot-light); color:var(--parrot-dark);}
+.dropdown-select.wrong{border-color:var(--coral); background:#FFE1DC; color:var(--coral-dark);}
+.check-btn{
+  border:none; border-radius:14px; padding:13px 34px; font-weight:800; font-size:15px;
+  background:var(--sky-deep); color:#fff; box-shadow:0 4px 0 rgba(0,0,0,0.12);
+}
+.check-btn:disabled{opacity:0.6;}
+.check-btn.shake{animation:shakeX .35s ease;}
+@keyframes shakeX{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+
+/* ---------- Result screen ---------- */
+.result-wrap{padding:40px 24px; text-align:center;}
+.result-mascot{display:flex; justify-content:center; align-items:flex-end; gap:10px;}
+.result-mascot svg{width:120px; height:120px;}
+.result-mascot .buddy-svg{width:76px; height:76px;}
+.result-title{font-family:'Baloo Da 2',sans-serif; font-size:26px; font-weight:800; margin:10px 0 2px;}
+.result-sub{color:var(--ink-soft); font-size:14.5px; margin-bottom:18px;}
+.stars-big{display:flex; justify-content:center; gap:10px; margin:18px 0;}
+.stars-big span{font-size:52px; opacity:0.25; transform:scale(0.6); display:inline-block;}
+.stars-big span.won{opacity:1; animation:pop .45s ease forwards;}
+@keyframes pop{ 0%{transform:scale(0.4) rotate(-20deg);} 60%{transform:scale(1.15) rotate(6deg);} 100%{transform:scale(1) rotate(0);} }
+.result-score{font-weight:800; color:var(--marigold-dark); font-size:16px; margin-bottom:22px;}
+.result-actions{display:flex; flex-direction:column; gap:12px; max-width:320px; margin:0 auto;}
+.btn-primary{border:none; border-radius:16px; padding:15px; font-weight:800; font-size:15.5px; color:#fff; background:var(--parrot); box-shadow:0 4px 0 rgba(0,0,0,0.1);}
+.btn-secondary{border:2px solid var(--line); border-radius:16px; padding:14px; font-weight:700; font-size:15px; color:var(--ink); background:#fff;}
+
+@media (min-width:480px){
+  .question-text{font-size:30px;}
+}
+
+/* ---------- Abacus Learn screen ---------- */
+.learn-wrap{padding:14px 18px 40px;}
+.learn-header{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
+.learn-title{font-family:'Baloo Da 2',sans-serif; font-weight:800; font-size:20px;}
+.learn-tagline{padding:0 0 12px; color:var(--ink-soft); font-size:13.5px;}
+.mode-tabs{display:flex; gap:8px; margin-bottom:14px;}
+.mode-tab{
+  flex:1; border:2px solid var(--line); background:#fff; border-radius:14px;
+  padding:10px 6px; font-weight:800; font-size:13.5px; color:var(--ink-soft);
+  text-align:center;
+}
+.mode-tab.active{background:var(--indigo-dark); border-color:var(--indigo-dark); color:#fff;}
+.digit-select{display:flex; gap:8px; justify-content:center; margin-bottom:14px; flex-wrap:wrap;}
+.digit-btn{
+  border:2px solid var(--line); background:#fff; border-radius:12px; padding:8px 14px;
+  font-weight:800; font-size:13.5px; color:var(--ink-soft);
+}
+.digit-btn.active{background:var(--sky-deep); border-color:var(--sky-deep); color:#fff;}
+.learn-card{
+  background:var(--paper); border-radius:22px; padding:18px 14px 20px; text-align:center;
+  box-shadow:0 6px 0 rgba(0,0,0,0.06); border:2px solid var(--line);
+}
+.learn-abacus-visual{max-width:100%; width:340px; margin:6px auto 10px;}
+.learn-abacus-visual svg{width:100%; height:auto; display:block; touch-action:manipulation;}
+.bead-hit{cursor:pointer;}
+.number-display{
+  font-family:'Baloo Da 2',sans-serif; font-weight:800; font-size:clamp(28px,8vw,44px); color:var(--indigo-dark);
+  margin:6px 0 2px; letter-spacing:1px; word-break:break-all;
+}
+.expanded-form{font-size:13.5px; color:var(--ink-soft); margin-bottom:12px; word-break:break-word;}
+.place-chips{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:14px;}
+.place-chip{
+  border-radius:12px; padding:6px 12px; font-size:12px; font-weight:800; color:#fff; white-space:nowrap;
+}
+.challenge-box{
+  background:var(--indigo-light); border-radius:16px; padding:12px 14px; margin-bottom:14px; text-align:center;
+}
+.challenge-target{font-family:'Baloo Da 2',sans-serif; font-weight:800; font-size:clamp(20px,6vw,26px); color:var(--indigo-dark);}
+.challenge-label{font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.3px;}
+.challenge-feedback{margin-top:8px; font-weight:700; font-size:13.5px; min-height:20px;}
+.challenge-feedback.ok{color:var(--parrot-dark);}
+.challenge-feedback.no{color:var(--coral-dark);}
+.hint-box{
+  background:#FFF6E0; border:1.5px dashed var(--marigold); border-radius:14px;
+  padding:10px 14px; margin-bottom:12px; font-size:12.5px; line-height:1.5; color:#7A5B12; font-weight:600;
+}
+.learn-actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:6px;}
+.learn-btn{
+  border:none; border-radius:14px; padding:12px 18px; font-weight:800; font-size:14px;
+  color:#fff; box-shadow:0 4px 0 rgba(0,0,0,0.1);
+}
+.learn-btn.primary{background:var(--sky-deep);}
+.learn-btn.secondary{background:var(--parrot);}
+.learn-btn.ghost{background:#fff; color:var(--ink); border:2px solid var(--line); box-shadow:none;}
+.learn-cta{
+  display:flex; align-items:center; justify-content:center; gap:8px; margin:4px 18px 16px;
+  border:none; border-radius:16px; padding:14px; font-weight:800; font-size:14.5px; color:#fff;
+  background:linear-gradient(135deg,#7EC1F0,var(--sky-deep)); box-shadow:0 4px 0 rgba(0,0,0,0.12);
+  width:calc(100% - 36px);
+}
+
+/* ---------- Mobile responsive fixes ---------- */
+@media (max-width:400px){
+  #app{padding-bottom:20px;}
+  .topbar{padding:12px 14px 8px;}
+  .brand-name{font-size:18px;}
+  .brand-kite{width:28px; height:28px;}
+  .star-wallet{padding:5px 11px; font-size:13px;}
+  .hero{padding:4px 16px 12px;}
+  .hero h1{font-size:22px;}
+  .hero p{font-size:13px;}
+  .subject-list{padding:8px 12px 16px; gap:12px;}
+  .subject-card{padding:15px 12px 15px 74px; min-height:78px; border-radius:18px;}
+  .subject-card::after{font-size:20px; right:8px; bottom:4px;}
+  .subject-emoji{width:50px; height:50px; font-size:26px; left:12px; border-radius:14px;}
+  .subject-title{font-size:16.5px;}
+  .subject-sub{font-size:11.5px;}
+  .subject-progress{font-size:11.5px;}
+  .map-header{padding:12px 14px 4px;}
+  .map-title{font-size:18px;}
+  .map-tagline{padding:0 14px 4px; font-size:12.5px;}
+  .level-path{padding:22px 4px 30px; gap:24px;}
+  .level-node-wrap.left{padding-left:0;}
+  .level-node-wrap.right{padding-right:0;}
+  .level-node{width:74px; height:74px; border-radius:18px;}
+  .level-node .lvl-num{font-size:20px;}
+  .level-caption{font-size:10.5px; max-width:96px; margin-top:26px;}
+  .play-wrap{padding:12px 12px 30px;}
+  .question-card{padding:18px 12px; border-radius:18px;}
+  .question-text{font-size:20px;}
+  .question-text.en-q{font-size:16px;}
+  .question-text.math-q{font-size:25px;}
+  .abacus-visual{max-width:100%;}
+  .options-grid{gap:8px; margin-top:18px;}
+  .options-grid.matra{grid-template-columns:repeat(2,1fr);}
+  .opt-btn{font-size:14.5px; padding:13px 6px; border-radius:13px;}
+  .opt-btn.matra-opt{font-size:23px;}
+  .feedback-word{font-size:26px;}
+  .result-wrap{padding:28px 18px;}
+  .result-title{font-size:22px;}
+  .learn-wrap{padding:12px 12px 30px;}
+  .learn-card{padding:14px 8px 16px; border-radius:18px;}
+  .mode-tab{font-size:12px; padding:9px 4px;}
+  .digit-btn{font-size:12.5px; padding:7px 11px;}
+  .place-chip{font-size:10.5px; padding:5px 9px;}
+  .learn-btn{font-size:13px; padding:11px 14px;}
+}
+</style>
+</head>
+<body>
+<div class="forest-bg" aria-hidden="true">
+  <svg class="layer hills-far" viewBox="0 0 400 140" preserveAspectRatio="none" style="height:160px;">
+    <path d="M0,140 L0,70 Q40,30 80,60 T160,55 T240,65 T320,45 T400,60 L400,140 Z" fill="#2A7F58"/>
+  </svg>
+  <svg class="layer hills-near" viewBox="0 0 400 120" preserveAspectRatio="none" style="height:120px;">
+    <path d="M0,120 L0,85 Q50,45 100,80 T200,70 T300,85 T400,65 L400,120 Z" fill="#1E6B4C"/>
+  </svg>
+  <svg class="vine-left" viewBox="0 0 120 340" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10,0 Q40,60 15,120 T20,240 Q10,280 30,340" stroke="#3F9E6E" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <circle cx="15" cy="40" r="10" fill="#2A7F58"/><circle cx="24" cy="100" r="9" fill="#33B27C"/>
+    <circle cx="12" cy="170" r="10" fill="#2A7F58"/><circle cx="22" cy="230" r="9" fill="#33B27C"/>
+    <circle cx="18" cy="300" r="10" fill="#2A7F58"/>
+  </svg>
+  <svg class="vine-right" viewBox="0 0 120 340" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10,0 Q40,60 15,120 T20,240 Q10,280 30,340" stroke="#3F9E6E" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <circle cx="15" cy="40" r="10" fill="#2A7F58"/><circle cx="24" cy="100" r="9" fill="#33B27C"/>
+    <circle cx="12" cy="170" r="10" fill="#2A7F58"/><circle cx="22" cy="230" r="9" fill="#33B27C"/>
+    <circle cx="18" cy="300" r="10" fill="#2A7F58"/>
+  </svg>
+  <div class="leaf-float" style="left:8%; animation-duration:14s; animation-delay:0s;">🍃</div>
+  <div class="leaf-float" style="left:22%; animation-duration:18s; animation-delay:3s; font-size:14px;">🍃</div>
+  <div class="leaf-float" style="left:78%; animation-duration:16s; animation-delay:6s;">🍃</div>
+  <div class="leaf-float" style="left:88%; animation-duration:20s; animation-delay:1s; font-size:13px;">🍃</div>
+  <div class="leaf-float" style="left:50%; animation-duration:22s; animation-delay:9s; font-size:12px;">🍂</div>
+  <div class="firefly" style="left:12%; top:30%; animation-delay:0.4s;"></div>
+  <div class="firefly" style="left:85%; top:22%; animation-delay:1.4s;"></div>
+  <div class="firefly" style="left:70%; top:55%; animation-delay:2.1s;"></div>
+  <div class="firefly" style="left:20%; top:65%; animation-delay:0.9s;"></div>
+</div>
+<div id="app"></div>
+
+<script>
+/* ================= DATA ================= */
+const SUBJECTS = {
+  matra: {
+    label: "हिंदी मात्राएँ", labelEn:"Hindi Matras", emoji:"🪁", theme:"marigold",
+    tagline:"सही मात्रा चुनकर शब्द को उड़ान दो!",
+    levels:[
+      {title:"ा  ि  ी", classRange:"कक्षा 1-2", questions:[
+        {q:"म_ला", opts:["ा","ि","ी","ु"], ans:0, full:"माला", note:"माला — यहाँ 'ा' मात्रा लगती है (गले में पहनने वाली माला)।"},
+        {q:"द_न", opts:["ि","ी","ु","ा"], ans:0, full:"दिन", note:"दिन — यहाँ 'ि' मात्रा लगती है, ध्यान दें यह अक्षर से पहले लिखी जाती है।"},
+        {q:"ग_त", opts:["ी","ि","ु","ू"], ans:0, full:"गीत", note:"गीत — यहाँ 'ी' मात्रा लगती है (गाना)।"},
+        {q:"क_म", opts:["ा","ो","ी","ु"], ans:0, full:"काम", note:"काम — यहाँ 'ा' मात्रा लगती है।"},
+        {q:"म_ल", opts:["ि","ा","ी","े"], ans:0, full:"मिल", note:"मिल — यहाँ 'ि' मात्रा लगती है (मिलना)।"},
+        {q:"स_ता", opts:["ी","ि","ु","ा"], ans:0, full:"सीता", note:"सीता — यहाँ 'ी' मात्रा लगती है।"}
+      ]},
+      {title:"ु  ू  े", classRange:"कक्षा 1-2", questions:[
+        {q:"प_ल", opts:["ु","ू","ा","ि"], ans:0, full:"पुल", note:"पुल — यहाँ 'ु' मात्रा लगती है (नदी पर बना पुल)।"},
+        {q:"ध_ल", opts:["ू","ु","ो","े"], ans:0, full:"धूल", note:"धूल — यहाँ 'ू' मात्रा लगती है।"},
+        {q:"श_र", opts:["े","ै","ि","ी"], ans:0, full:"शेर", note:"शेर — यहाँ 'े' मात्रा लगती है (जंगल का राजा)।"},
+        {q:"च_हा", opts:["ू","ु","ो","ौ"], ans:0, full:"चूहा", note:"चूहा — यहाँ 'ू' मात्रा लगती है।"},
+        {q:"स_ई", opts:["ु","ू","ि","ी"], ans:0, full:"सुई", note:"सुई — यहाँ 'ु' मात्रा लगती है।"},
+        {q:"ख_ल", opts:["े","ै","ी","ि"], ans:0, full:"खेल", note:"खेल — यहाँ 'े' मात्रा लगती है।"}
+      ]},
+      {title:"ै  ो  ौ", classRange:"कक्षा 2-3", questions:[
+        {q:"क_सा", opts:["ै","े","ो","ौ"], ans:0, full:"कैसा", note:"कैसा — यहाँ 'ै' मात्रा लगती है।"},
+        {q:"म_र", opts:["ो","ौ","ा","ु"], ans:0, full:"मोर", note:"मोर — यहाँ 'ो' मात्रा लगती है (राष्ट्रीय पक्षी)।"},
+        {q:"म_का", opts:["ौ","ो","ा","ू"], ans:0, full:"मौका", note:"मौका — यहाँ 'ौ' मात्रा लगती है।"},
+        {q:"ब_ल", opts:["ै","े","ि","ी"], ans:0, full:"बैल", note:"बैल — यहाँ 'ै' मात्रा लगती है।"},
+        {q:"ग_ल", opts:["ो","ौ","ा","ु"], ans:0, full:"गोल", note:"गोल — यहाँ 'ो' मात्रा लगती है (गोल आकार)।"},
+        {q:"न_का", opts:["ौ","ो","ा","ू"], ans:0, full:"नौका", note:"नौका — यहाँ 'ौ' मात्रा लगती है (छोटी नाव)।"}
+      ]},
+      {title:"ं  ः  ँ", classRange:"कक्षा 3-4", questions:[
+        {q:"र_ग", opts:["ं","ः","ँ","ा"], ans:0, full:"रंग", note:"रंग — यहाँ अनुस्वार 'ं' लगता है।"},
+        {q:"नम_", opts:["ः","ं","ँ","ा"], ans:0, full:"नमः", note:"नमः — यहाँ विसर्ग 'ः' लगता है।"},
+        {q:"आ_ख", opts:["ँ","ं","ः","ा"], ans:0, full:"आँख", note:"आँख — यहाँ चंद्रबिंदु 'ँ' लगती है।"},
+        {q:"घ_टी", opts:["ं","ः","ँ","ि"], ans:0, full:"घंटी", note:"घंटी — यहाँ अनुस्वार 'ं' लगता है।"},
+        {q:"ऊ_ट", opts:["ँ","ं","ः","ा"], ans:0, full:"ऊँट", note:"ऊँट — यहाँ चंद्रबिंदु 'ँ' लगती है।"},
+        {q:"दु_ख", opts:["ः","ं","ँ","ु"], ans:0, full:"दुःख", note:"दुःख — यहाँ विसर्ग 'ः' लगता है।"}
+      ]},
+      {title:"मिश्रित समीक्षा", classRange:"सभी मात्राएँ", questions:[
+        {q:"म_ला", opts:["ा","ि","ो","ु"], ans:0, full:"माला", note:"माला — 'ा' मात्रा।"},
+        {q:"फ_ल", opts:["ू","ु","ो","े"], ans:0, full:"फूल", note:"फूल — 'ू' मात्रा।"},
+        {q:"म_र", opts:["ो","ौ","ा","ी"], ans:0, full:"मोर", note:"मोर — 'ो' मात्रा।"},
+        {q:"ब_ल", opts:["ै","े","ि","ा"], ans:0, full:"बैल", note:"बैल — 'ै' मात्रा।"},
+        {q:"र_ग", opts:["ं","ः","ँ","ो"], ans:0, full:"रंग", note:"रंग — अनुस्वार 'ं'।"},
+        {q:"आ_ख", opts:["ँ","ं","ः","ि"], ans:0, full:"आँख", note:"आँख — चंद्रबिंदु 'ँ'।"}
+      ]}
+,
+      {title:"ा ि ी अभ्यास-2", classRange:"कक्षा 2-3", questions:[
+        {q:"च_ड़िया", opts:["ि","ी","ु","ा"], ans:0, full:"चिड़िया", note:"चिड़िया — यहाँ 'ि' मात्रा लगती है (पक्षी)।"},
+        {q:"क_ल", opts:["ी","ि","ु","ू"], ans:0, full:"कील", note:"कील — यहाँ 'ी' मात्रा लगती है (लोहे की कील)।"},
+        {q:"त_ला", opts:["ा","ि","ी","ु"], ans:0, full:"ताला", note:"ताला — यहाँ 'ा' मात्रा लगती है (दरवाज़े का ताला)।"},
+        {q:"स_तार", opts:["ि","ी","ु","ा"], ans:0, full:"सितार", note:"सितार — यहाँ 'ि' मात्रा लगती है (एक वाद्य यंत्र)।"},
+        {q:"न_नी", opts:["ा","ि","ी","ु"], ans:0, full:"नानी", note:"नानी — पहले अक्षर में 'ा' मात्रा लगती है।"},
+        {q:"ट_का", opts:["ी","ि","ु","ू"], ans:0, full:"टीका", note:"टीका — यहाँ 'ी' मात्रा लगती है।"}
+      ]},
+      {title:"ु ू े अभ्यास-2", classRange:"कक्षा 2-3", questions:[
+        {q:"ग_ड़िया", opts:["ु","ू","ि","ी"], ans:0, full:"गुड़िया", note:"गुड़िया — यहाँ 'ु' मात्रा लगती है (खिलौना)।"},
+        {q:"झ_ला", opts:["ू","ु","ो","ौ"], ans:0, full:"झूला", note:"झूला — यहाँ 'ू' मात्रा लगती है।"},
+        {q:"द_र", opts:["े","ै","ि","ी"], ans:0, full:"देर", note:"देर — यहाँ 'े' मात्रा लगती है (समय)।"},
+        {q:"स_बह", opts:["ु","ू","ि","ी"], ans:0, full:"सुबह", note:"सुबह — यहाँ 'ु' मात्रा लगती है।"},
+        {q:"भ_ख", opts:["ू","ु","ो","ौ"], ans:0, full:"भूख", note:"भूख — यहाँ 'ू' मात्रा लगती है।"},
+        {q:"ब_टा", opts:["े","ै","ि","ी"], ans:0, full:"बेटा", note:"बेटा — यहाँ 'े' मात्रा लगती है।"}
+      ]},
+      {title:"ै ो ौ अभ्यास-2", classRange:"कक्षा 3-4", questions:[
+        {q:"म_दान", opts:["ै","े","ि","ी"], ans:0, full:"मैदान", note:"मैदान — यहाँ 'ै' मात्रा लगती है (खुला स्थान)।"},
+        {q:"स_ना", opts:["ो","ौ","ा","ु"], ans:0, full:"सोना", note:"सोना — यहाँ 'ो' मात्रा लगती है।"},
+        {q:"च_की", opts:["ौ","ो","ा","ू"], ans:0, full:"चौकी", note:"चौकी — यहाँ 'ौ' मात्रा लगती है।"},
+        {q:"प_सा", opts:["ै","े","ि","ी"], ans:0, full:"पैसा", note:"पैसा — यहाँ 'ै' मात्रा लगती है।"},
+        {q:"र_टी", opts:["ो","ौ","ा","ू"], ans:0, full:"रोटी", note:"रोटी — यहाँ 'ो' मात्रा लगती है।"},
+        {q:"क_आ", opts:["ौ","ो","ा","ू"], ans:0, full:"कौआ", note:"कौआ — यहाँ 'ौ' मात्रा लगती है (पक्षी)।"}
+      ]},
+      {title:"ं ः ँ अभ्यास-2", classRange:"कक्षा 4-5", questions:[
+        {q:"स_तरा", opts:["ं","ः","ँ","ा"], ans:0, full:"संतरा", note:"संतरा — यहाँ अनुस्वार 'ं' लगता है (फल)।"},
+        {q:"प्रात_", opts:["ः","ं","ँ","ा"], ans:0, full:"प्रातः", note:"प्रातः — यहाँ विसर्ग 'ः' लगता है (सुबह)।"},
+        {q:"च_द", opts:["ँ","ं","ः","ा"], ans:0, full:"चाँद", note:"चाँद — यहाँ चंद्रबिंदु 'ँ' लगती है।"},
+        {q:"स_गीत", opts:["ं","ः","ँ","ि"], ans:0, full:"संगीत", note:"संगीत — यहाँ अनुस्वार 'ं' लगता है।"},
+        {q:"ग_व", opts:["ँ","ं","ः","ा"], ans:0, full:"गाँव", note:"गाँव — यहाँ चंद्रबिंदु 'ँ' लगती है।"},
+        {q:"प_ख", opts:["ं","ः","ँ","ि"], ans:0, full:"पंख", note:"पंख — यहाँ अनुस्वार 'ं' लगता है (पक्षी के पंख)।"}
+      ]},
+      {title:"जुड़वाँ शब्द चुनौती", classRange:"कक्षा 4-5", questions:[
+        {q:"ह_रन", opts:["ि","ी","ु","ू"], ans:0, full:"हिरन", note:"हिरन — यहाँ 'ि' मात्रा लगती है (जंगल का जानवर)।"},
+        {q:"कब_तर", opts:["ू","ु","ो","ौ"], ans:0, full:"कबूतर", note:"कबूतर — यहाँ 'ू' मात्रा लगती है (पक्षी)।"},
+        {q:"त_तली", opts:["ि","ी","ु","ू"], ans:0, full:"तितली", note:"तितली — यहाँ 'ि' मात्रा लगती है (सुंदर कीट)।"},
+        {q:"म_ती", opts:["ो","ौ","ा","ू"], ans:0, full:"मोती", note:"मोती — यहाँ 'ो' मात्रा लगती है।"},
+        {q:"बकर_", opts:["ी","ि","ु","ू"], ans:0, full:"बकरी", note:"बकरी — अंत में 'ी' मात्रा लगती है।"},
+        {q:"हथ_ड़ा", opts:["ौ","ो","ा","ू"], ans:0, full:"हथौड़ा", note:"हथौड़ा — यहाँ 'ौ' मात्रा लगती है।"}
+      ]},
+      {title:"वाक्यों में मात्राएँ", classRange:"कक्षा 5-6", questions:[
+        {q:"राम ने एक स_ब खाया।", opts:["े","ै","ि","ी"], ans:0, full:"सेब", note:"सेब — यहाँ 'े' मात्रा लगती है (एक फल)।"},
+        {q:"आसमान में च_द चमकता है।", opts:["ँ","ं","ः","ा"], ans:0, full:"चाँद", note:"चाँद — यहाँ चंद्रबिंदु 'ँ' लगती है।"},
+        {q:"मुझे म_ठा पसंद है।", opts:["ी","ि","ु","ू"], ans:0, full:"मीठा", note:"मीठा — यहाँ 'ी' मात्रा लगती है (स्वाद)।"},
+        {q:"बगीचे में बहुत स_ंदर फूल हैं।", opts:["ु","ू","ि","ी"], ans:0, full:"सुंदर", note:"सुंदर — यहाँ 'ु' मात्रा लगती है।"},
+        {q:"मेरी माँ मुझे कह_नी सुनाती है।", opts:["ा","ि","ी","ु"], ans:0, full:"कहानी", note:"कहानी — यहाँ 'ा' मात्रा लगती है।"},
+        {q:"स्कूल में घ_टी बजी।", opts:["ं","ः","ँ","ि"], ans:0, full:"घंटी", note:"घंटी — यहाँ अनुस्वार 'ं' लगता है।"}
+      ]},
+      {title:"महा-चुनौती: मिश्रित मात्राएँ", classRange:"कक्षा 6-7", questions:[
+        {q:"पह_ड़", opts:["ा","ि","ी","ु"], ans:0, full:"पहाड़", note:"पहाड़ — यहाँ 'ा' मात्रा लगती है।"},
+        {q:"सम_द्र", opts:["ु","ू","ि","ी"], ans:0, full:"समुद्र", note:"समुद्र — यहाँ 'ु' मात्रा लगती है (सागर)।"},
+        {q:"द_वाली", opts:["ी","ि","ु","ू"], ans:0, full:"दीवाली", note:"दीवाली — यहाँ 'ी' मात्रा लगती है (रोशनी का त्योहार)।"},
+        {q:"म_रनी", opts:["ो","ौ","ा","ू"], ans:0, full:"मोरनी", note:"मोरनी — यहाँ 'ो' मात्रा लगती है।"},
+        {q:"म_ना", opts:["ै","े","ि","ी"], ans:0, full:"मैना", note:"मैना — यहाँ 'ै' मात्रा लगती है (पक्षी)।"},
+        {q:"ब_ढ़िया", opts:["ु","ू","ि","ी"], ans:0, full:"बुढ़िया", note:"बुढ़िया — यहाँ 'ु' मात्रा लगती है।"}
+      ]}
+    ]
+  },
+  vyakaran: {
+    label:"हिंदी व्याकरण", labelEn:"Hindi Grammar", emoji:"📖", theme:"plum",
+    tagline:"शब्दों के भेद पहचानो और पहेलियाँ जीतो!",
+    levels:[
+      {title:"संज्ञा", classRange:"कक्षा 3-5", questions:[
+        {q:"निम्नलिखित में संज्ञा शब्द चुनें:", opts:["किताब","दौड़ना","सुंदर","वह"], ans:0, note:"'किताब' एक वस्तु का नाम है, इसलिए यह संज्ञा है।", en:false},
+        {q:"\"राम विद्यालय जाता है\" — इस वाक्य में व्यक्तिवाचक संज्ञा कौन सी है?", opts:["राम","विद्यालय","जाता","है"], ans:0, note:"'राम' किसी विशेष व्यक्ति का नाम है, इसलिए व्यक्तिवाचक संज्ञा है।"},
+        {q:"\"ईमानदारी\" किस प्रकार की संज्ञा है?", opts:["भाववाचक","व्यक्तिवाचक","जातिवाचक","सर्वनाम"], ans:0, note:"'ईमानदारी' एक गुण को दर्शाती है, इसलिए यह भाववाचक संज्ञा है।"},
+        {q:"समूह में से जातिवाचक संज्ञा चुनें:", opts:["गाय","दिल्ली","मिठास","वह"], ans:0, note:"'गाय' एक पूरी जाति का बोध कराती है, इसलिए जातिवाचक संज्ञा है।"},
+        {q:"\"बचपन\" संज्ञा का कौन सा भेद है?", opts:["भाववाचक","व्यक्तिवाचक","जातिवाचक","समूहवाचक"], ans:0, note:"'बचपन' एक अवस्था/भाव है, इसलिए भाववाचक संज्ञा है।"},
+        {q:"\"सेना\" शब्द किस प्रकार की संज्ञा है?", opts:["समूहवाचक","व्यक्तिवाचक","भाववाचक","जातिवाचक"], ans:0, note:"'सेना' कई सैनिकों के समूह को दर्शाती है, इसलिए समूहवाचक संज्ञा है।"}
+      ]},
+      {title:"सर्वनाम", classRange:"कक्षा 4-6", questions:[
+        {q:"\"वह बाजार गया\" वाक्य में सर्वनाम शब्द है:", opts:["वह","बाजार","गया","में"], ans:0, note:"'वह' संज्ञा के स्थान पर प्रयोग हुआ है, इसलिए सर्वनाम है।"},
+        {q:"निम्न में सर्वनाम चुनें:", opts:["तुम","पुस्तक","दौड़ना","लाल"], ans:0, note:"'तुम' सर्वनाम है, जो किसी व्यक्ति के नाम की जगह प्रयोग होता है।"},
+        {q:"\"यह मेरी किताब है\" में 'मेरी' किस प्रकार का सर्वनाम है?", opts:["पुरुषवाचक","निश्चयवाचक","संबंधवाचक","प्रश्नवाचक"], ans:0, note:"'मेरी' पहले पुरुष सर्वनाम 'मैं' का रूप है, इसलिए पुरुषवाचक सर्वनाम है।"},
+        {q:"\"कौन आया है?\" में सर्वनाम कौन सा है?", opts:["कौन","आया","है","कब"], ans:0, note:"'कौन' प्रश्न पूछने के लिए प्रयोग होता है, इसलिए प्रश्नवाचक सर्वनाम है।"},
+        {q:"\"यह\" और \"वह\" किस प्रकार के सर्वनाम हैं?", opts:["निश्चयवाचक","अनिश्चयवाचक","प्रश्नवाचक","संबंधवाचक"], ans:0, note:"ये किसी निश्चित वस्तु/व्यक्ति की ओर संकेत करते हैं, इसलिए निश्चयवाचक सर्वनाम हैं।"},
+        {q:"\"अपने आप\" में कौन सा सर्वनाम प्रयोग होता है?", opts:["निजवाचक","पुरुषवाचक","प्रश्नवाचक","संबंधवाचक"], ans:0, note:"'अपना/अपने आप' निजवाचक सर्वनाम कहलाता है।"}
+      ]},
+      {title:"विशेषण", classRange:"कक्षा 4-6", questions:[
+        {q:"\"सुंदर लड़की\" में विशेषण शब्द है:", opts:["सुंदर","लड़की","है","वह"], ans:0, note:"'सुंदर' लड़की की विशेषता बता रहा है, इसलिए विशेषण है।"},
+        {q:"\"यह घड़ी महंगी है\" में विशेषण चुनें:", opts:["महंगी","घड़ी","यह","है"], ans:0, note:"'महंगी' घड़ी की विशेषता बताती है, इसलिए विशेषण है।"},
+        {q:"\"दो किताबें\" में 'दो' किस प्रकार का विशेषण है?", opts:["संख्यावाचक","गुणवाचक","परिमाणवाचक","सार्वनामिक"], ans:0, note:"'दो' संख्या बता रहा है, इसलिए संख्यावाचक विशेषण है।"},
+        {q:"\"थोड़ा दूध\" में 'थोड़ा' कौन सा विशेषण है?", opts:["परिमाणवाचक","गुणवाचक","संख्यावाचक","सार्वनामिक"], ans:0, note:"'थोड़ा' मात्रा/परिमाण बता रहा है, इसलिए परिमाणवाचक विशेषण है।"},
+        {q:"\"काला घोड़ा\" में विशेष्य (जिसकी विशेषता बताई गई) क्या है?", opts:["घोड़ा","काला","दौड़ा","वह"], ans:0, note:"'काला' शब्द 'घोड़ा' की विशेषता बता रहा है, इसलिए विशेष्य 'घोड़ा' है।"},
+        {q:"निम्न में गुणवाचक विशेषण चुनें:", opts:["मीठा","दो","यह","कुछ"], ans:0, note:"'मीठा' किसी वस्तु के गुण को दर्शाता है, इसलिए गुणवाचक विशेषण है।"}
+      ]},
+      {title:"क्रिया और काल", classRange:"कक्षा 5-7", questions:[
+        {q:"\"राम खाना खाता है\" में क्रिया शब्द चुनें:", opts:["खाता है","राम","खाना","है ना"], ans:0, note:"'खाता है' कार्य के होने का बोध कराता है, इसलिए क्रिया है।"},
+        {q:"\"वह स्कूल गया।\" — यह वाक्य किस काल में है?", opts:["भूतकाल","वर्तमानकाल","भविष्यकाल","अपूर्ण काल"], ans:0, note:"कार्य बीत चुका है, इसलिए यह भूतकाल है।"},
+        {q:"\"मैं कल जाऊंगा\" किस काल का उदाहरण है?", opts:["भविष्यकाल","वर्तमानकाल","भूतकाल","तात्कालिक"], ans:0, note:"कार्य आगे होगा, इसलिए यह भविष्यकाल है।"},
+        {q:"\"सीता गाना गा रही है\" — यह किस काल में है?", opts:["वर्तमानकाल","भूतकाल","भविष्यकाल","संभाव्य"], ans:0, note:"कार्य अभी हो रहा है, इसलिए यह वर्तमानकाल है।"},
+        {q:"सकर्मक क्रिया (जिसे कर्म चाहिए) चुनें:", opts:["लिखता है","सोता है","हँसता है","उड़ता है"], ans:0, note:"'लिखता है' को पूरा होने के लिए कर्म चाहिए (जैसे पत्र), इसलिए सकर्मक क्रिया है।"},
+        {q:"अकर्मक क्रिया (जिसे कर्म की ज़रूरत नहीं) चुनें:", opts:["सोता है","पढ़ता है","खाता है","बनाता है"], ans:0, note:"'सोता है' के लिए किसी कर्म की ज़रूरत नहीं, इसलिए अकर्मक क्रिया है।"}
+      ]},
+      {title:"लिंग-वचन समीक्षा", classRange:"मिश्रित", questions:[
+        {q:"\"लड़की\" शब्द का पुल्लिंग रूप क्या है?", opts:["लड़का","लड़कियाँ","लड़कों","लड़कीयों"], ans:0, note:"'लड़की' का पुल्लिंग रूप 'लड़का' है।"},
+        {q:"\"गाय\" शब्द का बहुवचन रूप है:", opts:["गायें","गाय","गायों","गायियाँ"], ans:0, note:"'गाय' का बहुवचन 'गायें' होता है।"},
+        {q:"\"अध्यापक\" का स्त्रीलिंग रूप क्या है?", opts:["अध्यापिका","अध्यापकी","अध्यापकिन","अध्यापकनी"], ans:0, note:"'अध्यापक' का स्त्रीलिंग रूप 'अध्यापिका' है।"},
+        {q:"\"किताब\" शब्द का बहुवचन रूप है:", opts:["किताबें","किताबों","किताबियाँ","किताबान"], ans:0, note:"'किताब' का बहुवचन 'किताबें' होता है।"},
+        {q:"\"बालक\" शब्द किस लिंग का है?", opts:["पुल्लिंग","स्त्रीलिंग","उभयलिंग","नपुंसकलिंग"], ans:0, note:"'बालक' पुल्लिंग शब्द है।"},
+        {q:"\"नदी\" शब्द किस लिंग का है?", opts:["स्त्रीलिंग","पुल्लिंग","उभयलिंग","नपुंसकलिंग"], ans:0, note:"'नदी' स्त्रीलिंग शब्द है।"}
+      ]}
+,
+      {title:"क्रिया विशेषण", classRange:"कक्षा 5-7", questions:[
+        {q:"\"वह धीरे-धीरे चलता है\" में क्रिया विशेषण कौन सा है?", opts:["धीरे-धीरे","चलता","वह","है"], ans:0, note:"'धीरे-धीरे' क्रिया के होने के तरीके को बताता है, इसलिए यह रीतिवाचक क्रिया विशेषण है।"},
+        {q:"\"वह कल आएगा\" में समय बताने वाला क्रिया विशेषण है:", opts:["कल","वह","आएगा","है"], ans:0, note:"'कल' क्रिया के होने का समय बताता है, इसलिए यह कालवाचक क्रिया विशेषण है।"},
+        {q:"\"यहाँ बैठो\" में स्थानवाचक क्रिया विशेषण कौन सा है?", opts:["यहाँ","बैठो","है","वह"], ans:0, note:"'यहाँ' स्थान बताता है, इसलिए यह स्थानवाचक क्रिया विशेषण है।"},
+        {q:"\"वह बहुत तेज़ दौड़ता है\" में परिमाणवाचक क्रिया विशेषण कौन सा है?", opts:["बहुत","तेज़","दौड़ता","वह"], ans:0, note:"'बहुत' मात्रा/परिमाण बताता है, इसलिए यह परिमाणवाचक क्रिया विशेषण है।"},
+        {q:"निम्न में से क्रिया विशेषण चुनें:", opts:["जल्दी","किताब","सुंदर","लड़का"], ans:0, note:"'जल्दी' क्रिया के होने का ढंग/समय बताता है, इसलिए यह क्रिया विशेषण है।"},
+        {q:"\"वह ज़ोर से चिल्लाया\" में क्रिया विशेषण है:", opts:["ज़ोर से","चिल्लाया","वह","से"], ans:0, note:"'ज़ोर से' क्रिया के होने का तरीका बताता है, इसलिए यह रीतिवाचक क्रिया विशेषण है।"}
+      ]},
+      {title:"विलोम शब्द", classRange:"कक्षा 3-5", questions:[
+        {q:"\"दिन\" का विलोम शब्द क्या है?", opts:["रात","सुबह","शाम","रोशनी"], ans:0, note:"'दिन' का विलोम 'रात' होता है।"},
+        {q:"\"बड़ा\" का विलोम शब्द चुनें:", opts:["छोटा","लंबा","मोटा","ऊँचा"], ans:0, note:"'बड़ा' का विलोम 'छोटा' होता है।"},
+        {q:"\"अमीर\" का विलोम शब्द क्या है?", opts:["गरीब","धनी","सुखी","बलवान"], ans:0, note:"'अमीर' का विलोम 'गरीब' होता है।"},
+        {q:"\"जीत\" का विलोम शब्द चुनें:", opts:["हार","खेल","दौड़","मैदान"], ans:0, note:"'जीत' का विलोम 'हार' होता है।"},
+        {q:"\"ऊपर\" का विलोम शब्द क्या है?", opts:["नीचे","आगे","पीछे","बगल"], ans:0, note:"'ऊपर' का विलोम 'नीचे' होता है।"},
+        {q:"\"सच\" का विलोम शब्द चुनें:", opts:["झूठ","बात","कहानी","चुप"], ans:0, note:"'सच' का विलोम 'झूठ' होता है।"}
+      ]},
+      {title:"पर्यायवाची शब्द", classRange:"कक्षा 4-6", questions:[
+        {q:"\"सूरज\" का पर्यायवाची शब्द चुनें:", opts:["सूर्य","चाँद","तारा","आकाश"], ans:0, note:"'सूरज' और 'सूर्य' एक ही अर्थ देते हैं।"},
+        {q:"\"पानी\" का पर्यायवाची शब्द है:", opts:["जल","आग","हवा","धूप"], ans:0, note:"'पानी' का पर्यायवाची 'जल' है।"},
+        {q:"\"पेड़\" का पर्यायवाची शब्द चुनें:", opts:["वृक्ष","पत्ता","फूल","जड़"], ans:0, note:"'पेड़' और 'वृक्ष' एक ही अर्थ रखते हैं।"},
+        {q:"\"राजा\" का पर्यायवाची शब्द है:", opts:["नरेश","रानी","सैनिक","मंत्री"], ans:0, note:"'राजा' का पर्यायवाची 'नरेश' है।"},
+        {q:"\"आकाश\" का पर्यायवाची शब्द चुनें:", opts:["गगन","धरती","सागर","पर्वत"], ans:0, note:"'आकाश' का पर्यायवाची 'गगन' है।"},
+        {q:"\"माता\" का पर्यायवाची शब्द है:", opts:["माँ","पिता","बहन","भाई"], ans:0, note:"'माता' और 'माँ' एक ही अर्थ देते हैं।"}
+      ]},
+      {title:"वाक्य के प्रकार", classRange:"कक्षा 5-7", questions:[
+        {q:"\"राम स्कूल जाता है।\" कौन सा वाक्य है?", opts:["विधानवाचक","प्रश्नवाचक","विस्मयादिबोधक","आज्ञावाचक"], ans:0, note:"यह एक सामान्य कथन है, इसलिए विधानवाचक वाक्य है।"},
+        {q:"\"क्या तुम खाना खाओगे?\" कौन सा वाक्य है?", opts:["प्रश्नवाचक","विधानवाचक","आज्ञावाचक","विस्मयादिबोधक"], ans:0, note:"यह प्रश्न पूछता है, इसलिए प्रश्नवाचक वाक्य है।"},
+        {q:"\"वाह! कितना सुंदर दृश्य है!\" कौन सा वाक्य है?", opts:["विस्मयादिबोधक","विधानवाचक","प्रश्नवाचक","आज्ञावाचक"], ans:0, note:"यह आश्चर्य/भाव प्रकट करता है, इसलिए विस्मयादिबोधक वाक्य है।"},
+        {q:"\"कृपया दरवाज़ा बंद करो।\" कौन सा वाक्य है?", opts:["आज्ञावाचक","प्रश्नवाचक","विधानवाचक","विस्मयादिबोधक"], ans:0, note:"यह आदेश/निवेदन करता है, इसलिए आज्ञावाचक वाक्य है।"},
+        {q:"\"मुझे आशा है कि वह जीतेगा।\" कौन सा वाक्य है?", opts:["इच्छावाचक","प्रश्नवाचक","आज्ञावाचक","विस्मयादिबोधक"], ans:0, note:"यह इच्छा/आशा प्रकट करता है, इसलिए इच्छावाचक वाक्य है।"},
+        {q:"\"वह पढ़ाई नहीं करता।\" कौन सा वाक्य है?", opts:["निषेधवाचक","विधानवाचक","प्रश्नवाचक","आज्ञावाचक"], ans:0, note:"यह किसी बात को नकारता है, इसलिए निषेधवाचक वाक्य है।"}
+      ]},
+      {title:"विराम चिह्न", classRange:"कक्षा 4-6", questions:[
+        {q:"वाक्य के अंत में कौन सा चिह्न लगता है?", opts:["पूर्ण विराम (।)","अल्प विराम (,)","प्रश्नवाचक (?)","विस्मयादिबोधक (!)"], ans:0, note:"साधारण वाक्य के अंत में पूर्ण विराम '।' लगाया जाता है।"},
+        {q:"प्रश्न पूछने के लिए कौन सा चिह्न लगाते हैं?", opts:["?","।",",","!"], ans:0, note:"प्रश्न वाक्य के अंत में प्रश्नवाचक चिह्न '?' लगता है।"},
+        {q:"आश्चर्य या भाव प्रकट करने के लिए कौन सा चिह्न लगता है?", opts:["!","?","।",","], ans:0, note:"आश्चर्य/भाव के लिए विस्मयादिबोधक चिह्न '!' लगता है।"},
+        {q:"सूची के शब्दों को अलग करने के लिए कौन सा चिह्न लगता है?", opts:[",","।","?","!"], ans:0, note:"शब्दों/वाक्यांशों को अलग करने के लिए अल्प विराम ',' लगाया जाता है।"},
+        {q:"किसी के कहे हुए शब्दों को दिखाने के लिए कौन सा चिह्न लगाते हैं?", opts:["उद्धरण चिह्न (\\\" \\\")","पूर्ण विराम (।)","अल्प विराम (,)","योजक चिह्न (-)"], ans:0, note:"किसी के कहे शब्दों को दिखाने के लिए उद्धरण चिह्न प्रयोग होता है।"},
+        {q:"दो शब्दों को जोड़ने के लिए कौन सा चिह्न प्रयोग होता है?", opts:["योजक चिह्न (-)","प्रश्नवाचक (?)","विस्मयादिबोधक (!)","पूर्ण विराम (।)"], ans:0, note:"दो शब्दों को जोड़ने के लिए योजक चिह्न '-' प्रयोग होता है।"}
+      ]},
+      {title:"सरल मुहावरे", classRange:"कक्षा 6-8", questions:[
+        {q:"\"आँखें खुलना\" मुहावरे का अर्थ क्या है?", opts:["सच्चाई पता चलना","सो जाना","रोना","हँसना"], ans:0, note:"'आँखें खुलना' का अर्थ है — सच्चाई या असलियत का पता चलना।"},
+        {q:"\"नाक में दम करना\" मुहावरे का अर्थ है:", opts:["बहुत परेशान करना","खुश करना","मदद करना","सुला देना"], ans:0, note:"'नाक में दम करना' का अर्थ है — किसी को बहुत परेशान करना।"},
+        {q:"\"दाँतों तले उँगली दबाना\" का अर्थ क्या है?", opts:["बहुत हैरान होना","गुस्सा होना","खाना खाना","सो जाना"], ans:0, note:"इस मुहावरे का अर्थ है — किसी बात पर बहुत हैरान होना।"},
+        {q:"\"आग बबूला होना\" मुहावरे का अर्थ है:", opts:["बहुत गुस्सा होना","बहुत खुश होना","डर जाना","सो जाना"], ans:0, note:"'आग बबूला होना' का अर्थ है — बहुत अधिक गुस्सा होना।"},
+        {q:"\"कान भरना\" मुहावरे का अर्थ क्या है?", opts:["किसी की चुगली करना","गाना सुनना","सो जाना","पढ़ना"], ans:0, note:"'कान भरना' का अर्थ है — किसी के खिलाफ भड़काने वाली बातें कहना।"},
+        {q:"\"हाथ पैर मारना\" मुहावरे का अर्थ है:", opts:["बहुत कोशिश करना","लड़ाई करना","आराम करना","सो जाना"], ans:0, note:"'हाथ पैर मारना' का अर्थ है — किसी काम को करने के लिए बहुत कोशिश करना।"}
+      ]},
+      {title:"मिश्रित व्याकरण चुनौती", classRange:"कक्षा 6-8", questions:[
+        {q:"\"सुंदर बगीचा\" में विशेषण कौन सा है?", opts:["सुंदर","बगीचा","है","वह"], ans:0, note:"'सुंदर' बगीचे की विशेषता बता रहा है, इसलिए विशेषण है।"},
+        {q:"\"वे तेज़ी से भागे\" में क्रिया विशेषण चुनें:", opts:["तेज़ी से","भागे","वे","से"], ans:0, note:"'तेज़ी से' क्रिया के होने का ढंग बताता है, इसलिए क्रिया विशेषण है।"},
+        {q:"\"गरीब\" का विलोम शब्द है:", opts:["अमीर","दुखी","कमज़ोर","भूखा"], ans:0, note:"'गरीब' का विलोम 'अमीर' है।"},
+        {q:"\"नदी\" का पर्यायवाची शब्द चुनें:", opts:["सरिता","सागर","तालाब","झरना"], ans:0, note:"'नदी' का पर्यायवाची शब्द 'सरिता' है।"},
+        {q:"\"क्या समय हो गया है?\" कौन सा वाक्य है?", opts:["प्रश्नवाचक","विधानवाचक","आज्ञावाचक","विस्मयादिबोधक"], ans:0, note:"यह प्रश्न पूछता है, इसलिए प्रश्नवाचक वाक्य है।"},
+        {q:"\"सिर पर पैर रखकर भागना\" मुहावरे का अर्थ है:", opts:["बहुत तेज़ भागना","धीरे चलना","सो जाना","रुक जाना"], ans:0, note:"इस मुहावरे का अर्थ है — बहुत तेज़ी से भागना।"}
+      ]}
+    ]
+  },
+  english: {
+    label:"English Grammar", labelEn:"English Grammar", emoji:"✏️", theme:"parrot",
+    tagline:"Solve puzzles, master grammar, fly high!",
+    levels:[
+      {title:"Nouns", classRange:"Class 3-5", questions:[
+        {q:"Choose the noun:", opts:["Table","Run","Beautiful","He"], ans:0, note:"'Table' is a naming word for a thing, so it is a noun.", en:true},
+        {q:"Which one is a proper noun?", opts:["Delhi","city","happiness","quickly"], ans:0, note:"'Delhi' names a specific place, so it is a proper noun.", en:true},
+        {q:"Which one is an abstract noun?", opts:["Honesty","Dog","Chair","Sun"], ans:0, note:"'Honesty' names a quality we cannot touch, so it is an abstract noun.", en:true},
+        {q:"Which one is a collective noun?", opts:["Team","Boy","Apple","Fast"], ans:0, note:"'Team' names a group of people, so it is a collective noun.", en:true},
+        {q:"Pick the noun in: \"The children are playing in the park.\"", opts:["children","playing","are","in"], ans:0, note:"'Children' names people, so it is the noun in this sentence.", en:true},
+        {q:"Which word is a common noun?", opts:["river","London","Ravi","India"], ans:0, note:"'River' names any river in general, so it is a common noun.", en:true}
+      ]},
+      {title:"Pronouns & Verbs", classRange:"Class 3-5", questions:[
+        {q:"Choose the pronoun:", opts:["She","Run","Blue","Table"], ans:0, note:"'She' is used in place of a noun, so it is a pronoun.", en:true},
+        {q:"\"They went to the market.\" The pronoun here is:", opts:["They","went","to","market"], ans:0, note:"'They' replaces the names of people, so it is a pronoun.", en:true},
+        {q:"Choose the verb:", opts:["Jump","Happy","Slowly","Chair"], ans:0, note:"'Jump' shows an action, so it is a verb.", en:true},
+        {q:"\"Ravi is reading a book.\" Find the verb:", opts:["reading","book","Ravi","a"], ans:0, note:"'Reading' shows the action being done, so it is the verb.", en:true},
+        {q:"Which is a reflexive pronoun?", opts:["himself","they","who","this"], ans:0, note:"'Himself' refers back to the subject, so it is a reflexive pronoun.", en:true},
+        {q:"Which is a possessive pronoun?", opts:["mine","she","it","who"], ans:0, note:"'Mine' shows ownership, so it is a possessive pronoun.", en:true}
+      ]},
+      {title:"Adjectives & Articles", classRange:"Class 4-6", questions:[
+        {q:"Choose the adjective:", opts:["Beautiful","Run","Quickly","Table"], ans:0, note:"'Beautiful' describes a noun, so it is an adjective.", en:true},
+        {q:"\"She has a red car.\" Find the adjective:", opts:["red","car","has","a"], ans:0, note:"'Red' describes the car, so it is the adjective.", en:true},
+        {q:"Choose the correct article: \"___ apple a day keeps the doctor away.\"", opts:["An","A","The","No article"], ans:0, note:"'Apple' starts with a vowel sound, so we use 'An'.", en:true},
+        {q:"Choose the correct article: \"___ sun rises in the east.\"", opts:["The","A","An","No article"], ans:0, note:"There is only one sun, so we use 'The' for unique things.", en:true},
+        {q:"Which is a comparative adjective?", opts:["taller","tall","tallest","tall-er"], ans:0, note:"'Taller' compares two things, so it is a comparative adjective.", en:true},
+        {q:"Which is a superlative adjective?", opts:["best","better","good","well"], ans:0, note:"'Best' compares more than two things at the highest degree, so it is superlative.", en:true}
+      ]},
+      {title:"Tenses", classRange:"Class 5-7", questions:[
+        {q:"\"She sings a song.\" This sentence is in which tense?", opts:["Present","Past","Future","Perfect"], ans:0, note:"The action happens regularly now, so it is present tense.", en:true},
+        {q:"\"He played football yesterday.\" This sentence is in which tense?", opts:["Past","Present","Future","Continuous"], ans:0, note:"The action already happened, so it is past tense.", en:true},
+        {q:"\"They will visit Delhi.\" This sentence is in which tense?", opts:["Future","Present","Past","Perfect"], ans:0, note:"The action will happen later, so it is future tense.", en:true},
+        {q:"Choose the past tense of 'go':", opts:["went","goes","going","gone-ing"], ans:0, note:"The past form of 'go' is 'went'.", en:true},
+        {q:"Choose the future tense sentence:", opts:["I will study tomorrow.","I study daily.","I studied yesterday.","I am studying."], ans:0, note:"'Will' shows an action that will happen in the future.", en:true},
+        {q:"\"I am eating lunch.\" This is which tense?", opts:["Present continuous","Simple past","Simple future","Past continuous"], ans:0, note:"'Am eating' shows an action happening right now, so it is present continuous.", en:true}
+      ]},
+      {title:"Mixed Review", classRange:"Class 6-8", questions:[
+        {q:"Choose the correct plural of 'child':", opts:["children","childs","childes","childrens"], ans:0, note:"'Child' has an irregular plural form: 'children'.", en:true},
+        {q:"Choose the correct sentence:", opts:["She goes to school daily.","She go to school daily.","She going to school daily.","She gone to school daily."], ans:0, note:"With 'she' (third person singular), the verb takes 's': 'goes'.", en:true},
+        {q:"Which is an adverb in \"He runs quickly\"?", opts:["quickly","runs","He","-"], ans:0, note:"'Quickly' tells us how he runs, so it is an adverb.", en:true},
+        {q:"Choose the correct punctuation: \"What is your name__\"", opts:["?",".","!",","], ans:0, note:"A question always ends with a question mark '?'.", en:true},
+        {q:"Choose the correct preposition: \"The cat is ___ the table.\"", opts:["on","of","near-ly","and"], ans:0, note:"'On' correctly shows the cat's position on the table.", en:true},
+        {q:"Choose the conjunction: \"I like tea ___ coffee.\"", opts:["and","run","quickly","table"], ans:0, note:"'And' joins two words together, so it is a conjunction.", en:true}
+      ]}
+,
+      {title:"Adverbs", classRange:"Class 5-7", questions:[
+        {q:"Choose the adverb: \"She sings beautifully.\"", opts:["beautifully","sings","she","."], ans:0, note:"'Beautifully' tells us how she sings, so it is an adverb.", en:true},
+        {q:"Which word is an adverb of time?", opts:["yesterday","happy","run","blue"], ans:0, note:"'Yesterday' tells us when something happened, so it is an adverb of time.", en:true},
+        {q:"\"He lives here.\" Find the adverb:", opts:["here","lives","he","."], ans:0, note:"'Here' tells us where he lives, so it is an adverb of place.", en:true},
+        {q:"Which word is an adverb of frequency?", opts:["always","quick","tall","blue"], ans:0, note:"'Always' tells us how often something happens, so it is an adverb of frequency.", en:true},
+        {q:"Choose the correct adverb form of 'quick':", opts:["quickly","quicker","quickness","quickest"], ans:0, note:"Adding '-ly' to 'quick' makes the adverb 'quickly'.", en:true},
+        {q:"\"She speaks very softly.\" Find the adverb of manner:", opts:["softly","very","speaks","she"], ans:0, note:"'Softly' tells us how she speaks, so it is an adverb of manner.", en:true}
+      ]},
+      {title:"Prepositions", classRange:"Class 4-6", questions:[
+        {q:"Choose the correct preposition: \"The book is ___ the table.\"", opts:["on","in","at","of"], ans:0, note:"'On' shows the book's position on top of the table.", en:true},
+        {q:"\"She lives ___ Delhi.\"", opts:["in","on","at","of"], ans:0, note:"We use 'in' with cities and large places.", en:true},
+        {q:"\"The cat is hiding ___ the box.\"", opts:["under","on","between","above"], ans:0, note:"'Under' shows the cat is beneath the box.", en:true},
+        {q:"\"We will meet ___ 5 o'clock.\"", opts:["at","in","on","of"], ans:0, note:"We use 'at' with exact clock times.", en:true},
+        {q:"\"He walked ___ the bridge.\"", opts:["across","in","at","of"], ans:0, note:"'Across' shows movement from one side to the other.", en:true},
+        {q:"\"The gift is ___ my sister.\"", opts:["for","at","on","of"], ans:0, note:"'For' shows who the gift is intended for.", en:true}
+      ]},
+      {title:"Conjunctions", classRange:"Class 5-7", questions:[
+        {q:"Choose the conjunction: \"I like tea and coffee.\"", opts:["and","tea","coffee","like"], ans:0, note:"'And' joins two words together, so it is a conjunction.", en:true},
+        {q:"\"She was tired, ___ she kept working.\"", opts:["but","and","because","or"], ans:0, note:"'But' shows a contrast between two ideas.", en:true},
+        {q:"\"You can have tea ___ coffee.\"", opts:["or","and","but","so"], ans:0, note:"'Or' shows a choice between two things.", en:true},
+        {q:"\"He was late ___ he missed the train.\"", opts:["because","but","or","and"], ans:0, note:"'Because' shows the reason for something.", en:true},
+        {q:"\"It rained, ___ we stayed inside.\"", opts:["so","but","or","because"], ans:0, note:"'So' shows the result of an action.", en:true},
+        {q:"Choose the conjunction that shows contrast:", opts:["although","and","so","because"], ans:0, note:"'Although' introduces a contrasting idea in a sentence.", en:true}
+      ]},
+      {title:"Singular & Plural", classRange:"Class 3-5", questions:[
+        {q:"Choose the plural of 'book':", opts:["books","bookes","bookies","bookss"], ans:0, note:"Most nouns form the plural by adding 's': book → books.", en:true},
+        {q:"Choose the plural of 'box':", opts:["boxes","boxs","boxies","boxxes"], ans:0, note:"Words ending in 'x' add 'es' to form the plural: box → boxes.", en:true},
+        {q:"Choose the plural of 'baby':", opts:["babies","babys","babyes","baby"], ans:0, note:"Words ending in consonant+'y' change 'y' to 'ies': baby → babies.", en:true},
+        {q:"Choose the plural of 'mouse':", opts:["mice","mouses","mices","mouse"], ans:0, note:"'Mouse' has an irregular plural form: 'mice'.", en:true},
+        {q:"Choose the plural of 'leaf':", opts:["leaves","leafs","leafes","leafies"], ans:0, note:"Words ending in 'f' often change to 'ves': leaf → leaves.", en:true},
+        {q:"Choose the singular of 'children':", opts:["child","childs","childes","childrens"], ans:0, note:"'Children' is the plural form of 'child'.", en:true}
+      ]},
+      {title:"Synonyms & Antonyms", classRange:"Class 4-6", questions:[
+        {q:"Choose the synonym of 'happy':", opts:["joyful","sad","angry","tired"], ans:0, note:"'Joyful' means the same as 'happy'.", en:true},
+        {q:"Choose the antonym of 'big':", opts:["small","large","huge","tall"], ans:0, note:"'Small' is the opposite of 'big'.", en:true},
+        {q:"Choose the synonym of 'begin':", opts:["start","end","stop","finish"], ans:0, note:"'Start' means the same as 'begin'.", en:true},
+        {q:"Choose the antonym of 'day':", opts:["night","morning","noon","evening"], ans:0, note:"'Night' is the opposite of 'day'.", en:true},
+        {q:"Choose the synonym of 'quick':", opts:["fast","slow","lazy","late"], ans:0, note:"'Fast' means the same as 'quick'.", en:true},
+        {q:"Choose the antonym of 'strong':", opts:["weak","powerful","tough","hard"], ans:0, note:"'Weak' is the opposite of 'strong'.", en:true}
+      ]},
+      {title:"Punctuation", classRange:"Class 4-6", questions:[
+        {q:"Which mark is used at the end of a question?", opts:["?",".","!",","], ans:0, note:"A question ends with a question mark '?'.", en:true},
+        {q:"Which mark shows strong feeling or surprise?", opts:["!","?",".",","], ans:0, note:"An exclamation mark '!' shows strong feeling or surprise.", en:true},
+        {q:"Which mark is used to separate items in a list?", opts:[",",".","?","!"], ans:0, note:"A comma ',' is used to separate items in a list.", en:true},
+        {q:"Which mark ends a simple statement?", opts:[".","?","!",","], ans:0, note:"A full stop '.' ends a simple statement.", en:true},
+        {q:"Which mark shows someone's exact words?", opts:["quotation marks","full stop (.)","comma (,)","hyphen (-)"], ans:0, note:"Quotation marks show the exact words someone said.", en:true},
+        {q:"Which letter should be capital in a sentence?", opts:["the first letter","the last letter","every letter","no letter"], ans:0, note:"The first letter of a sentence is always capitalized.", en:true}
+      ]},
+      {title:"Mixed Master Challenge", classRange:"Class 6-8", questions:[
+        {q:"Choose the adverb in: \"He answered correctly.\"", opts:["correctly","answered","he","."], ans:0, note:"'Correctly' tells us how he answered, so it is an adverb.", en:true},
+        {q:"Choose the correct preposition: \"The keys are ___ the drawer.\"", opts:["in","at","on","of"], ans:0, note:"'In' shows the keys are inside the drawer.", en:true},
+        {q:"Choose the conjunction: \"Study hard ___ you will pass.\"", opts:["so that","but","or","although"], ans:0, note:"'So that' shows purpose or result.", en:true},
+        {q:"Choose the plural of 'city':", opts:["cities","citys","cityes","city"], ans:0, note:"Words ending in consonant+'y' change to 'ies': city → cities.", en:true},
+        {q:"Choose the synonym of 'brave':", opts:["courageous","scared","weak","shy"], ans:0, note:"'Courageous' means the same as 'brave'.", en:true},
+        {q:"Choose the correct punctuation: \"Wow___ That's amazing!\"", opts:["!",".","?",","], ans:0, note:"An exclamation mark shows excitement, matching 'Wow'.", en:true}
+      ]}
+    ]
+  },
+  math: {
+    label:"गणित", labelEn:"Math", emoji:"🔢", theme:"coral",
+    tagline:"गिनो, जोड़ो, घटाओ और मज़े से सीखो!",
+    levels:[
+      {title:"जोड़ (+)", classRange:"कक्षा 1-2", questions:[
+        {q:"3 + 2 = ?", opts:["5","4","6","3"], ans:0, math:true, note:"सोचो: पहले 3 उँगलियाँ उठाओ, फिर 2 और उँगलियाँ उठाओ। अब सबको गिनो — कुल 5 हो जाती हैं! 🖐️✌️"},
+        {q:"🐦🐦 + 🐦🐦🐦 = ?", opts:["5","4","6","3"], ans:0, math:true, note:"2 चिड़िया और 3 चिड़िया साथ बैठ गईं। सबको गिनो — 1,2,3,4,5। कुल 5 चिड़िया!"},
+        {q:"7 + 1 = ?", opts:["8","7","9","6"], ans:0, math:true, note:"जब हम किसी संख्या में सिर्फ 1 जोड़ते हैं, तो वह अगली संख्या बन जाती है — 7 के बाद 8 आता है।"},
+        {q:"4 + 4 = ?", opts:["8","7","9","6"], ans:0, math:true, note:"4 और 4 बराबर-बराबर हैं, इसलिए इन्हें 'डबल' कहते हैं — 4+4 = 8।"},
+        {q:"10 + 5 = ?", opts:["15","14","16","13"], ans:0, math:true, note:"10 के बाद गिनती आगे बढ़ाओ: 11,12,13,14,15 — यानी 5 कदम आगे बढ़े तो 15 आया।"},
+        {q:"6 + 3 = ?", opts:["9","8","10","7"], ans:0, math:true, note:"6 से शुरू करके 3 कदम आगे गिनो: 7, 8, 9 — जवाब है 9।"}
+      ]},
+      {title:"घटाव (−)", classRange:"कक्षा 2-3", questions:[
+        {q:"5 − 2 = ?", opts:["3","4","2","5"], ans:0, math:true, note:"तुम्हारे पास 5 चॉकलेट थीं, तुमने 2 खा लीं। अब गिनो कितनी बचीं — 3 चॉकलेट बचीं! 🍫"},
+        {q:"🍬🍬🍬🍬🍬🍬 में से 2 खा लीं, कितनी बचीं?", opts:["4","3","5","6"], ans:0, math:true, note:"6 टॉफियों में से 2 हटाओ — बची हुई टॉफियाँ गिनो: 4 टॉफियाँ बचीं।"},
+        {q:"9 − 4 = ?", opts:["5","4","6","3"], ans:0, math:true, note:"9 से पीछे की ओर 4 कदम गिनो: 8,7,6,5 — जवाब है 5।"},
+        {q:"12 − 5 = ?", opts:["7","6","8","5"], ans:0, math:true, note:"12 में से 5 हटाओ। पीछे गिनो: 11,10,9,8,7 — जवाब है 7।"},
+        {q:"10 − 10 = ?", opts:["0","1","10","5"], ans:0, math:true, note:"अगर तुम्हारे पास 10 चीज़ें थीं और सारी की सारी दे दीं, तो अब कुछ भी नहीं बचता — यानी 0।"},
+        {q:"15 − 7 = ?", opts:["8","7","9","6"], ans:0, math:true, note:"15 में से 7 हटाओ — पीछे गिनते जाओ: 14,13,12,11,10,9,8 — जवाब है 8।"}
+      ]},
+      {title:"गुणा (×)", classRange:"कक्षा 3-4", questions:[
+        {q:"2 × 3 = ?", opts:["6","5","7","8"], ans:0, math:true, note:"2 गुणा 3 का मतलब है — 3, दो बार जोड़ना: 3 + 3 = 6।"},
+        {q:"4 × 2 = ?", opts:["8","6","10","7"], ans:0, math:true, note:"4 गुणा 2 का मतलब है — 4, दो बार जोड़ना: 4 + 4 = 8।"},
+        {q:"5 × 5 = ?", opts:["25","20","30","15"], ans:0, math:true, note:"5 गुणा 5 का मतलब है — 5, पाँच बार जोड़ना: 5+5+5+5+5 = 25।"},
+        {q:"3 × 4 = ?", opts:["12","10","14","9"], ans:0, math:true, note:"सोचो — 4 पेटियाँ हैं, हर पेटी में 3 गेंदें हैं। कुल गेंदें: 3+3+3+3 = 12।"},
+        {q:"6 × 2 = ?", opts:["12","10","14","11"], ans:0, math:true, note:"6 गुणा 2 का मतलब है — 6, दो बार जोड़ना: 6 + 6 = 12।"},
+        {q:"7 × 3 = ?", opts:["21","18","24","20"], ans:0, math:true, note:"7 गुणा 3 का मतलब है — 7, तीन बार जोड़ना: 7+7+7 = 21।"}
+      ]},
+      {title:"भाग (÷)", classRange:"कक्षा 4-5", questions:[
+        {q:"10 ÷ 2 = ?", opts:["5","4","6","3"], ans:0, math:true, note:"10 लड्डू 2 दोस्तों में बराबर बाँटने हैं। हर दोस्त को मिलेंगे — 5 लड्डू।"},
+        {q:"12 ÷ 3 = ?", opts:["4","5","3","6"], ans:0, math:true, note:"12 पेंसिलें 3 बच्चों में बराबर बाँटो — हर बच्चे को मिलेंगी 4 पेंसिलें।"},
+        {q:"20 ÷ 4 = ?", opts:["5","4","6","8"], ans:0, math:true, note:"20 चॉकलेट 4 डिब्बों में बराबर रखनी हैं — हर डिब्बे में आएंगी 5 चॉकलेट।"},
+        {q:"15 ÷ 5 = ?", opts:["3","4","5","2"], ans:0, math:true, note:"15 सेब 5 टोकरियों में बराबर बाँटो — हर टोकरी में आएंगे 3 सेब।"},
+        {q:"18 ÷ 2 = ?", opts:["9","8","10","7"], ans:0, math:true, note:"18 गुब्बारे 2 बच्चों में बराबर बाँटो — हर बच्चे को मिलेंगे 9 गुब्बारे।"},
+        {q:"24 ÷ 6 = ?", opts:["4","5","3","6"], ans:0, math:true, note:"24 किताबें 6 शेल्फ़ पर बराबर रखनी हैं — हर शेल्फ़ पर आएंगी 4 किताबें।"}
+      ]},
+      {title:"मिश्रित पहेलियाँ", classRange:"कक्षा 5-8", questions:[
+        {q:"राम के पास 15 चॉकलेट थीं। उसने 6 अपने दोस्त को दे दीं। अब कितनी बचीं?", opts:["9","8","10","7"], ans:0, math:true, note:"15 में से 6 घटाओ — 15 − 6 = 9 चॉकलेट बचीं।"},
+        {q:"एक डिब्बे में 8 पेंसिलें हैं। ऐसे 5 डिब्बों में कुल कितनी पेंसिलें होंगी?", opts:["40","35","45","30"], ans:0, math:true, note:"हर डिब्बे में 8 हैं और डिब्बे 5 हैं, तो 8 × 5 = 40 पेंसिलें।"},
+        {q:"सीता के पास 24 केले हैं। उसने उन्हें 4 दोस्तों में बराबर बाँटा। हर दोस्त को कितने केले मिले?", opts:["6","5","7","8"], ans:0, math:true, note:"24 को 4 दोस्तों में बराबर बाँटो — 24 ÷ 4 = 6 केले हर दोस्त को।"},
+        {q:"यह पैटर्न पूरा करो: 2, 4, 6, 8, ?", opts:["10","9","11","12"], ans:0, math:true, note:"हर बार संख्या 2 से बढ़ रही है — 8 के बाद 2 और जोड़ो तो 10 आता है।"},
+        {q:"100 में से 45 घटाओ।", opts:["55","50","60","45"], ans:0, math:true, note:"100 − 45 = 55। बड़ी संख्या को छोटे हिस्सों में तोड़कर घटाना आसान होता है: पहले 40 घटाओ (60), फिर 5 और घटाओ (55)।"},
+        {q:"1 किताब की कीमत ₹20 है। 3 किताबों की कीमत क्या होगी?", opts:["60","50","70","40"], ans:0, math:true, note:"हर किताब ₹20 की है और किताबें 3 हैं, तो 20 × 3 = ₹60।"}
+      ]}
+,
+      {title:"बड़ी संख्याओं का जोड़", classRange:"कक्षा 3-5", questions:[
+        {q:"34 + 25 = ?", opts:["59","58","60","49"], ans:0, math:true, note:"34 और 25 को जोड़ो: पहले इकाई जोड़ो 4+5=9, फिर दहाई जोड़ो 3+2=5 — जवाब है 59।"},
+        {q:"47 + 36 = ?", opts:["83","82","84","73"], ans:0, math:true, note:"इकाई: 7+6=13 (3 लिखो, 1 आगे बढ़ाओ), दहाई: 4+3+1=8 — जवाब है 83।"},
+        {q:"128 + 143 = ?", opts:["271","261","281","270"], ans:0, math:true, note:"128 और 143 को जोड़ने पर 271 आता है।"},
+        {q:"256 + 219 = ?", opts:["475","465","485","474"], ans:0, math:true, note:"256 और 219 को जोड़ने पर 475 आता है।"},
+        {q:"305 + 198 = ?", opts:["503","493","513","502"], ans:0, math:true, note:"305 और 198 को जोड़ने पर 503 आता है।"},
+        {q:"412 + 289 = ?", opts:["701","691","711","700"], ans:0, math:true, note:"412 और 289 को जोड़ने पर 701 आता है।"}
+      ]},
+      {title:"बड़ी संख्याओं का घटाव", classRange:"कक्षा 4-6", questions:[
+        {q:"68 − 29 = ?", opts:["39","38","40","49"], ans:0, math:true, note:"68 में से 29 घटाने पर 39 बचता है।"},
+        {q:"145 − 78 = ?", opts:["67","66","68","77"], ans:0, math:true, note:"145 में से 78 घटाने पर 67 बचता है।"},
+        {q:"200 − 84 = ?", opts:["116","106","126","115"], ans:0, math:true, note:"200 में से 84 घटाने पर 116 बचता है।"},
+        {q:"356 − 178 = ?", opts:["178","168","188","177"], ans:0, math:true, note:"356 में से 178 घटाने पर 178 बचता है।"},
+        {q:"500 − 245 = ?", opts:["255","245","265","254"], ans:0, math:true, note:"500 में से 245 घटाने पर 255 बचता है।"},
+        {q:"623 − 356 = ?", opts:["267","257","277","266"], ans:0, math:true, note:"623 में से 356 घटाने पर 267 बचता है।"}
+      ]},
+      {title:"पहाड़े: 6 से 9", classRange:"कक्षा 4-5", questions:[
+        {q:"6 × 4 = ?", opts:["24","20","28","22"], ans:0, math:true, note:"6 को 4 बार जोड़ो: 6+6+6+6 = 24।"},
+        {q:"7 × 5 = ?", opts:["35","30","40","33"], ans:0, math:true, note:"7 को 5 बार जोड़ो: 7+7+7+7+7 = 35।"},
+        {q:"8 × 6 = ?", opts:["48","42","54","46"], ans:0, math:true, note:"8 को 6 बार जोड़ने पर 48 आता है।"},
+        {q:"9 × 3 = ?", opts:["27","24","30","26"], ans:0, math:true, note:"9 को 3 बार जोड़ो: 9+9+9 = 27।"},
+        {q:"8 × 8 = ?", opts:["64","56","72","62"], ans:0, math:true, note:"8 का 8 गुना 64 होता है।"},
+        {q:"9 × 9 = ?", opts:["81","72","90","80"], ans:0, math:true, note:"9 का 9 गुना 81 होता है।"}
+      ]},
+      {title:"भाग की पहेलियाँ", classRange:"कक्षा 5-6", questions:[
+        {q:"36 ÷ 6 = ?", opts:["6","5","7","8"], ans:0, math:true, note:"36 को 6 बराबर हिस्सों में बाँटो — हर हिस्से में आएंगे 6।"},
+        {q:"48 ÷ 8 = ?", opts:["6","5","7","8"], ans:0, math:true, note:"48 को 8 बराबर हिस्सों में बाँटो — हर हिस्से में आएंगे 6।"},
+        {q:"63 ÷ 7 = ?", opts:["9","8","10","7"], ans:0, math:true, note:"63 को 7 बराबर हिस्सों में बाँटो — हर हिस्से में आएंगे 9।"},
+        {q:"72 ÷ 9 = ?", opts:["8","7","9","6"], ans:0, math:true, note:"72 को 9 बराबर हिस्सों में बाँटो — हर हिस्से में आएंगे 8।"},
+        {q:"90 ÷ 10 = ?", opts:["9","8","10","11"], ans:0, math:true, note:"90 को 10 बराबर हिस्सों में बाँटो — हर हिस्से में आएंगे 9।"},
+        {q:"108 आम 12 टोकरियों में बराबर बाँटो। हर टोकरी में कितने आम?", opts:["9","8","10","11"], ans:0, math:true, note:"108 ÷ 12 = 9 — हर टोकरी में 9 आम आएंगे।"}
+      ]},
+      {title:"भिन्न (Fractions)", classRange:"कक्षा 4-6", questions:[
+        {q:"एक पिज़्ज़ा के 4 बराबर टुकड़े हुए। अगर तुमने 1 टुकड़ा खाया, तो तुमने कितना भाग खाया?", opts:["1/4","1/2","1/3","2/4"], ans:0, math:true, note:"पिज़्ज़ा के 4 बराबर टुकड़ों में से 1 टुकड़ा यानी 1/4 भाग।"},
+        {q:"1/2 और 1/4 में से कौन सा भिन्न बड़ा है?", opts:["1/2","1/4","दोनों बराबर","कह नहीं सकते"], ans:0, math:true, note:"1/2 का मतलब आधा है, जो 1/4 (चौथाई) से बड़ा है।"},
+        {q:"एक केक के 2 बराबर टुकड़े हुए। हर टुकड़ा केक का कितना भाग है?", opts:["1/2","1/3","1/4","2/2"], ans:0, math:true, note:"2 बराबर टुकड़ों में हर टुकड़ा आधा यानी 1/2 भाग होता है।"},
+        {q:"3/4 में 'हर' (नीचे की संख्या) क्या है?", opts:["4","3","7","1"], ans:0, math:true, note:"भिन्न में नीचे लिखी संख्या को 'हर' कहते हैं — यहाँ यह 4 है।"},
+        {q:"1/3 में 'अंश' (ऊपर की संख्या) क्या है?", opts:["1","3","4","0"], ans:0, math:true, note:"भिन्न में ऊपर लिखी संख्या को 'अंश' कहते हैं — यहाँ यह 1 है।"},
+        {q:"एक थाली में 8 बराबर हिस्से हैं। अगर 4 हिस्से खा लिए, तो कितना भाग खाया?", opts:["1/2","1/4","1/8","4/4"], ans:0, math:true, note:"8 में से 4 हिस्से यानी 4/8 = 1/2 भाग खाया गया।"}
+      ]},
+      {title:"आकार और माप", classRange:"कक्षा 3-5", questions:[
+        {q:"त्रिभुज (triangle) की कितनी भुजाएँ होती हैं?", opts:["3","4","5","6"], ans:0, math:true, note:"त्रिभुज की 3 भुजाएँ होती हैं।"},
+        {q:"वर्ग (square) की सभी भुजाएँ कैसी होती हैं?", opts:["बराबर","असमान","गोल","टेढ़ी"], ans:0, math:true, note:"वर्ग की चारों भुजाएँ बराबर लंबाई की होती हैं।"},
+        {q:"एक घंटे में कितने मिनट होते हैं?", opts:["60","30","100","50"], ans:0, math:true, note:"1 घंटे में 60 मिनट होते हैं।"},
+        {q:"1 किलोग्राम में कितने ग्राम होते हैं?", opts:["1000","100","10","500"], ans:0, math:true, note:"1 किलोग्राम = 1000 ग्राम होता है।"},
+        {q:"वृत्त (circle) का कोई कोना होता है क्या?", opts:["नहीं, कोई कोना नहीं","हाँ, 4 कोने","हाँ, 3 कोने","हाँ, 6 कोने"], ans:0, math:true, note:"वृत्त एक गोल आकृति है जिसका कोई कोना नहीं होता।"},
+        {q:"आयत (rectangle) की कितनी भुजाएँ होती हैं?", opts:["4","3","5","6"], ans:0, math:true, note:"आयत की 4 भुजाएँ होती हैं — सामने वाली भुजाएँ बराबर होती हैं।"}
+      ]},
+      {title:"मिश्रित गणित चुनौती-2", classRange:"कक्षा 6-8", questions:[
+        {q:"एक बस में 45 सीटें हैं। अगर 3 बसें हों, तो कुल कितनी सीटें होंगी?", opts:["135","130","140","125"], ans:0, math:true, note:"45 × 3 = 135 सीटें।"},
+        {q:"एक बगीचे में 12 पंक्तियाँ हैं और हर पंक्ति में 15 पौधे हैं। कुल पौधे कितने हैं?", opts:["180","170","190","160"], ans:0, math:true, note:"12 × 15 = 180 पौधे।"},
+        {q:"144 को 12 बराबर हिस्सों में बाँटो। हर हिस्से में कितना आएगा?", opts:["12","14","11","13"], ans:0, math:true, note:"144 ÷ 12 = 12।"},
+        {q:"यह पैटर्न पूरा करो: 5, 10, 20, 40, ?", opts:["80","60","70","90"], ans:0, math:true, note:"हर संख्या पिछली संख्या से दोगुनी है — 40 × 2 = 80।"},
+        {q:"500 रुपये में से 235 रुपये खर्च हुए। कितने रुपये बचे?", opts:["265","260","270","255"], ans:0, math:true, note:"500 − 235 = 265 रुपये बचे।"},
+        {q:"एक ट्रेन में 8 डिब्बे हैं, हर डिब्बे में 60 यात्री बैठ सकते हैं। कुल कितने यात्री बैठ सकते हैं?", opts:["480","470","490","460"], ans:0, math:true, note:"8 × 60 = 480 यात्री।"}
+      ]}
+    ]
+  },
+  abacus: {
+    label:"अबेकस", labelEn:"Abacus", emoji:"🧮", theme:"indigo",
+    tagline:"दाने गिनो, संख्या पहचानो, अबेकस के उस्ताद बनो!",
+    levels:[
+      {title:"इकाई पहचानो", classRange:"कक्षा 1", questions:[
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:3, places:1}, opts:["3","4","2","5"], ans:0, note:"इकाई की छड़ में 3 दाने रंगीन (भरे हुए) हैं, इसलिए संख्या 3 है। ऊपर के बाकी दाने खाली दिखते हैं।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:7, places:1}, opts:["7","6","8","9"], ans:0, note:"इकाई की छड़ में 7 दाने भरे हुए हैं — गिनकर देखो: 1,2,3,4,5,6,7।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:5, places:1}, opts:["5","4","6","3"], ans:0, note:"5 दाने भरे हैं, इसलिए संख्या 5 है।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:9, places:1}, opts:["9","8","7","6"], ans:0, note:"सारे 9 दाने भरे हुए हैं — यह इकाई की छड़ की सबसे बड़ी संख्या है।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:2, places:1}, opts:["2","3","1","4"], ans:0, note:"सिर्फ 2 दाने भरे हैं, बाकी सब खाली हैं।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:6, places:1}, opts:["6","5","7","8"], ans:0, note:"6 दाने भरे हुए गिनो: 1,2,3,4,5,6।"}
+      ]},
+      {title:"दहाई-इकाई", classRange:"कक्षा 2-3", questions:[
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:24, places:2}, opts:["24","42","25","23"], ans:0, note:"दहाई की छड़ में 2 दाने यानी 20, और इकाई की छड़ में 4 दाने यानी 4। 20 + 4 = 24।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:37, places:2}, opts:["37","73","36","38"], ans:0, note:"दहाई में 3 दाने (30), इकाई में 7 दाने (7)। 30 + 7 = 37।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:58, places:2}, opts:["58","85","57","59"], ans:0, note:"दहाई में 5 दाने (50), इकाई में 8 दाने (8)। 50 + 8 = 58।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:42, places:2}, opts:["42","24","41","43"], ans:0, note:"दहाई में 4 दाने (40), इकाई में 2 दाने (2)। 40 + 2 = 42।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:63, places:2}, opts:["63","36","62","64"], ans:0, note:"दहाई में 6 दाने (60), इकाई में 3 दाने (3)। 60 + 3 = 63।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:19, places:2}, opts:["19","91","18","20"], ans:0, note:"दहाई में सिर्फ 1 दाना (10), इकाई में 9 दाने (9)। 10 + 9 = 19।"}
+      ]},
+      {title:"सैकड़ा-दहाई-इकाई", classRange:"कक्षा 3-4", questions:[
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:235, places:3}, opts:["235","253","236","234"], ans:0, note:"सैकड़ा में 2 दाने (200), दहाई में 3 दाने (30), इकाई में 5 दाने (5)। 200+30+5 = 235।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:407, places:3}, opts:["407","470","417","406"], ans:0, note:"सैकड़ा में 4 दाने (400), दहाई की छड़ बिल्कुल खाली है यानी 0, इकाई में 7 दाने (7)। 400+0+7 = 407।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:158, places:3}, opts:["158","185","157","159"], ans:0, note:"सैकड़ा में 1 दाना (100), दहाई में 5 दाने (50), इकाई में 8 दाने (8)। 100+50+8 = 158।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:320, places:3}, opts:["320","302","321","330"], ans:0, note:"सैकड़ा में 3 दाने (300), दहाई में 2 दाने (20), इकाई की छड़ खाली यानी 0। 300+20+0 = 320।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:671, places:3}, opts:["671","617","672","670"], ans:0, note:"सैकड़ा में 6 दाने (600), दहाई में 7 दाने (70), इकाई में 1 दाना (1)। 600+70+1 = 671।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:999, places:3}, opts:["999","998","989","899"], ans:0, note:"हर छड़ में पूरे 9 दाने भरे हैं — यह 3 अंकों की सबसे बड़ी संख्या है!"}
+      ]},
+      {title:"अबेकस पर जोड़", classRange:"कक्षा 3-5", questions:[
+        {q:"इकाई की छड़ में 4 दाने हैं। अगर 3 दाने और जोड़ दें, तो कुल कितने दाने होंगे?", abacus:{number:4, places:1}, opts:["7","6","8","5"], ans:0, note:"4 दानों में 3 और जोड़ने पर: 4+3 = 7 दाने हो जाते हैं।"},
+        {q:"इकाई की छड़ में 2 दाने हैं। अगर 6 दाने और जोड़ दें, तो कुल कितने दाने होंगे?", abacus:{number:2, places:1}, opts:["8","7","9","6"], ans:0, note:"2 दानों में 6 और जोड़ने पर: 2+6 = 8 दाने हो जाते हैं।"},
+        {q:"इकाई की छड़ में 5 दाने हैं। अगर 1 दाना और जोड़ दें, तो कुल कितने दाने होंगे?", abacus:{number:5, places:1}, opts:["6","5","7","4"], ans:0, note:"5 दानों में 1 और जोड़ने पर: 5+1 = 6 दाने हो जाते हैं।"},
+        {q:"इकाई की छड़ में 3 दाने हैं। अगर 5 दाने और जोड़ दें, तो कुल कितने दाने होंगे?", abacus:{number:3, places:1}, opts:["8","7","9","6"], ans:0, note:"3 दानों में 5 और जोड़ने पर: 3+5 = 8 दाने हो जाते हैं।"},
+        {q:"इकाई की छड़ में 6 दाने हैं। अगर 3 दाने और जोड़ दें, तो कुल कितने दाने होंगे?", abacus:{number:6, places:1}, opts:["9","8","10","7"], ans:0, note:"6 दानों में 3 और जोड़ने पर: 6+3 = 9 दाने हो जाते हैं — यह छड़ की सबसे बड़ी संख्या है।"},
+        {q:"इकाई की छड़ में 1 दाना है। अगर 8 दाने और जोड़ दें, तो कुल कितने दाने होंगे?", abacus:{number:1, places:1}, opts:["9","8","10","7"], ans:0, note:"1 दाने में 8 और जोड़ने पर: 1+8 = 9 दाने हो जाते हैं।"}
+      ]},
+      {title:"मिश्रित अभ्यास", classRange:"कक्षा 4-6", questions:[
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:46, places:2}, opts:["46","64","45","47"], ans:0, note:"दहाई में 4 दाने (40), इकाई में 6 दाने (6)। 40+6 = 46।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:803, places:3}, opts:["803","830","813","802"], ans:0, note:"सैकड़ा में 8 दाने (800), दहाई की छड़ खाली (0), इकाई में 3 दाने (3)। 800+0+3 = 803।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:100, places:3}, opts:["100","110","101","10"], ans:0, note:"सैकड़ा में सिर्फ 1 दाना (100), दहाई और इकाई दोनों छड़ें बिल्कुल खाली। सिर्फ 100।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:29, places:2}, opts:["29","92","28","30"], ans:0, note:"दहाई में 2 दाने (20), इकाई में 9 दाने (9)। 20+9 = 29।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:560, places:3}, opts:["560","506","561","650"], ans:0, note:"सैकड़ा में 5 दाने (500), दहाई में 6 दाने (60), इकाई की छड़ खाली यानी 0। 500+60+0 = 560।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:74, places:2}, opts:["74","47","73","75"], ans:0, note:"दहाई में 7 दाने (70), इकाई में 4 दाने (4)। 70+4 = 74।"}
+      ]}
+,
+      {title:"दहाई पहचानो", classRange:"कक्षा 2", questions:[
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:20, places:2}, opts:["20","2","12","02"], ans:0, note:"दहाई में 2 दाने (20), इकाई की छड़ बिल्कुल खाली यानी 0। 20+0 = 20।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:50, places:2}, opts:["50","5","15","05"], ans:0, note:"दहाई में 5 दाने (50), इकाई खाली यानी 0। 50+0=50।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:70, places:2}, opts:["70","7","17","07"], ans:0, note:"दहाई में 7 दाने (70), इकाई खाली। 70+0=70।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:90, places:2}, opts:["90","9","19","09"], ans:0, note:"दहाई में 9 दाने (90) — यह दहाई की सबसे बड़ी संख्या है।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:30, places:2}, opts:["30","3","13","03"], ans:0, note:"दहाई में 3 दाने (30), इकाई खाली।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:10, places:2}, opts:["10","1","11","01"], ans:0, note:"दहाई में सिर्फ 1 दाना (10), इकाई खाली।"}
+      ]},
+      {title:"अबेकस पर घटाव", classRange:"कक्षा 3-5", questions:[
+        {q:"इकाई की छड़ में 9 दाने हैं। अगर 3 दाने हटा दें, तो कितने दाने बचेंगे?", abacus:{number:9, places:1}, opts:["6","5","7","8"], ans:0, note:"9 दानों में से 3 हटाने पर: 9−3 = 6 दाने बचते हैं।"},
+        {q:"इकाई की छड़ में 8 दाने हैं। अगर 5 दाने हटा दें, तो कितने दाने बचेंगे?", abacus:{number:8, places:1}, opts:["3","4","2","5"], ans:0, note:"8−5 = 3 दाने बचते हैं।"},
+        {q:"इकाई की छड़ में 7 दाने हैं। अगर 7 दाने हटा दें, तो कितने दाने बचेंगे?", abacus:{number:7, places:1}, opts:["0","1","7","2"], ans:0, note:"सारे दाने हटाने पर 7−7 = 0 दाने बचते हैं।"},
+        {q:"इकाई की छड़ में 6 दाने हैं। अगर 2 दाने हटा दें, तो कितने दाने बचेंगे?", abacus:{number:6, places:1}, opts:["4","3","5","2"], ans:0, note:"6−2 = 4 दाने बचते हैं।"},
+        {q:"इकाई की छड़ में 5 दाने हैं। अगर 4 दाने हटा दें, तो कितने दाने बचेंगे?", abacus:{number:5, places:1}, opts:["1","2","0","3"], ans:0, note:"5−4 = 1 दाना बचता है।"},
+        {q:"इकाई की छड़ में 9 दाने हैं। अगर 1 दाना हटा दें, तो कितने दाने बचेंगे?", abacus:{number:9, places:1}, opts:["8","9","7","6"], ans:0, note:"9−1 = 8 दाने बचते हैं।"}
+      ]},
+      {title:"हज़ार तक अबेकस", classRange:"कक्षा 4-5", questions:[
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:1234, places:4}, opts:["1234","1243","2134","1324"], ans:0, note:"हज़ार में 1 दाना (1000), सैकड़ा में 2 दाने (200), दहाई में 3 दाने (30), इकाई में 4 दाने (4)। कुल 1234।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:3456, places:4}, opts:["3456","3465","4356","3546"], ans:0, note:"हज़ार में 3 दाने (3000), सैकड़ा में 4 दाने (400), दहाई में 5 दाने (50), इकाई में 6 दाने (6)। कुल 3456।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:2807, places:4}, opts:["2807","2870","2078","2708"], ans:0, note:"हज़ार में 2 दाने (2000), सैकड़ा में 8 दाने (800), दहाई खाली (0), इकाई में 7 दाने (7)। कुल 2807।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:5090, places:4}, opts:["5090","5900","5009","5099"], ans:0, note:"हज़ार में 5 दाने (5000), सैकड़ा खाली, दहाई में 9 दाने (90), इकाई खाली। कुल 5090।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:4321, places:4}, opts:["4321","4312","4231","3421"], ans:0, note:"हज़ार में 4 दाने (4000), सैकड़ा में 3 दाने (300), दहाई में 2 दाने (20), इकाई में 1 दाना (1)। कुल 4321।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:9999, places:4}, opts:["9999","9998","9989","9899"], ans:0, note:"हर छड़ में पूरे 9 दाने भरे हैं — यह 4 अंकों की सबसे बड़ी संख्या है!"}
+      ]},
+      {title:"आगे-पीछे की संख्या", classRange:"कक्षा 3-4", questions:[
+        {q:"यह अबेकस 45 दिखा रहा है। इससे 1 अधिक संख्या क्या होगी?", abacus:{number:45, places:2}, opts:["46","44","47","45"], ans:0, note:"45 से 1 अधिक करने पर 46 आता है।"},
+        {q:"यह अबेकस 60 दिखा रहा है। इससे 1 कम संख्या क्या होगी?", abacus:{number:60, places:2}, opts:["59","61","50","58"], ans:0, note:"60 से 1 कम करने पर 59 आता है।"},
+        {q:"यह अबेकस 29 दिखा रहा है। इससे 1 अधिक संख्या क्या होगी?", abacus:{number:29, places:2}, opts:["30","28","31","20"], ans:0, note:"29 से 1 अधिक करने पर 30 आता है — दहाई की जगह भी बदल जाती है।"},
+        {q:"यह अबेकस 100 दिखा रहा है। इससे 1 कम संख्या क्या होगी?", abacus:{number:100, places:3}, opts:["99","101","90","110"], ans:0, note:"100 से 1 कम करने पर 99 आता है।"},
+        {q:"यह अबेकस 75 दिखा रहा है। इससे 10 अधिक संख्या क्या होगी?", abacus:{number:75, places:2}, opts:["85","65","76","74"], ans:0, note:"75 में 10 जोड़ने पर 85 आता है — दहाई की संख्या 1 बढ़ जाती है।"},
+        {q:"यह अबेकस 50 दिखा रहा है। इससे 10 कम संख्या क्या होगी?", abacus:{number:50, places:2}, opts:["40","60","49","51"], ans:0, note:"50 में से 10 घटाने पर 40 आता है।"}
+      ]},
+      {title:"अबेकस पर दोगुना करना", classRange:"कक्षा 4-5", questions:[
+        {q:"इकाई की छड़ में 3 दाने हैं। इसे दोगुना करने पर कितने दाने होंगे?", abacus:{number:3, places:1}, opts:["6","5","7","3"], ans:0, note:"3 को दोगुना करने पर 3+3 = 6 दाने होते हैं।"},
+        {q:"यह अबेकस 12 दिखा रहा है। इसे दोगुना करने पर क्या होगा?", abacus:{number:12, places:2}, opts:["24","22","26","14"], ans:0, note:"12 को दोगुना करने पर 12+12 = 24 होता है।"},
+        {q:"इकाई की छड़ में 5 दाने हैं। इसे दोगुना करने पर कितने दाने होंगे?", abacus:{number:5, places:1}, opts:["10","9","8","11"], ans:0, note:"5 को दोगुना करने पर 5+5=10 होता है।"},
+        {q:"यह अबेकस 20 दिखा रहा है। इसे दोगुना करने पर क्या होगा?", abacus:{number:20, places:2}, opts:["40","30","42","22"], ans:0, note:"20 को दोगुना करने पर 20+20=40 होता है।"},
+        {q:"इकाई की छड़ में 4 दाने हैं। इसे दोगुना करने पर कितने दाने होंगे?", abacus:{number:4, places:1}, opts:["8","7","9","6"], ans:0, note:"4 को दोगुना करने पर 4+4=8 होता है।"},
+        {q:"यह अबेकस 15 दिखा रहा है। इसे दोगुना करने पर क्या होगा?", abacus:{number:15, places:2}, opts:["30","25","32","20"], ans:0, note:"15 को दोगुना करने पर 15+15=30 होता है।"}
+      ]},
+      {title:"शून्य को समझें", classRange:"कक्षा 3-4", questions:[
+        {q:"इकाई की छड़ में कोई भी दाना भरा नहीं है। यह कौन सी संख्या दिखाता है?", abacus:{number:0, places:1}, opts:["0","1","10","खाली"], ans:0, note:"जब छड़ में कोई दाना भरा नहीं होता, तो वह संख्या 0 (शून्य) दिखाती है।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:100, places:3}, opts:["100","10","1","1000"], ans:0, note:"सैकड़ा में 1 दाना, दहाई और इकाई दोनों छड़ें खाली यानी 0। सिर्फ 100।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:406, places:3}, opts:["406","460","46","604"], ans:0, note:"सैकड़ा में 4 दाने (400), दहाई खाली (0), इकाई में 6 दाने (6)। कुल 406।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:10, places:2}, opts:["10","1","100","01"], ans:0, note:"दहाई में 1 दाना (10), इकाई की छड़ बिल्कुल खाली यानी 0। 10+0=10।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:900, places:3}, opts:["900","90","9","9000"], ans:0, note:"सैकड़ा में 9 दाने (900), दहाई और इकाई दोनों खाली (0)। कुल 900।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:3, places:2}, opts:["3","30","13","33"], ans:0, note:"दहाई की छड़ खाली यानी 0, इकाई में 3 दाने। संख्या है सिर्फ 3।"}
+      ]},
+      {title:"मिश्रित अबेकस चुनौती-2", classRange:"कक्षा 5-7", questions:[
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:512, places:3}, opts:["512","521","215","152"], ans:0, note:"सैकड़ा में 5 दाने (500), दहाई में 1 दाना (10), इकाई में 2 दाने (2)। कुल 512।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:7050, places:4}, opts:["7050","7500","7005","7055"], ans:0, note:"हज़ार में 7 दाने (7000), सैकड़ा खाली, दहाई में 5 दाने (50), इकाई खाली। कुल 7050।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:88, places:2}, opts:["88","98","78","89"], ans:0, note:"दहाई में 8 दाने (80), इकाई में 8 दाने (8)। कुल 88।"},
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:6000, places:4}, opts:["6000","600","60","6600"], ans:0, note:"हज़ार में 6 दाने (6000), बाकी सभी छड़ें खाली।"},
+        {q:"यह अबेकस 345 दिखा रहा है। इसमें 10 जोड़ने पर क्या होगा?", abacus:{number:345, places:3}, opts:["355","335","346","344"], ans:0, note:"345 में 10 जोड़ने पर 355 आता है — दहाई की संख्या 1 बढ़ जाती है।"},
+        {q:"यह अबेकस 999 दिखा रहा है। इसमें 1 जोड़ने पर क्या होगा?", abacus:{number:999, places:3}, opts:["1000","998","990","1001"], ans:0, note:"999 में 1 जोड़ने पर 1000 आता है — यह अगले हज़ार तक पहुँचता है!"}
+      ]}
+    ]
+  }
+};
+
+const THEME_COLORS = {
+  marigold:{main:"var(--marigold)", dark:"var(--marigold-dark)", light:"var(--marigold-light)"},
+  plum:{main:"var(--plum)", dark:"var(--plum-dark)", light:"var(--plum-light)"},
+  parrot:{main:"var(--parrot)", dark:"var(--parrot-dark)", light:"var(--parrot-light)"},
+  coral:{main:"var(--coral)", dark:"var(--coral-dark)", light:"var(--coral-light)"},
+  indigo:{main:"var(--sky-deep)", dark:"var(--indigo-dark)", light:"var(--indigo-light)"}
+};
+
+/* Mark one question per level (2nd question) as a dropdown-style puzzle,
+   so kids also practice picking answers from a dropdown list. */
+Object.keys(SUBJECTS).forEach(subjKey=>{
+  SUBJECTS[subjKey].levels.forEach(level=>{
+    if(level.questions[1]) level.questions[1].type = "dropdown";
+    if(level.questions[4]) level.questions[4].type = "dropdown";
+  });
+});
+
+/* ================= STATE ================= */
+let state = { screen:"home", subject:null, levelIdx:0, qIdx:0, correctCount:0, answered:false,
+  learnDigits:2, learnValues:[0,0,0,0], learnTab:"free", learnLevel:1,
+  learnTask:null, learnHelperCount:0, learnFb:"", learnMsg:"",
+  puzzleScore:0, puzzleStreak:0 };
+let progress = {}; // { subjectKey: [stars0, stars1, ...] }
+Object.keys(SUBJECTS).forEach(k=>{ progress[k] = SUBJECTS[k].levels.map(()=>0); });
+progress.abacusMaster = [0]; // stars earned in the Abacus Master puzzle mode
+
+function totalStars(){
+  let t=0;
+  Object.values(progress).forEach(arr=>arr.forEach(s=>t+=s));
+  return t;
+}
+function unlockedCount(subjKey){
+  const arr = progress[subjKey];
+  let n = 1;
+  for(let i=0;i<arr.length;i++){ if(arr[i]>0) n = Math.max(n, i+2); }
+  return Math.min(n, arr.length);
+}
+
+/* ================= ABACUS SVG (used by quiz questions — realistic soroban) ================= */
+function abacusSVG(number, places){
+  const values = [0,0,0,0];
+  String(number).padStart(places,'0').split('').reverse().forEach((d,i)=>{ values[i]=Number(d); });
+  return sorobanSVG(values, places, false);
+}
+
+/* ================= REALISTIC SOROBAN (Japanese-style abacus) ================= */
+/* Matches a real toy abacus: each rod has 1 heaven bead (worth 5, upper deck)
+   and 4 earth beads (worth 1 each, lower deck). Beads physically slide toward
+   or away from the central reckoning bar — that is what "counts" them. */
+const PLACE_COLORS = ['#FF6B5B','#33B27C','#8A4FC4','#FFA630']; // इकाई, दहाई, सैकड़ा, हज़ार
+function placeNameHi(p){ return p===0 ? 'इकाई' : p===1 ? 'दहाई' : p===2 ? 'सैकड़ा' : 'हज़ार'; }
+
+function beadPolygon(cx, cy, w, h, active){
+  const fill = '#E0402A';
+  const stroke = active ? '#FFD65A' : '#7A2318';
+  const sw = active ? 2.2 : 1.2;
+  const pts = `${(cx-w).toFixed(1)},${cy} ${(cx-w*0.42).toFixed(1)},${cy-h} ${(cx+w*0.42).toFixed(1)},${cy-h} ${(cx+w).toFixed(1)},${cy} ${(cx+w*0.42).toFixed(1)},${cy+h} ${(cx-w*0.42).toFixed(1)},${cy+h}`;
+  return `<polygon points="${pts}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+}
+
+/* interactive=true adds invisible tap zones (data-place/data-part/data-bead)
+   so a click handler can move beads exactly like a real abacus. */
+function sorobanSVG(values, digits, interactive){
+  const rodGap = interactive ? 74 : 58;
+  const topY = 12, barY = 118, botY = 224;
+  const beadW = interactive ? 15 : 12, beadH = interactive ? 8 : 6.5;
+  const gap = beadH*2 + 4;
+  const width = digits*rodGap + 36;
+  let svg = `<svg viewBox="0 0 ${width} 250" xmlns="http://www.w3.org/2000/svg" class="soroban">`;
+  svg += `<rect x="3" y="3" width="${width-6}" height="234" rx="12" fill="none" stroke="#1B1F2E" stroke-width="6"/>`;
+  svg += `<rect x="3" y="${barY-6}" width="${width-6}" height="12" fill="#1B1F2E"/>`;
+  for(let idx=0; idx<digits; idx++){
+    const place = digits-1-idx;
+    const cx = 24 + idx*rodGap;
+    const val = values[place]||0;
+    const heaven = val>=5 ? 1 : 0;
+    const earth = val%5;
+    svg += `<line x1="${cx}" y1="8" x2="${cx}" y2="230" stroke="#B9B4D8" stroke-width="3"/>`;
+    if(place%3===0){ svg += `<circle cx="${cx}" cy="${barY}" r="3" fill="#FFD65A"/>`; }
+    const hy = heaven ? barY-15 : topY+15;
+    svg += beadPolygon(cx, hy, beadW, beadH, !!heaven);
+    for(let b=0;b<4;b++){
+      const active = b<earth;
+      const y = active ? (barY+15+b*gap) : (botY-15-(3-b)*gap);
+      svg += beadPolygon(cx, y, beadW, beadH, active);
+    }
+    if(interactive){
+      svg += `<rect class="bead-hit" data-place="${place}" data-part="heaven" x="${cx-beadW-6}" y="${topY}" width="${(beadW+6)*2}" height="${barY-topY-4}" fill="transparent"/>`;
+      const zoneH = (botY-4-(barY+4))/4;
+      for(let b=0;b<4;b++){
+        const y0 = barY+4+b*zoneH;
+        svg += `<rect class="bead-hit" data-place="${place}" data-part="earth" data-bead="${b}" x="${cx-beadW-6}" y="${y0}" width="${(beadW+6)*2}" height="${zoneH}" fill="transparent"/>`;
+      }
+    }
+    svg += `<text x="${cx}" y="246" font-size="${interactive?13:11.5}" font-weight="700" fill="#5B6178" text-anchor="middle" font-family="Mukta, sans-serif">${placeNameHi(place)}</text>`;
+  }
+  svg += `</svg>`;
+  return svg;
+}
+
+/* ================= ABACUS MASTER — full arithmetic engine ================= */
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+function learnNumber(){
+  let n = 0;
+  for(let p=0;p<state.learnDigits;p++){ n += (state.learnValues[p]||0) * Math.pow(10,p); }
+  return n;
+}
+function resetLearnValues(){ state.learnValues = [0,0,0,0]; state.learnHelperCount = 0; }
+function setLearnValue(n){
+  state.learnValues = [0,0,0,0];
+  String(Math.max(0,n)).split('').reverse().forEach((d,i)=>{ state.learnValues[i] = Number(d); });
+}
+function clearFeedback(){ state.learnFb=""; state.learnMsg=""; }
+
+const OP_TABS = [
+  {key:"free",    label:"🖐️ अभ्यास"},
+  {key:"add",     label:"➕ जोड़"},
+  {key:"sub",     label:"➖ घटाव"},
+  {key:"mul",     label:"✖️ गुणा"},
+  {key:"div",     label:"➗ भाग"},
+  {key:"puzzle",  label:"🎯 पहेली"}
+];
+
+function digitsNeeded(n){ return Math.max(1, String(Math.max(0,n)).length); }
+
+function genTask(op, digits, level){
+  const max = Math.pow(10,digits)-1;
+  if(op==="add"){
+    const shrink = level===1 ? 1 : 0;
+    const hi = Math.max(1, Math.pow(10, Math.max(1,digits-shrink))-1);
+    let a,b,sum;
+    do{ a=randInt(1,hi); b=randInt(1,hi); sum=a+b; } while(sum>max);
+    return {op, a, b, target:sum, startValue:a, verb:"में जोड़ो", symbol:"+"};
+  }
+  if(op==="sub"){
+    const a = randInt(Math.pow(10,Math.max(0,digits-1)), max);
+    const b = randInt(1, a);
+    return {op, a, b, target:a-b, startValue:a, verb:"में से घटाओ", symbol:"−"};
+  }
+  if(op==="mul"){
+    const aMax = level===1 ? 9 : level===2 ? 12 : 25;
+    let a,b,product,tries=0;
+    do{ a=randInt(2,aMax); b=randInt(2,9); product=a*b; tries++; } while(product>max && tries<60);
+    return {op, a, b, target:product, startValue:0, verb:"× ", symbol:"×"};
+  }
+  // division — exact, remainder-free (classic soroban repeated-subtraction method)
+  const bMax = level===1 ? 5 : level===2 ? 9 : 12;
+  const b = randInt(2,bMax);
+  const q = randInt(2, Math.max(2, Math.floor(max/b)));
+  const a = b*q;
+  return {op, a, b, target:q, startValue:a, verb:"÷ ", symbol:"÷"};
+}
+
+function ensureTask(){
+  if(state.learnTask && state.learnTask.op===state.learnTab) return;
+  newTask();
+}
+function newTask(){
+  const op = state.learnTab==="puzzle" ? ["add","sub","mul","div"][randInt(0,3)] : state.learnTab;
+  const t = genTask(op, state.learnDigits, state.learnLevel);
+  state.learnDigits = Math.max(state.learnDigits, digitsNeeded(t.a), digitsNeeded(t.target), digitsNeeded(t.startValue));
+  state.learnTask = t;
+  setLearnValue(t.startValue);
+  state.learnHelperCount = 0;
+  clearFeedback();
+}
+
+/* Friend-number (complement) hint — the classic soroban trick for carrying. */
+function complementHint(task){
+  if(task.op==="add"){
+    const onesA = task.a%10, onesB = task.b%10;
+    if(onesA+onesB>=10){
+      const smallFriend = 10-onesB;
+      return `टिप: ${onesA} में सीधे ${onesB} नहीं जुड़ेंगे (10 पार हो जाएगा)। "10 का दोस्त" इस्तेमाल करो — ${onesB} का दोस्त है ${smallFriend}, यानी ${onesA} में से ${smallFriend} घटाओ और अगली छड़ (दहाई) में 1 जोड़ दो।`;
+    }
+    return `टिप: दोनों संख्याओं को सीधे-सीधे जोड़ो — अभी किसी "दोस्त संख्या" की जरूरत नहीं है।`;
+  }
+  if(task.op==="sub"){
+    const onesA = task.a%10, onesB = task.b%10;
+    if(onesB>onesA){
+      return `टिप: इकाई में से सीधे ${onesB} नहीं घटेगा। पड़ोसी छड़ (दहाई) से 1 उधार लो — यानी अगली छड़ में से 1 घटाओ और इकाई में 10 जोड़कर फिर घटाओ।`;
+    }
+    return `टिप: इकाई में से सीधे घटाओ — यहाँ उधार लेने की जरूरत नहीं है।`;
+  }
+  if(task.op==="mul"){
+    return `टिप: "${task.a} जोड़ो" बटन को ${task.b} बार दबाओ — हर बार अबेकस में ${task.a} जुड़ता जाएगा, यही गुणा का मतलब है (${task.a} को ${task.b} बार जोड़ना)।`;
+  }
+  return `टिप: "${task.b} घटाओ" बटन तब तक दबाओ जब तक अबेकस शून्य न हो जाए — तुमने कितनी बार बटन दबाया, वही भागफल (उत्तर) है।`;
+}
+
+function checkTask(){
+  const t = state.learnTask; if(!t) return;
+  const val = learnNumber();
+  let correct;
+  if(t.op==="div"){ correct = state.learnHelperCount===t.target && val===0; }
+  else { correct = val===t.target; }
+
+  if(correct){
+    state.learnFb="ok";
+    state.learnMsg = "✅ शाबाश! बिल्कुल सही जवाब।";
+    if(state.learnTab==="puzzle"){
+      state.puzzleStreak++;
+      state.puzzleScore++;
+      if(!progress.abacusMaster) progress.abacusMaster=[0];
+      progress.abacusMaster[0]++;
+    }
+    setTimeout(()=>{ newTask(); render(); }, 1300);
+  } else {
+    state.learnFb="no";
+    if(state.learnTab==="puzzle") state.puzzleStreak=0;
+    state.learnMsg = t.op==="div"
+      ? `❌ अभी सही नहीं है। अबेकस पर मान: ${val}, भागफल गिनती: ${state.learnHelperCount}। फिर कोशिश करो।`
+      : `❌ अभी अबेकस पर ${val} बना है, ${t.target} नहीं — फिर कोशिश करो।`;
+  }
+}
+
+function applyHelper(){
+  const t = state.learnTask; if(!t) return;
+  if(t.op==="mul"){
+    setLearnValue(Math.min(learnNumber()+t.a, Math.pow(10,state.learnDigits)-1));
+    state.learnHelperCount++;
+  } else if(t.op==="div"){
+    const cur = learnNumber();
+    if(cur>=t.b){ setLearnValue(cur-t.b); state.learnHelperCount++; }
+  }
+  clearFeedback();
+}
+
+function mascot(mood){
+  const face = mood==="sad" ? 
+    `<path d="M40 62 Q50 56 60 62" stroke="#22283B" stroke-width="3" fill="none" stroke-linecap="round"/>
+     <circle cx="38" cy="46" r="4" fill="#22283B"/><circle cx="62" cy="46" r="4" fill="#22283B"/>` :
+    mood==="excited" ?
+    `<path d="M38 56 Q50 70 62 56" stroke="#22283B" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+     <path d="M32 44 Q38 38 44 44" stroke="#22283B" stroke-width="3" fill="none" stroke-linecap="round"/>
+     <path d="M56 44 Q62 38 68 44" stroke="#22283B" stroke-width="3" fill="none" stroke-linecap="round"/>` :
+    `<path d="M38 58 Q50 66 62 58" stroke="#22283B" stroke-width="3" fill="none" stroke-linecap="round"/>
+     <circle cx="38" cy="46" r="4" fill="#22283B"/><circle cx="62" cy="46" r="4" fill="#22283B"/>`;
+  return `<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="50,4 92,50 50,96 8,50" fill="#FFA630" stroke="#E4890E" stroke-width="3"/>
+    <line x1="8" y1="50" x2="92" y2="50" stroke="#E4890E" stroke-width="2"/>
+    <line x1="50" y1="4" x2="50" y2="96" stroke="#E4890E" stroke-width="2"/>
+    ${face}
+    <path d="M50 96 Q46 106 50 114 Q54 122 50 130" stroke="#FF6B5B" stroke-width="3" fill="none"/>
+  </svg>`;
+}
+
+/* Original jungle-guide monkey buddy — encouragement companion for the play/result screens. */
+function jungleBuddy(mood){
+  const face = mood==="sad" ?
+    `<path d="M42 78 Q52 73 62 78" stroke="#3B2314" stroke-width="3" fill="none" stroke-linecap="round"/>
+     <circle cx="42" cy="64" r="3.4" fill="#3B2314"/><circle cx="62" cy="64" r="3.4" fill="#3B2314"/>` :
+    mood==="excited" ?
+    `<path d="M40 76 Q52 90 64 76" stroke="#3B2314" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+     <path d="M35 60 Q40 55 46 60" stroke="#3B2314" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+     <path d="M58 60 Q64 55 69 60" stroke="#3B2314" stroke-width="2.5" fill="none" stroke-linecap="round"/>` :
+    `<path d="M42 77 Q52 84 62 77" stroke="#3B2314" stroke-width="3" fill="none" stroke-linecap="round"/>
+     <circle cx="42" cy="64" r="3.4" fill="#3B2314"/><circle cx="62" cy="64" r="3.4" fill="#3B2314"/>`;
+  return `<svg viewBox="0 0 104 110" xmlns="http://www.w3.org/2000/svg">
+    <path d="M52 8 Q10 18 14 60 Q16 92 52 100 Q88 92 90 60 Q94 18 52 8 Z" fill="#8A5A34"/>
+    <circle cx="20" cy="34" r="14" fill="#8A5A34"/><circle cx="20" cy="34" r="8" fill="#E7C39C"/>
+    <circle cx="84" cy="34" r="14" fill="#8A5A34"/><circle cx="84" cy="34" r="8" fill="#E7C39C"/>
+    <ellipse cx="52" cy="58" rx="30" ry="26" fill="#E7C39C"/>
+    ${face}
+    <ellipse cx="52" cy="75" rx="9" ry="6" fill="#C99A6C"/>
+  </svg>`;
+}
+
+/* ================= RENDER ================= */
+const app = document.getElementById('app');
+
+function render(){
+  if(state.screen==="home") renderHome();
+  else if(state.screen==="map") renderMap();
+  else if(state.screen==="play") renderPlay();
+  else if(state.screen==="result") renderResult();
+  else if(state.screen==="learn") renderLearn();
+}
+
+function renderHome(){
+  let cards = Object.keys(SUBJECTS).map(key=>{
+    const s = SUBJECTS[key];
+    const done = progress[key].filter(x=>x>0).length;
+    return `<button class="subject-card ${s.theme}" data-subj="${key}">
+      <div class="subject-emoji">${s.emoji}</div>
+      <div class="subject-title hi">${s.label}</div>
+      <div class="subject-sub">${s.tagline}</div>
+      <div class="subject-progress">${done}/${s.levels.length} स्तर पूरे</div>
+    </button>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="topbar">
+      <button class="brand" id="homeBrand"><svg class="brand-kite" viewBox="0 0 100 130">${mascot("happy").match(/<polygon[\s\S]*?\/>/)[0]}</svg><span class="brand-name">अक्षर उड़ान</span></button>
+      <div class="star-wallet">⭐ ${totalStars()}</div>
+    </div>
+    <a class="portal-back" href="/index.html">← Exam Portal पर वापस जाएँ</a>
+    <div class="hero">
+      <h1 class="hi">क्या सीखना है आज?</h1>
+      <p>पहेलियाँ हल करो, तारे कमाओ, नए स्तर खोलो!</p>
+    </div>
+    <div class="subject-list">${cards}</div>
+  `;
+  document.querySelectorAll('.subject-card').forEach(el=>{
+    el.addEventListener('click', ()=>{ state.subject = el.dataset.subj; state.screen="map"; render(); });
+  });
+}
+
+function renderMap(){
+  const subj = SUBJECTS[state.subject];
+  const theme = THEME_COLORS[subj.theme];
+  const unlocked = unlockedCount(state.subject);
+  const positions = ["left","mid","right","mid","left"];
+  let nodes = subj.levels.map((lvl,i)=>{
+    const isLocked = i+1 > unlocked;
+    const stars = progress[state.subject][i];
+    const starStr = isLocked ? "" : `<div class="level-stars-mini">${[0,1,2].map(si=>`<span>${si<stars?"⭐":"☆"}</span>`).join("")}</div>`;
+    const pos = positions[i % positions.length];
+    return `<div class="level-node-wrap ${pos}">
+      <div style="text-align:center;">
+        <button class="level-node ${isLocked?'locked':''}" data-idx="${i}" ${isLocked?'disabled':''} style="background:${isLocked?'':theme.main}">
+          <div class="inner"><div class="lvl-num">${isLocked?'🔒':(i+1)}</div></div>
+        </button>
+        <div class="level-caption hi">${lvl.title}<br><span style="font-weight:500;font-size:11px;">${lvl.classRange}</span></div>
+        ${starStr}
+      </div>
+    </div>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="map-header">
+      <button class="back-btn" id="backHome">←</button>
+      <div>
+        <div class="map-title hi">${subj.label}</div>
+      </div>
+    </div>
+    <div class="map-tagline">${subj.tagline}</div>
+    ${state.subject==='abacus' ? `<button class="learn-cta" id="learnAbacusBtn">🧮 अबेकस मास्टर खोलो — जोड़, घटाव, गुणा, भाग सीखो →</button>` : ""}
+    <div class="level-path" style="--string-color:${theme.main}">${nodes}</div>
+  `;
+  document.getElementById('backHome').addEventListener('click', ()=>{ state.screen="home"; render(); });
+  if(state.subject==='abacus'){
+    document.getElementById('learnAbacusBtn').addEventListener('click', ()=>{ state.screen="learn"; render(); });
+  }
+  document.querySelectorAll('.level-node:not(.locked)').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.levelIdx = parseInt(el.dataset.idx);
+      state.qIdx = 0; state.correctCount = 0; state.answered=false;
+      state.screen="play"; render();
+    });
+  });
+}
+
+function renderLearn(){
+  if(state.learnTab!=="free") ensureTask();
+  const digits = state.learnDigits;
+  const val = learnNumber();
+  const svg = sorobanSVG(state.learnValues, digits, true);
+  const t = state.learnTask;
+
+  let parts = [];
+  for(let p=digits-1;p>=0;p--){
+    const v = (state.learnValues[p]||0) * Math.pow(10,p);
+    if(v>0) parts.push(v);
+  }
+  const expanded = parts.length ? `${parts.join(' + ')} = ${val}` : `संख्या: 0`;
+
+  let chips = "";
+  for(let p=digits-1;p>=0;p--){
+    const bg = ['#E4890E','#278F62','#6B379D','#E24C3C'][p] || '#E4890E';
+    chips += `<span class="place-chip" style="background:${bg}">${placeNameHi(p)}: ${state.learnValues[p]||0}</span>`;
+  }
+
+  const tabsHtml = OP_TABS.map(o=>`<button class="mode-tab ${state.learnTab===o.key?'active':''}" data-tab="${o.key}">${o.label}</button>`).join("");
+  const digitBtns = [1,2,3,4].map(d=>`<button class="digit-btn ${digits===d?'active':''}" data-d="${d}">${d} अंक</button>`).join("");
+  const levelBtns = [[1,"आसान"],[2,"मध्यम"],[3,"कठिन"]].map(([lv,lbl])=>`<button class="digit-btn ${state.learnLevel===lv?'active':''}" data-lv="${lv}">${lbl}</button>`).join("");
+
+  let taskHtml = "";
+  if(t && state.learnTab!=="free"){
+    const opWord = {add:"जोड़ (Addition)", sub:"घटाव (Subtraction)", mul:"गुणा (Multiplication)", div:"भाग (Division)"}[t.op];
+    const puzzleTag = state.learnTab==="puzzle" ? `<div class="challenge-label">पहेली · ${opWord} · स्ट्रीक 🔥 ${state.puzzleStreak} · स्कोर ⭐ ${state.puzzleScore}</div>` : `<div class="challenge-label">${opWord}</div>`;
+    const helperBtn = t.op==="mul" ? `<button class="learn-btn secondary" id="helperBtn">+${t.a} जोड़ो (${state.learnHelperCount}× हुआ)</button>`
+      : t.op==="div" ? `<button class="learn-btn secondary" id="helperBtn">−${t.b} घटाओ (${state.learnHelperCount}× हुआ)</button>` : "";
+    taskHtml = `
+      <div class="challenge-box">
+        ${puzzleTag}
+        <div class="challenge-target">${t.a} ${t.symbol} ${t.b} = ?</div>
+        <div class="challenge-feedback ${state.learnFb}" id="challengeFeedback">${state.learnMsg}</div>
+      </div>
+      <div class="hint-box" id="hintBox" style="display:none;"></div>`;
+  }
+
+  app.innerHTML = `
+    <div class="learn-wrap">
+      <div class="learn-header">
+        <button class="back-btn" id="backFromLearn">←</button>
+        <div class="learn-title hi">अबेकस मास्टर</div>
+      </div>
+      <div class="learn-tagline hi">असली अबेकस को छूकर जोड़, घटाव, गुणा और भाग सीखो!</div>
+      <div class="mode-tabs">${tabsHtml}</div>
+      <div class="digit-select">${digitBtns}</div>
+      ${state.learnTab!=="free" ? `<div class="digit-select">${levelBtns}</div>` : ""}
+      ${taskHtml}
+      <div class="learn-card">
+        <div class="learn-abacus-visual">${svg}</div>
+        <div class="number-display">${val}</div>
+        <div class="expanded-form hi">${expanded}</div>
+        <div class="place-chips">${chips}</div>
+        <div class="learn-actions">
+          ${t && state.learnTab!=="free" ? '<button class="learn-btn primary" id="checkTaskBtn">जांचो ✓</button>' : ''}
+          ${t && (t.op==="mul"||t.op==="div") ? `<button class="learn-btn secondary" id="helperBtnWrap">${t.op==="mul"?`+${t.a} जोड़ो`:`−${t.b} घटाओ`} (${state.learnHelperCount}×)</button>` : ''}
+          ${t && state.learnTab!=="free" ? '<button class="learn-btn ghost" id="hintBtn">💡 टिप</button><button class="learn-btn ghost" id="newTaskBtn">नया प्रश्न 🔄</button>' : ''}
+          <button class="learn-btn ghost" id="resetLearn">रीसेट ↺</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('backFromLearn').addEventListener('click', ()=>{ state.screen="map"; render(); });
+
+  document.querySelectorAll('.mode-tab').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.learnTab = el.dataset.tab;
+      state.learnTask = null;
+      resetLearnValues();
+      if(state.learnTab==="free") clearFeedback();
+      render();
+    });
+  });
+
+  document.querySelectorAll('.digit-select .digit-btn[data-d]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.learnDigits = parseInt(el.dataset.d);
+      state.learnTask = null;
+      resetLearnValues();
+      render();
+    });
+  });
+  document.querySelectorAll('.digit-btn[data-lv]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.learnLevel = parseInt(el.dataset.lv);
+      state.learnTask = null;
+      render();
+    });
+  });
+
+  document.querySelectorAll('.bead-hit').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const place = parseInt(el.dataset.place);
+      const part = el.dataset.part;
+      let v = state.learnValues[place]||0;
+      let heaven = v>=5?1:0, earth=v%5;
+      if(part==='heaven'){ heaven = heaven?0:1; }
+      else { const b=parseInt(el.dataset.bead); earth=(b<earth)?b:b+1; }
+      state.learnValues[place] = heaven*5+earth;
+      clearFeedback();
+      render();
+    });
+  });
+
+  document.getElementById('resetLearn').addEventListener('click', ()=>{
+    resetLearnValues(); clearFeedback(); render();
+  });
+
+  const checkBtn = document.getElementById('checkTaskBtn');
+  if(checkBtn) checkBtn.addEventListener('click', checkTask);
+
+  const helperBtn = document.getElementById('helperBtnWrap');
+  if(helperBtn) helperBtn.addEventListener('click', ()=>{ applyHelper(); render(); });
+
+  const newTaskBtn = document.getElementById('newTaskBtn');
+  if(newTaskBtn) newTaskBtn.addEventListener('click', ()=>{ newTask(); render(); });
+
+  const hintBtn = document.getElementById('hintBtn');
+  if(hintBtn) hintBtn.addEventListener('click', ()=>{
+    const box = document.getElementById('hintBox');
+    if(box.style.display==='none'){ box.textContent = complementHint(state.learnTask); box.style.display='block'; }
+    else { box.style.display='none'; }
+  });
+}
+
+function shuffledOptions(q){
+  const idxs = q.opts.map((_,i)=>i);
+  for(let i=idxs.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [idxs[i],idxs[j]] = [idxs[j],idxs[i]];
+  }
+  const opts = idxs.map(i=>q.opts[i]);
+  const ans = idxs.indexOf(q.ans);
+  return {opts, ans};
+}
+
+function renderPlay(){
+  const subj = SUBJECTS[state.subject];
+  const theme = THEME_COLORS[subj.theme];
+  const level = subj.levels[state.levelIdx];
+  const q = level.questions[state.qIdx];
+  const isMatra = state.subject === "matra";
+  const pct = Math.round((state.qIdx)/level.questions.length*100);
+
+  const shuffled = shuffledOptions(q);
+  state.currentAns = shuffled.ans;
+
+  let qHtml;
+  if(isMatra){
+    qHtml = `<div class="question-text hi">${q.q.replace('_','<span class="blank">___</span>')}</div>`;
+  } else if(q.abacus){
+    qHtml = `<div class="question-text hi">${q.q}</div><div class="abacus-visual">${abacusSVG(q.abacus.number, q.abacus.places)}</div>`;
+  } else if(q.math){
+    qHtml = `<div class="question-text math-q">${q.q}</div>`;
+  } else {
+    qHtml = `<div class="question-text ${q.en?'en-q':'hi'}">${q.q}</div>`;
+  }
+
+  const optClass = isMatra ? "options-grid matra" : "options-grid";
+  let optsHtml;
+  if(q.type === "dropdown"){
+    optsHtml = `<div class="dropdown-wrap">
+      <select class="dropdown-select" id="dropdownSelect">
+        <option value="-1" selected disabled>अपना जवाब चुनो 👇</option>
+        ${shuffled.opts.map((o,i)=>`<option value="${i}">${o}</option>`).join("")}
+      </select>
+      <button class="check-btn" id="checkDropdown">जवाब जांचो ✓</button>
+    </div>`;
+  } else {
+    optsHtml = shuffled.opts.map((o,i)=>{
+      const cls = isMatra ? "opt-btn matra-opt" : "opt-btn";
+      return `<button class="${cls}" data-i="${i}">${o}</button>`;
+    }).join("");
+  }
+  const dropdownBadge = q.type==="dropdown" ? `<div class="dropdown-badge">🔽 ड्रॉपडाउन से चुनो</div>` : "";
+
+  app.innerHTML = `
+    <div class="play-wrap">
+      <div class="play-top">
+        <button class="back-btn" id="exitPlay">✕</button>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%; background:${theme.main}"></div></div>
+        <div class="play-score">⭐ ${state.correctCount}/${level.questions.length}</div>
+      </div>
+      <div class="mascot-row" id="mascotHolder">${mascot("happy")}<span class="buddy-svg">${jungleBuddy("happy")}</span></div>
+      <div class="question-card">
+        <div class="question-label">प्रश्न ${state.qIdx+1} / ${level.questions.length}</div>
+        ${dropdownBadge}
+        ${qHtml}
+        <div class="${q.type==='dropdown' ? '' : optClass}" id="optsWrap">${optsHtml}</div>
+        <div class="feedback-box" id="feedback"></div>
+        <button class="next-btn" id="nextBtn">आगे बढ़ो →</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('exitPlay').addEventListener('click', ()=>{ state.screen="map"; render(); });
+  if(q.type === "dropdown"){
+    document.getElementById('checkDropdown').addEventListener('click', ()=>{
+      const sel = document.getElementById('dropdownSelect');
+      const val = parseInt(sel.value);
+      if(isNaN(val) || val === -1){
+        const btn = document.getElementById('checkDropdown');
+        btn.classList.remove('shake'); void btn.offsetWidth; btn.classList.add('shake');
+        return;
+      }
+      onAnswer(val);
+    });
+  } else {
+    document.querySelectorAll('#optsWrap .opt-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>onAnswer(parseInt(btn.dataset.i)));
+    });
+  }
+  document.getElementById('nextBtn').addEventListener('click', onNext);
+}
+
+function onAnswer(i){
+  if(state.answered) return;
+  state.answered = true;
+  const subj = SUBJECTS[state.subject];
+  const level = subj.levels[state.levelIdx];
+  const q = level.questions[state.qIdx];
+  const correct = i === state.currentAns;
+  if(correct) state.correctCount++;
+
+  document.querySelectorAll('#optsWrap .opt-btn').forEach((btn,idx)=>{
+    btn.disabled = true;
+    if(idx===state.currentAns) btn.classList.add('correct');
+    else if(idx===i) btn.classList.add('wrong');
+    else btn.classList.add('dim');
+  });
+
+  if(q.type === "dropdown"){
+    const sel = document.getElementById('dropdownSelect');
+    const btn = document.getElementById('checkDropdown');
+    if(sel){ sel.disabled = true; sel.classList.add(correct ? 'correct' : 'wrong'); }
+    if(btn){ btn.disabled = true; }
+  }
+
+  const fb = document.getElementById('feedback');
+  fb.className = "feedback-box show " + (correct?"ok":"no");
+  const isMatra = state.subject === "matra";
+  const bigWord = isMatra ? q.full : q.opts[q.ans];
+  const wordClass = (q.math || q.abacus) ? "feedback-word en" : (isMatra || !q.en) ? "feedback-word hi" : "feedback-word en";
+  fb.innerHTML = `
+    <div class="${wordClass}">${bigWord}</div>
+    <div class="feedback-note">${correct ? "✅ सही जवाब! " : "❌ थोड़ा और सोचो। "}${q.note||""}</div>
+  `;
+
+  const newMood = correct?"excited":"sad";
+  document.getElementById('mascotHolder').innerHTML = mascot(newMood)+`<span class="buddy-svg">${jungleBuddy(newMood)}</span>`;
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function onNext(){
+  const subj = SUBJECTS[state.subject];
+  const level = subj.levels[state.levelIdx];
+  if(state.qIdx < level.questions.length-1){
+    state.qIdx++;
+    state.answered = false;
+    render();
+  } else {
+    const pct = state.correctCount / level.questions.length;
+    let stars = pct===1 ? 3 : pct>=0.6 ? 2 : 1;
+    if(stars > progress[state.subject][state.levelIdx]) progress[state.subject][state.levelIdx] = stars;
+    state.screen = "result";
+    render();
+  }
+}
+
+function renderResult(){
+  const subj = SUBJECTS[state.subject];
+  const level = subj.levels[state.levelIdx];
+  const total = level.questions.length;
+  const pct = state.correctCount/total;
+  const stars = pct===1 ? 3 : pct>=0.6 ? 2 : 1;
+  const mood = stars===3 ? "excited" : stars===2 ? "happy" : "sad";
+  const hasNext = state.levelIdx < subj.levels.length-1;
+
+  app.innerHTML = `
+    <div class="result-wrap">
+      <div class="result-mascot">${mascot(mood)}<span class="buddy-svg">${jungleBuddy(mood)}</span></div>
+      <div class="result-title hi">${stars===3?"शानदार!":stars===2?"बहुत बढ़िया!":"अच्छी कोशिश!"}</div>
+      <div class="result-sub hi">${level.title} पूरा हुआ</div>
+      <div class="stars-big" id="starsBig">
+        <span data-s="1">⭐</span><span data-s="2">⭐</span><span data-s="3">⭐</span>
+      </div>
+      <div class="result-score">${state.correctCount} / ${total} सही जवाब</div>
+      <div class="result-actions">
+        ${hasNext?'<button class="btn-primary" id="nextLevelBtn">अगला स्तर →</button>':''}
+        <button class="btn-secondary" id="retryBtn">फिर से खेलें</button>
+        <button class="btn-secondary" id="mapBtn">स्तर मानचित्र</button>
+      </div>
+    </div>
+  `;
+  const starEls = document.querySelectorAll('#starsBig span');
+  starEls.forEach((el,idx)=>{
+    if(idx < stars){
+      setTimeout(()=>{ el.classList.add('won'); }, idx*180);
+    }
+  });
+  if(hasNext) document.getElementById('nextLevelBtn').addEventListener('click', ()=>{
+    state.levelIdx++; state.qIdx=0; state.correctCount=0; state.answered=false; state.screen="play"; render();
+  });
+  document.getElementById('retryBtn').addEventListener('click', ()=>{
+    state.qIdx=0; state.correctCount=0; state.answered=false; state.screen="play"; render();
+  });
+  document.getElementById('mapBtn').addEventListener('click', ()=>{ state.screen="map"; render(); });
+}
+
+render();
+</script>
+</body>
+</html>
