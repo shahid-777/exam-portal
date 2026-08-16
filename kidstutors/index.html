@@ -189,6 +189,20 @@ button{font-family:inherit; cursor:pointer;}
 .question-text.math-q{font-family:'Baloo 2',sans-serif; font-size:34px; font-weight:800; letter-spacing:0.5px;}
 .abacus-visual{max-width:260px; margin:14px auto 4px;}
 .abacus-visual svg{width:100%; height:auto; display:block;}
+.build-abacus-visual{max-width:100%; width:320px; margin:10px auto 2px;}
+.build-abacus-visual svg{width:100%; height:auto; display:block; touch-action:manipulation;}
+.build-target-badge{
+  display:inline-block; margin:10px auto 4px; padding:10px 22px; border-radius:16px;
+  background:var(--indigo-light); border:2px dashed var(--indigo-dark); color:var(--indigo-dark);
+  font-family:'Baloo Da 2',sans-serif; font-weight:800; font-size:clamp(24px,7vw,34px);
+}
+.build-number-display{
+  font-family:'Baloo Da 2',sans-serif; font-weight:800; font-size:30px; text-align:center;
+  margin-top:2px; color:var(--indigo-dark);
+}
+.build-hint{font-size:13px; font-weight:600; color:var(--ink-soft); text-align:center; margin:2px 0 6px;}
+.build-actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:14px;}
+.bead-hit.disabled{pointer-events:none;}
 .options-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px;}
 .options-grid.matra{grid-template-columns:repeat(4,1fr);}
 .opt-btn{
@@ -826,7 +840,10 @@ const SUBJECTS = {
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:5, places:1}, opts:["5","4","6","3"], ans:0, note:"5 दाने भरे हैं, इसलिए संख्या 5 है।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:9, places:1}, opts:["9","8","7","6"], ans:0, note:"सारे 9 दाने भरे हुए हैं — यह इकाई की छड़ की सबसे बड़ी संख्या है।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:2, places:1}, opts:["2","3","1","4"], ans:0, note:"सिर्फ 2 दाने भरे हैं, बाकी सब खाली हैं।"},
-        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:6, places:1}, opts:["6","5","7","8"], ans:0, note:"6 दाने भरे हुए गिनो: 1,2,3,4,5,6।"}
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:6, places:1}, opts:["6","5","7","8"], ans:0, note:"6 दाने भरे हुए गिनो: 1,2,3,4,5,6।"},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:4, places:1}, opts:["4"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:8, places:1}, opts:["8"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:1, places:1}, opts:["1"], ans:0}
       ]},
       {title:"दहाई-इकाई", classRange:"कक्षा 2-3", questions:[
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:24, places:2}, opts:["24","42","25","23"], ans:0, note:"दहाई की छड़ में 2 दाने यानी 20, और इकाई की छड़ में 4 दाने यानी 4। 20 + 4 = 24।"},
@@ -834,7 +851,10 @@ const SUBJECTS = {
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:58, places:2}, opts:["58","85","57","59"], ans:0, note:"दहाई में 5 दाने (50), इकाई में 8 दाने (8)। 50 + 8 = 58।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:42, places:2}, opts:["42","24","41","43"], ans:0, note:"दहाई में 4 दाने (40), इकाई में 2 दाने (2)। 40 + 2 = 42।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:63, places:2}, opts:["63","36","62","64"], ans:0, note:"दहाई में 6 दाने (60), इकाई में 3 दाने (3)। 60 + 3 = 63।"},
-        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:19, places:2}, opts:["19","91","18","20"], ans:0, note:"दहाई में सिर्फ 1 दाना (10), इकाई में 9 दाने (9)। 10 + 9 = 19।"}
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:19, places:2}, opts:["19","91","18","20"], ans:0, note:"दहाई में सिर्फ 1 दाना (10), इकाई में 9 दाने (9)। 10 + 9 = 19।"},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:36, places:2}, opts:["36"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:81, places:2}, opts:["81"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:27, places:2}, opts:["27"], ans:0}
       ]},
       {title:"सैकड़ा-दहाई-इकाई", classRange:"कक्षा 3-4", questions:[
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:235, places:3}, opts:["235","253","236","234"], ans:0, note:"सैकड़ा में 2 दाने (200), दहाई में 3 दाने (30), इकाई में 5 दाने (5)। 200+30+5 = 235।"},
@@ -842,7 +862,10 @@ const SUBJECTS = {
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:158, places:3}, opts:["158","185","157","159"], ans:0, note:"सैकड़ा में 1 दाना (100), दहाई में 5 दाने (50), इकाई में 8 दाने (8)। 100+50+8 = 158।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:320, places:3}, opts:["320","302","321","330"], ans:0, note:"सैकड़ा में 3 दाने (300), दहाई में 2 दाने (20), इकाई की छड़ खाली यानी 0। 300+20+0 = 320।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:671, places:3}, opts:["671","617","672","670"], ans:0, note:"सैकड़ा में 6 दाने (600), दहाई में 7 दाने (70), इकाई में 1 दाना (1)। 600+70+1 = 671।"},
-        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:999, places:3}, opts:["999","998","989","899"], ans:0, note:"हर छड़ में पूरे 9 दाने भरे हैं — यह 3 अंकों की सबसे बड़ी संख्या है!"}
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:999, places:3}, opts:["999","998","989","899"], ans:0, note:"हर छड़ में पूरे 9 दाने भरे हैं — यह 3 अंकों की सबसे बड़ी संख्या है!"},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:254, places:3}, opts:["254"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:608, places:3}, opts:["608"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:731, places:3}, opts:["731"], ans:0}
       ]},
       {title:"अबेकस पर जोड़", classRange:"कक्षा 3-5", questions:[
         {q:"इकाई की छड़ में 4 दाने हैं। अगर 3 दाने और जोड़ दें, तो कुल कितने दाने होंगे?", abacus:{number:4, places:1}, opts:["7","6","8","5"], ans:0, note:"4 दानों में 3 और जोड़ने पर: 4+3 = 7 दाने हो जाते हैं।"},
@@ -850,7 +873,10 @@ const SUBJECTS = {
         {q:"इकाई की छड़ में 5 दाने हैं। अगर 1 दाना और जोड़ दें, तो कुल कितने दाने होंगे?", abacus:{number:5, places:1}, opts:["6","5","7","4"], ans:0, note:"5 दानों में 1 और जोड़ने पर: 5+1 = 6 दाने हो जाते हैं।"},
         {q:"इकाई की छड़ में 3 दाने हैं। अगर 5 दाने और जोड़ दें, तो कुल कितने दाने होंगे?", abacus:{number:3, places:1}, opts:["8","7","9","6"], ans:0, note:"3 दानों में 5 और जोड़ने पर: 3+5 = 8 दाने हो जाते हैं।"},
         {q:"इकाई की छड़ में 6 दाने हैं। अगर 3 दाने और जोड़ दें, तो कुल कितने दाने होंगे?", abacus:{number:6, places:1}, opts:["9","8","10","7"], ans:0, note:"6 दानों में 3 और जोड़ने पर: 6+3 = 9 दाने हो जाते हैं — यह छड़ की सबसे बड़ी संख्या है।"},
-        {q:"इकाई की छड़ में 1 दाना है। अगर 8 दाने और जोड़ दें, तो कुल कितने दाने होंगे?", abacus:{number:1, places:1}, opts:["9","8","10","7"], ans:0, note:"1 दाने में 8 और जोड़ने पर: 1+8 = 9 दाने हो जाते हैं।"}
+        {q:"इकाई की छड़ में 1 दाना है। अगर 8 दाने और जोड़ दें, तो कुल कितने दाने होंगे?", abacus:{number:1, places:1}, opts:["9","8","10","7"], ans:0, note:"1 दाने में 8 और जोड़ने पर: 1+8 = 9 दाने हो जाते हैं।"},
+        {q:"3 + 4 जोड़ने पर जो जवाब आए, वह संख्या अबेकस पर दाने खिसकाकर बनाओ:", type:"build", abacus:{number:7, places:1}, opts:["7"], ans:0},
+        {q:"5 + 4 जोड़ने पर जो जवाब आए, वह संख्या अबेकस पर दाने खिसकाकर बनाओ:", type:"build", abacus:{number:9, places:1}, opts:["9"], ans:0},
+        {q:"2 + 4 जोड़ने पर जो जवाब आए, वह संख्या अबेकस पर दाने खिसकाकर बनाओ:", type:"build", abacus:{number:6, places:1}, opts:["6"], ans:0}
       ]},
       {title:"मिश्रित अभ्यास", classRange:"कक्षा 4-6", questions:[
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:46, places:2}, opts:["46","64","45","47"], ans:0, note:"दहाई में 4 दाने (40), इकाई में 6 दाने (6)। 40+6 = 46।"},
@@ -858,7 +884,10 @@ const SUBJECTS = {
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:100, places:3}, opts:["100","110","101","10"], ans:0, note:"सैकड़ा में सिर्फ 1 दाना (100), दहाई और इकाई दोनों छड़ें बिल्कुल खाली। सिर्फ 100।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:29, places:2}, opts:["29","92","28","30"], ans:0, note:"दहाई में 2 दाने (20), इकाई में 9 दाने (9)। 20+9 = 29।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:560, places:3}, opts:["560","506","561","650"], ans:0, note:"सैकड़ा में 5 दाने (500), दहाई में 6 दाने (60), इकाई की छड़ खाली यानी 0। 500+60+0 = 560।"},
-        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:74, places:2}, opts:["74","47","73","75"], ans:0, note:"दहाई में 7 दाने (70), इकाई में 4 दाने (4)। 70+4 = 74।"}
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:74, places:2}, opts:["74","47","73","75"], ans:0, note:"दहाई में 7 दाने (70), इकाई में 4 दाने (4)। 70+4 = 74।"},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:92, places:2}, opts:["92"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:415, places:3}, opts:["415"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:68, places:2}, opts:["68"], ans:0}
       ]}
 ,
       {title:"दहाई पहचानो", classRange:"कक्षा 2", questions:[
@@ -867,7 +896,10 @@ const SUBJECTS = {
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:70, places:2}, opts:["70","7","17","07"], ans:0, note:"दहाई में 7 दाने (70), इकाई खाली। 70+0=70।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:90, places:2}, opts:["90","9","19","09"], ans:0, note:"दहाई में 9 दाने (90) — यह दहाई की सबसे बड़ी संख्या है।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:30, places:2}, opts:["30","3","13","03"], ans:0, note:"दहाई में 3 दाने (30), इकाई खाली।"},
-        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:10, places:2}, opts:["10","1","11","01"], ans:0, note:"दहाई में सिर्फ 1 दाना (10), इकाई खाली।"}
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:10, places:2}, opts:["10","1","11","01"], ans:0, note:"दहाई में सिर्फ 1 दाना (10), इकाई खाली।"},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:40, places:2}, opts:["40"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:80, places:2}, opts:["80"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:60, places:2}, opts:["60"], ans:0}
       ]},
       {title:"अबेकस पर घटाव", classRange:"कक्षा 3-5", questions:[
         {q:"इकाई की छड़ में 9 दाने हैं। अगर 3 दाने हटा दें, तो कितने दाने बचेंगे?", abacus:{number:9, places:1}, opts:["6","5","7","8"], ans:0, note:"9 दानों में से 3 हटाने पर: 9−3 = 6 दाने बचते हैं।"},
@@ -875,7 +907,10 @@ const SUBJECTS = {
         {q:"इकाई की छड़ में 7 दाने हैं। अगर 7 दाने हटा दें, तो कितने दाने बचेंगे?", abacus:{number:7, places:1}, opts:["0","1","7","2"], ans:0, note:"सारे दाने हटाने पर 7−7 = 0 दाने बचते हैं।"},
         {q:"इकाई की छड़ में 6 दाने हैं। अगर 2 दाने हटा दें, तो कितने दाने बचेंगे?", abacus:{number:6, places:1}, opts:["4","3","5","2"], ans:0, note:"6−2 = 4 दाने बचते हैं।"},
         {q:"इकाई की छड़ में 5 दाने हैं। अगर 4 दाने हटा दें, तो कितने दाने बचेंगे?", abacus:{number:5, places:1}, opts:["1","2","0","3"], ans:0, note:"5−4 = 1 दाना बचता है।"},
-        {q:"इकाई की छड़ में 9 दाने हैं। अगर 1 दाना हटा दें, तो कितने दाने बचेंगे?", abacus:{number:9, places:1}, opts:["8","9","7","6"], ans:0, note:"9−1 = 8 दाने बचते हैं।"}
+        {q:"इकाई की छड़ में 9 दाने हैं। अगर 1 दाना हटा दें, तो कितने दाने बचेंगे?", abacus:{number:9, places:1}, opts:["8","9","7","6"], ans:0, note:"9−1 = 8 दाने बचते हैं।"},
+        {q:"9 − 6 घटाने पर जो जवाब आए, वह संख्या अबेकस पर दाने खिसकाकर बनाओ:", type:"build", abacus:{number:3, places:1}, opts:["3"], ans:0},
+        {q:"7 − 2 घटाने पर जो जवाब आए, वह संख्या अबेकस पर दाने खिसकाकर बनाओ:", type:"build", abacus:{number:5, places:1}, opts:["5"], ans:0},
+        {q:"8 − 6 घटाने पर जो जवाब आए, वह संख्या अबेकस पर दाने खिसकाकर बनाओ:", type:"build", abacus:{number:2, places:1}, opts:["2"], ans:0}
       ]},
       {title:"हज़ार तक अबेकस", classRange:"कक्षा 4-5", questions:[
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:1234, places:4}, opts:["1234","1243","2134","1324"], ans:0, note:"हज़ार में 1 दाना (1000), सैकड़ा में 2 दाने (200), दहाई में 3 दाने (30), इकाई में 4 दाने (4)। कुल 1234।"},
@@ -883,7 +918,10 @@ const SUBJECTS = {
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:2807, places:4}, opts:["2807","2870","2078","2708"], ans:0, note:"हज़ार में 2 दाने (2000), सैकड़ा में 8 दाने (800), दहाई खाली (0), इकाई में 7 दाने (7)। कुल 2807।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:5090, places:4}, opts:["5090","5900","5009","5099"], ans:0, note:"हज़ार में 5 दाने (5000), सैकड़ा खाली, दहाई में 9 दाने (90), इकाई खाली। कुल 5090।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:4321, places:4}, opts:["4321","4312","4231","3421"], ans:0, note:"हज़ार में 4 दाने (4000), सैकड़ा में 3 दाने (300), दहाई में 2 दाने (20), इकाई में 1 दाना (1)। कुल 4321।"},
-        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:9999, places:4}, opts:["9999","9998","9989","9899"], ans:0, note:"हर छड़ में पूरे 9 दाने भरे हैं — यह 4 अंकों की सबसे बड़ी संख्या है!"}
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:9999, places:4}, opts:["9999","9998","9989","9899"], ans:0, note:"हर छड़ में पूरे 9 दाने भरे हैं — यह 4 अंकों की सबसे बड़ी संख्या है!"},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:6789, places:4}, opts:["6789"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:2345, places:4}, opts:["2345"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:5008, places:4}, opts:["5008"], ans:0}
       ]},
       {title:"आगे-पीछे की संख्या", classRange:"कक्षा 3-4", questions:[
         {q:"यह अबेकस 45 दिखा रहा है। इससे 1 अधिक संख्या क्या होगी?", abacus:{number:45, places:2}, opts:["46","44","47","45"], ans:0, note:"45 से 1 अधिक करने पर 46 आता है।"},
@@ -891,7 +929,10 @@ const SUBJECTS = {
         {q:"यह अबेकस 29 दिखा रहा है। इससे 1 अधिक संख्या क्या होगी?", abacus:{number:29, places:2}, opts:["30","28","31","20"], ans:0, note:"29 से 1 अधिक करने पर 30 आता है — दहाई की जगह भी बदल जाती है।"},
         {q:"यह अबेकस 100 दिखा रहा है। इससे 1 कम संख्या क्या होगी?", abacus:{number:100, places:3}, opts:["99","101","90","110"], ans:0, note:"100 से 1 कम करने पर 99 आता है।"},
         {q:"यह अबेकस 75 दिखा रहा है। इससे 10 अधिक संख्या क्या होगी?", abacus:{number:75, places:2}, opts:["85","65","76","74"], ans:0, note:"75 में 10 जोड़ने पर 85 आता है — दहाई की संख्या 1 बढ़ जाती है।"},
-        {q:"यह अबेकस 50 दिखा रहा है। इससे 10 कम संख्या क्या होगी?", abacus:{number:50, places:2}, opts:["40","60","49","51"], ans:0, note:"50 में से 10 घटाने पर 40 आता है।"}
+        {q:"यह अबेकस 50 दिखा रहा है। इससे 10 कम संख्या क्या होगी?", abacus:{number:50, places:2}, opts:["40","60","49","51"], ans:0, note:"50 में से 10 घटाने पर 40 आता है।"},
+        {q:"45 से 1 अधिक — वह संख्या अबेकस पर दाने खिसकाकर बनाओ:", type:"build", abacus:{number:46, places:2}, opts:["46"], ans:0},
+        {q:"60 से 1 कम — वह संख्या अबेकस पर दाने खिसकाकर बनाओ:", type:"build", abacus:{number:59, places:2}, opts:["59"], ans:0},
+        {q:"100 से 1 अधिक — वह संख्या अबेकस पर दाने खिसकाकर बनाओ:", type:"build", abacus:{number:101, places:3}, opts:["101"], ans:0}
       ]},
       {title:"अबेकस पर दोगुना करना", classRange:"कक्षा 4-5", questions:[
         {q:"इकाई की छड़ में 3 दाने हैं। इसे दोगुना करने पर कितने दाने होंगे?", abacus:{number:3, places:1}, opts:["6","5","7","3"], ans:0, note:"3 को दोगुना करने पर 3+3 = 6 दाने होते हैं।"},
@@ -899,7 +940,10 @@ const SUBJECTS = {
         {q:"इकाई की छड़ में 5 दाने हैं। इसे दोगुना करने पर कितने दाने होंगे?", abacus:{number:5, places:1}, opts:["10","9","8","11"], ans:0, note:"5 को दोगुना करने पर 5+5=10 होता है।"},
         {q:"यह अबेकस 20 दिखा रहा है। इसे दोगुना करने पर क्या होगा?", abacus:{number:20, places:2}, opts:["40","30","42","22"], ans:0, note:"20 को दोगुना करने पर 20+20=40 होता है।"},
         {q:"इकाई की छड़ में 4 दाने हैं। इसे दोगुना करने पर कितने दाने होंगे?", abacus:{number:4, places:1}, opts:["8","7","9","6"], ans:0, note:"4 को दोगुना करने पर 4+4=8 होता है।"},
-        {q:"यह अबेकस 15 दिखा रहा है। इसे दोगुना करने पर क्या होगा?", abacus:{number:15, places:2}, opts:["30","25","32","20"], ans:0, note:"15 को दोगुना करने पर 15+15=30 होता है।"}
+        {q:"यह अबेकस 15 दिखा रहा है। इसे दोगुना करने पर क्या होगा?", abacus:{number:15, places:2}, opts:["30","25","32","20"], ans:0, note:"15 को दोगुना करने पर 15+15=30 होता है।"},
+        {q:"4 को दोगुना करने पर जो संख्या बने, वह अबेकस पर दाने खिसकाकर बनाओ:", type:"build", abacus:{number:8, places:1}, opts:["8"], ans:0},
+        {q:"12 को दोगुना करने पर जो संख्या बने, वह अबेकस पर दाने खिसकाकर बनाओ:", type:"build", abacus:{number:24, places:2}, opts:["24"], ans:0},
+        {q:"20 को दोगुना करने पर जो संख्या बने, वह अबेकस पर दाने खिसकाकर बनाओ:", type:"build", abacus:{number:40, places:2}, opts:["40"], ans:0}
       ]},
       {title:"शून्य को समझें", classRange:"कक्षा 3-4", questions:[
         {q:"इकाई की छड़ में कोई भी दाना भरा नहीं है। यह कौन सी संख्या दिखाता है?", abacus:{number:0, places:1}, opts:["0","1","10","खाली"], ans:0, note:"जब छड़ में कोई दाना भरा नहीं होता, तो वह संख्या 0 (शून्य) दिखाती है।"},
@@ -907,7 +951,10 @@ const SUBJECTS = {
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:406, places:3}, opts:["406","460","46","604"], ans:0, note:"सैकड़ा में 4 दाने (400), दहाई खाली (0), इकाई में 6 दाने (6)। कुल 406।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:10, places:2}, opts:["10","1","100","01"], ans:0, note:"दहाई में 1 दाना (10), इकाई की छड़ बिल्कुल खाली यानी 0। 10+0=10।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:900, places:3}, opts:["900","90","9","9000"], ans:0, note:"सैकड़ा में 9 दाने (900), दहाई और इकाई दोनों खाली (0)। कुल 900।"},
-        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:3, places:2}, opts:["3","30","13","33"], ans:0, note:"दहाई की छड़ खाली यानी 0, इकाई में 3 दाने। संख्या है सिर्फ 3।"}
+        {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:3, places:2}, opts:["3","30","13","33"], ans:0, note:"दहाई की छड़ खाली यानी 0, इकाई में 3 दाने। संख्या है सिर्फ 3।"},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:205, places:3}, opts:["205"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:60, places:2}, opts:["60"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:900, places:3}, opts:["900"], ans:0}
       ]},
       {title:"मिश्रित अबेकस चुनौती-2", classRange:"कक्षा 5-7", questions:[
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:512, places:3}, opts:["512","521","215","152"], ans:0, note:"सैकड़ा में 5 दाने (500), दहाई में 1 दाना (10), इकाई में 2 दाने (2)। कुल 512।"},
@@ -915,7 +962,10 @@ const SUBJECTS = {
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:88, places:2}, opts:["88","98","78","89"], ans:0, note:"दहाई में 8 दाने (80), इकाई में 8 दाने (8)। कुल 88।"},
         {q:"यह अबेकस कौन सी संख्या दिखा रहा है?", abacus:{number:6000, places:4}, opts:["6000","600","60","6600"], ans:0, note:"हज़ार में 6 दाने (6000), बाकी सभी छड़ें खाली।"},
         {q:"यह अबेकस 345 दिखा रहा है। इसमें 10 जोड़ने पर क्या होगा?", abacus:{number:345, places:3}, opts:["355","335","346","344"], ans:0, note:"345 में 10 जोड़ने पर 355 आता है — दहाई की संख्या 1 बढ़ जाती है।"},
-        {q:"यह अबेकस 999 दिखा रहा है। इसमें 1 जोड़ने पर क्या होगा?", abacus:{number:999, places:3}, opts:["1000","998","990","1001"], ans:0, note:"999 में 1 जोड़ने पर 1000 आता है — यह अगले हज़ार तक पहुँचता है!"}
+        {q:"यह अबेकस 999 दिखा रहा है। इसमें 1 जोड़ने पर क्या होगा?", abacus:{number:999, places:3}, opts:["1000","998","990","1001"], ans:0, note:"999 में 1 जोड़ने पर 1000 आता है — यह अगले हज़ार तक पहुँचता है!"},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:316, places:3}, opts:["316"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:908, places:3}, opts:["908"], ans:0},
+        {q:"अबेकस पर दाने खिसकाकर यह संख्या बनाओ:", type:"build", abacus:{number:4070, places:4}, opts:["4070"], ans:0}
       ]}
     ]
   }
@@ -942,7 +992,14 @@ Object.keys(SUBJECTS).forEach(subjKey=>{
 let state = { screen:"home", subject:null, levelIdx:0, qIdx:0, correctCount:0, answered:false,
   learnDigits:2, learnValues:[0,0,0,0], learnTab:"free", learnLevel:1,
   learnTask:null, learnHelperCount:0, learnFb:"", learnMsg:"",
-  puzzleScore:0, puzzleStreak:0 };
+  puzzleScore:0, puzzleStreak:0,
+  buildValues:[0,0,0,0], buildFeedback:null };
+function resetBuildValues(){ state.buildValues = [0,0,0,0]; state.buildFeedback = null; }
+function buildNumber(places){
+  let n = 0;
+  for(let p=0;p<places;p++){ n += (state.buildValues[p]||0) * Math.pow(10,p); }
+  return n;
+}
 let progress = {}; // { subjectKey: [stars0, stars1, ...] }
 Object.keys(SUBJECTS).forEach(k=>{ progress[k] = SUBJECTS[k].levels.map(()=>0); });
 progress.abacusMaster = [0]; // stars earned in the Abacus Master puzzle mode
@@ -972,6 +1029,25 @@ function abacusSVG(number, places){
    or away from the central reckoning bar — that is what "counts" them. */
 const PLACE_COLORS = ['#FF6B5B','#33B27C','#8A4FC4','#FFA630']; // इकाई, दहाई, सैकड़ा, हज़ार
 function placeNameHi(p){ return p===0 ? 'इकाई' : p===1 ? 'दहाई' : p===2 ? 'सैकड़ा' : 'हज़ार'; }
+
+/* Generates a step-by-step Hindi explanation of exactly which beads to move
+   to build a given number — used as the feedback note for beads-building
+   puzzles, so it always matches the target number correctly. */
+function digitBeadsHi(d){
+  if(d===0) return 'कोई दाना मत खिसकाओ (0)';
+  if(d<5) return `नीचे के ${d} दाने ऊपर खिसकाओ (=${d})`;
+  if(d===5) return `ऊपर वाला भारी दाना (=5) नीचे खिसकाओ`;
+  return `ऊपर वाला भारी दाना (=5) नीचे खिसकाओ, और नीचे के ${d-5} दाने भी ऊपर खिसकाओ (5+${d-5}=${d})`;
+}
+function explainBuildNumber(number, places){
+  const digits = String(Math.max(0,number)).padStart(places,'0').split('').map(Number).reverse();
+  let parts = [];
+  for(let p=places-1;p>=0;p--){
+    const d = digits[p]||0;
+    parts.push(`${placeNameHi(p)} की छड़ में: ${digitBeadsHi(d)}`);
+  }
+  return parts.join('। ') + `। इस तरह कुल संख्या बनेगी: ${number}.`;
+}
 
 function beadPolygon(cx, cy, w, h, active){
   const fill = '#E0402A';
@@ -1270,6 +1346,7 @@ function renderMap(){
     el.addEventListener('click', ()=>{
       state.levelIdx = parseInt(el.dataset.idx);
       state.qIdx = 0; state.correctCount = 0; state.answered=false;
+      resetBuildValues();
       state.screen="play"; render();
     });
   });
@@ -1422,6 +1499,8 @@ function renderPlay(){
   const isMatra = state.subject === "matra";
   const pct = Math.round((state.qIdx)/level.questions.length*100);
 
+  if(q.type==="build"){ renderPlayAbacusBuild(subj, theme, level, q); return; }
+
   const shuffled = shuffledOptions(q);
   state.currentAns = shuffled.ans;
 
@@ -1492,6 +1571,82 @@ function renderPlay(){
   document.getElementById('nextBtn').addEventListener('click', onNext);
 }
 
+/* Abacus subject: instead of picking a text option, the child builds the
+   correct number themselves by tapping the abacus beads (soroban), then
+   taps "जांचो" to check what they built. */
+function renderPlayAbacusBuild(subj, theme, level, q){
+  const pct = Math.round((state.qIdx)/level.questions.length*100);
+  const places = q.abacus.places;
+  const target = q.abacus.number;
+  const svg = sorobanSVG(state.buildValues, places, !state.answered);
+  const val = buildNumber(places);
+  const fb = state.answered ? state.buildFeedback : null;
+  const mood = fb ? fb.mood : "happy";
+
+  app.innerHTML = `
+    <div class="play-wrap">
+      <div class="play-top">
+        <button class="back-btn" id="exitPlay">✕</button>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%; background:${theme.main}"></div></div>
+        <div class="play-score">⭐ ${state.correctCount}/${level.questions.length}</div>
+      </div>
+      <div class="mascot-row" id="mascotHolder">${mascot(mood)}<span class="buddy-svg">${jungleBuddy(mood)}</span></div>
+      <div class="question-card">
+        <div class="question-label">प्रश्न ${state.qIdx+1} / ${level.questions.length}</div>
+        <div class="question-text hi">${q.q}</div>
+        <div class="build-target-badge">🎯 ${target}</div>
+        <div class="build-hint hi">दाने छूकर ऊपर लिखी संख्या अबेकस पर बनाओ</div>
+        <div class="build-abacus-visual" id="buildAbacusVisual">${svg}</div>
+        <div class="build-number-display" id="buildNumberDisplay">अभी बना है: ${val}</div>
+        <div class="build-actions">
+          ${!state.answered ? '<button class="learn-btn ghost" id="clearBuild">साफ करो ↺</button><button class="learn-btn primary" id="checkBuild">जांचो ✓</button>' : ''}
+        </div>
+        <div class="feedback-box ${fb ? 'show '+(fb.correct?'ok':'no') : ''}" id="feedback">${fb ? fb.html : ''}</div>
+        <button class="next-btn ${fb ? 'show' : ''}" id="nextBtn">आगे बढ़ो →</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('exitPlay').addEventListener('click', ()=>{ state.screen="map"; render(); });
+  document.getElementById('nextBtn').addEventListener('click', onNext);
+
+  if(!state.answered){
+    document.querySelectorAll('#buildAbacusVisual .bead-hit').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const place = parseInt(el.dataset.place);
+        const part = el.dataset.part;
+        let v = state.buildValues[place]||0;
+        let heaven = v>=5?1:0, earth=v%5;
+        if(part==='heaven'){ heaven = heaven?0:1; }
+        else { const b=parseInt(el.dataset.bead); earth=(b<earth)?b:b+1; }
+        state.buildValues[place] = heaven*5+earth;
+        render();
+      });
+    });
+    document.getElementById('clearBuild').addEventListener('click', ()=>{ resetBuildValues(); render(); });
+    document.getElementById('checkBuild').addEventListener('click', onAbacusCheck);
+  }
+}
+
+function onAbacusCheck(){
+  if(state.answered) return;
+  const subj = SUBJECTS[state.subject];
+  const level = subj.levels[state.levelIdx];
+  const q = level.questions[state.qIdx];
+  const target = q.abacus.number;
+  const built = buildNumber(q.abacus.places);
+  const correct = built === target;
+  state.answered = true;
+  if(correct) state.correctCount++;
+  const explain = explainBuildNumber(target, q.abacus.places);
+  state.buildFeedback = {
+    correct,
+    mood: correct?"excited":"sad",
+    html: `<div class="feedback-word en">${target}</div>
+      <div class="feedback-note">${correct ? "✅ शाबाश! तुमने अबेकस पर सही संख्या बनाई। " : `❌ अभी अबेकस पर ${built} बना है, ${target} नहीं — फिर कोशिश करो। `}${explain}</div>`
+  };
+  render();
+}
+
 function onAnswer(i){
   if(state.answered) return;
   state.answered = true;
@@ -1536,6 +1691,7 @@ function onNext(){
   if(state.qIdx < level.questions.length-1){
     state.qIdx++;
     state.answered = false;
+    resetBuildValues();
     render();
   } else {
     const pct = state.correctCount / level.questions.length;
@@ -1578,10 +1734,10 @@ function renderResult(){
     }
   });
   if(hasNext) document.getElementById('nextLevelBtn').addEventListener('click', ()=>{
-    state.levelIdx++; state.qIdx=0; state.correctCount=0; state.answered=false; state.screen="play"; render();
+    state.levelIdx++; state.qIdx=0; state.correctCount=0; state.answered=false; resetBuildValues(); state.screen="play"; render();
   });
   document.getElementById('retryBtn').addEventListener('click', ()=>{
-    state.qIdx=0; state.correctCount=0; state.answered=false; state.screen="play"; render();
+    state.qIdx=0; state.correctCount=0; state.answered=false; resetBuildValues(); state.screen="play"; render();
   });
   document.getElementById('mapBtn').addEventListener('click', ()=>{ state.screen="map"; render(); });
 }
