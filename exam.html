@@ -4,7 +4,7 @@
     <meta name="google" content="notranslate">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" type="image/png" href="/logo.png">
     <title>Live Examination Engine — Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -125,7 +125,7 @@
     <header class="tb-header w-full backdrop-blur-md py-3 px-4 flex items-center justify-between shadow-sm fixed top-0 left-0 right-0 z-50">
         <div class="flex items-center space-x-2 max-w-[50%] min-w-0">
             <div class="bg-slate-50 p-1 rounded-xl shadow-sm border border-slate-200 shrink-0">
-                <img src="logo.png" alt="Logo" class="h-7 w-auto object-contain" onerror="this.style.display='none'">
+                <img src="/logo.png" alt="Logo" class="h-7 w-auto object-contain" onerror="this.style.display='none'">
             </div>
             <div class="flex flex-col truncate">
                 <span id="live-subject-title" class="tb-title text-[10px] sm:text-xs font-black tracking-widest uppercase leading-none truncate font-serif">LOADING ASSESSMENT...</span>
@@ -294,7 +294,7 @@
             const adminSession = localStorage.getItem('adminEmail');
 
             if(!studentSession && !adminSession) {
-                window.location.replace("index.html");
+                window.location.replace("/index.html");
                 return;
             }
 
@@ -310,7 +310,7 @@
                 isComboExamMode = false;
                 streamTargetExamJson(decodeURIComponent(targetSubject));
             } else {
-                window.location.replace("dashboard.html");
+                window.location.replace("/dashboard.html");
             }
         };
 
@@ -329,7 +329,7 @@
 
             } catch(e) {
                 alert("Combo Engine Fault: " + e.message);
-                window.location.replace("dashboard.html");
+                window.location.replace("/dashboard.html");
             }
         }
 
@@ -888,12 +888,12 @@
                 }
 
                 const generatedId = data[0].id;
-                window.location.replace(`result-analysis.html?id=${generatedId}`);
+                window.location.replace(`/result-analysis.html?id=${generatedId}`);
 
             } catch (err) {
                 console.error("Detailed Database Error:", err);
                 alert("⚠️ Could not save/open your result analysis.\n\nReason: " + (err.message || JSON.stringify(err)) + "\n\nYour attempt may still be saved — check My Performance Repository on the dashboard.");
-                window.location.replace("dashboard.html");
+                window.location.replace("/dashboard.html");
             }
         }
     </script>

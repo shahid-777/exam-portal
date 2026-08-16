@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" type="image/png" href="/logo.png">
     <title>Live Exam — Real-Time Assessment</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -48,7 +48,7 @@
             <div class="text-5xl">🚫</div>
             <h2 class="text-xl font-black text-red-400 uppercase tracking-widest">Disqualified</h2>
             <p class="text-sm text-slate-300 font-medium" id="disqualify-reason-text">You switched away from the exam tab/window. This live exam has strict proctoring — your score has been recorded as 0.</p>
-            <button onclick="window.location.replace('dashboard.html')" class="bg-red-600 hover:bg-red-500 text-white font-black py-3 px-6 rounded-xl uppercase text-xs tracking-widest transition">Return to Dashboard</button>
+            <button onclick="window.location.replace('/dashboard.html')" class="bg-red-600 hover:bg-red-500 text-white font-black py-3 px-6 rounded-xl uppercase text-xs tracking-widest transition">Return to Dashboard</button>
         </div>
     </div>
 
@@ -62,7 +62,7 @@
                 <div class="text-3xl font-mono font-black text-blue-400" id="final-score-display">0 / 0</div>
                 <div class="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Final Score</div>
             </div>
-            <button onclick="window.location.replace('dashboard.html')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-6 rounded-xl uppercase text-xs tracking-widest transition">Return to Dashboard</button>
+            <button onclick="window.location.replace('/dashboard.html')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-6 rounded-xl uppercase text-xs tracking-widest transition">Return to Dashboard</button>
         </div>
     </div>
 
@@ -103,13 +103,13 @@
         window.onload = function () {
             studentEmail = localStorage.getItem('userEmail');
             if (!studentEmail) {
-                window.location.replace("index.html");
+                window.location.replace("/index.html");
                 return;
             }
             const urlParams = new URLSearchParams(window.location.search);
             const sessionId = urlParams.get('session');
             if (!sessionId) {
-                window.location.replace("dashboard.html");
+                window.location.replace("/dashboard.html");
                 return;
             }
             initializeLiveSession(sessionId);

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <link class="rounded" rel="icon" type="image/png" href="logo.png">
+    <link class="rounded" rel="icon" type="image/png" href="/logo.png">
     <title>Admin Gateway Authentication</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -35,7 +35,7 @@
         </div>
 
         <div class="flex flex-col items-center justify-center pt-2 border-t border-slate-900 text-[11px] font-bold">
-            <a href="index.html" class="text-slate-500 hover:text-slate-400 transition font-mono tracking-wider text-[10px] uppercase">
+            <a href="/index.html" class="text-slate-500 hover:text-slate-400 transition font-mono tracking-wider text-[10px] uppercase">
                 &larr; Exit Gateway Terminal
             </a>
         </div>
@@ -112,7 +112,7 @@
                 localStorage.setItem('userRole', 'admin');
                 localStorage.setItem('adminAuthenticated', 'true');
                 
-                window.location.replace("admin.html");
+                window.location.replace("/admin.html");
 
             } catch (err) {
                 alert("Gateway Authentication Fault: " + err.message);

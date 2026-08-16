@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" type="image/png" href="/logo.png">
     <title>Student Dashboard — Exam Portal CSE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -26,7 +26,7 @@
     <header class="w-full bg-white/90 backdrop-blur-md border-b border-slate-200 py-4 px-4 sm:px-6 flex items-center justify-between shadow-sm sticky top-0 z-50">
         <div class="flex items-center space-x-3">
             <div class="bg-slate-50 p-1 rounded-xl shadow-sm border border-slate-200">
-                <img src="logo.png" alt="Logo" class="h-9 w-auto object-contain">
+                <img src="/logo.png" alt="Logo" class="h-9 w-auto object-contain">
             </div>
             <div class="flex flex-col">
                 <span class="text-sm font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-sky-500 uppercase leading-none font-serif">Student Hub</span>
@@ -80,7 +80,7 @@
         <div class="flex items-center justify-between px-5 h-20 border-b border-slate-200">
             <div class="flex items-center space-x-2.5">
                 <div class="bg-slate-50 p-1 rounded-lg border border-slate-200">
-                    <img src="logo.png" alt="Logo" class="h-9 w-auto object-contain">
+                    <img src="/logo.png" alt="Logo" class="h-9 w-auto object-contain">
                 </div>
                 <span class="text-sm font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-sky-500 uppercase font-serif">Exam Portal</span>
             </div>
@@ -89,13 +89,13 @@
         <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 text-sm font-semibold text-slate-600">
             <button onclick="closeSideMenu(); showCategoriesView();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🏠</span> Home</button>
             <button onclick="closeSideMenu(); showCategoriesView();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">📝</span> Test Series</button>
-            <a href="index.html#courses" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🎓</span> Courses</a>
-            <a href="index.html#study-material" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">📘</span> Study Material</a>
+            <a href="/index.html#courses" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🎓</span> Courses</a>
+            <a href="/index.html#study-material" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">📘</span> Study Material</a>
             <button onclick="closeSideMenu(); showProfileView();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">👤</span> My Profile</button>
             <button onclick="closeSideMenu(); showProfileView('library');" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">📚</span> My Library</button>
             <button onclick="closeSideMenu(); showHistoryView();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🏆</span> Exam History</button>
-            <a href="index.html#about-us" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">ℹ️</span> About Us</a>
-            <a href="index.html#contact-us" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">✉️</span> Contact Us</a>
+            <a href="/index.html#about-us" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">ℹ️</span> About Us</a>
+            <a href="/index.html#contact-us" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">✉️</span> Contact Us</a>
             <div class="pt-3 mt-3 border-t border-slate-100">
                 <button onclick="handleUserLogout()" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold transition"><span class="text-base">🚪</span> Logout</button>
             </div>
@@ -292,7 +292,7 @@
         window.onload = function () {
             activeUserEmail = localStorage.getItem('userEmail');
             if (!activeUserEmail) {
-                window.location.replace("index.html");
+                window.location.replace("/index.html");
                 return;
             }
 
@@ -524,8 +524,8 @@
                 <div class="col-span-full border border-dashed border-slate-300 text-center p-8 rounded-2xl text-slate-500 font-mono text-[11px] uppercase tracking-wider bg-slate-50 space-y-4">
                     <div>You haven't purchased any courses or test series yet.</div>
                     <div class="flex items-center justify-center gap-3 flex-wrap normal-case font-sans">
-                        <a href="index.html#test-series" class="text-xs font-bold text-blue-600 hover:text-blue-700 border border-blue-200 hover:border-blue-300 bg-blue-50 px-4 py-2 rounded-xl transition">Browse Test Series</a>
-                        <a href="index.html#courses" class="text-xs font-bold text-orange-600 hover:text-orange-700 border border-orange-200 hover:border-orange-300 bg-orange-50 px-4 py-2 rounded-xl transition">Browse Courses</a>
+                        <a href="/index.html#test-series" class="text-xs font-bold text-blue-600 hover:text-blue-700 border border-blue-200 hover:border-blue-300 bg-blue-50 px-4 py-2 rounded-xl transition">Browse Test Series</a>
+                        <a href="/index.html#courses" class="text-xs font-bold text-orange-600 hover:text-orange-700 border border-orange-200 hover:border-orange-300 bg-orange-50 px-4 py-2 rounded-xl transition">Browse Courses</a>
                     </div>
                 </div>`;
         }
@@ -587,7 +587,7 @@
 
         function launchLiveExamSession(sessionId) {
             if (confirm("This is a live proctored exam. Switching tabs, minimizing, or leaving this window will disqualify you with a score of 0. Continue?")) {
-                window.location.href = `live-exam.html?session=${sessionId}`;
+                window.location.href = `/live-exam.html?session=${sessionId}`;
             }
         }
 
@@ -649,7 +649,7 @@
 
         function launchSecureComboPipeline(comboId) {
             if(confirm("This is a two-stage combined exam. After you submit Paper 1, Paper 2 will start automatically and you cannot go back to Paper 1. Start now?")) {
-                window.location.href = `exam.html?combo_id=${comboId}`;
+                window.location.href = `/exam.html?combo_id=${comboId}`;
             }
         }
 
@@ -890,13 +890,13 @@
 
         function initializeAssessmentRuntime(encodedSubject) {
             if (confirm("Do you want to start this exam now?")) {
-                window.location.href = `exam.html?subject=${encodedSubject}`;
+                window.location.href = `/exam.html?subject=${encodedSubject}`;
             }
         }
 
         function handleUserLogout() {
             localStorage.clear();
-            window.location.replace("index.html");
+            window.location.replace("/index.html");
         }
 
         // =========================================================================
