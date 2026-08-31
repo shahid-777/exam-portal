@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Star of Kashan — A Blackwood Manor Mystery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14110D;
+    --panel:#221C14;
+    --panel-2:#2B2318;
+    --line:#3D3323;
+    --brass:#BC8A42;
+    --brass-bright:#D9AA5F;
+    --red:#8C3B33;
+    --text:#EAE1CB;
+    --muted:#9C8F73;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:var(--ink);color:var(--text);font-family:'Special Elite',monospace;}
+  body{min-height:100vh;}
+  .wrap{max-width:960px;margin:0 auto;padding:30px 20px 70px;}
+  h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:700;margin:0;}
+  .kicker{font-size:12px;letter-spacing:.06em;color:var(--brass);margin-bottom:8px;}
+  .muted{color:var(--muted);}
+  p{line-height:1.7;}
+  .btn{
+    font-family:'Special Elite',monospace;background:var(--brass);color:#1A1408;border:none;
+    padding:14px 24px;font-size:14px;cursor:pointer;letter-spacing:.02em;
+  }
+  .btn:hover{background:var(--brass-bright);}
+  .btn:disabled{background:var(--line);color:var(--muted);cursor:not-allowed;}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text);font-family:'Special Elite',monospace;padding:12px 20px;font-size:13px;cursor:pointer;}
+  .btn-ghost:hover{border-color:var(--brass);color:var(--brass);}
+
+  /* ---- Intro ---- */
+  .stamp{display:inline-block;border:2px solid var(--red);color:var(--red);padding:4px 10px;font-size:11px;letter-spacing:.08em;transform:rotate(-3deg);margin-bottom:18px;}
+  .intro-hero{padding:8px 0 26px;border-bottom:1px solid var(--line);margin-bottom:24px;}
+  .intro-hero h1{font-size:44px;line-height:1.05;font-style:italic;}
+  .intro-hero .sub{font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--muted);margin-top:8px;}
+  .briefing{background:var(--panel);border:1px solid var(--line);padding:22px;margin-bottom:24px;}
+  .briefing p{font-size:14.5px;color:#DED2B4;}
+  .suspect-preview{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:26px;}
+  @media(max-width:640px){.suspect-preview{grid-template-columns:repeat(2,1fr);}}
+  .sp-card{background:var(--panel);border:1px solid var(--line);padding:12px 8px;text-align:center;}
+  .sp-avatar{width:44px;height:44px;border-radius:50%;background:var(--panel-2);border:1px solid var(--brass);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--brass-bright);}
+  .sp-card .n{font-size:11.5px;font-weight:normal;}
+  .sp-card .r{font-size:10px;color:var(--muted);margin-top:2px;}
+
+  /* ---- Investigation ---- */
+  .topbar{background:var(--panel);border:1px solid var(--line);padding:12px 16px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .topbar .case-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;}
+  .topbar .qcount{font-size:12px;color:var(--brass-bright);}
+  .layout{display:grid;grid-template-columns:210px 1fr;gap:18px;}
+  @media(max-width:680px){.layout{grid-template-columns:1fr;}}
+
+  .suspects-col .label{font-size:11px;letter-spacing:.05em;color:var(--muted);margin-bottom:8px;}
+  .suspect-item{background:var(--panel);border:1px solid var(--line);padding:10px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:10px;}
+  .suspect-item.active{border-color:var(--brass);background:var(--panel-2);}
+  .suspect-item .sp-avatar{width:34px;height:34px;font-size:15px;margin:0;flex-shrink:0;}
+  .suspect-item .info .n{font-size:12px;}
+  .suspect-item .info .r{font-size:10px;color:var(--muted);}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--brass);margin-left:auto;flex-shrink:0;}
+
+  .notebook-toggle{margin-top:6px;width:100%;}
+
+  .chat-panel{background:var(--panel);border:1px solid var(--line);display:flex;flex-direction:column;height:520px;}
+  .chat-header{padding:14px 16px;border-bottom:1px solid var(--line);}
+  .chat-header .n{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;}
+  .chat-header .r{font-size:11px;color:var(--muted);}
+  .chat-log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
+  .msg{max-width:80%;padding:10px 13px;font-size:13px;line-height:1.55;}
+  .msg.you{align-self:flex-end;background:var(--panel-2);border:1px solid var(--brass);}
+  .msg.them{align-self:flex-start;background:#1B160F;border:1px solid var(--line);}
+  .msg.system{align-self:center;color:var(--muted);font-size:11.5px;border:none;background:none;}
+  .chat-input{display:flex;border-top:1px solid var(--line);}
+  .chat-input input{flex:1;background:var(--panel-2);border:none;color:var(--text);padding:14px;font-family:'Special Elite',monospace;font-size:13px;}
+  .chat-input input:focus{outline:none;}
+  .chat-input button{border:none;background:var(--brass);color:#1A1408;padding:0 18px;cursor:pointer;font-family:'Special Elite',monospace;font-size:12px;}
+  .chat-input button:disabled{background:var(--line);color:var(--muted);cursor:not-allowed;}
+  .chat-placeholder{padding:30px 20px;text-align:center;color:var(--muted);font-size:13px;}
+
+  .notebook{background:var(--panel);border:1px solid var(--line);padding:14px;margin-top:14px;}
+  .notebook textarea{width:100%;min-height:100px;background:var(--panel-2);border:1px solid var(--line);color:var(--text);font-family:'Special Elite',monospace;font-size:12.5px;padding:10px;resize:vertical;}
+  .notebook textarea:focus{outline:none;border-color:var(--brass);}
+
+  .accuse-bar{margin-top:20px;text-align:center;}
+
+  /* ---- Accusation & reveal ---- */
+  .suspect-radio{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);padding:12px 14px;margin-bottom:8px;cursor:pointer;}
+  .suspect-radio.selected{border-color:var(--brass);background:var(--panel-2);}
+  .suspect-radio input{accent-color:var(--brass);}
+  .accuse-box textarea{width:100%;min-height:90px;background:var(--panel);border:1px solid var(--line);color:var(--text);font-family:'Special Elite',monospace;font-size:12.5px;padding:12px;margin-top:14px;resize:vertical;}
+  .accuse-box textarea:focus{outline:none;border-color:var(--brass);}
+
+  .verdict-badge{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:46px;margin-bottom:6px;}
+  .reveal-panel{background:var(--panel);border:1px solid var(--line);padding:24px;}
+  .reveal-panel p{font-size:14.5px;color:#DED2B4;}
+  .rank-row{margin-top:16px;padding-top:16px;border-top:1px solid var(--line);}
+
+  .howto{margin-top:18px;}
+  .howto summary{cursor:pointer;color:var(--brass);font-size:12px;letter-spacing:.02em;}
+  .howto .body{font-size:12px;color:var(--muted);line-height:1.7;border-left:2px solid var(--line);padding-left:14px;margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+const TOTAL_QUESTIONS = 16;
+
+const CASE = {
+  title: "The Star of Kashan",
+  caseNumber: "Case File No. 07",
+  setting: "Blackwood Manor, a stormy November night",
+  briefing: "Edmund Blackwood, an elderly collector of rare gems, hosted a small dinner to celebrate his birthday and unveil the crown of his collection: a flawless blue sapphire called the Star of Kashan. Midway through dinner, the lights failed across the manor. When they returned two minutes later, the safe behind Edmund's portrait stood open. The Star of Kashan was gone. Only five people were in the manor that night, and the storm has washed out the road until morning. Nobody leaves. Nobody is above suspicion.",
+  culpritId: 'rana',
+  suspects: [
+    {
+      id:'priya', name:'Priya Malhotra', role:"Edmund's niece, an artist",
+      bio:"Priya is Edmund's niece. She and Edmund fell out two years ago after he removed her from his will in favour of a charitable trust, believing she only visited him for money. She resents this deeply and has said so publicly. That night, she was in the manor's east sitting room with the housekeeper, Meera, discussing an old family photo album, for the entire blackout — Meera can confirm this if asked. She is sharp-tongued, defensive about her falling out with Edmund, and quick to assume everyone thinks she's guilty because of the will.",
+      isGuilty:false
+    },
+    {
+      id:'rana', name:'Colonel Rana', role:'Retired army colonel, old family friend and rival gem collector',
+      bio:"Colonel Rana has known Edmund for forty years and is himself an obsessive, lifelong collector of rare stones. He has tried to buy the Star of Kashan from Edmund on at least three occasions and was refused each time, which visibly irritated him — several guests have heard him mutter that the sapphire 'belongs in a real collection, not gathering dust in a country house.' During the blackout, he claims he stepped out to the veranda for air because of the heat in the dining room. In truth, he used the blackout (which he engineered himself by cutting the fuse from the garden junction box) to slip in through the side study, crack the safe using a code he once saw Edmund enter years ago, and take the sapphire, hiding it in his coat before returning to the veranda. His shoes picked up mud from the garden bed near the fuse box, and a brass button matching his coat was found snagged on the study door hinge. He is proud, prickly about being doubted, and grows visibly irritated and evasive if pressed specifically about the garden, his shoes, or the study door — though he will not confess outright unless confronted with strong, specific combined evidence, at which point he becomes flustered and defensive rather than calmly confessing.",
+      isGuilty:true
+    },
+    {
+      id:'meera', name:'Meera', role:"The manor's housekeeper of twenty years",
+      bio:"Meera has worked at Blackwood Manor for two decades and is fiercely loyal to the family. She was with Priya in the east sitting room for the entire blackout and will confirm this without hesitation if asked. She is guarded about one unrelated matter: years ago she borrowed a small sum from Edmund to help her son and has been quietly paying it back; she is embarrassed by this and will dodge questions about money or debts, but it has nothing to do with the theft. She is observant about the household and, if asked directly about unusual behaviour that night, will mention — somewhat reluctantly, as she doesn't want to accuse a guest — that she noticed Colonel Rana's shoes were muddy when he came back inside, which struck her as odd since he said he'd only been on the veranda.",
+      isGuilty:false
+    },
+    {
+      id:'arjun', name:'Arjun Verma', role:'A guest introduced as an antique dealer',
+      bio:"Arjun was invited by a mutual friend and is new to this social circle, which makes the other guests instinctively suspicious of him. In truth, he is an insurance investigator who was quietly hired months ago by Edmund's insurer to assess the security of the Star of Kashan after a near-miss burglary attempt last year; he has been deliberately vague about his real profession because his cover was not supposed to be broken. During the blackout he was in the dining room the whole time, seated next to Dr. Kapoor, who can confirm this. He is charming but visibly uncomfortable and evasive when asked pointed questions about his background or why he was really invited, though he is not the thief and did not leave the dining room.",
+      isGuilty:false
+    },
+    {
+      id:'kapoor', name:'Dr. Kapoor', role:"Edmund's family physician and close friend",
+      bio:"Dr. Kapoor has been Edmund's physician and friend for fifteen years. During the blackout, a guest (unrelated to this case) briefly felt faint from the heat, and Dr. Kapoor was attending to her in the dining room the entire time, seated beside Arjun, who can confirm this. He is calm, precise, and genuinely worried about Edmund's health after the shock of the theft. He has no secrets relevant to this case and answers questions plainly, though he grows concerned and steers conversation toward Edmund's wellbeing if pressed too hard on suspicion of his friends.",
+      isGuilty:false
+    }
+  ],
+  reveal: "It was Colonel Rana. Forty years of friendship, and in the end his obsession with the Star of Kashan outweighed it. He cut the fuse at the garden junction box himself — the mud on his shoes gave that away — then slipped through the side study while the manor sat in darkness, opened the safe using a code he'd glimpsed Edmund enter years before, and pocketed the sapphire before strolling back to the veranda as if nothing had happened. A brass button torn from his coat, snagged on the study door hinge, was the final thread that unravelled him. When confronted with the mud, the button, and his own words about the sapphire belonging in 'a real collection,' the Colonel's composure finally cracked."
+};
+
+let state = {
+  screen:'intro',
+  activeSuspectId: null,
+  chats: {},          // suspectId -> [{role, content}]
+  questionsUsed: 0,
+  loading:false,
+  showNotebook:false,
+  notes:'',
+  accusedId:null,
+  reasoning:'',
+  result:null
+};
+
+CASE.suspects.forEach(s => { state.chats[s.id] = []; });
+
+function initials(name){
+  return name.split(' ').map(w=>w[0]).slice(0,2).join('');
+}
+
+function render(){
+  const app = document.getElementById('app');
+  if(state.screen==='intro') app.innerHTML = renderIntro();
+  else if(state.screen==='investigate') app.innerHTML = renderInvestigate();
+  else if(state.screen==='accuse') app.innerHTML = renderAccuse();
+  else app.innerHTML = renderReveal();
+  attachHandlers();
+  const log = document.getElementById('chatLog');
+  if(log) log.scrollTop = log.scrollHeight;
+}
+
+function renderIntro(){
+  return `
+    <div class="stamp">CONFIDENTIAL — CASE FILE</div>
+    <div class="intro-hero">
+      <h1>The Star of Kashan</h1>
+      <div class="sub">${CASE.caseNumber} — ${CASE.setting}</div>
+    </div>
+    <div class="briefing">
+      <p>${CASE.briefing}</p>
+    </div>
+    <div class="label" style="font-size:11px;letter-spacing:.05em;color:var(--muted);margin-bottom:10px;">FIVE SUSPECTS WERE IN THE HOUSE</div>
+    <div class="suspect-preview">
+      ${CASE.suspects.map(s => `
+        <div class="sp-card">
+          <div class="sp-avatar">${initials(s.name)}</div>
+          <div class="n">${s.name}</div>
+          <div class="r">${s.role}</div>
+        </div>
+      `).join('')}
+    </div>
+    <p class="muted" style="font-size:13px;">You have <strong style="color:var(--brass-bright);">${TOTAL_QUESTIONS} questions</strong> in total to spend across all five suspects before you must name the thief. Choose them wisely.</p>
+    <button class="btn" id="beginBtn">Begin the investigation</button>
+    <details class="howto">
+      <summary>How to play (teacher notes)</summary>
+      <div class="body">Each student/group questions the five suspects (AI-played, in character) in a live chat, spending from a shared pool of ${TOTAL_QUESTIONS} questions. Good questions surface real clues; vague ones waste a question. Once ready, they accuse one suspect and see the full reveal, plus a detective rank based on accuracy and efficiency. Runs well in 20–25 minutes, solo or in small groups on one device.</div>
+    </details>
+  `;
+}
+
+function renderInvestigate(){
+  const active = CASE.suspects.find(s => s.id === state.activeSuspectId);
+  const chat = active ? state.chats[active.id] : [];
+  const remaining = TOTAL_QUESTIONS - state.questionsUsed;
+  return `
+    <div class="topbar">
+      <div class="case-title">${CASE.title}</div>
+      <div class="qcount">${remaining} / ${TOTAL_QUESTIONS} questions remaining</div>
+    </div>
+    <div class="layout">
+      <div class="suspects-col">
+        <div class="label">SUSPECTS</div>
+        ${CASE.suspects.map(s => `
+          <div class="suspect-item ${state.activeSuspectId===s.id?'active':''}" data-suspect="${s.id}">
+            <div class="sp-avatar">${initials(s.name)}</div>
+            <div class="info">
+              <div class="n">${s.name}</div>
+              <div class="r">${s.role}</div>
+            </div>
+            ${state.chats[s.id].length ? '<div class="dot"></div>' : ''}
+          </div>
+        `).join('')}
+        <button class="btn-ghost notebook-toggle" id="toggleNotebook">${state.showNotebook ? 'Hide notebook' : 'Open notebook'}</button>
+        ${state.showNotebook ? `
+          <div class="notebook">
+            <div class="label" style="margin-bottom:8px;">YOUR NOTES</div>
+            <textarea id="notesArea" placeholder="Jot down clues, contradictions, hunches...">${state.notes}</textarea>
+          </div>
+        ` : ''}
+      </div>
+
+      <div class="chat-panel">
+        ${active ? `
+          <div class="chat-header">
+            <div class="n">${active.name}</div>
+            <div class="r">${active.role}</div>
+          </div>
+          <div class="chat-log" id="chatLog">
+            ${chat.length === 0 ? '<div class="msg system">You approach '+active.name+'. What would you like to ask?</div>' : ''}
+            ${chat.map(m => `<div class="msg ${m.role==='user'?'you':'them'}">${m.content}</div>`).join('')}
+            ${state.loading ? '<div class="msg system">'+active.name+' is thinking of a reply…</div>' : ''}
+          </div>
+          <div class="chat-input">
+            <input type="text" id="questionInput" placeholder="${remaining<=0 ? 'You are out of questions' : 'Ask a question…'}" ${remaining<=0||state.loading?'disabled':''}>
+            <button id="askBtn" ${remaining<=0||state.loading?'disabled':''}>Ask</button>
+          </div>
+        ` : `<div class="chat-placeholder">Select a suspect on the left to begin questioning them.</div>`}
+      </div>
+    </div>
+
+    <div class="accuse-bar">
+      <button class="btn" id="goAccuseBtn">I'm ready to name the thief</button>
+    </div>
+  `;
+}
+
+function renderAccuse(){
+  return `
+    <div class="stamp">FINAL ACCUSATION</div>
+    <h2 style="font-size:30px;font-style:italic;margin-bottom:16px;">Who took the Star of Kashan?</h2>
+    <div class="accuse-box">
+      ${CASE.suspects.map(s => `
+        <label class="suspect-radio ${state.accusedId===s.id?'selected':''}" data-accuse="${s.id}">
+          <input type="radio" name="accuse" ${state.accusedId===s.id?'checked':''}>
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;">${s.name}</div>
+            <div class="muted" style="font-size:11px;">${s.role}</div>
+          </div>
+        </label>
+      `).join('')}
+      <textarea id="reasoningArea" placeholder="Optional: explain your reasoning...">${state.reasoning}</textarea>
+    </div>
+    <button class="btn" id="submitAccuseBtn" style="margin-top:18px;" ${!state.accusedId?'disabled':''}>Submit accusation</button>
+  `;
+}
+
+function computeRank(correct){
+  if(!correct) return 'Case Unsolved';
+  if(state.questionsUsed <= 8) return 'Master Detective';
+  if(state.questionsUsed <= 12) return 'Sharp Detective';
+  return 'Detective — Just in Time';
+}
+
+function renderReveal(){
+  const correct = state.accusedId === CASE.culpritId;
+  const accused = CASE.suspects.find(s => s.id === state.accusedId);
+  const rank = computeRank(correct);
+  return `
+    <div class="stamp" style="border-color:${correct?'var(--brass)':'var(--red)'};color:${correct?'var(--brass-bright)':'var(--red)'};">CASE CLOSED</div>
+    <div class="verdict-badge" style="color:${correct?'var(--brass-bright)':'var(--red)'};">${correct ? 'You caught the thief.' : 'Wrong suspect.'}</div>
+    <p class="muted" style="margin-bottom:20px;">You accused ${accused.name}, using ${state.questionsUsed} of ${TOTAL_QUESTIONS} questions.</p>
+    <div class="reveal-panel">
+      <p>${CASE.reveal}</p>
+      <div class="rank-row">
+        <div class="label" style="font-size:11px;letter-spacing:.05em;color:var(--muted);margin-bottom:6px;">YOUR RANK</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:26px;color:var(--brass-bright);">${rank}</div>
+      </div>
+    </div>
+    <button class="btn-ghost" id="restartBtn" style="margin-top:20px;">Investigate again</button>
+  `;
+}
+
+async function askQuestion(){
+  const input = document.getElementById('questionInput');
+  const text = input.value.trim();
+  if(!text || state.loading || state.questionsUsed >= TOTAL_QUESTIONS) return;
+
+  const suspect = CASE.suspects.find(s => s.id === state.activeSuspectId);
+  state.chats[suspect.id].push({role:'user', content:text});
+  state.questionsUsed += 1;
+  state.loading = true;
+  render();
+
+  try{
+    const reply = await fetchSuspectReply(suspect);
+    state.chats[suspect.id].push({role:'assistant', content:reply});
+  }catch(err){
+    console.error('Interrogation call failed, using fallback', err);
+    state.chats[suspect.id].push({role:'assistant', content: fallbackReply(suspect)});
+  }
+  state.loading = false;
+  render();
+}
+
+async function fetchSuspectReply(suspect){
+  const system = "You are roleplaying as " + suspect.name + " (" + suspect.role + "), a suspect being questioned in a mystery investigation at Blackwood Manor. This is your true, secret background, known only to you: " + suspect.bio + " A detective is questioning you. Reply in character, in 2 to 4 sentences, natural spoken dialogue with no stage directions or quotation marks around the whole reply. Never break character, never mention you are an AI, never reveal information your character would not know or say. If you are guilty, you may deflect or omit but should not casually invent facts that contradict the true events described above.";
+
+  const history = state.chats[suspect.id].map(m => ({role: m.role, content: m.content}));
+
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 300,
+      system: system,
+      messages: history
+    })
+  });
+  const data = await response.json();
+  const block = (data.content || []).find(b => b.type === 'text');
+  if(!block) throw new Error('No text in response');
+  return block.text.trim();
+}
+
+function fallbackReply(suspect){
+  const lines = [
+    "The storm outside seems to have rattled " + suspect.name.split(' ')[0] + " — they glance away and give a vague, half-finished answer before the connection to them flickers out.",
+    suspect.name.split(' ')[0] + " starts to answer, but thunder rattles the windows and the moment passes. \"Ask me again,\" they say."
+  ];
+  return lines[Math.floor(Math.random()*lines.length)];
+}
+
+function attachHandlers(){
+  const beginBtn = document.getElementById('beginBtn');
+  if(beginBtn) beginBtn.onclick = () => { state.screen='investigate'; render(); };
+
+  document.querySelectorAll('[data-suspect]').forEach(el=>{
+    el.onclick = () => { state.activeSuspectId = el.getAttribute('data-suspect'); render(); };
+  });
+
+  const toggleNotebook = document.getElementById('toggleNotebook');
+  if(toggleNotebook) toggleNotebook.onclick = () => { state.showNotebook = !state.showNotebook; render(); };
+  const notesArea = document.getElementById('notesArea');
+  if(notesArea) notesArea.oninput = (e) => { state.notes = e.target.value; };
+
+  const askBtn = document.getElementById('askBtn');
+  if(askBtn) askBtn.onclick = askQuestion;
+  const qInput = document.getElementById('questionInput');
+  if(qInput) qInput.onkeydown = (e) => { if(e.key === 'Enter') askQuestion(); };
+
+  const goAccuseBtn = document.getElementById('goAccuseBtn');
+  if(goAccuseBtn) goAccuseBtn.onclick = () => { state.screen='accuse'; render(); };
+
+  document.querySelectorAll('[data-accuse]').forEach(el=>{
+    el.onclick = () => { state.accusedId = el.getAttribute('data-accuse'); render(); };
+  });
+  const reasoningArea = document.getElementById('reasoningArea');
+  if(reasoningArea) reasoningArea.oninput = (e) => { state.reasoning = e.target.value; };
+
+  const submitAccuseBtn = document.getElementById('submitAccuseBtn');
+  if(submitAccuseBtn) submitAccuseBtn.onclick = () => { state.screen='reveal'; render(); };
+
+  const restartBtn = document.getElementById('restartBtn');
+  if(restartBtn) restartBtn.onclick = () => {
+    state = {
+      screen:'intro', activeSuspectId:null, chats:{}, questionsUsed:0,
+      loading:false, showNotebook:false, notes:'', accusedId:null, reasoning:'', result:null
+    };
+    CASE.suspects.forEach(s => { state.chats[s.id] = []; });
+    render();
+  };
+}
+
+render();
+</script>
+</body>
+</html>
