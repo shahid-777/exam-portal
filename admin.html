@@ -891,7 +891,7 @@
                 if (insertErr) throw insertErr;
 
                 alert(`🔴 Live session started for [ ${subjectName.toUpperCase()} ]! Opening the live scoreboard monitor now.`);
-                window.open(`live-scoreboard.html?session=${session.id}`, '_blank');
+                window.open(`/live-scoreboard.html?session=${session.id}`, '_blank');
                 fetchActiveLiveSessions();
 
             } catch (e) {
