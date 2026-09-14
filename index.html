@@ -62,18 +62,18 @@
 
     <!-- ---------- RESPONSIVE NAVIGATION BAR ---------- -->
     <header class="w-full bg-white border-b border-slate-200 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
-            <div class="flex items-center space-x-3.5 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between gap-2">
+            <div class="flex items-center space-x-2 sm:space-x-3.5 cursor-pointer min-w-0" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                 <div class="bg-slate-50 p-1 rounded-xl shadow-sm border border-slate-200 shrink-0">
-                    <img src="/logo.png" alt="Logo" class="h-12 sm:h-16 w-auto object-contain transition duration-200 hover:scale-102">
+                    <img src="/logo.png" alt="Logo" class="h-10 sm:h-12 lg:h-16 w-auto object-contain transition duration-200 hover:scale-102">
                 </div>
-                <div class="flex flex-col">
-                    <span class="text-sm sm:text-base font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 uppercase leading-none font-serif">EXAM PORTAL</span>
-                    <span class="text-[8px] sm:text-[9px] font-mono font-black text-slate-400 tracking-widest mt-1 uppercase">Computer Science Dept</span>
+                <div class="flex flex-col min-w-0">
+                    <span class="text-xs sm:text-sm lg:text-base font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 uppercase leading-none font-serif truncate">EXAM PORTAL</span>
+                    <span class="block text-[8px] sm:text-[9px] font-mono font-black text-slate-400 tracking-widest mt-1 uppercase truncate">Computer Science Dept</span>
                 </div>
             </div>
 
-            <div class="hidden md:flex items-center space-x-8 text-xs font-semibold uppercase tracking-wider text-slate-500">
+            <div class="hidden xl:flex items-center gap-4 2xl:gap-6 text-[11px] font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap">
                 <a href="#home" class="hover:text-blue-600 transition">Home</a>
                 <a href="#test-series" class="hover:text-blue-600 transition">Test Series</a>
                 <a href="#courses" class="hover:text-blue-600 transition">Courses</a>
@@ -83,11 +83,11 @@
                 <a href="#about-us" class="hover:text-blue-600 transition">About Us</a>
                 <a href="#contact-us" class="hover:text-blue-600 transition">Contact Us</a>
                 <a href="https://claude.ai/public/artifacts/07e3c43f-5336-4231-8848-6662eb3e654c" class="hover:text-blue-600 transition">ChatMeForYourHelp</a>
-                 <a href="blackwood-manor-mystery.html" class="hover:text-blue-600 transition">click for game</a>
+                <a href="blackwood-manor-mystery.html" class="hover:text-blue-600 transition">click for game</a>
             </div>
-            <div class="flex items-center space-x-3 sm:space-x-4">
-                <button id="header-login-btn" onclick="openGatedAuthModal()" class="text-xs sm:text-sm font-bold text-white transition px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20">Login / Sign Up</button>
-                <button onclick="openSideMenu()" aria-label="Open menu" class="flex flex-col justify-center items-center gap-1.5 w-10 h-10 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition shrink-0">
+            <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+                <button id="header-login-btn" onclick="openGatedAuthModal()" class="text-[11px] sm:text-sm font-bold text-white transition px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 whitespace-nowrap">Login / Sign Up</button>
+                <button onclick="openSideMenu()" aria-label="Open menu" class="flex xl:hidden flex-col justify-center items-center gap-1.5 w-10 h-10 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition shrink-0">
                     <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
                     <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
                     <span class="block w-5 h-0.5 bg-slate-700 rounded"></span>
@@ -117,8 +117,9 @@
             <a href="#live-demo-test" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🧪</span> Free Demo Test</a>
             <a href="#features-hub" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">⭐</span> Features</a>
             <a href="#about-us" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">ℹ️</span> About Us</a>
-            <a href="blackwood-manor-mystery.html" class="hover:text-blue-600 transition">click for game</a>
             <a href="#contact-us" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">✉️</span> Contact Us</a>
+            <a href="https://claude.ai/public/artifacts/07e3c43f-5336-4231-8848-6662eb3e654c" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">💬</span> ChatMeForYourHelp</a>
+            <a href="blackwood-manor-mystery.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🎮</span> click for game</a>
             <div class="pt-3 mt-3 border-t border-slate-100">
                 <button id="sidemenu-login-btn" onclick="closeSideMenu(); openGatedAuthModal();" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition"><span class="text-base">🔐</span> Login / Sign Up</button>
             </div>
@@ -429,7 +430,7 @@
                             <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">C Language</span>
                         </div>
                         <p class="text-slate-800 text-base font-semibold mb-6">What will be the output of the expression <code class="bg-slate-100 text-blue-700 px-1.5 py-0.5 rounded font-mono text-sm">sizeof('A')</code> in a standard C compiler?</p>
-                        <div class="flex flex-col gap-3 quiz-options-group">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 quiz-options-group">
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q1" value="A" class="accent-blue-600"> <span>1 Byte</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q1" value="B" class="accent-blue-600"> <span>Depends on the character set</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q1" value="C" class="accent-blue-600"> <span>Same size as an integer (typically 4 Bytes)</span></label>
@@ -444,7 +445,7 @@
                             <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">Java Runtime</span>
                         </div>
                         <p class="text-slate-800 text-base font-semibold mb-6">Which memory area in Java stores method names, field data, and static variables?</p>
-                        <div class="flex flex-col gap-3 quiz-options-group">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 quiz-options-group">
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q2" value="A" class="accent-blue-600"> <span>Heap Memory</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q2" value="B" class="accent-blue-600"> <span>Java Stack Area</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q2" value="C" class="accent-blue-600"> <span>Program Counter (PC) Register</span></label>
@@ -459,7 +460,7 @@
                             <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">DBMS Core</span>
                         </div>
                         <p class="text-slate-800 text-base font-semibold mb-6">Which ACID property ensures a database transaction survives even after a sudden power loss?</p>
-                        <div class="flex flex-col gap-3 quiz-options-group">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 quiz-options-group">
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q3" value="A" class="accent-blue-600"> <span>Atomicity</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q3" value="B" class="accent-blue-600"> <span>Consistency</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q3" value="C" class="accent-blue-600"> <span>Isolation</span></label>
@@ -474,7 +475,7 @@
                             <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">C Language</span>
                         </div>
                         <p class="text-slate-800 text-base font-semibold mb-6">What is the default value of a local variable in C if it is not explicitly assigned?</p>
-                        <div class="flex flex-col gap-3 quiz-options-group">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 quiz-options-group">
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q4" value="A" class="accent-blue-600"> <span>Zero (0)</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q4" value="B" class="accent-blue-600"> <span>An undefined garbage value</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q4" value="C" class="accent-blue-600"> <span>A null pointer</span></label>
@@ -489,7 +490,7 @@
                             <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">Java Core</span>
                         </div>
                         <p class="text-slate-800 text-base font-semibold mb-6">Why is the String class immutable in standard Java?</p>
-                        <div class="flex flex-col gap-3 quiz-options-group">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 quiz-options-group">
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q5" value="A" class="accent-blue-600"> <span>For security, synchronization, and memory optimization</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q5" value="B" class="accent-blue-600"> <span>Java does not support mutable strings at all</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q5" value="C" class="accent-blue-600"> <span>To stop memory from being allocated at runtime</span></label>
@@ -504,7 +505,7 @@
                             <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">DBMS Architecture</span>
                         </div>
                         <p class="text-slate-800 text-base font-semibold mb-6">Which normal form deals with problems caused by transitive functional dependencies?</p>
-                        <div class="flex flex-col gap-3 quiz-options-group">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 quiz-options-group">
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q6" value="A" class="accent-blue-600"> <span>First Normal Form (1NF)</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q6" value="B" class="accent-blue-600"> <span>Second Normal Form (2NF)</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q6" value="C" class="accent-blue-600"> <span>Third Normal Form (3NF)</span></label>
@@ -519,7 +520,7 @@
                             <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">C Language</span>
                         </div>
                         <p class="text-slate-800 text-base font-semibold mb-6">Which standard C memory function automatically sets allocated memory to zero?</p>
-                        <div class="flex flex-col gap-3 quiz-options-group">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 quiz-options-group">
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q7" value="A" class="accent-blue-600"> <span>malloc()</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q7" value="B" class="accent-blue-600"> <span>calloc()</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q7" value="C" class="accent-blue-600"> <span>realloc()</span></label>
@@ -534,7 +535,7 @@
                             <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">Java OOP</span>
                         </div>
                         <p class="text-slate-800 text-base font-semibold mb-6">Which keyword stops a class from being inherited in Java?</p>
-                        <div class="flex flex-col gap-3 quiz-options-group">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 quiz-options-group">
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q8" value="A" class="accent-blue-600"> <span>static</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q8" value="B" class="accent-blue-600"> <span>abstract</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q8" value="C" class="accent-blue-600"> <span>final</span></label>
@@ -549,7 +550,7 @@
                             <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">DBMS Structure</span>
                         </div>
                         <p class="text-slate-800 text-base font-semibold mb-6">What type of SQL command is 'DROP TABLE'?</p>
-                        <div class="flex flex-col gap-3 quiz-options-group">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 quiz-options-group">
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q9" value="A" class="accent-blue-600"> <span>Data Manipulation Language (DML)</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q9" value="B" class="accent-blue-600"> <span>Data Definition Language (DDL)</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q9" value="C" class="accent-blue-600"> <span>Data Control Language (DCL)</span></label>
@@ -564,7 +565,7 @@
                             <span class="bg-slate-100 text-slate-500 text-[10px] font-mono px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">Architecture</span>
                         </div>
                         <p class="text-slate-800 text-base font-semibold mb-6">In an object-oriented language like Java, what maps directly to a schema definition in a relational database?</p>
-                        <div class="flex flex-col gap-3 quiz-options-group">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 quiz-options-group">
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q10" value="A" class="accent-blue-600"> <span>An object instance</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q10" value="B" class="accent-blue-600"> <span>A class definition</span></label>
                             <label class="quiz-opt flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"><input type="radio" name="q10" value="C" class="accent-blue-600"> <span>A method override</span></label>
@@ -737,7 +738,7 @@
     <footer class="w-full text-center py-5 border-t border-slate-200 bg-white text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest shrink-0">&copy; Exam Portal CSE — Computer Science Department</footer>
 
     <!-- ---------- SIDE NEWS & UPDATES PANEL ---------- -->
-    <div id="newsPanel" class="closed hidden lg:block">
+    <div id="newsPanel" class="closed hidden md:block">
         <div class="news-panel-row">
             <button id="newsToggleTab" onclick="toggleNewsPanel()" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-4 rounded-l-xl shadow-lg">News</button>
             <div class="news-card w-72 bg-white border border-slate-200 border-r-0 rounded-l-2xl shadow-2xl">
