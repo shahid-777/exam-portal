@@ -16,7 +16,6 @@
         ::-webkit-scrollbar{ width:6px; }
         ::-webkit-scrollbar-track{ background:#f1f5f9; }
         ::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:4px; }
-        /* removed: fake ~/exams/ path prefix (was confusing, looked like a broken URL) */
         .app-view{ display:none; }
         .app-view.active{ display:block; }
     </style>
@@ -538,14 +537,21 @@
             if (!wrapper || !grid) return;
 
             try {
+                const nowIso = new Date().toISOString();
+                // Debug aid: log the exact timestamp being compared against, so if the
+                // device clock/timezone is wrong this is easy to spot in console.
+                console.log("[live-exams] checking for sessions active as of", nowIso);
+
                 const { data: liveSessions, error } = await supabaseClient
                     .from('live_exam_sessions')
                     .select('*')
                     .eq('status', 'active')
-                    .gt('ends_at', new Date().toISOString())
+                    .gt('ends_at', nowIso)
                     .order('started_at', { ascending: false });
 
                 if (error) throw error;
+
+                console.log("[live-exams] sessions found:", liveSessions ? liveSessions.length : 0, liveSessions);
 
                 if (!liveSessions || liveSessions.length === 0) {
                     wrapper.classList.add('hidden');
@@ -582,7 +588,11 @@
 
             } catch (e) {
                 console.error("Live session fetch failed:", e);
-                wrapper.classList.add('hidden');
+                // Show the wrapper with a visible error instead of silently hiding it,
+                // so this is debuggable on mobile too (previously it just vanished
+                // with no on-screen indication of why).
+                wrapper.classList.remove('hidden');
+                grid.innerHTML = `<div class="col-span-full text-center font-mono text-[11px] text-red-500 border border-dashed border-red-300 py-6 rounded-2xl uppercase bg-white break-words px-3">Live exam check failed: ${(e && e.message) ? e.message : 'unknown error'}</div>`;
             }
         }
 
