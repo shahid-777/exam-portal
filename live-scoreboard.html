@@ -10,20 +10,52 @@
 </head>
 <body class="bg-slate-950 font-sans min-h-screen text-slate-200 flex flex-col justify-between">
 
-    <header class="w-full bg-slate-900/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex items-center justify-between shadow-lg sticky top-0 z-50">
+    <header class="w-full bg-slate-900/60 backdrop-blur-md border-b border-white/5 py-4 px-6 flex flex-wrap items-center justify-between gap-3 shadow-lg sticky top-0 z-50">
         <div class="flex items-center space-x-3">
             <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
             <div class="flex flex-col">
                 <span id="board-subject-title" class="text-sm font-black tracking-widest text-red-400 uppercase leading-none">LOADING LIVE SESSION...</span>
-                <span class="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">LIVE SCOREBOARD MONITOR</span>
+                <span id="board-subtitle" class="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">LIVE SCOREBOARD MONITOR</span>
             </div>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 flex-wrap">
             <div class="bg-slate-900 border border-white/10 px-3 py-1.5 rounded-xl text-xs font-mono font-black text-amber-400" id="board-countdown">--:--</div>
-            <button onclick="endLiveSessionNow()" id="btn-end-session" class="bg-red-600 hover:bg-red-500 text-white font-black py-2 px-4 rounded-xl text-xs uppercase tracking-widest transition">End Session Now</button>
-            <button onclick="window.location.replace('/admin.html')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 px-4 rounded-xl text-xs transition">&larr; Admin Console</button>
+
+            <!-- Admin-only controls -->
+            <div id="admin-controls" class="hidden items-center gap-3 flex-wrap">
+                <div class="relative">
+                    <button onclick="toggleColumnsPanel()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2 px-4 rounded-xl text-xs uppercase tracking-widest transition">Manage Columns</button>
+                    <div id="columns-panel" class="hidden absolute right-0 mt-2 w-56 bg-slate-900 border border-white/10 rounded-xl shadow-2xl p-4 z-50 space-y-2">
+                        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-black mb-2">Visible to students</div>
+                        <div id="columns-checkbox-list" class="space-y-2 text-xs"></div>
+                        <button onclick="applyColumnVisibility(true)" class="w-full mt-2 bg-blue-600 hover:bg-blue-500 text-white font-black py-2 rounded-lg text-[10px] uppercase tracking-widest transition">Save & Apply</button>
+                    </div>
+                </div>
+                <button onclick="toggleSharePanelVisibility()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2 px-4 rounded-xl text-xs uppercase tracking-widest transition">Share Scoreboard</button>
+                <button onclick="endLiveSessionNow()" id="btn-end-session" class="bg-red-600 hover:bg-red-500 text-white font-black py-2 px-4 rounded-xl text-xs uppercase tracking-widest transition">End Session Now</button>
+                <button onclick="window.location.replace('/admin.html')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 px-4 rounded-xl text-xs transition">&larr; Admin Console</button>
+            </div>
         </div>
     </header>
+
+    <!-- Share panel (admin only) -->
+    <div id="share-panel-overlay" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[300] items-center justify-center p-6">
+        <div class="max-w-md w-full bg-slate-900 border border-white/10 rounded-2xl p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between">
+                <h2 class="text-sm font-black text-emerald-400 uppercase tracking-widest">Share Live Scoreboard</h2>
+                <button onclick="toggleSharePanelVisibility()" class="text-slate-500 hover:text-slate-300 text-lg leading-none">&times;</button>
+            </div>
+            <p class="text-xs text-slate-400">Anyone with this link can view the live scoreboard in read-only mode — no login required. Only the columns you've made visible above will show.</p>
+            <div class="flex items-center gap-2">
+                <input id="share-link-input" type="text" readonly class="flex-1 bg-slate-800 border border-white/10 rounded-xl px-3 py-2 text-[11px] font-mono text-slate-200 outline-none">
+                <button onclick="copyShareLink()" id="copy-link-btn" class="bg-slate-700 hover:bg-slate-600 text-white font-black py-2 px-3 rounded-xl text-[10px] uppercase tracking-widest transition shrink-0">Copy</button>
+            </div>
+            <div class="grid grid-cols-2 gap-3 pt-1">
+                <a id="whatsapp-share-btn" href="#" target="_blank" rel="noopener" class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white font-black py-2.5 rounded-xl text-xs uppercase tracking-widest transition">WhatsApp</a>
+                <a id="email-share-btn" href="#" class="flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl text-xs uppercase tracking-widest transition">Email</a>
+            </div>
+        </div>
+    </div>
 
     <section class="max-w-6xl w-full mx-auto px-4 sm:px-6 pt-6 grid grid-cols-2 sm:grid-cols-5 gap-4">
         <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl text-center">
@@ -63,17 +95,18 @@
                 <thead>
                     <tr class="border-b border-white/5 text-slate-400 font-mono uppercase tracking-wider text-[10px] bg-slate-900/60">
                         <th class="py-3 px-4">Rank</th>
-                        <th class="py-3 px-4">Email</th>
-                        <th class="py-3 px-4 text-center">Attempted</th>
-                        <th class="py-3 px-4 text-center">Unattempted</th>
-                        <th class="py-3 px-4 text-center">Correct</th>
-                        <th class="py-3 px-4 text-center">Wrong</th>
-                        <th class="py-3 px-4 text-center">Score</th>
-                        <th class="py-3 px-4 text-center">Status</th>
+                        <th class="py-3 px-4" data-col="name">Name</th>
+                        <th class="py-3 px-4" data-col="email">Email</th>
+                        <th class="py-3 px-4 text-center" data-col="attempted">Attempted</th>
+                        <th class="py-3 px-4 text-center" data-col="unattempted">Unattempted</th>
+                        <th class="py-3 px-4 text-center" data-col="correct">Correct</th>
+                        <th class="py-3 px-4 text-center" data-col="wrong">Wrong</th>
+                        <th class="py-3 px-4 text-center" data-col="score">Score</th>
+                        <th class="py-3 px-4 text-center" data-col="status">Status</th>
                     </tr>
                 </thead>
                 <tbody id="scoreboard-tbody" class="divide-y divide-white/5 font-medium">
-                    <tr><td colspan="8" class="text-center py-8 font-mono text-slate-500 animate-pulse uppercase">Connecting to live telemetry stream...</td></tr>
+                    <tr><td colspan="9" class="text-center py-8 font-mono text-slate-500 animate-pulse uppercase">Connecting to live telemetry stream...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -92,24 +125,63 @@
         let sessionRow = null;
         let realtimeChannel = null;
         let countdownInterval = null;
+        let isPublicView = false;
+        let latestParticipants = [];
+
+        // Columns an admin can hide from the student-facing / shared view.
+        // "Rank" is always shown since it's the whole point of a leaderboard.
+        const TOGGLEABLE_COLUMNS = ['name', 'email', 'attempted', 'unattempted', 'correct', 'wrong', 'score', 'status'];
+        const COLUMN_LABELS = {
+            name: 'Name', email: 'Email', attempted: 'Attempted', unattempted: 'Unattempted',
+            correct: 'Correct', wrong: 'Wrong', score: 'Score', status: 'Status'
+        };
+        let visibleColumns = {}; // populated in initializeScoreboard
+        function defaultVisibleColumns() {
+            const v = {};
+            TOGGLEABLE_COLUMNS.forEach(c => v[c] = true);
+            return v;
+        }
 
         window.onload = function () {
-            const userEmail = localStorage.getItem('userEmail');
-            const userRole = localStorage.getItem('userRole');
-            const adminAuthenticated = localStorage.getItem('adminAuthenticated');
-            if (!userEmail || userRole !== 'admin' || adminAuthenticated !== 'true' || userEmail !== 'examportalcse@gmail.com') {
-                window.location.replace("/admin-login.html");
-                return;
-            }
-
             const urlParams = new URLSearchParams(window.location.search);
             sessionId = urlParams.get('session');
+            isPublicView = urlParams.get('public') === '1';
+
+            if (!isPublicView) {
+                // Admin-only path — same auth gate as before.
+                const userEmail = localStorage.getItem('userEmail');
+                const userRole = localStorage.getItem('userRole');
+                const adminAuthenticated = localStorage.getItem('adminAuthenticated');
+                if (!userEmail || userRole !== 'admin' || adminAuthenticated !== 'true' || userEmail !== 'examportalcse@gmail.com') {
+                    window.location.replace("/admin-login.html");
+                    return;
+                }
+                document.getElementById('admin-controls').classList.remove('hidden');
+                document.getElementById('admin-controls').classList.add('flex');
+            } else {
+                // Public/shared view — read-only, no admin chrome.
+                document.getElementById('board-subtitle').innerText = 'LIVE SCOREBOARD';
+            }
+
             if (!sessionId) {
-                window.location.replace("/admin.html");
+                if (isPublicView) {
+                    document.getElementById('scoreboard-tbody').innerHTML = `<tr><td colspan="9" class="text-center py-8 font-mono text-red-400 uppercase">Invalid or missing scoreboard link.</td></tr>`;
+                } else {
+                    window.location.replace("/admin.html");
+                }
                 return;
             }
 
             initializeScoreboard();
+
+            // Close the columns dropdown when clicking outside it.
+            document.addEventListener('click', function (e) {
+                const panel = document.getElementById('columns-panel');
+                if (!panel || panel.classList.contains('hidden')) return;
+                if (!e.target.closest('#columns-panel') && !e.target.closest('button[onclick="toggleColumnsPanel()"]')) {
+                    panel.classList.add('hidden');
+                }
+            });
         };
 
         function escapeHtmlForDisplay(text) {
@@ -128,16 +200,119 @@
                 if (error || !session) throw new Error("Live session not found.");
                 sessionRow = session;
 
+                // Load column visibility saved by the admin for this session.
+                // Falls back to "everything visible" if the session has no
+                // saved preference yet, or if the DB doesn't have this column.
+                let saved = null;
+                if (session.visible_columns) {
+                    try {
+                        saved = typeof session.visible_columns === 'string'
+                            ? JSON.parse(session.visible_columns)
+                            : session.visible_columns;
+                    } catch (e) { saved = null; }
+                }
+                visibleColumns = Object.assign(defaultVisibleColumns(), saved || {});
+
                 document.getElementById('board-subject-title').innerText = `🔴 LIVE: ${session.subject.toUpperCase()}`;
                 startCountdown(session.ends_at, session.status);
+
+                if (!isPublicView) {
+                    buildColumnsCheckboxList();
+                    setupSharePanel();
+                }
+                applyColumnVisibilityToDom();
 
                 await refreshScoreboard();
                 subscribeToLiveUpdates();
 
             } catch (err) {
-                document.getElementById('scoreboard-tbody').innerHTML = `<tr><td colspan="8" class="text-center py-8 font-mono text-red-400 uppercase">${err.message}</td></tr>`;
+                document.getElementById('scoreboard-tbody').innerHTML = `<tr><td colspan="9" class="text-center py-8 font-mono text-red-400 uppercase">${err.message}</td></tr>`;
             }
         }
+
+        // ---------- Column visibility (admin) ----------
+
+        function toggleColumnsPanel() {
+            document.getElementById('columns-panel').classList.toggle('hidden');
+        }
+
+        function buildColumnsCheckboxList() {
+            const list = document.getElementById('columns-checkbox-list');
+            list.innerHTML = TOGGLEABLE_COLUMNS.map(col => `
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" data-col-toggle="${col}" ${visibleColumns[col] ? 'checked' : ''} class="accent-blue-500">
+                    <span class="text-slate-300">${COLUMN_LABELS[col]}</span>
+                </label>`).join('');
+        }
+
+        async function applyColumnVisibility(persist) {
+            document.querySelectorAll('#columns-checkbox-list input[data-col-toggle]').forEach(cb => {
+                visibleColumns[cb.getAttribute('data-col-toggle')] = cb.checked;
+            });
+
+            applyColumnVisibilityToDom();
+            renderScoreboard(latestParticipants);
+            document.getElementById('columns-panel').classList.add('hidden');
+
+            if (persist) {
+                try {
+                    const { error } = await supabaseClient
+                        .from('live_exam_sessions')
+                        .update({ visible_columns: visibleColumns })
+                        .eq('id', sessionId);
+                    if (error) throw error;
+                } catch (e) {
+                    console.error("Could not save column visibility:", e.message);
+                    alert("Column changes are applied here, but couldn't be saved for shared/public viewers. If this keeps happening, ask your developer to add a 'visible_columns' (jsonb) column to the live_exam_sessions table.");
+                }
+            }
+        }
+
+        function applyColumnVisibilityToDom() {
+            document.querySelectorAll('[data-col]').forEach(el => {
+                const col = el.getAttribute('data-col');
+                el.classList.toggle('hidden', visibleColumns[col] === false);
+            });
+        }
+
+        // ---------- Share panel (admin) ----------
+
+        function setupSharePanel() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('session', sessionId);
+            url.searchParams.set('public', '1');
+            const shareUrl = url.toString();
+
+            document.getElementById('share-link-input').value = shareUrl;
+
+            const subject = sessionRow ? sessionRow.subject : 'Exam';
+            const message = `Live scoreboard for ${subject} — watch the rankings update in real time: ${shareUrl}`;
+
+            document.getElementById('whatsapp-share-btn').href = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            document.getElementById('email-share-btn').href = `mailto:?subject=${encodeURIComponent('Live Scoreboard — ' + subject)}&body=${encodeURIComponent(message)}`;
+        }
+
+        function toggleSharePanelVisibility() {
+            const overlay = document.getElementById('share-panel-overlay');
+            const isHidden = overlay.classList.contains('hidden');
+            overlay.classList.toggle('hidden', !isHidden);
+            overlay.classList.toggle('flex', isHidden);
+        }
+
+        function copyShareLink() {
+            const input = document.getElementById('share-link-input');
+            input.select();
+            navigator.clipboard.writeText(input.value).then(() => {
+                const btn = document.getElementById('copy-link-btn');
+                const original = btn.innerText;
+                btn.innerText = "Copied!";
+                setTimeout(() => btn.innerText = original, 1500);
+            }).catch(() => {
+                document.execCommand('copy');
+            });
+        }
+
+        // ---------- Data + rendering ----------
 
         function subscribeToLiveUpdates() {
             realtimeChannel = supabaseClient
@@ -154,6 +329,31 @@
 
             // Fallback polling every 5s in case realtime replication isn't enabled
             setInterval(refreshScoreboard, 5000);
+
+            // Public viewers won't get admin column updates via realtime on the
+            // sessions table by default, so re-check visibility periodically too.
+            if (isPublicView) {
+                setInterval(refreshColumnVisibilityForPublicViewers, 10000);
+            }
+        }
+
+        async function refreshColumnVisibilityForPublicViewers() {
+            try {
+                const { data: session } = await supabaseClient
+                    .from('live_exam_sessions')
+                    .select('visible_columns')
+                    .eq('id', sessionId)
+                    .maybeSingle();
+                if (!session) return;
+                let saved = null;
+                if (session.visible_columns) {
+                    saved = typeof session.visible_columns === 'string' ? JSON.parse(session.visible_columns) : session.visible_columns;
+                }
+                visibleColumns = Object.assign(defaultVisibleColumns(), saved || {});
+                applyColumnVisibilityToDom();
+            } catch (e) {
+                console.error("Column visibility refresh failed:", e.message);
+            }
         }
 
         function startCountdown(endsAt, status) {
@@ -179,7 +379,8 @@
                     .eq('session_id', sessionId);
 
                 if (error) throw error;
-                renderScoreboard(participants || []);
+                latestParticipants = participants || [];
+                renderScoreboard(latestParticipants);
             } catch (err) {
                 console.error("Scoreboard refresh failed:", err.message);
             }
@@ -202,8 +403,10 @@
             document.getElementById('metric-avg-score').innerText = avgScore;
 
             const tbody = document.getElementById('scoreboard-tbody');
+            const visibleColCount = 1 + TOGGLEABLE_COLUMNS.filter(c => visibleColumns[c] !== false).length;
+
             if (sorted.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 font-mono text-slate-500 uppercase">No participants have joined yet.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${visibleColCount}" class="text-center py-8 font-mono text-slate-500 uppercase">No participants have joined yet.</td></tr>`;
                 return;
             }
 
@@ -211,6 +414,7 @@
             sorted.forEach((p, idx) => {
                 const total = p.total_questions || totalQuestions || 1;
                 const pct = (parseFloat(p.score) / total) * 100;
+                const displayName = p.name && p.name.trim() ? p.name : (p.email ? p.email.split('@')[0] : 'Student');
 
                 let rowClass = "bg-red-500/10 border-l-4 border-red-500";
                 let statusBadge = `<span class="px-2 py-0.5 text-[9px] font-black bg-slate-700 text-slate-300 rounded uppercase">${p.status}</span>`;
@@ -237,17 +441,19 @@
                 html += `
                     <tr class="${rowClass} transition">
                         <td class="py-3 px-4 font-mono font-black text-slate-200">#${idx + 1}</td>
-                        <td class="py-3 px-4 font-sans lowercase text-slate-200">${escapeHtmlForDisplay(p.email)}</td>
-                        <td class="py-3 px-4 text-center font-mono text-emerald-400">${p.attempted_count || 0}</td>
-                        <td class="py-3 px-4 text-center font-mono text-slate-400">${p.unattempted_count || 0}</td>
-                        <td class="py-3 px-4 text-center font-mono text-emerald-400">${p.correct_count || 0}</td>
-                        <td class="py-3 px-4 text-center font-mono text-red-400">${p.wrong_count || 0}</td>
-                        <td class="py-3 px-4 text-center font-mono font-black text-slate-100">${p.score}</td>
-                        <td class="py-3 px-4 text-center">${statusBadge}</td>
+                        <td class="py-3 px-4 font-sans text-slate-200" data-col="name">${escapeHtmlForDisplay(displayName)}</td>
+                        <td class="py-3 px-4 font-sans lowercase text-slate-200" data-col="email">${escapeHtmlForDisplay(p.email)}</td>
+                        <td class="py-3 px-4 text-center font-mono text-emerald-400" data-col="attempted">${p.attempted_count || 0}</td>
+                        <td class="py-3 px-4 text-center font-mono text-slate-400" data-col="unattempted">${p.unattempted_count || 0}</td>
+                        <td class="py-3 px-4 text-center font-mono text-emerald-400" data-col="correct">${p.correct_count || 0}</td>
+                        <td class="py-3 px-4 text-center font-mono text-red-400" data-col="wrong">${p.wrong_count || 0}</td>
+                        <td class="py-3 px-4 text-center font-mono font-black text-slate-100" data-col="score">${p.score}</td>
+                        <td class="py-3 px-4 text-center" data-col="status">${statusBadge}</td>
                     </tr>`;
             });
 
             tbody.innerHTML = html;
+            applyColumnVisibilityToDom();
         }
 
         async function endLiveSessionNow() {
