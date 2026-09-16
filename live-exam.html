@@ -120,6 +120,7 @@
         let userResponses = {};
         let studentEmail = "";
         let timerInterval = null;
+        let sessionSyncInterval = null; // periodically re-checks the real end time/status from the DB
         let examLocked = false; // true once disqualified or submitted — blocks further writes
 
         // --- Forward-only navigation state ---
@@ -280,8 +281,51 @@
         function beginExam() {
             renderCurrentQuestion();
             updateLiveStatusCounters();
-            startCountdown(sessionData.ends_at);
+            startCountdown();
             attachAntiCheatListeners();
+
+            // Re-check the session's real status/end-time from the DB every
+            // few seconds. This is what catches an admin ending the session
+            // early via "End Session Now" — without this, a student's page
+            // would otherwise keep trusting the ends_at it loaded at the start.
+            if (sessionSyncInterval) clearInterval(sessionSyncInterval);
+            sessionSyncInterval = setInterval(syncSessionStatus, 4000);
+        }
+
+        // True once time is genuinely up or the admin has ended the session —
+        // the single source of truth every write path checks before acting.
+        function isExamExpired() {
+            if (!sessionData) return false;
+            if (sessionData.status && sessionData.status !== 'active') return true;
+            return new Date(sessionData.ends_at).getTime() <= Date.now();
+        }
+
+        // If time is up, force-submit immediately and report true so the
+        // caller can bail out of whatever action it was about to take.
+        function enforceExamEndIfNeeded() {
+            if (examLocked) return true;
+            if (isExamExpired()) {
+                submitLiveExam(true);
+                return true;
+            }
+            return false;
+        }
+
+        async function syncSessionStatus() {
+            if (examLocked || !sessionData) return;
+            try {
+                const { data: freshSession, error } = await supabaseClient
+                    .from('live_exam_sessions')
+                    .select('status, ends_at')
+                    .eq('id', sessionData.id)
+                    .maybeSingle();
+                if (error || !freshSession) return;
+                sessionData.status = freshSession.status;
+                sessionData.ends_at = freshSession.ends_at;
+                enforceExamEndIfNeeded();
+            } catch (e) {
+                console.error("Session sync failed:", e.message);
+            }
         }
 
         // Renders ONE question at a time. There is no "previous" control —
@@ -338,6 +382,7 @@
 
         function goToNextQuestion() {
             if (examLocked) return;
+            if (enforceExamEndIfNeeded()) return; // time's up — force-submit instead of advancing
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 renderCurrentQuestion();
@@ -346,6 +391,7 @@
 
         async function registerLiveResponse(qIdx, optIdx) {
             if (examLocked) return;
+            if (enforceExamEndIfNeeded()) return; // time's up — force-submit instead of accepting this answer
             userResponses[qIdx] = optIdx;
             updateLiveStatusCounters();
             await pushLiveUpdate();
@@ -398,23 +444,23 @@
             }
         }
 
-        function startCountdown(endsAt) {
+        function startCountdown() {
             const clock = document.getElementById('time-counter-clock');
             if (timerInterval) clearInterval(timerInterval);
 
             timerInterval = setInterval(() => {
-                const remainingMs = new Date(endsAt).getTime() - Date.now();
-                if (remainingMs <= 0) {
+                if (examLocked) { clearInterval(timerInterval); return; }
+                if (enforceExamEndIfNeeded()) {
                     clearInterval(timerInterval);
                     clock.innerText = "00:00";
-                    submitLiveExam(true);
                     return;
                 }
-                const totalSec = Math.floor(remainingMs / 1000);
+                const remainingMs = new Date(sessionData.ends_at).getTime() - Date.now();
+                const totalSec = Math.max(0, Math.floor(remainingMs / 1000));
                 const min = Math.floor(totalSec / 60);
                 const sec = totalSec % 60;
                 clock.innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-            }, 1000);
+            }, 500);
         }
 
         // 🛡️ ANTI-CHEAT: tab switch / window blur / minimize detection
@@ -442,6 +488,7 @@
             if (examLocked) return;
             examLocked = true;
             clearInterval(timerInterval);
+            clearInterval(sessionSyncInterval);
             detachAntiCheatListeners();
 
             try {
@@ -575,6 +622,7 @@
             if (examLocked) return;
             examLocked = true;
             clearInterval(timerInterval);
+            clearInterval(sessionSyncInterval);
             detachAntiCheatListeners();
 
             const tally = computeTally();
