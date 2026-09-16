@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="google" content="notranslate">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
     <link rel="icon" type="image/png" href="/logo.png">
     <title>Live Exam — Real-Time Assessment</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,33 +11,40 @@
 </head>
 <body class="bg-slate-950 font-sans min-h-screen text-slate-200 flex flex-col justify-between select-none">
 
-    <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-white/5 py-3 px-4 flex items-center justify-between shadow-lg fixed top-0 left-0 right-0 z-50">
-        <div class="flex items-center space-x-2 min-w-0">
-            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse shrink-0"></span>
-            <div class="flex flex-col truncate">
-                <span id="live-subject-title" class="text-[10px] sm:text-xs font-black tracking-widest text-red-400 uppercase leading-none truncate">LOADING LIVE SESSION...</span>
-                <span class="text-[7px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">LIVE PROCTORED EXAM</span>
+    <!-- Header + stats bar are combined into ONE sticky block (no fixed
+         positioning, no hardcoded pixel offsets). This is what makes it
+         behave correctly on every phone screen — a fixed header with a
+         separately-offset sticky bar below it can end up overlapping or
+         hiding the questions on some mobile screen sizes / font settings. -->
+    <div class="sticky top-0 z-50" style="padding-top: env(safe-area-inset-top);">
+        <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-white/5 py-3 px-4 flex items-center justify-between shadow-lg">
+            <div class="flex items-center space-x-2 min-w-0">
+                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse shrink-0"></span>
+                <div class="flex flex-col truncate">
+                    <span id="live-subject-title" class="text-[10px] sm:text-xs font-black tracking-widest text-red-400 uppercase leading-none truncate">LOADING LIVE SESSION...</span>
+                    <span class="text-[7px] font-mono font-bold text-slate-500 uppercase tracking-wider mt-0.5">LIVE PROCTORED EXAM</span>
+                </div>
             </div>
-        </div>
-        <div class="bg-red-500/10 border border-red-500/20 px-2.5 sm:px-4 py-1.5 rounded-xl flex items-center space-x-1.5 shrink-0">
-            <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
-            <span id="time-counter-clock" class="text-[11px] sm:text-xs font-mono font-black text-red-400 tracking-widest">00:00</span>
-        </div>
-    </header>
-
-    <section class="w-full bg-slate-900/30 border-b border-white/5 py-3 px-6 sticky top-[65px] z-40 backdrop-blur-sm">
-        <div class="max-w-4xl mx-auto flex flex-wrap gap-4 items-center justify-between text-xs font-mono">
-            <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-                <div>Total: <span id="stat-total" class="text-blue-400 font-bold">0</span></div>
-                <div>Attempted: <span id="stat-attempted" class="text-green-400 font-bold">0</span></div>
-                <div>Unattempted: <span id="stat-left" class="text-slate-400 font-bold">0</span></div>
-                <div>Question: <span id="stat-current" class="text-amber-400 font-bold">0</span> / <span id="stat-current-total" class="text-slate-400 font-bold">0</span></div>
+            <div class="bg-red-500/10 border border-red-500/20 px-2.5 sm:px-4 py-1.5 rounded-xl flex items-center space-x-1.5 shrink-0">
+                <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                <span id="time-counter-clock" class="text-[11px] sm:text-xs font-mono font-black text-red-400 tracking-widest">00:00</span>
             </div>
-            <div class="text-amber-400 font-bold text-[10px] uppercase tracking-wider">⚠️ Do not switch tabs or minimize — instant disqualification</div>
-        </div>
-    </section>
+        </header>
 
-    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-8 mt-28 space-y-6">
+        <section class="w-full bg-slate-900/30 border-b border-white/5 py-3 px-4 sm:px-6 backdrop-blur-sm">
+            <div class="max-w-4xl mx-auto flex flex-wrap gap-3 sm:gap-4 items-center justify-between text-[10px] sm:text-xs font-mono">
+                <div class="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2">
+                    <div>Total: <span id="stat-total" class="text-blue-400 font-bold">0</span></div>
+                    <div>Attempted: <span id="stat-attempted" class="text-green-400 font-bold">0</span></div>
+                    <div>Unattempted: <span id="stat-left" class="text-slate-400 font-bold">0</span></div>
+                    <div>Question: <span id="stat-current" class="text-amber-400 font-bold">0</span> / <span id="stat-current-total" class="text-slate-400 font-bold">0</span></div>
+                </div>
+                <div class="text-amber-400 font-bold text-[9px] sm:text-[10px] uppercase tracking-wider">⚠️ Don't switch apps or minimize</div>
+            </div>
+        </section>
+    </div>
+
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 sm:py-8 space-y-6">
         <div id="live-exam-body">
             <div class="text-center text-slate-500 font-mono text-xs py-12 animate-pulse uppercase">Connecting to live session...</div>
         </div>
@@ -464,23 +471,47 @@
         }
 
         // 🛡️ ANTI-CHEAT: tab switch / window blur / minimize detection
+        // A short grace period absorbs brief, non-cheating mobile interruptions
+        // (address bar auto-hide/show, a notification peeking in, a permission
+        // prompt) so they don't falsely disqualify a student — a genuine app
+        // switch stays hidden well past this window and still gets caught.
+        let disqualifyGraceTimer = null;
+        const DISQUALIFY_GRACE_MS = 1200;
+
         function attachAntiCheatListeners() {
-            document.addEventListener('visibilitychange', handleVisibilityOrBlur);
-            window.addEventListener('blur', handleVisibilityOrBlur);
+            document.addEventListener('visibilitychange', handleAntiCheatSignal);
+            window.addEventListener('blur', handleAntiCheatSignal);
+            document.addEventListener('visibilitychange', handleReturnedToExam);
+            window.addEventListener('focus', handleReturnedToExam);
         }
 
         function detachAntiCheatListeners() {
-            document.removeEventListener('visibilitychange', handleVisibilityOrBlur);
-            window.removeEventListener('blur', handleVisibilityOrBlur);
+            document.removeEventListener('visibilitychange', handleAntiCheatSignal);
+            window.removeEventListener('blur', handleAntiCheatSignal);
+            document.removeEventListener('visibilitychange', handleReturnedToExam);
+            window.removeEventListener('focus', handleReturnedToExam);
+            if (disqualifyGraceTimer) { clearTimeout(disqualifyGraceTimer); disqualifyGraceTimer = null; }
         }
 
-        function handleVisibilityOrBlur() {
-            if (examLocked) return;
-            if (document.hidden || document.visibilityState === 'hidden') {
-                disqualifyStudent("Switched away from the exam tab or minimized the window.");
-            } else {
-                // window blur without tab hidden (e.g. alt-tabbed to another app)
-                disqualifyStudent("Switched to another window or application.");
+        function isExamTabAwayFromFocus() {
+            return document.hidden || document.visibilityState === 'hidden' || !document.hasFocus();
+        }
+
+        function handleAntiCheatSignal() {
+            if (examLocked || disqualifyGraceTimer) return;
+            if (!isExamTabAwayFromFocus()) return;
+            disqualifyGraceTimer = setTimeout(() => {
+                disqualifyGraceTimer = null;
+                if (!examLocked && isExamTabAwayFromFocus()) {
+                    disqualifyStudent("Switched to another tab, app, or window during the exam.");
+                }
+            }, DISQUALIFY_GRACE_MS);
+        }
+
+        function handleReturnedToExam() {
+            if (disqualifyGraceTimer && !isExamTabAwayFromFocus()) {
+                clearTimeout(disqualifyGraceTimer);
+                disqualifyGraceTimer = null;
             }
         }
 
