@@ -80,7 +80,28 @@
                 <div class="text-3xl font-mono font-black text-blue-400" id="final-score-display">0 / 0</div>
                 <div class="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Final Score</div>
             </div>
-            <button onclick="window.location.replace('/dashboard.html')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-6 rounded-xl uppercase text-xs tracking-widest transition">Return to Dashboard</button>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="showResultReview()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-black py-3 px-6 rounded-xl uppercase text-xs tracking-widest transition">Show Result</button>
+                <button onclick="window.location.replace('/dashboard.html')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-6 rounded-xl uppercase text-xs tracking-widest transition">Return to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result review: question-by-question breakdown with correct/wrong/your-answer -->
+    <div id="result-review-overlay" class="fixed inset-0 bg-slate-950/98 backdrop-blur-md z-[250] hidden flex-col">
+        <div class="w-full bg-slate-900/90 backdrop-blur-md border-b border-white/5 py-3 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-10 shrink-0">
+            <div class="flex flex-col">
+                <span class="text-xs font-black tracking-widest text-blue-400 uppercase leading-none">Your Result</span>
+                <div class="flex items-center gap-3 mt-1.5 text-[10px] font-mono uppercase tracking-wider">
+                    <span class="text-emerald-400 font-bold">Correct: <span id="result-summary-correct">0</span></span>
+                    <span class="text-red-400 font-bold">Wrong: <span id="result-summary-wrong">0</span></span>
+                    <span class="text-slate-400 font-bold">Skipped: <span id="result-summary-unattempted">0</span></span>
+                </div>
+            </div>
+            <button onclick="hideResultReview()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 px-4 rounded-xl text-xs transition shrink-0">Close</button>
+        </div>
+        <div class="flex-1 overflow-y-auto">
+            <div id="result-review-body" class="max-w-4xl w-full mx-auto px-4 py-6 space-y-5"></div>
         </div>
     </div>
 
@@ -178,6 +199,7 @@
                     return;
                 }
                 if (existing && existing.status === 'submitted') {
+                    userResponses = existing.responses || {};
                     showSubmittedOverlay(existing.score, existing.total_questions);
                     return;
                 }
@@ -450,6 +472,103 @@
         function showSubmittedOverlay(score, total) {
             document.getElementById('final-score-display').innerText = `${score} / ${total}`;
             document.getElementById('submitted-overlay').classList.remove('hidden');
+        }
+
+        // Question-by-question review shown after submission: what the
+        // student picked, what the correct answer was, and right/wrong/skipped.
+        function showResultReview() {
+            const container = document.getElementById('result-review-body');
+            let correctCount = 0, wrongCount = 0, unattemptedCount = 0;
+            let html = "";
+
+            questions.forEach((q, index) => {
+                const sel = userResponses[index];
+                const hasAnswer = sel !== undefined && sel !== null;
+                const isCorrect = hasAnswer && parseInt(sel) === parseInt(q.correct);
+
+                if (!hasAnswer) unattemptedCount++;
+                else if (isCorrect) correctCount++;
+                else wrongCount++;
+
+                let tableHtml = "";
+                if (q.table && q.table.headers && q.table.rows) {
+                    tableHtml = `<div class="overflow-x-auto my-3 rounded-xl border border-white/10 bg-slate-900/80 p-2"><table class="w-full text-[10px] text-left border-collapse text-white"><thead class="bg-slate-800 uppercase"><tr>`;
+                    q.table.headers.forEach(h => tableHtml += `<th class="p-2 border border-white/10">${escapeHtmlForDisplay(h)}</th>`);
+                    tableHtml += `</tr></thead><tbody class="text-slate-300">`;
+                    q.table.rows.forEach(row => {
+                        tableHtml += `<tr>`;
+                        row.forEach(cell => tableHtml += `<td class="p-2 border border-white/10">${escapeHtmlForDisplay(cell)}</td>`);
+                        tableHtml += `</tr>`;
+                    });
+                    tableHtml += `</tbody></table></div>`;
+                }
+
+                let optionsHtml = "";
+                (q.options || []).forEach((opt, optIdx) => {
+                    const optText = escapeHtmlForDisplay(resolveOptionText(opt));
+                    const isCorrectOption = parseInt(optIdx) === parseInt(q.correct);
+                    const isSelectedOption = hasAnswer && parseInt(sel) === parseInt(optIdx);
+
+                    let optClass = "bg-slate-900/60 border border-white/5";
+                    let icon = "";
+                    let tag = "";
+
+                    if (isCorrectOption) {
+                        optClass = "bg-emerald-500/10 border border-emerald-500/40";
+                        icon = '<span class="text-emerald-400 font-black">✓</span>';
+                        tag = '<span class="text-[9px] font-mono text-emerald-400 uppercase tracking-wider">Correct answer</span>';
+                    }
+                    if (isSelectedOption && !isCorrectOption) {
+                        optClass = "bg-red-500/10 border border-red-500/40";
+                        icon = '<span class="text-red-400 font-black">✗</span>';
+                        tag = '<span class="text-[9px] font-mono text-red-400 uppercase tracking-wider">Your answer</span>';
+                    } else if (isSelectedOption && isCorrectOption) {
+                        tag = '<span class="text-[9px] font-mono text-emerald-400 uppercase tracking-wider">Your answer &middot; Correct</span>';
+                    }
+
+                    optionsHtml += `
+                        <div class="flex items-center justify-between space-x-3 p-3 rounded-xl ${optClass}">
+                            <div class="flex flex-col">
+                                <span class="text-xs">${optText}</span>
+                                ${tag}
+                            </div>
+                            ${icon}
+                        </div>`;
+                });
+
+                const qImg = q.question_image || q.q_image;
+                let statusBadge = `<span class="px-2 py-0.5 text-[9px] font-black bg-slate-700 text-slate-300 rounded uppercase">Not Attempted</span>`;
+                if (hasAnswer) {
+                    statusBadge = isCorrect
+                        ? `<span class="px-2 py-0.5 text-[9px] font-black bg-emerald-600 text-white rounded uppercase">Correct</span>`
+                        : `<span class="px-2 py-0.5 text-[9px] font-black bg-red-600 text-white rounded uppercase">Wrong</span>`;
+                }
+
+                html += `
+                    <div class="bg-slate-900/20 border border-white/5 p-5 rounded-2xl space-y-3 shadow-xl">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
+                            ${statusBadge}
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-100">${escapeHtmlForDisplay(resolveBilingualText(q.question, q.title || 'Objective Question'))}</h4>
+                        ${qImg ? `<img src="${qImg}" class="max-h-64 rounded-xl border border-white/10 object-contain">` : ""}
+                        ${tableHtml}
+                        <div class="grid grid-cols-1 gap-2">${optionsHtml}</div>
+                    </div>`;
+            });
+
+            document.getElementById('result-summary-correct').innerText = correctCount;
+            document.getElementById('result-summary-wrong').innerText = wrongCount;
+            document.getElementById('result-summary-unattempted').innerText = unattemptedCount;
+
+            container.innerHTML = html;
+            document.getElementById('result-review-overlay').classList.remove('hidden');
+            document.getElementById('result-review-overlay').classList.add('flex');
+        }
+
+        function hideResultReview() {
+            document.getElementById('result-review-overlay').classList.add('hidden');
+            document.getElementById('result-review-overlay').classList.remove('flex');
         }
 
         async function submitLiveExam(autoSubmittedByTimer) {
