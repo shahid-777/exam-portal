@@ -38,6 +38,11 @@
         </div>
     </header>
 
+    <!-- Shown only in the read-only/public view, so it's obvious no login was needed -->
+    <div id="public-view-banner" class="hidden bg-blue-500/10 border-b border-blue-500/20 text-blue-300 text-[11px] font-mono uppercase tracking-wider text-center py-2 px-4">
+        👁️ You're viewing this live scoreboard in read-only mode — no sign-in required.
+    </div>
+
     <!-- Share panel (admin only) -->
     <div id="share-panel-overlay" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[300] items-center justify-center p-6">
         <div class="max-w-md w-full bg-slate-900 border border-white/10 rounded-2xl p-6 space-y-4 shadow-2xl">
@@ -145,8 +150,11 @@
         window.onload = function () {
             const urlParams = new URLSearchParams(window.location.search);
             sessionId = urlParams.get('session');
-            isPublicView = urlParams.get('public') === '1';
+            const publicParam = (urlParams.get('public') || '').toLowerCase();
+            isPublicView = publicParam === '1' || publicParam === 'true';
 
+            // isPublicView short-circuits everything below — a shared link is
+            // NEVER routed through the admin-login check, by design.
             if (!isPublicView) {
                 // Admin-only path — same auth gate as before.
                 const userEmail = localStorage.getItem('userEmail');
@@ -159,8 +167,9 @@
                 document.getElementById('admin-controls').classList.remove('hidden');
                 document.getElementById('admin-controls').classList.add('flex');
             } else {
-                // Public/shared view — read-only, no admin chrome.
-                document.getElementById('board-subtitle').innerText = 'LIVE SCOREBOARD';
+                // Public/shared view — read-only, no admin chrome, no login gate at all.
+                document.getElementById('board-subtitle').innerText = 'LIVE SCOREBOARD · READ-ONLY VIEW';
+                document.getElementById('public-view-banner').classList.remove('hidden');
             }
 
             if (!sessionId) {
