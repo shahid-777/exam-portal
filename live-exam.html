@@ -31,16 +31,34 @@
                 <div>Total: <span id="stat-total" class="text-blue-400 font-bold">0</span></div>
                 <div>Attempted: <span id="stat-attempted" class="text-green-400 font-bold">0</span></div>
                 <div>Unattempted: <span id="stat-left" class="text-slate-400 font-bold">0</span></div>
+                <div>Question: <span id="stat-current" class="text-amber-400 font-bold">0</span> / <span id="stat-current-total" class="text-slate-400 font-bold">0</span></div>
             </div>
             <div class="text-amber-400 font-bold text-[10px] uppercase tracking-wider">⚠️ Do not switch tabs or minimize — instant disqualification</div>
         </div>
     </section>
 
-    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-8 mt-24 space-y-6">
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-8 mt-28 space-y-6">
         <div id="live-exam-body">
             <div class="text-center text-slate-500 font-mono text-xs py-12 animate-pulse uppercase">Connecting to live session...</div>
         </div>
     </main>
+
+    <!-- Name capture modal — shown once, before the exam attempt is created -->
+    <div id="name-modal-overlay" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[300] hidden flex items-center justify-center p-6">
+        <div class="max-w-sm w-full bg-slate-900 border border-white/10 rounded-2xl p-6 space-y-4 text-center shadow-2xl">
+            <div class="text-4xl">🏷️</div>
+            <h2 class="text-lg font-black text-blue-400 uppercase tracking-widest">Enter Your Name</h2>
+            <p class="text-xs text-slate-400">This name will appear on the live leaderboard for this session.</p>
+            <input id="name-input-field" type="text" placeholder="Full Name" maxlength="60"
+                class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-blue-500 text-center"
+                onkeydown="if(event.key==='Enter'){submitStudentName();}">
+            <p id="name-input-error" class="text-[10px] text-red-400 hidden">Please enter your name to continue.</p>
+            <button id="name-submit-btn" onclick="submitStudentName()"
+                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-xl uppercase text-xs tracking-widest transition">
+                Continue to Exam
+            </button>
+        </div>
+    </div>
 
     <!-- Disqualification overlay -->
     <div id="disqualify-overlay" class="fixed inset-0 bg-red-950/95 backdrop-blur-md z-[200] hidden flex items-center justify-center p-6">
@@ -83,6 +101,10 @@
         let timerInterval = null;
         let examLocked = false; // true once disqualified or submitted — blocks further writes
 
+        // --- Forward-only navigation state ---
+        let currentQuestionIndex = 0;
+        let pendingSessionId = null; // session id waiting on the name modal before the attempt is created
+
         function escapeHtmlForDisplay(text) {
             if (text === undefined || text === null) return "";
             return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -112,10 +134,17 @@
                 window.location.replace("/dashboard.html");
                 return;
             }
-            initializeLiveSession(sessionId);
+            loadLiveSession(sessionId);
+
+            // Block the browser back button from ever taking the student to a
+            // previous state once the exam page is open.
+            history.pushState(null, "", window.location.href);
+            window.addEventListener('popstate', function () {
+                history.pushState(null, "", window.location.href);
+            });
         };
 
-        async function initializeLiveSession(sessionId) {
+        async function loadLiveSession(sessionId) {
             const body = document.getElementById('live-exam-body');
             try {
                 const { data: session, error: sessErr } = await supabaseClient
@@ -154,32 +183,18 @@
                 }
 
                 if (existing) {
+                    // Resuming an in-progress attempt — name was already captured, skip the modal.
                     participantRow = existing;
                     userResponses = existing.responses || {};
+                    // Resume at the first question that hasn't been answered yet.
+                    currentQuestionIndex = Math.min(Object.keys(userResponses).length, questions.length - 1);
+                    beginExam();
                 } else {
-                    const name = studentEmail.split('@')[0];
-                    const { data: created, error: insertErr } = await supabaseClient
-                        .from('live_exam_participants')
-                        .insert([{
-                            session_id: parseInt(sessionId),
-                            email: studentEmail.toLowerCase(),
-                            name: name,
-                            responses: {},
-                            total_questions: questions.length,
-                            unattempted_count: questions.length,
-                            status: 'active'
-                        }])
-                        .select()
-                        .single();
-
-                    if (insertErr) throw insertErr;
-                    participantRow = created;
+                    // Brand new attempt — collect the student's display name first.
+                    pendingSessionId = sessionId;
+                    body.innerHTML = "";
+                    showNameModal();
                 }
-
-                renderQuestions();
-                updateLiveStatusCounters();
-                startCountdown(session.ends_at);
-                attachAntiCheatListeners();
 
             } catch (err) {
                 console.error(err);
@@ -187,54 +202,124 @@
             }
         }
 
-        function renderQuestions() {
+        function showNameModal() {
+            document.getElementById('name-modal-overlay').classList.remove('hidden');
+            setTimeout(() => document.getElementById('name-input-field').focus(), 50);
+        }
+
+        async function submitStudentName() {
+            const input = document.getElementById('name-input-field');
+            const errorEl = document.getElementById('name-input-error');
+            const btn = document.getElementById('name-submit-btn');
+            const name = (input.value || "").trim();
+
+            if (!name) {
+                errorEl.classList.remove('hidden');
+                input.focus();
+                return;
+            }
+            errorEl.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerText = "Starting...";
+
+            try {
+                const { data: created, error: insertErr } = await supabaseClient
+                    .from('live_exam_participants')
+                    .insert([{
+                        session_id: parseInt(pendingSessionId),
+                        email: studentEmail.toLowerCase(),
+                        name: name,
+                        responses: {},
+                        total_questions: questions.length,
+                        unattempted_count: questions.length,
+                        status: 'active'
+                    }])
+                    .select()
+                    .single();
+
+                if (insertErr) throw insertErr;
+
+                participantRow = created;
+                userResponses = {};
+                currentQuestionIndex = 0;
+
+                document.getElementById('name-modal-overlay').classList.add('hidden');
+                beginExam();
+
+            } catch (err) {
+                console.error(err);
+                errorEl.innerText = "Could not start the exam. Please try again.";
+                errorEl.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerText = "Continue to Exam";
+            }
+        }
+
+        function beginExam() {
+            renderCurrentQuestion();
+            updateLiveStatusCounters();
+            startCountdown(sessionData.ends_at);
+            attachAntiCheatListeners();
+        }
+
+        // Renders ONE question at a time. There is no "previous" control —
+        // once the student moves to the next question there is no way back.
+        function renderCurrentQuestion() {
             const body = document.getElementById('live-exam-body');
-            let html = "";
+            const index = currentQuestionIndex;
+            const q = questions[index];
 
-            questions.forEach((q, index) => {
-                let tableHtml = "";
-                if (q.table && q.table.headers && q.table.rows) {
-                    tableHtml = `<div class="overflow-x-auto my-3 rounded-xl border border-white/10 bg-slate-900/80 p-2"><table class="w-full text-[10px] text-left border-collapse text-white"><thead class="bg-slate-800 uppercase"><tr>`;
-                    q.table.headers.forEach(h => tableHtml += `<th class="p-2 border border-white/10">${escapeHtmlForDisplay(h)}</th>`);
-                    tableHtml += `</tr></thead><tbody class="text-slate-300">`;
-                    q.table.rows.forEach(row => {
-                        tableHtml += `<tr>`;
-                        row.forEach(cell => tableHtml += `<td class="p-2 border border-white/10">${escapeHtmlForDisplay(cell)}</td>`);
-                        tableHtml += `</tr>`;
-                    });
-                    tableHtml += `</tbody></table></div>`;
-                }
-
-                let optionsHtml = "";
-                (q.options || []).forEach((opt, optIdx) => {
-                    const optText = escapeHtmlForDisplay(resolveOptionText(opt));
-                    optionsHtml += `
-                        <label class="flex items-center space-x-3 bg-slate-900/60 p-3 rounded-xl cursor-pointer hover:bg-slate-800 transition">
-                            <input type="radio" name="live-q-${index}" value="${optIdx}" onchange="registerLiveResponse(${index}, ${optIdx})" ${userResponses[index] == optIdx ? 'checked' : ''}>
-                            <span class="text-xs">${optText}</span>
-                        </label>`;
+            let tableHtml = "";
+            if (q.table && q.table.headers && q.table.rows) {
+                tableHtml = `<div class="overflow-x-auto my-3 rounded-xl border border-white/10 bg-slate-900/80 p-2"><table class="w-full text-[10px] text-left border-collapse text-white"><thead class="bg-slate-800 uppercase"><tr>`;
+                q.table.headers.forEach(h => tableHtml += `<th class="p-2 border border-white/10">${escapeHtmlForDisplay(h)}</th>`);
+                tableHtml += `</tr></thead><tbody class="text-slate-300">`;
+                q.table.rows.forEach(row => {
+                    tableHtml += `<tr>`;
+                    row.forEach(cell => tableHtml += `<td class="p-2 border border-white/10">${escapeHtmlForDisplay(cell)}</td>`);
+                    tableHtml += `</tr>`;
                 });
+                tableHtml += `</tbody></table></div>`;
+            }
 
-                const qImg = q.question_image || q.q_image;
-
-                html += `
-                    <div class="bg-slate-900/20 border border-white/5 p-5 rounded-2xl space-y-4 shadow-xl">
-                        <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1}</span>
-                        <h4 class="text-sm font-bold text-slate-100">${escapeHtmlForDisplay(resolveBilingualText(q.question, q.title || 'Objective Question'))}</h4>
-                        ${qImg ? `<img src="${qImg}" class="max-h-64 rounded-xl border border-white/10 object-contain">` : ""}
-                        ${tableHtml}
-                        <div class="grid grid-cols-1 gap-2">${optionsHtml}</div>
-                    </div>`;
+            let optionsHtml = "";
+            (q.options || []).forEach((opt, optIdx) => {
+                const optText = escapeHtmlForDisplay(resolveOptionText(opt));
+                optionsHtml += `
+                    <label class="flex items-center space-x-3 bg-slate-900/60 p-3 rounded-xl cursor-pointer hover:bg-slate-800 transition">
+                        <input type="radio" name="live-q-${index}" value="${optIdx}" onchange="registerLiveResponse(${index}, ${optIdx})" ${userResponses[index] == optIdx ? 'checked' : ''}>
+                        <span class="text-xs">${optText}</span>
+                    </label>`;
             });
 
-            html += `
+            const qImg = q.question_image || q.q_image;
+            const isLast = index === questions.length - 1;
+
+            const html = `
+                <div class="bg-slate-900/20 border border-white/5 p-5 rounded-2xl space-y-4 shadow-xl">
+                    <span class="text-xs font-mono font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md">Q. ${index + 1} / ${questions.length}</span>
+                    <h4 class="text-sm font-bold text-slate-100">${escapeHtmlForDisplay(resolveBilingualText(q.question, q.title || 'Objective Question'))}</h4>
+                    ${qImg ? `<img src="${qImg}" class="max-h-64 rounded-xl border border-white/10 object-contain">` : ""}
+                    ${tableHtml}
+                    <div class="grid grid-cols-1 gap-2">${optionsHtml}</div>
+                </div>
                 <div class="pt-4 flex justify-end">
-                    <button onclick="submitLiveExam(false)" class="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-3 px-8 rounded-xl shadow-xl uppercase text-xs tracking-widest transition">
-                        Submit Live Exam
-                    </button>
+                    ${isLast
+                        ? `<button onclick="submitLiveExam(false)" class="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-3 px-8 rounded-xl shadow-xl uppercase text-xs tracking-widest transition">Submit Live Exam</button>`
+                        : `<button onclick="goToNextQuestion()" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-black py-3 px-8 rounded-xl shadow-xl uppercase text-xs tracking-widest transition">Next Question →</button>`
+                    }
                 </div>`;
 
             body.innerHTML = html;
+            updateLiveStatusCounters();
+        }
+
+        function goToNextQuestion() {
+            if (examLocked) return;
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                renderCurrentQuestion();
+            }
         }
 
         async function registerLiveResponse(qIdx, optIdx) {
@@ -250,6 +335,8 @@
             document.getElementById('stat-total').innerText = total;
             document.getElementById('stat-attempted').innerText = attempted;
             document.getElementById('stat-left').innerText = total - attempted;
+            document.getElementById('stat-current').innerText = currentQuestionIndex + 1;
+            document.getElementById('stat-current-total').innerText = total;
         }
 
         function computeTally() {
