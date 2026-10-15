@@ -351,9 +351,7 @@
 
                 let rawQuestions = data.questions || [];
 
-                if (shuffleQuestionsActive && Array.isArray(rawQuestions)) {
-                    rawQuestions.sort(() => Math.random() - 0.5);
-                }
+                // Question shuffle disabled: questions hamesha original order mein aayenge.
                 if (questionsPerAttemptLimit && Array.isArray(rawQuestions) && questionsPerAttemptLimit < rawQuestions.length) {
                     rawQuestions = rawQuestions.slice(0, questionsPerAttemptLimit);
                 }
@@ -390,9 +388,7 @@
 
                 let rawQuestions = data.questions || [];
 
-                if (shuffleQuestionsActive && Array.isArray(rawQuestions)) {
-                    rawQuestions.sort(() => Math.random() - 0.5);
-                }
+                // Question shuffle disabled: questions hamesha original order mein aayenge.
                 if (questionsPerAttemptLimit && Array.isArray(rawQuestions) && questionsPerAttemptLimit < rawQuestions.length) {
                     rawQuestions = rawQuestions.slice(0, questionsPerAttemptLimit);
                 }
