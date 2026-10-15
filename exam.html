@@ -810,6 +810,16 @@
                 return out;
             }
 
+            // FIX: server ki questions_with_answers list ko exam ke (shuffled) order mein
+            // laate hain, taaki result page par position-wise answers sahi question se match hon.
+            function alignToAttemptOrder(serverQs, attemptQs) {
+                if (!Array.isArray(serverQs) || !Array.isArray(attemptQs)) return serverQs;
+                const byQ = {};
+                serverQs.forEach(sq => { if (sq && sq.q_index !== undefined) byQ[sq.q_index] = sq; });
+                const aligned = attemptQs.map(aq => byQ[aq.q_index]);
+                return aligned.every(Boolean) ? aligned : serverQs;
+            }
+
             let p1Correct = 0, p1Wrong = 0, p1Unattempted = 0, p1NetScore = 0;
             let p2Correct = 0, p2Wrong = 0, p2Unattempted = 0, p2NetScore = 0;
             let p2QuestionsWithAnswers = globalLoadedQuestions;
@@ -828,7 +838,7 @@
             p2Wrong = p2Result.wrong_answers;
             p2Unattempted = p2Result.unattempted;
             p2NetScore = p2Result.score;
-            p2QuestionsWithAnswers = p2Result.questions_with_answers;
+            p2QuestionsWithAnswers = alignToAttemptOrder(p2Result.questions_with_answers, globalLoadedQuestions);
 
             if (isComboExamMode) {
                 const p1Payload = buildResponsesByQIndex(comboPaper1Snapshot, comboPaper1Responses);
@@ -844,7 +854,7 @@
                 p1Wrong = p1Result.wrong_answers;
                 p1Unattempted = p1Result.unattempted;
                 p1NetScore = p1Result.score;
-                p1QuestionsWithAnswers = p1Result.questions_with_answers;
+                p1QuestionsWithAnswers = alignToAttemptOrder(p1Result.questions_with_answers, comboPaper1Snapshot);
             }
 
             let finalCombinedScore = isComboExamMode ? (p1NetScore + p2NetScore) : p2NetScore;
