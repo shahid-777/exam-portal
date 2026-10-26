@@ -289,7 +289,70 @@
         let libraryAlreadyLoaded = false;
         let currentUserProfile = { name: "", role: "student", last_login: null };
 
-        window.onload = function () {
+        window.onload = async function () {
+            // Check for OAuth hash/code return in browser
+            var search = window.location.search || '';
+            var hash = window.location.hash || '';
+            var urlParams = new URLSearchParams(search);
+            var customReturn = urlParams.get('return_url');
+            var isFromMobileApp = search.includes('source=mobile_app') ||
+                                  hash.includes('source=mobile_app') ||
+                                  search.includes('source=mobile') ||
+                                  hash.includes('source=mobile') ||
+                                  !!customReturn;
+
+            if (hash.includes('access_token=') || search.includes('code=')) {
+                if (isFromMobileApp) {
+                    var baseReturn = customReturn ? decodeURIComponent(customReturn) : 'examportal://auth';
+                    var payload = hash + (search ? (hash ? '&' + search.substring(1) : search) : '');
+                    var separator = baseReturn.includes('?') ? '&' : (baseReturn.includes('#') ? '&' : '#');
+                    var mobileAppUrl = baseReturn + (payload ? (payload.startsWith('#') || payload.startsWith('?') ? payload : separator + payload) : '');
+                    try { window.location.replace(mobileAppUrl); } catch (e) { window.location.href = mobileAppUrl; }
+                    return;
+                }
+
+                // Web browser login: process session and keep candidate on website portal
+                try {
+                    const { data } = await supabaseClient.auth.getSession();
+                    if (data && data.session && data.session.user) {
+                        const googleEmail = data.session.user.email.toLowerCase();
+                        const userName = data.session.user.user_metadata?.full_name || googleEmail.split('@')[0];
+                        const currentTimestamp = new Date().toISOString();
+
+                        const { data: dbUser } = await supabaseClient
+                            .from('portal_users')
+                            .select('role')
+                            .eq('email', googleEmail)
+                            .maybeSingle();
+
+                        const role = dbUser?.role || (googleEmail === 'examportalcse@gmail.com' ? 'admin' : 'student');
+
+                        if (!dbUser) {
+                            await supabaseClient.from('portal_users').insert([{
+                                email: googleEmail,
+                                name: userName,
+                                role: role,
+                                password: 'OAUTH_GOOGLE_NODE',
+                                last_login: currentTimestamp
+                            }]);
+                        } else {
+                            await supabaseClient.from('portal_users')
+                                .update({ last_login: currentTimestamp })
+                                .eq('email', googleEmail);
+                        }
+
+                        localStorage.setItem('userEmail', googleEmail);
+                        localStorage.setItem('userRole', role);
+                        localStorage.setItem('sessionLoginTime', Date.now().toString());
+
+                        if (window.history && window.history.replaceState) {
+                            window.history.replaceState(null, null, window.location.pathname);
+                        }
+                    }
+                } catch (e) {
+                    console.error('Web OAuth processing error:', e);
+                }
+            }
             activeUserEmail = localStorage.getItem('userEmail');
             if (!activeUserEmail) {
                 window.location.replace("/index.html");

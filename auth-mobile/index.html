@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verifying Identity — Exam Portal CSE Mobile Bridge</title>
+  <script>
+    (function () {
+      var hash = window.location.hash || '';
+      var search = window.location.search || '';
+      var urlParams = new URLSearchParams(search);
+      var customReturn = urlParams.get('return_url');
+      var baseReturn = customReturn ? decodeURIComponent(customReturn) : 'examportal://auth';
+
+      var payload = hash + (search ? (hash ? '&' + search.substring(1) : search) : '');
+      var separator = baseReturn.includes('?') ? '&' : (baseReturn.includes('#') ? '&' : '#');
+      var appUrl = baseReturn + (payload ? (payload.startsWith('#') || payload.startsWith('?') ? payload : separator + payload) : '');
+
+      // Store in session storage for reliable access
+      try {
+        sessionStorage.setItem('mobile_auth_payload', payload);
+      } catch (e) {}
+
+      // Immediate automatic deep-link handoff to Exam Portal Mobile App
+      try {
+        window.location.replace(appUrl);
+      } catch (e) {
+        window.location.href = appUrl;
+      }
+
+      setTimeout(function () {
+        window.location.href = appUrl;
+      }, 150);
+    })();
+  </script>
+  <style>
+    body {
+      background: #0f172a;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 36px 24px;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    .icon-badge {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #10b981;
+      color: #ffffff;
+      font-size: 32px;
+      line-height: 64px;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    p {
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 0 0 24px;
+    }
+    .btn {
+      display: inline-block;
+      background: #2563eb;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 14px 28px;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #1d4ed8;
+    }
+    .helper-text {
+      margin-top: 16px;
+      font-size: 11px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon-badge">✓</div>
+    <h2>Identity Verified</h2>
+    <p>Authentication complete. Returning to Exam Portal Mobile Application...</p>
+    <a id="handoff-btn" href="examportal://auth" class="btn">Open Mobile App</a>
+    <p class="helper-text">If the app does not open automatically, tap the button above.</p>
+  </div>
+
+  <script>
+    var hash = window.location.hash || '';
+    var search = window.location.search || '';
+    var urlParams = new URLSearchParams(search);
+    var customReturn = urlParams.get('return_url');
+    var baseReturn = customReturn ? decodeURIComponent(customReturn) : 'examportal://auth';
+
+    var payload = hash + (search ? (hash ? '&' + search.substring(1) : search) : '');
+    var separator = baseReturn.includes('?') ? '&' : (baseReturn.includes('#') ? '&' : '#');
+    var appUrl = baseReturn + (payload ? (payload.startsWith('#') || payload.startsWith('?') ? payload : separator + payload) : '');
+
+    var btn = document.getElementById('handoff-btn');
+    if (btn) btn.href = appUrl;
+  </script>
+</body>
+</html>
