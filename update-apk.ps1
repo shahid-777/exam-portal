@@ -69,15 +69,14 @@ if (Test-Path $indexPath) {
     }
 }
 
-# 4. Commit and push to GitHub
+# 4. Commit and push to GitHub if changes exist
 Set-Location $RepoDir
-Write-Host "Checking git status..." -ForegroundColor Yellow
-$status = git status --porcelain
-if ([string]::IsNullOrWhiteSpace($status)) {
-    Write-Host "Website repository is already up to date with this APK build." -ForegroundColor Green
+git add examportalcse.apk index.html
+$diff = git diff --cached --name-only
+if ([string]::IsNullOrWhiteSpace($diff)) {
+    Write-Host "Website repository is already up to date with this APK build. Nothing new to commit or push." -ForegroundColor Green
 } else {
     Write-Host "Staging and committing to Git..." -ForegroundColor Yellow
-    git add examportalcse.apk index.html
     $msg = "Update mobile APK to latest build (" + $sourceSizeMB + " MB - " + $sourceTime + ")"
     git commit -m $msg
 
