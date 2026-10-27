@@ -30,6 +30,8 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* Interactive 10 MCQ Navigation Slider Utilities */
         .quiz-item { display: none; }
@@ -70,45 +72,55 @@
 <body class="bg-[#f5f8fd] text-slate-900 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased selection:bg-blue-600 selection:text-white">
 
     <!-- ---------- RESPONSIVE NAVIGATION BAR ---------- -->
-    <header class="w-full bg-white border-b border-slate-200 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 lg:h-24 flex items-center justify-between gap-3">
+    <header class="w-full bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
             <div class="flex items-center space-x-2 sm:space-x-3 cursor-pointer min-w-0 shrink-0" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                 <div class="bg-slate-50 p-1 rounded-xl shadow-sm border border-slate-200 shrink-0">
-                    <img src="/logo.png" alt="Logo" class="h-9 sm:h-12 lg:h-14 w-auto object-contain transition duration-200 hover:scale-102">
+                    <img src="/logo.png" alt="Logo" class="h-9 sm:h-12 w-auto object-contain transition duration-200 hover:scale-102">
                 </div>
                 <div class="flex flex-col min-w-0">
                     <span class="text-xs sm:text-sm lg:text-base font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 uppercase leading-none font-serif truncate">EXAM PORTAL</span>
-                    <span class="block text-[8px] sm:text-[9px] font-mono font-black text-slate-400 tracking-widest mt-1 uppercase truncate">Computer Science Dept</span>
+                    <span class="block text-[8px] sm:text-[9px] font-mono font-black text-slate-400 tracking-widest mt-0.5 sm:mt-1 uppercase truncate">Computer Science Dept</span>
                 </div>
             </div>
 
-            <!-- Desktop Full Navigation (visible only on large screens >= 1280px to prevent multi-line wrap on tablets) -->
-            <div class="hidden xl:flex flex-1 min-w-0 items-center justify-end gap-x-5 2xl:gap-x-7 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <a href="#home" class="hover:text-blue-600 transition">Home</a>
-                <a href="#test-series" class="hover:text-blue-600 transition">Test Series</a>
-                <a href="#courses" class="hover:text-blue-600 transition">Courses</a>
-                <a href="#study-material" class="hover:text-blue-600 transition">Study Material</a>
-                <a href="/kidstutors/" class="hover:text-orange-500 transition">🧒 KidsTutors</a>
-                <a href="#features-hub" class="hover:text-blue-600 transition">Features</a>
-                <a href="#download-app" class="hover:text-blue-600 text-blue-600 font-bold transition flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>Mobile App</span></a>
-                <a href="#about-us" class="hover:text-blue-600 transition">About Us</a>
-                <a href="#contact-us" class="hover:text-blue-600 transition">Contact Us</a>
-            </div>
+            <!-- Desktop Navigation Links (>= 1024px) -->
+            <nav class="hidden lg:flex flex-1 min-w-0 items-center justify-center lg:justify-end gap-x-1.5 xl:gap-x-3 2xl:gap-x-4 text-[11px] xl:text-xs font-semibold uppercase tracking-wider text-slate-600">
+                <a href="#home" class="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition">Home</a>
+                <a href="#test-series" class="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition">Test Series</a>
+                <a href="#courses" class="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition">Courses</a>
+                <a href="#study-material" class="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition">Study Material</a>
+                <a href="/kidstutors/" class="px-2.5 py-1.5 rounded-lg text-orange-600 hover:text-orange-700 hover:bg-orange-50 font-bold transition">🧒 KidsTutors</a>
+                <a href="#features-hub" class="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition">Features</a>
+                <a href="#download-app" class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold hover:bg-emerald-100 transition flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>📱 Mobile App</span></a>
+                <a href="#about-us" class="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition">About Us</a>
+                <a href="#contact-us" class="px-2.5 py-1.5 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition">Contact Us</a>
+            </nav>
 
             <!-- Responsive Right Actions -->
             <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-                <a href="#download-app" class="xl:hidden inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] sm:text-xs font-bold hover:bg-emerald-100 transition">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>App</span>
-                </a>
-                <button id="header-login-btn" onclick="openGatedAuthModal()" class="text-xs sm:text-sm font-bold text-white transition px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 whitespace-nowrap">Login</button>
-                <button onclick="openSideMenu()" aria-label="Open menu" class="flex flex-col justify-center items-center gap-1.5 w-9 sm:w-10 h-9 sm:h-10 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition shrink-0">
+                <button id="header-login-btn" onclick="openGatedAuthModal()" class="text-xs sm:text-sm font-bold text-white transition px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 whitespace-nowrap cursor-pointer">Login / Sign Up</button>
+                <button onclick="openSideMenu()" aria-label="Open menu" class="flex flex-col justify-center items-center gap-1.5 w-9 sm:w-10 h-9 sm:h-10 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition shrink-0 cursor-pointer">
                     <span class="block w-4 sm:w-5 h-0.5 bg-slate-700 rounded"></span>
                     <span class="block w-4 sm:w-5 h-0.5 bg-slate-700 rounded"></span>
                     <span class="block w-4 sm:w-5 h-0.5 bg-slate-700 rounded"></span>
                 </button>
             </div>
         </div>
+
+        <!-- Mobile & Tablet Horizontal Scroll Navigation Strip (< 1024px) -->
+        <nav class="lg:hidden w-full border-t border-slate-100 bg-slate-50/95 backdrop-blur px-3 py-2 overflow-x-auto no-scrollbar scroll-smooth flex items-center gap-1.5 text-xs font-semibold text-slate-700 whitespace-nowrap shadow-xs">
+            <a href="#home" class="px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:border-blue-400 hover:text-blue-600 transition shrink-0 shadow-2xs">🏠 Home</a>
+            <a href="#test-series" class="px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:border-blue-400 hover:text-blue-600 transition shrink-0 shadow-2xs">📝 Test Series</a>
+            <a href="#courses" class="px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:border-blue-400 hover:text-blue-600 transition shrink-0 shadow-2xs">🎓 Courses</a>
+            <a href="#study-material" class="px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:border-blue-400 hover:text-blue-600 transition shrink-0 shadow-2xs">📘 Study Material</a>
+            <a href="/kidstutors/" class="px-3 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-orange-700 font-bold hover:bg-orange-100 transition shrink-0 shadow-2xs">🧒 KidsTutors</a>
+            <a href="#download-app" class="px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold hover:bg-emerald-100 transition shrink-0 shadow-2xs flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span><span>📱 Mobile App</span></a>
+            <a href="#live-demo-test" class="px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:border-blue-400 hover:text-blue-600 transition shrink-0 shadow-2xs">🧪 Free Test</a>
+            <a href="#features-hub" class="px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:border-blue-400 hover:text-blue-600 transition shrink-0 shadow-2xs">⭐ Features</a>
+            <a href="#about-us" class="px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:border-blue-400 hover:text-blue-600 transition shrink-0 shadow-2xs">ℹ️ About Us</a>
+            <a href="#contact-us" class="px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:border-blue-400 hover:text-blue-600 transition shrink-0 shadow-2xs">✉️ Contact Us</a>
+        </nav>
     </header>
 
     <!-- ---------- SLIDE-IN SIDE MENU ---------- -->
@@ -1186,7 +1198,11 @@
                 window.location.href = "/dashboard.html";
                 return;
             }
-            document.getElementById('gated-auth-modal').classList.add('active');
+            var modal = document.getElementById('gated-auth-modal');
+            if (modal) {
+                modal.classList.add('active');
+                initGoogleSignIn();
+            }
         }
 
         function closeGatedAuthModal() {
@@ -1391,15 +1407,34 @@
                     console.error('Web OAuth session error:', e);
                 }
             }
-                client_id: "313377576458-c198ssj598dcg6c58c3kmtvtg5sf9m84.apps.googleusercontent.com",
-                callback: handleGoogleAuthCallbackResponse,
-                auto_select: false
-            });
-            google.accounts.id.renderButton(
-                document.getElementById("google-auth-element-root"),
-                { theme: "filled_blue", size: "large", type: "standard", text: "continue_with", width: "280", shape: "pill" }
-            );
+
+            // Initialize Google Sign-In button
+            initGoogleSignIn();
+            setTimeout(initGoogleSignIn, 500);
+            setTimeout(initGoogleSignIn, 1500);
         };
+
+        // Standalone safe Google Sign-In initializer
+        function initGoogleSignIn() {
+            try {
+                if (window.google && google.accounts && google.accounts.id) {
+                    google.accounts.id.initialize({
+                        client_id: "313377576458-c198ssj598dcg6c58c3kmtvtg5sf9m84.apps.googleusercontent.com",
+                        callback: handleGoogleAuthCallbackResponse,
+                        auto_select: false
+                    });
+                    var root = document.getElementById("google-auth-element-root");
+                    if (root && !root.hasChildNodes()) {
+                        google.accounts.id.renderButton(
+                            root,
+                            { theme: "filled_blue", size: "large", type: "standard", text: "continue_with", width: "280", shape: "pill" }
+                        );
+                    }
+                }
+            } catch (err) {
+                console.warn("Google Sign-In initialization error:", err);
+            }
+        }
 
         // OAuth Token Session Receiver Pipeline
         async function handleGoogleAuthCallbackResponse(response) {
