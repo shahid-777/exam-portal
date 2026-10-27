@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Exam Portal CSE">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/logo.png">
     <link rel="icon" type="image/png" href="/logo.png">
     <title>EXAM PORTAL CSE — Government & Private Exam Preparation</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -80,6 +86,7 @@
                 <a href="#study-material" class="hover:text-blue-600 transition">Study Material</a>
                 <a href="/kidstutors/" class="hover:text-orange-500 transition">🧒 KidsTutors</a>
                 <a href="#features-hub" class="hover:text-blue-600 transition">Features</a>
+                <a href="#download-app" class="hover:text-blue-600 text-blue-600 font-bold transition flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>Mobile App</span></a>
                 <a href="#about-us" class="hover:text-blue-600 transition">About Us</a>
                 <a href="#contact-us" class="hover:text-blue-600 transition">Contact Us</a>
             </div>
@@ -114,6 +121,7 @@
             <a href="/kidstutors/" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition"><span class="text-base">🧒</span> KidsTutors</a>
             <a href="#live-demo-test" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">🧪</span> Free Demo Test</a>
             <a href="#features-hub" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">⭐</span> Features</a>
+            <a href="#download-app" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-50 to-emerald-50 text-blue-700 font-bold hover:from-blue-100 hover:to-emerald-100 transition border border-blue-100"><span class="text-base">📱</span> Download App <span class="ml-auto text-[9px] bg-emerald-500 text-white font-mono px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">APK &amp; iOS</span></a>
             <a href="#about-us" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">ℹ️</span> About Us</a>
             <a href="#contact-us" onclick="closeSideMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">✉️</span> Contact Us</a>
             <a href="https://claude.ai/public/artifacts/07e3c43f-5336-4231-8848-6662eb3e654c" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition"><span class="text-base">💬</span> ChatMeForYourHelp</a>
@@ -136,9 +144,14 @@
                 <h1 class="font-serif font-bold text-3xl sm:text-5xl lg:text-[3.2rem] text-slate-900 tracking-tight leading-[1.1]">Prepare for <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">Government &amp; Private</span> Exams the Smart Way.</h1>
 
                 <p class="text-slate-600 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">Get full-length mock tests, live rankings, and previous year question papers for GATE CSE, UGC NET, and other government and private job exams — all in one place.</p>
-                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2">
                     <button onclick="openGatedAuthModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-black px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest shadow-xl shadow-orange-500/25 transition transform active:scale-95 cursor-pointer">Start Free Mock Test</button>
                     <a href="#live-demo-test" class="border border-slate-300 hover:border-blue-400 bg-white text-slate-700 hover:text-blue-700 font-bold px-6 py-3.5 rounded-xl text-xs uppercase tracking-widest transition shadow-sm">Try Free Demo Test ↓</a>
+                    <a href="#download-app" class="inline-flex items-center gap-2 border border-emerald-300 bg-emerald-50/90 hover:bg-emerald-100 text-emerald-800 font-bold px-5 py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-sm hover:shadow">
+                        <svg class="w-4 h-4 fill-emerald-600" viewBox="0 0 24 24"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993 0 .5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9994.4482.9994.9993 0 .5511-.4483.9997-.9994.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5802 7.7475 13.849 7.3912 12 7.3912s-3.5802.3563-5.1368 1.0585L4.8409 4.9467a.4164.4164 0 00-.5676-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 10.7308.3333 14.5458.3333 19h23.3334c0-4.4542-2.3556-8.2692-5.7862-10.1786"/></svg>
+                        <span>Download App</span>
+                        <span class="text-[9px] font-mono bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded uppercase font-extrabold">APK</span>
+                    </a>
                 </div>
                 <div class="flex items-center justify-center lg:justify-start gap-6 pt-4 text-slate-600">
                     <div class="flex items-center gap-2"><span class="text-emerald-600 font-bold">✓</span><span class="text-xs font-semibold">Verified Question Banks</span></div>
@@ -665,6 +678,335 @@
         </div>
     </div>
 
+    <!-- ---------- MOBILE APP (ANDROID APK & IOS) SECTION ---------- -->
+    <section class="w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 via-white to-blue-50/40 border-t border-slate-200" id="download-app">
+        <div class="max-w-7xl mx-auto space-y-12 sm:space-y-16">
+
+            <!-- Section Heading Header -->
+            <div class="max-w-3xl mx-auto text-center space-y-3">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/70 border border-blue-200 text-blue-700 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span>Official Mobile App • Android &amp; iOS</span>
+                </div>
+                <h2 class="font-serif font-extrabold text-2xl sm:text-4xl lg:text-5xl text-slate-900 tracking-tight leading-tight">
+                    Practice Anywhere With The <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-sky-600 to-indigo-600">Exam Portal Mobile App</span>
+                </h2>
+                <p class="text-slate-600 text-xs sm:text-base leading-relaxed font-medium max-w-2xl mx-auto">
+                    Take full-length mock tests with real-time countdown timers, solve previous year papers offline, receive instant scorecards, and track your all-India percentile on your mobile phone.
+                </p>
+
+                <!-- Dynamic Device Auto-Detection Banner -->
+                <div id="device-detection-banner" class="hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-sm mt-2 transition-all">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Main Interactive App Showcase & Download Center -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+
+                <!-- Left Column (Platform Cards & Download CTAs) -->
+                <div class="lg:col-span-7 space-y-6">
+
+                    <!-- Platform Selector / Tabs -->
+                    <div class="bg-slate-100/90 p-1.5 rounded-2xl flex items-center max-w-md mx-auto lg:mx-0 border border-slate-200 text-xs font-bold font-serif">
+                        <button id="tab-btn-android" onclick="switchAppPlatform('android')" class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl transition bg-white text-slate-900 shadow-sm">
+                            <svg class="w-4 h-4 fill-emerald-600" viewBox="0 0 24 24"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993 0 .5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9994.4482.9994.9993 0 .5511-.4483.9997-.9994.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5802 7.7475 13.849 7.3912 12 7.3912s-3.5802.3563-5.1368 1.0585L4.8409 4.9467a.4164.4164 0 00-.5676-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 10.7308.3333 14.5458.3333 19h23.3334c0-4.4542-2.3556-8.2692-5.7862-10.1786"/></svg>
+                            <span>Android (.APK)</span>
+                        </button>
+                        <button id="tab-btn-ios" onclick="switchAppPlatform('ios')" class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl transition text-slate-500 hover:text-slate-800">
+                            <svg class="w-4 h-4 fill-slate-800" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-1.99.6-2.63 1.35-.57.65-1.06 1.71-.93 2.73 1.01.08 2.02-.48 2.64-1.23z"/></svg>
+                            <span>Apple iOS (iPhone)</span>
+                        </button>
+                    </div>
+
+                    <!-- Platform Panel: ANDROID -->
+                    <div id="platform-panel-android" class="bg-white border-2 border-emerald-500/30 rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden transition-all duration-300">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                        <div class="flex items-start justify-between gap-4 flex-wrap sm:flex-nowrap">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 flex items-center justify-center shrink-0 shadow-inner">
+                                    <svg class="w-8 h-8 fill-emerald-600" viewBox="0 0 24 24"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993 0 .5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9994.4482.9994.9993 0 .5511-.4483.9997-.9994.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5802 7.7475 13.849 7.3912 12 7.3912s-3.5802.3563-5.1368 1.0585L4.8409 4.9467a.4164.4164 0 00-.5676-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 10.7308.3333 14.5458.3333 19h23.3334c0-4.4542-2.3556-8.2692-5.7862-10.1786"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-serif font-bold text-xl text-slate-900">Exam Portal CSE for Android</h3>
+                                    <p class="text-xs text-slate-500 font-mono mt-0.5">Package: <span class="text-emerald-700 font-semibold">examportalcse.apk</span></p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Direct APK v1.0
+                            </span>
+                        </div>
+
+                        <!-- Technical Specification Pills -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 my-6 text-center">
+                            <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5">
+                                <div class="text-[10px] font-mono uppercase text-slate-400 font-bold">File Size</div>
+                                <div class="text-xs sm:text-sm font-black font-mono text-slate-800 mt-0.5">70.6 MB</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5">
+                                <div class="text-[10px] font-mono uppercase text-slate-400 font-bold">Requirement</div>
+                                <div class="text-xs sm:text-sm font-black font-mono text-slate-800 mt-0.5">Android 5.0+</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5">
+                                <div class="text-[10px] font-mono uppercase text-slate-400 font-bold">Architecture</div>
+                                <div class="text-xs sm:text-sm font-black font-mono text-slate-800 mt-0.5">Universal</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5">
+                                <div class="text-[10px] font-mono uppercase text-slate-400 font-bold">Verification</div>
+                                <div class="text-xs sm:text-sm font-black font-mono text-emerald-600 mt-0.5">✓ Safe &amp; Clean</div>
+                            </div>
+                        </div>
+
+                        <!-- Features list -->
+                        <ul class="space-y-2 text-xs text-slate-600 font-medium mb-6">
+                            <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Direct one-click APK download with fast local installation</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Deep-link integration (<code class="text-[11px] font-mono bg-slate-100 text-blue-600 px-1 py-0.5 rounded">examportal://auth</code>) with Google Sign-In</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Offline test support, high-speed cached questions &amp; zero lag</li>
+                        </ul>
+
+                        <!-- Download & Action Buttons -->
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                            <a href="examportalcse.apk" download="examportalcse.apk" class="flex-1 inline-flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-serif font-bold text-sm px-6 py-4 rounded-xl shadow-lg shadow-emerald-600/25 transition transform active:scale-95 text-center cursor-pointer">
+                                <svg class="w-5 h-5 fill-none stroke-current stroke-2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                <span>Download APK (70.6 MB)</span>
+                            </a>
+                            <button onclick="copyApkDownloadLink()" id="btn-copy-apk" class="inline-flex items-center justify-center gap-2 border border-slate-300 hover:border-slate-400 bg-white text-slate-700 font-bold text-xs uppercase tracking-wider px-4 py-4 rounded-xl transition shadow-sm">
+                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                                <span id="copy-text-apk">Copy Link</span>
+                            </button>
+                        </div>
+
+                        <!-- Installation Guide Accordion -->
+                        <div class="mt-6 pt-5 border-t border-slate-100">
+                            <button onclick="toggleApkGuide()" class="flex items-center justify-between w-full text-left text-xs font-bold text-slate-700 hover:text-emerald-700 transition">
+                                <span class="flex items-center gap-2">
+                                    <span class="text-base">💡</span>
+                                    <span>How to install APK on your Android device?</span>
+                                </span>
+                                <span id="apk-guide-icon" class="text-base font-mono transition-transform duration-200">↓</span>
+                            </button>
+                            <div id="apk-guide-content" class="hidden mt-4 space-y-3 text-xs text-slate-600 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                                <div class="flex items-start gap-3">
+                                    <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-mono font-bold flex items-center justify-center shrink-0 text-xs">1</span>
+                                    <p>Click the <strong class="text-slate-900">Download APK</strong> button above. If Chrome prompts <em>"File might be harmful"</em>, tap <strong class="text-emerald-700">Download anyway</strong> (it is 100% verified and built for Exam Portal CSE).</p>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-mono font-bold flex items-center justify-center shrink-0 text-xs">2</span>
+                                    <p>Once downloaded, pull down your notification tray or go to your <strong class="text-slate-900">Downloads</strong> folder and tap <strong class="text-slate-900">examportalcse.apk</strong>.</p>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-mono font-bold flex items-center justify-center shrink-0 text-xs">3</span>
+                                    <p>If your phone displays <em>"For your security, your phone is not allowed to install unknown apps"</em>, tap <strong class="text-slate-900">Settings</strong> and toggle on <strong class="text-emerald-700">Allow from this source</strong>.</p>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-mono font-bold flex items-center justify-center shrink-0 text-xs">4</span>
+                                    <p>Tap <strong class="text-slate-900">Install</strong>. Once completed, tap <strong class="text-emerald-700">Open</strong> to launch Exam Portal and sign in with Google!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Platform Panel: APPLE iOS (iPhone & iPad) -->
+                    <div id="platform-panel-ios" class="hidden bg-white border-2 border-slate-300 rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden transition-all duration-300">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                        <div class="flex items-start justify-between gap-4 flex-wrap sm:flex-nowrap">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-300 flex items-center justify-center shrink-0 shadow-inner">
+                                    <svg class="w-8 h-8 fill-slate-900" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-1.99.6-2.63 1.35-.57.65-1.06 1.71-.93 2.73 1.01.08 2.02-.48 2.64-1.23z"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-serif font-bold text-xl text-slate-900">Exam Portal CSE for Apple iOS</h3>
+                                    <p class="text-xs text-slate-500 font-mono mt-0.5">Optimized Web App for iPhone &amp; iPad</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase bg-blue-100 text-blue-800 border border-blue-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Standalone PWA
+                            </span>
+                        </div>
+
+                        <!-- Technical Specification Pills -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 my-6 text-center">
+                            <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5">
+                                <div class="text-[10px] font-mono uppercase text-slate-400 font-bold">Storage</div>
+                                <div class="text-xs sm:text-sm font-black font-mono text-slate-800 mt-0.5">0 MB (Cloud)</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5">
+                                <div class="text-[10px] font-mono uppercase text-slate-400 font-bold">Compatibility</div>
+                                <div class="text-xs sm:text-sm font-black font-mono text-slate-800 mt-0.5">iOS 14.0+</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5">
+                                <div class="text-[10px] font-mono uppercase text-slate-400 font-bold">Mode</div>
+                                <div class="text-xs sm:text-sm font-black font-mono text-slate-800 mt-0.5">Full Screen</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5">
+                                <div class="text-[10px] font-mono uppercase text-slate-400 font-bold">App Store</div>
+                                <div class="text-xs sm:text-sm font-black font-mono text-blue-600 mt-0.5">In Review ⏳</div>
+                            </div>
+                        </div>
+
+                        <!-- Info Alert for iOS Users -->
+                        <div class="p-4 bg-sky-50 border border-sky-200 rounded-2xl text-xs text-sky-900 leading-relaxed mb-6">
+                            <div class="font-bold flex items-center gap-2 mb-1">
+                                <span>ℹ️</span> <span>Note for iPhone &amp; iPad Users:</span>
+                            </div>
+                            Apple devices do not run <code>.apk</code> files. You can install Exam Portal instantly as a native-grade Web App on your home screen with zero download time!
+                        </div>
+
+                        <!-- iOS 3-Step Visual Setup -->
+                        <div class="space-y-3 text-xs text-slate-700 bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-6">
+                            <div class="font-serif font-bold text-slate-900 text-sm mb-1">How to Add to iPhone Home Screen:</div>
+                            <div class="flex items-start gap-3">
+                                <span class="w-6 h-6 rounded-full bg-slate-900 text-white font-mono font-bold flex items-center justify-center shrink-0 text-xs">1</span>
+                                <p>Open <strong class="text-slate-900">Safari</strong> on your iPhone and visit this website.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="w-6 h-6 rounded-full bg-slate-900 text-white font-mono font-bold flex items-center justify-center shrink-0 text-xs">2</span>
+                                <p>Tap the <strong class="text-slate-900">Share icon</strong> (<svg class="w-4 h-4 inline-block text-blue-600 align-text-bottom" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg> square with arrow pointing up) at the bottom toolbar.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="w-6 h-6 rounded-full bg-slate-900 text-white font-mono font-bold flex items-center justify-center shrink-0 text-xs">3</span>
+                                <p>Scroll down and select <strong class="text-blue-700">"Add to Home Screen"</strong> (➕), then tap <strong class="text-slate-900">Add</strong>. The app icon will be placed directly on your iPhone home screen!</p>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                            <a href="/" class="flex-1 inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-serif font-bold text-sm px-6 py-4 rounded-xl shadow-lg transition transform active:scale-95 text-center">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-1.99.6-2.63 1.35-.57.65-1.06 1.71-.93 2.73 1.01.08 2.02-.48 2.64-1.23z"/></svg>
+                                <span>Launch Web App (iOS)</span>
+                            </a>
+                            <button onclick="alert('The Exam Portal CSE native iOS app is currently in Apple App Store review. In the meantime, please use the Add to Home Screen Web App!')" class="inline-flex items-center justify-center gap-2 border border-slate-300 hover:border-slate-400 bg-white text-slate-700 font-bold text-xs uppercase tracking-wider px-4 py-4 rounded-xl transition shadow-sm">
+                                <span>App Store (Coming Soon)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column (Device Frame Mockup & QR Code Center) -->
+                <div class="lg:col-span-5 flex flex-col items-center space-y-6">
+
+                    <!-- Smartphone Frame Mockup -->
+                    <div class="w-full max-w-[290px] sm:max-w-[310px] bg-slate-900 p-3 rounded-[2.5rem] shadow-2xl border-4 border-slate-800 ring-1 ring-white/10 relative transition-transform hover:scale-[1.02] duration-300">
+                        <!-- Dynamic Island / Speaker -->
+                        <div class="w-24 h-4 bg-slate-950 rounded-full mx-auto mb-2 flex items-center justify-end px-3">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        </div>
+
+                        <!-- Inner Screen Display -->
+                        <div class="bg-gradient-to-b from-[#f5f8fd] to-white rounded-[2rem] p-4 text-left border border-slate-200/60 overflow-hidden relative min-h-[460px] flex flex-col justify-between">
+
+                            <!-- Status Bar -->
+                            <div class="flex items-center justify-between text-[10px] font-mono font-bold text-slate-500 pb-2 border-b border-slate-200/60">
+                                <span>09:41</span>
+                                <div class="flex items-center gap-1.5">
+                                    <span>5G</span>
+                                    <span>📶</span>
+                                    <span class="text-emerald-600">100%</span>
+                                </div>
+                            </div>
+
+                            <!-- Mobile App Header -->
+                            <div class="flex items-center justify-between py-2">
+                                <div class="flex items-center gap-2">
+                                    <img src="/logo.png" alt="Logo" class="h-6 w-auto object-contain">
+                                    <div>
+                                        <div class="text-[11px] font-black font-serif text-blue-700 leading-none">EXAM PORTAL</div>
+                                        <div class="text-[7px] font-mono text-slate-400 uppercase mt-0.5">Mobile Edition</div>
+                                    </div>
+                                </div>
+                                <span class="bg-emerald-100 text-emerald-800 text-[8px] font-mono font-bold px-1.5 py-0.5 rounded-full">ACTIVE</span>
+                            </div>
+
+                            <!-- Current Active Mock Test Widget inside Phone -->
+                            <div class="space-y-3 flex-1 py-2">
+                                <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[9px] font-mono font-bold text-blue-600 uppercase">GATE CSE 2027 Mock</span>
+                                        <span class="text-[9px] font-mono font-black text-orange-500">⏱️ 01:42:18</span>
+                                    </div>
+                                    <div class="text-[11px] font-bold text-slate-800 leading-snug">
+                                        Q14. What is the time complexity of building a heap with n elements?
+                                    </div>
+                                    <div class="space-y-1.5 pt-1 text-[10px]">
+                                        <div class="p-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-600">A) O(n log n)</div>
+                                        <div class="p-1.5 rounded-lg border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-bold flex items-center justify-between">
+                                            <span>B) O(n)</span>
+                                            <span>✓</span>
+                                        </div>
+                                        <div class="p-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-600">C) O(log n)</div>
+                                    </div>
+                                </div>
+
+                                <!-- Live Ranking Strip -->
+                                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-2.5 shadow-md flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-base">🏆</span>
+                                        <div>
+                                            <div class="text-[10px] font-bold">All-India Rank #1</div>
+                                            <div class="text-[8px] text-blue-100">Score: 96/100 • Speed: 28s/Q</div>
+                                        </div>
+                                    </div>
+                                    <span class="text-[9px] font-mono bg-white/20 px-2 py-0.5 rounded font-bold">Top 1%</span>
+                                </div>
+                            </div>
+
+                            <!-- Mobile App Navigation Dock -->
+                            <div class="pt-2 border-t border-slate-200 flex items-center justify-around text-[9px] text-slate-400 font-bold">
+                                <span class="text-blue-600 flex flex-col items-center"><span>🏠</span>Home</span>
+                                <span class="flex flex-col items-center"><span>📝</span>Tests</span>
+                                <span class="flex flex-col items-center"><span>📊</span>Rank</span>
+                                <span class="flex flex-col items-center"><span>👤</span>Profile</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scan QR Code Card for Desktop Viewers -->
+                    <div class="w-full max-w-[290px] sm:max-w-[310px] bg-white border border-slate-200 rounded-2xl p-4 shadow-sm text-center space-y-3">
+                        <div class="flex items-center justify-center gap-2 text-xs font-serif font-bold text-slate-800">
+                            <span>📲</span>
+                            <span>Scan to Download on Phone</span>
+                        </div>
+                        <div class="w-36 h-36 mx-auto bg-slate-50 border border-slate-200 rounded-xl p-2 flex items-center justify-center shadow-inner">
+                            <img id="qr-code-img" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&amp;data=https://exam-portal.vercel.app/examportalcse.apk" alt="Download QR Code" class="w-full h-full object-contain">
+                        </div>
+                        <p class="text-[10px] text-slate-500 font-mono">
+                            Point your camera at this QR code to download <strong class="text-slate-700">examportalcse.apk</strong> directly onto your phone.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- 4 Feature Highlights Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 pt-4">
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 text-center shadow-sm hover:shadow transition">
+                    <div class="text-2xl mb-1.5">⚡</div>
+                    <div class="font-serif font-bold text-sm text-slate-900">Instant Loading</div>
+                    <div class="text-[11px] text-slate-500 mt-1">Lightweight binary with zero delays</div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 text-center shadow-sm hover:shadow transition">
+                    <div class="text-2xl mb-1.5">📴</div>
+                    <div class="font-serif font-bold text-sm text-slate-900">Offline Practice</div>
+                    <div class="text-[11px] text-slate-500 mt-1">Study notes and solve tests anywhere</div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 text-center shadow-sm hover:shadow transition">
+                    <div class="text-2xl mb-1.5">🔔</div>
+                    <div class="font-serif font-bold text-sm text-slate-900">Live Exam Alerts</div>
+                    <div class="text-[11px] text-slate-500 mt-1">Instant push updates for live test series</div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 text-center shadow-sm hover:shadow transition">
+                    <div class="text-2xl mb-1.5">🔒</div>
+                    <div class="font-serif font-bold text-sm text-slate-900">Secure Sync</div>
+                    <div class="text-[11px] text-slate-500 mt-1">One-tap Google sign in synchronized</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
     <!-- ---------- ABOUT US SECTION ---------- -->
     <section class="w-full py-16 px-4 sm:px-6 lg:px-8 bg-white border-y border-slate-200" id="about-us">
         <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
@@ -1070,6 +1412,93 @@
                 alert("Sign-in failed: " + err.message);
             }
         }
+
+        // ==========================================
+        // 📱 MOBILE APP (ANDROID & iOS) HELPERS
+        // ==========================================
+        function switchAppPlatform(platform) {
+            var btnAndroid = document.getElementById('tab-btn-android');
+            var btnIos = document.getElementById('tab-btn-ios');
+            var panelAndroid = document.getElementById('platform-panel-android');
+            var panelIos = document.getElementById('platform-panel-ios');
+
+            if (!btnAndroid || !btnIos || !panelAndroid || !panelIos) return;
+
+            if (platform === 'ios') {
+                btnIos.className = "flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl transition bg-white text-slate-900 shadow-sm font-bold";
+                btnAndroid.className = "flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl transition text-slate-500 hover:text-slate-800 font-bold";
+                panelAndroid.classList.add('hidden');
+                panelIos.classList.remove('hidden');
+            } else {
+                btnAndroid.className = "flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl transition bg-white text-slate-900 shadow-sm font-bold";
+                btnIos.className = "flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl transition text-slate-500 hover:text-slate-800 font-bold";
+                panelIos.classList.add('hidden');
+                panelAndroid.classList.remove('hidden');
+            }
+        }
+
+        function toggleApkGuide() {
+            var content = document.getElementById('apk-guide-content');
+            var icon = document.getElementById('apk-guide-icon');
+            if (!content || !icon) return;
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function copyApkDownloadLink() {
+            var apkUrl = (window.location.origin && window.location.origin.startsWith('http')) 
+                ? (window.location.origin + '/examportalcse.apk') 
+                : 'examportalcse.apk';
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(apkUrl).then(function() {
+                    var copyText = document.getElementById('copy-text-apk');
+                    if (copyText) {
+                        var original = copyText.innerText;
+                        copyText.innerText = 'Copied!';
+                        setTimeout(function() { copyText.innerText = original; }, 2000);
+                    }
+                }).catch(function() {
+                    prompt("Copy APK download link:", apkUrl);
+                });
+            } else {
+                prompt("Copy APK download link:", apkUrl);
+            }
+        }
+
+        // Automatic OS detection on page load
+        (function detectUserDevice() {
+            var ua = navigator.userAgent || navigator.vendor || window.opera || '';
+            var banner = document.getElementById('device-detection-banner');
+            var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            var isAndroid = /android/i.test(ua);
+
+            if (banner) {
+                if (isAndroid) {
+                    banner.innerHTML = '<span class="text-base">🤖</span> <span>We detected you are on an <strong>Android</strong> device. Tap <strong>Download APK</strong> below to install!</span>';
+                    banner.classList.remove('hidden');
+                    switchAppPlatform('android');
+                } else if (isIOS) {
+                    banner.innerHTML = '<span class="text-base">🍎</span> <span>We detected you are on an <strong>Apple iOS</strong> device. Follow the 3-step guide below to add to your Home Screen!</span>';
+                    banner.classList.remove('hidden');
+                    switchAppPlatform('ios');
+                }
+            }
+
+            // Dynamically update QR code with current domain URL
+            try {
+                var qrImg = document.getElementById('qr-code-img');
+                if (qrImg && window.location.origin && window.location.origin.startsWith('http')) {
+                    var currentDownloadUrl = encodeURIComponent(window.location.origin + '/examportalcse.apk');
+                    qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + currentDownloadUrl;
+                }
+            } catch (e) {}
+        })();
     </script>
 </body>
 </html>
