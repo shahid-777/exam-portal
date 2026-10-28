@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>I/O Organization – Class Notes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+:root{--bg:#eef2f6;--card:#fff;--ink:#17233b;--mut:#51607a;--acc:#0b7d83;--hi:#f2a93b;--line:#c9d3e0;--tint:#e1f1f1;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1829;--card:#18253d;--ink:#e8eef8;--mut:#9fb0c9;--acc:#4fc3c8;--hi:#f2b95a;--line:#2f4262;--tint:#16363f}}
+:root[data-theme="dark"]{--bg:#0f1829;--card:#18253d;--ink:#e8eef8;--mut:#9fb0c9;--acc:#4fc3c8;--hi:#f2b95a;--line:#2f4262;--tint:#16363f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 "Source Sans 3",system-ui,sans-serif}
+.w{max-width:780px;margin:0 auto;padding:28px 18px 60px}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.15}
+header{padding:26px 0 8px}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:800;margin:0 0 10px}
+.sub{color:var(--mut);margin:0 0 18px}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+nav a{padding:5px 12px;border:1px solid var(--line);border-radius:20px;color:var(--ink);text-decoration:none;font-size:.9rem;background:var(--card)}
+nav a:hover,nav a:focus-visible{border-color:var(--acc);outline:2px solid var(--acc)}
+section{background:var(--card);border-left:6px solid var(--acc);border-radius:4px 14px 14px 4px;padding:6px 22px 20px;margin:26px 0}
+h2{font-size:1.6rem;margin:16px 0 4px}
+h3{font-size:1.05rem;margin:18px 0 4px;color:var(--acc)}
+.def{background:var(--tint);border-radius:8px;padding:10px 14px;margin:10px 0}
+ul{padding-left:20px;margin:6px 0}li{margin:3px 0}
+figure{margin:16px 0 4px}figcaption{font-size:.88rem;color:var(--mut);text-align:center;margin-top:4px}
+svg{width:100%;height:auto;display:block}
+svg .b{fill:var(--card);stroke:var(--ink);stroke-width:1.5}
+svg .a{fill:var(--tint);stroke:var(--acc);stroke-width:1.5}
+svg .h{fill:var(--hi);stroke:var(--ink);stroke-width:1.5}
+svg .l{stroke:var(--ink);stroke-width:1.8;fill:none}
+svg .d{stroke:var(--acc);stroke-width:1.8;fill:none;stroke-dasharray:5 4}
+svg text{fill:var(--ink);font:13px "Source Sans 3",system-ui,sans-serif;text-anchor:middle}
+svg .s{font-size:11px;fill:var(--mut)}
+.sc{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--tint)}
+.tip{border-left:4px solid var(--hi);padding:2px 12px;margin:12px 0;color:var(--mut)}
+</style></head><body><div class="w">
+<svg width="0" height="0" style="position:absolute"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--ink)"/></marker></defs></svg>
+<header><h1>I/O Organization</h1>
+<p class="sub">How a computer talks to the keyboard, disk, printer and every other device. Short notes with diagrams.</p>
+<nav><a href="#s1">I/O Interface</a><a href="#s2">PCI</a><a href="#s3">SCSI</a><a href="#s4">USB</a><a href="#s5">Data Transfer</a><a href="#s6">Modes</a><a href="#s7">DMA</a><a href="#s8">I/O Processor</a></nav></header>
+
+<section id="s1"><h2>1. I/O Interface</h2>
+<div class="def"><b>Definition:</b> An I/O interface is a small circuit placed between the CPU and a device. It lets two very different parts understand each other.</div>
+<h3>Why do we need it?</h3>
+<ul><li><b>Speed gap:</b> the CPU works in nanoseconds, a keyboard in milliseconds.</li><li><b>Format gap:</b> devices may use different voltages, codes and word sizes.</li><li><b>Control:</b> something must say which device is chosen and when to start.</li></ul>
+<figure><svg viewBox="0 0 700 150" role="img" aria-label="CPU connected through bus to interface and device">
+<rect class="b" x="10" y="45" width="100" height="60" rx="6"/><text x="60" y="80">CPU</text>
+<rect class="a" x="300" y="45" width="130" height="60" rx="6"/><text x="365" y="70">I/O Interface</text><text class="s" x="365" y="88">registers + logic</text>
+<rect class="b" x="590" y="45" width="100" height="60" rx="6"/><text x="640" y="80">Device</text>
+<path class="l" d="M110 60H300" marker-end="url(#ar)"/><path class="l" d="M300 75H110" marker-end="url(#ar)"/><path class="l" d="M300 90H110" marker-end="url(#ar)"/>
+<text class="s" x="205" y="40">Data / Address / Control bus</text>
+<path class="l" d="M430 75H590" marker-start="url(#ar)" marker-end="url(#ar)"/><text class="s" x="510" y="65">device signals</text></svg>
+<figcaption>The interface sits between the system bus and the device.</figcaption></figure>
+<h3>Main parts inside</h3>
+<ul><li><b>Data register</b> holds the data being moved.</li><li><b>Status register</b> tells the CPU if the device is busy or ready.</li><li><b>Control register</b> carries commands such as start or stop.</li><li><b>Address decoder</b> checks whether the CPU is calling this device.</li></ul></section>
+
+<section id="s2"><h2>2. PCI Bus</h2>
+<div class="def"><b>PCI (Peripheral Component Interconnect)</b> is a fast bus that connects add-on cards (sound, network, graphics) to the processor.</div>
+<ul><li>32-bit or 64-bit wide, runs at 33 or 66 MHz. A 32-bit, 33 MHz bus gives about 133 MB/s.</li><li><b>Plug and Play:</b> the system finds and sets up a new card by itself.</li><li>A <b>bridge</b> joins the PCI bus to the CPU bus, so each side can run at its own speed.</li><li>Any card can become a <b>bus master</b> and move data without bothering the CPU.</li></ul>
+<figure><svg viewBox="0 0 700 190" role="img" aria-label="CPU, memory, PCI bridge, PCI bus with cards">
+<rect class="b" x="30" y="15" width="90" height="42" rx="6"/><text x="75" y="41">CPU</text>
+<rect class="b" x="170" y="15" width="90" height="42" rx="6"/><text x="215" y="41">Memory</text>
+<path class="l" d="M20 80H280"/><text class="s" x="150" y="76">Host (CPU) bus</text>
+<path class="l" d="M75 57V80M215 57V80"/>
+<rect class="h" x="300" y="60" width="100" height="40" rx="6"/><text x="350" y="85">PCI Bridge</text>
+<path class="l" d="M280 80H300"/><path class="l" d="M400 80H440V140H20" style="display:none"/>
+<path class="l" d="M350 100V140"/><path class="l" d="M40 140H680"/><text class="s" x="560" y="133">PCI bus</text>
+<rect class="a" x="60" y="155" width="110" height="30" rx="5"/><text x="115" y="175">Graphics card</text>
+<rect class="a" x="220" y="155" width="110" height="30" rx="5"/><text x="275" y="175">Network card</text>
+<rect class="a" x="380" y="155" width="110" height="30" rx="5"/><text x="435" y="175">Sound card</text>
+<rect class="a" x="540" y="155" width="110" height="30" rx="5"/><text x="595" y="175">Disk control</text>
+<path class="l" d="M115 140V155M275 140V155M435 140V155M595 140V155"/></svg>
+<figcaption>The bridge links the fast CPU side with the PCI side.</figcaption></figure></section>
+
+<section id="s3"><h2>3. SCSI Bus</h2>
+<div class="def"><b>SCSI (Small Computer System Interface)</b> is a parallel bus used mainly for disks, tapes and CD drives. Many devices share one cable.</div>
+<ul><li>Narrow SCSI: 8 devices (IDs 0 to 7). Wide SCSI: 16 devices.</li><li>The <b>host adapter</b> connects the bus to the computer and takes one ID.</li><li>Devices are joined in a <b>daisy chain</b>: one after another on the same cable.</li><li>Both ends of the cable need a <b>terminator</b>. It stops signals from bouncing back.</li><li>Every device has a unique ID. A device that starts a request is the <b>initiator</b>; the one that answers is the <b>target</b>.</li></ul>
+<figure><svg viewBox="0 0 700 120" role="img" aria-label="SCSI daisy chain with terminators">
+<rect class="h" x="10" y="35" width="110" height="50" rx="6"/><text x="65" y="57">Host adapter</text><text class="s" x="65" y="73">ID 7</text>
+<rect class="a" x="190" y="35" width="100" height="50" rx="6"/><text x="240" y="57">Disk</text><text class="s" x="240" y="73">ID 0</text>
+<rect class="a" x="350" y="35" width="100" height="50" rx="6"/><text x="400" y="57">Tape</text><text class="s" x="400" y="73">ID 3</text>
+<rect class="a" x="510" y="35" width="100" height="50" rx="6"/><text x="560" y="57">CD drive</text><text class="s" x="560" y="73">ID 5</text>
+<path class="l" d="M120 60H190M290 60H350M450 60H510M610 60H650"/>
+<rect class="b" x="650" y="45" width="40" height="30" rx="4"/><text x="670" y="64">T</text>
+<text class="s" x="65" y="105">(T = terminator, also at the host end)</text></svg>
+<figcaption>One cable, many devices, each with its own ID.</figcaption></figure></section>
+
+<section id="s4"><h2>4. USB (Universal Serial Bus)</h2>
+<div class="def"><b>USB</b> is a simple serial connection for almost any device: keyboard, mouse, pen drive, phone, printer.</div>
+<ul><li>Works as a <b>tree</b>. The <b>host</b> is the root, <b>hubs</b> branch out, devices are the leaves. Up to 127 devices.</li><li>Cable has 4 wires: power (+5 V), ground, and two data wires (D+ and D−).</li><li><b>Hot plug:</b> connect or remove a device while the computer is running.</li><li>Supplies power to small devices, and detects the device speed automatically.</li></ul>
+<div class="sc"><table><tr><th>Version</th><th>Speed</th></tr><tr><td>USB 1.0 (low / full)</td><td>1.5 / 12 Mbps</td></tr><tr><td>USB 2.0 (high)</td><td>480 Mbps</td></tr><tr><td>USB 3.0</td><td>5 Gbps</td></tr></table></div>
+<figure><svg viewBox="0 0 700 220" role="img" aria-label="USB tree: host, hubs, devices">
+<rect class="h" x="290" y="10" width="120" height="40" rx="6"/><text x="350" y="35">Host / Root hub</text>
+<path class="l" d="M350 50V75M350 75H170M350 75H530M170 75V95M530 75V95"/>
+<rect class="a" x="120" y="95" width="100" height="36" rx="6"/><text x="170" y="118">Hub</text>
+<rect class="a" x="480" y="95" width="100" height="36" rx="6"/><text x="530" y="118">Hub</text>
+<path class="l" d="M350 75V160"/><rect class="b" x="300" y="160" width="100" height="36" rx="6"/><text x="350" y="183">Printer</text>
+<path class="l" d="M170 131V150M170 150H80V160M170 150H260V160"/>
+<rect class="b" x="30" y="160" width="100" height="36" rx="6"/><text x="80" y="183">Keyboard</text>
+<rect class="b" x="210" y="160" width="100" height="36" rx="6" style="display:none"/>
+<path class="l" d="M530 131V150M530 150H470V160M530 150H600V160"/>
+<rect class="b" x="420" y="160" width="100" height="36" rx="6"/><text x="470" y="183">Mouse</text>
+<rect class="b" x="560" y="160" width="100" height="36" rx="6"/><text x="610" y="183">Pen drive</text>
+<path class="l" d="M260 150V160" style="display:none"/></svg>
+<figcaption>Each hub opens more ports. One host controls everything.</figcaption></figure></section>
+
+<section id="s5"><h2>5. Data Transfer</h2>
+<p>Data moves between devices in different ways. We classify it in two ways: <b>how bits travel</b> and <b>how the timing is agreed</b>.</p>
+<h3>Serial vs Parallel</h3>
+<figure><svg viewBox="0 0 700 150" role="img" aria-label="Serial uses one wire, parallel uses many">
+<text x="170" y="18">Serial: one wire, one bit at a time</text>
+<rect class="b" x="20" y="40" width="70" height="40" rx="5"/><text x="55" y="65">Sender</text>
+<rect class="b" x="250" y="40" width="70" height="40" rx="5"/><text x="285" y="65">Receiver</text>
+<path class="l" d="M90 60H250" marker-end="url(#ar)"/><text class="s" x="170" y="55">1 0 1 1 0 0 1 0</text>
+<text x="525" y="18">Parallel: 8 wires, 8 bits together</text>
+<rect class="b" x="380" y="35" width="70" height="95" rx="5"/><text x="415" y="87">Sender</text>
+<rect class="b" x="610" y="35" width="70" height="95" rx="5"/><text x="645" y="87">Receiver</text>
+<path class="l" d="M450 45H610M450 58H610M450 71H610M450 84H610M450 97H610M450 110H610M450 123H610" marker-end="url(#ar)" style="stroke-width:1.2"/></svg></figure>
+<div class="sc"><table><tr><th></th><th>Serial</th><th>Parallel</th></tr><tr><td>Wires</td><td>Few</td><td>Many</td></tr><tr><td>Best for</td><td>Long distance (USB, network)</td><td>Short distance (inside computer)</td></tr><tr><td>Problem</td><td>Slower per clock</td><td>Wires interfere, costly</td></tr></table></div>
+<h3>Synchronous vs Asynchronous</h3>
+<ul><li><b>Synchronous:</b> sender and receiver follow one <b>common clock</b>. Fast and simple, but both sides must keep the same speed.</li><li><b>Asynchronous:</b> no common clock. Each transfer is announced by a <b>control signal</b> (strobe) or a two-way <b>handshake</b> (request and acknowledge). Works for devices of any speed.</li></ul>
+<figure><svg viewBox="0 0 700 150" role="img" aria-label="Handshake between source and destination">
+<rect class="b" x="40" y="20" width="110" height="110" rx="6"/><text x="95" y="80">Source</text>
+<rect class="b" x="550" y="20" width="110" height="110" rx="6"/><text x="605" y="80">Destination</text>
+<path class="l" d="M150 45H550" marker-end="url(#ar)"/><text class="s" x="350" y="38">1. Data valid (request)</text>
+<path class="l" d="M550 85H150" marker-end="url(#ar)"/><text class="s" x="350" y="80">2. Data accepted (acknowledge)</text>
+<path class="d" d="M150 115H550"/><text class="s" x="350" y="130">Next transfer starts after step 2</text></svg>
+<figcaption>Two-wire handshake used in asynchronous transfer.</figcaption></figure></section>
+
+<section id="s6"><h2>6. Modes of Data Transfer</h2>
+<p>There are three ways to move data between a device and memory. They differ in <b>how much work the CPU does</b>.</p>
+<div class="sc"><table><tr><th>Mode</th><th>How it works</th><th>CPU effort</th></tr>
+<tr><td><b>Programmed I/O</b></td><td>CPU keeps checking the status register (polling) until the device is ready, then moves each word itself.</td><td>Highest. CPU is stuck waiting.</td></tr>
+<tr><td><b>Interrupt-driven I/O</b></td><td>CPU starts the device and does other work. The device sends an <b>interrupt</b> when ready. CPU then moves the word.</td><td>Medium. No waiting, but still moves every word.</td></tr>
+<tr><td><b>DMA</b></td><td>A DMA controller moves a whole block between device and memory directly.</td><td>Lowest. CPU only starts and ends it.</td></tr></table></div>
+<p class="tip"><b>Example:</b> Polling is like checking the oven every minute. Interrupt is like setting a timer. DMA is like asking someone else to cook the whole meal.</p></section>
+
+<section id="s7"><h2>7. Direct Memory Access (DMA)</h2>
+<div class="def"><b>DMA</b> lets an I/O device transfer data to or from memory <b>without passing through the CPU</b>. A special chip, the <b>DMA controller</b>, manages it.</div>
+<h3>DMA controller registers</h3>
+<ul><li><b>Address register:</b> where in memory the block starts.</li><li><b>Word count register:</b> how many words to move.</li><li><b>Control register:</b> direction (read/write) and mode.</li></ul>
+<h3>Steps</h3>
+<ul><li>1. CPU loads the address, count and direction into the controller.</li><li>2. The device asks for transfer with a <b>DMA request</b>.</li><li>3. Controller asks the CPU for the bus (<b>HOLD</b>). CPU replies <b>HLDA</b> and lets go of the bus.</li><li>4. Controller moves the data directly to memory and counts down.</li><li>5. At count zero it sends an <b>interrupt</b> to the CPU: transfer complete.</li></ul>
+<figure><svg viewBox="0 0 700 230" role="img" aria-label="DMA controller between CPU, memory and I/O device">
+<rect class="b" x="30" y="20" width="120" height="50" rx="6"/><text x="90" y="50">CPU</text>
+<rect class="b" x="540" y="20" width="120" height="50" rx="6"/><text x="600" y="50">Memory</text>
+<rect class="h" x="270" y="100" width="150" height="55" rx="6"/><text x="345" y="125">DMA Controller</text><text class="s" x="345" y="142">address | count | control</text>
+<rect class="b" x="540" y="165" width="120" height="50" rx="6"/><text x="600" y="195">I/O Device</text>
+<path class="l" d="M20 85H680"/><text class="s" x="345" y="80">System bus</text>
+<path class="l" d="M90 70V85M600 70V85M345 85V100"/>
+<path class="d" d="M150 45H250V110H270" marker-end="url(#ar)"/><text class="s" x="200" y="38">HOLD / HLDA</text>
+<path class="l" d="M420 135H500V190H540" marker-start="url(#ar)" marker-end="url(#ar)"/><text class="s" x="480" y="125">DMA req / ack</text>
+<path class="d" d="M345 155V215H100V70" marker-end="url(#ar)"/><text class="s" x="200" y="210">Interrupt when done</text></svg>
+<figcaption>Data flows device ⇄ memory. The CPU only starts and finishes the job.</figcaption></figure>
+<h3>Types of DMA transfer</h3>
+<ul><li><b>Burst mode:</b> whole block in one go. CPU is blocked for that time.</li><li><b>Cycle stealing:</b> controller takes the bus for one word at a time, between CPU cycles.</li><li><b>Transparent mode:</b> controller uses the bus only when the CPU is not using it.</li></ul></section>
+
+<section id="s8"><h2>8. I/O Processor (IOP)</h2>
+<div class="def"><b>I/O Processor</b> is a separate small processor built only for I/O work. It can fetch and run its own instructions, called a <b>channel program</b>.</div>
+<ul><li>CPU only sends a short command: "do this I/O program in memory". Then it carries on with its own work.</li><li>The IOP handles many devices, checks errors, converts data formats, and interrupts the CPU at the end.</li><li>It talks to memory directly, like DMA, but it is far smarter.</li></ul>
+<figure><svg viewBox="0 0 700 190" role="img" aria-label="CPU, memory, IOP and several devices">
+<rect class="b" x="30" y="15" width="110" height="45" rx="6"/><text x="85" y="43">CPU</text>
+<rect class="b" x="560" y="15" width="110" height="45" rx="6"/><text x="615" y="43">Memory</text>
+<path class="l" d="M20 85H680"/><text class="s" x="345" y="78">Memory bus</text><path class="l" d="M85 60V85M615 60V85"/>
+<rect class="h" x="270" y="100" width="150" height="45" rx="6"/><text x="345" y="127">I/O Processor</text><path class="l" d="M345 85V100"/>
+<path class="l" d="M345 145V160M110 160H580"/>
+<rect class="a" x="60" y="165" width="100" height="22" rx="4"/><text x="110" y="181">Printer</text>
+<rect class="a" x="240" y="165" width="100" height="22" rx="4"/><text x="290" y="181">Disk</text>
+<rect class="a" x="400" y="165" width="100" height="22" rx="4"/><text x="450" y="181">Monitor</text>
+<rect class="a" x="530" y="165" width="100" height="22" rx="4"/><text x="580" y="181">Keyboard</text>
+<path class="l" d="M110 160V165M290 160V165M450 160V165M580 160V165"/></svg>
+<figcaption>The IOP manages all devices so the CPU is free.</figcaption></figure>
+<h3>DMA vs I/O Processor</h3>
+<div class="sc"><table><tr><th></th><th>DMA</th><th>I/O Processor</th></tr><tr><td>Intelligence</td><td>Only moves data</td><td>Runs its own programs</td></tr><tr><td>Devices</td><td>Usually one or a few</td><td>Many devices</td></tr><tr><td>Cost</td><td>Low</td><td>Higher</td></tr></table></div></section>
+</div></body></html>
