@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Memory Organization</title>
+<style>
+:root{--bg:#fbfaf7;--tx:#1f1e1b;--mu:#5f5e5a;--card:#fff;--bd:#d9d6cc;
+--p-bg:#EEEDFE;--p-bd:#7F77DD;--p-tx:#3C3489;--t-bg:#E1F5EE;--t-bd:#1D9E75;--t-tx:#085041;
+--c-bg:#FAECE7;--c-bd:#D85A30;--c-tx:#712B13;--a-bg:#FAEEDA;--a-bd:#BA7517;--a-tx:#633806;
+--b-bg:#E6F1FB;--b-bd:#378ADD;--b-tx:#0C447C;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1916;--tx:#f1efe8;--mu:#b4b2a9;--card:#262521;--bd:#444441;
+--p-bg:#26215C;--p-bd:#AFA9EC;--p-tx:#CECBF6;--t-bg:#04342C;--t-bd:#5DCAA5;--t-tx:#9FE1CB;
+--c-bg:#4A1B0C;--c-bd:#F0997B;--c-tx:#F5C4B3;--a-bg:#412402;--a-bd:#EF9F27;--a-tx:#FAC775;
+--b-bg:#042C53;--b-bd:#85B7EB;--b-tx:#B5D4F4;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1a1916;--tx:#f1efe8;--mu:#b4b2a9;--card:#262521;--bd:#444441;
+--p-bg:#26215C;--p-bd:#AFA9EC;--p-tx:#CECBF6;--t-bg:#04342C;--t-bd:#5DCAA5;--t-tx:#9FE1CB;
+--c-bg:#4A1B0C;--c-bd:#F0997B;--c-tx:#F5C4B3;--a-bg:#412402;--a-bd:#EF9F27;--a-tx:#FAC775;
+--b-bg:#042C53;--b-bd:#85B7EB;--b-tx:#B5D4F4;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.65;font-size:16px}
+main{max-width:880px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:32px;margin:0 0 8px;font-weight:600}
+h2{font-size:23px;margin:44px 0 12px;font-weight:600;display:flex;align-items:center;gap:10px}
+h2 span{flex:none;width:34px;height:34px;border-radius:50%;background:var(--tx);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:17px}
+h3{font-size:17px;margin:22px 0 8px}
+p{margin:0 0 12px}
+.hero{background:var(--b-bg);border:1.5px solid var(--b-bd);border-radius:16px;padding:24px;color:var(--b-tx)}
+.hero p{margin:0;font-size:17px}
+.tag{display:inline-block;background:var(--a-bg);color:var(--a-tx);border:1px solid var(--a-bd);border-radius:20px;padding:2px 12px;font-size:13px;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}
+.k{border-radius:12px;padding:12px 14px;border:1.5px solid;font-size:15px}
+.k b{display:block;font-size:16px}
+.k-p{background:var(--p-bg);border-color:var(--p-bd);color:var(--p-tx)}
+.k-t{background:var(--t-bg);border-color:var(--t-bd);color:var(--t-tx)}
+.k-c{background:var(--c-bg);border-color:var(--c-bd);color:var(--c-tx)}
+.k-a{background:var(--a-bg);border-color:var(--a-bd);color:var(--a-tx)}
+.k-b{background:var(--b-bg);border-color:var(--b-bd);color:var(--b-tx)}
+.ex{background:var(--a-bg);border-left:5px solid var(--a-bd);color:var(--a-tx);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:15px}
+.ex b:first-child{text-transform:uppercase;font-size:12px;letter-spacing:.05em;display:block}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;background:var(--card);border:1px solid var(--bd);border-radius:6px;padding:1px 6px;color:var(--tx)}
+.tw{overflow-x:auto;margin:12px 0}
+table{width:100%;border-collapse:collapse;font-size:14.5px;background:var(--card)}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{background:var(--p-bg);color:var(--p-tx);white-space:nowrap}
+.svgw{overflow-x:auto}
+svg{display:block;width:100%;height:auto;min-width:500px}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;dominant-baseline:central;text-anchor:middle}
+.t{font-size:14px;font-weight:600}.s{font-size:12px}
+.g-p rect,.g-p path,.g-p circle{fill:var(--p-bg);stroke:var(--p-bd);stroke-width:1.5}.g-p text{fill:var(--p-tx)}
+.g-t rect{fill:var(--t-bg);stroke:var(--t-bd);stroke-width:1.5}.g-t text{fill:var(--t-tx)}
+.g-c rect,.g-c path{fill:var(--c-bg);stroke:var(--c-bd);stroke-width:1.5}.g-c text{fill:var(--c-tx)}
+.g-a rect{fill:var(--a-bg);stroke:var(--a-bd);stroke-width:1.5}.g-a text{fill:var(--a-tx)}
+.g-b rect,.g-b circle{fill:var(--b-bg);stroke:var(--b-bd);stroke-width:1.5}.g-b text{fill:var(--b-tx)}
+.fl{display:flex;flex-direction:column;align-items:center;gap:4px;max-width:520px;margin:0 auto}
+.fl div{width:100%;box-sizing:border-box;text-align:center;border-radius:10px;padding:8px 10px;border:1.5px solid;font-size:15px}
+.fl i{font-style:normal;color:var(--mu);font-size:18px;line-height:1}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;max-width:620px;margin:6px auto 0}
+.bits{display:flex;max-width:620px;margin:8px auto;border-radius:10px;overflow:hidden;border:1.5px solid var(--bd);text-align:center;font-size:14px;font-weight:600}
+.bits div{padding:10px 4px}
+ol.n{padding-left:22px;margin:8px 0}
+ol.n li{margin-bottom:4px}
+.cap{font-size:13px;color:var(--mu);text-align:center;margin-top:6px}
+</style>
+</head>
+<body>
+<main>
+<div class="hero">
+<h1>Memory Organization</h1>
+<p>Seven topics explained step by step, with pictures, flowcharts, tables and solved examples.</p>
+</div>
+
+<h2><span>1</span>Memory Hierarchy</h2>
+<p>No single memory is fast, big and cheap at the same time. So a computer uses several kinds of memory in layers, like a pyramid. The top is tiny and very fast. The bottom is huge and slow.</p>
+<div class="card svgw"><svg viewBox="0 0 680 290" role="img" aria-label="Memory pyramid from registers at the top to tape at the bottom">
+<g class="g-p"><rect x="250" y="8" width="180" height="46" rx="8"/><text class="t" x="340" y="25">Registers</text><text class="s" x="340" y="42">0.3 ns, under 1 KB</text></g>
+<g class="g-b"><rect x="210" y="62" width="260" height="46" rx="8"/><text class="t" x="340" y="79">Cache (L1, L2, L3), SRAM</text><text class="s" x="340" y="96">1 to 12 ns, 32 KB to 32 MB</text></g>
+<g class="g-t"><rect x="170" y="116" width="340" height="46" rx="8"/><text class="t" x="340" y="133">Main memory, DRAM</text><text class="s" x="340" y="150">50 to 100 ns, 4 to 64 GB</text></g>
+<g class="g-a"><rect x="130" y="170" width="420" height="46" rx="8"/><text class="t" x="340" y="187">Secondary: SSD and hard disk</text><text class="s" x="340" y="204">0.1 to 10 ms, up to several TB</text></g>
+<g class="g-c"><rect x="90" y="224" width="500" height="46" rx="8"/><text class="t" x="340" y="241">Tertiary: optical disc and tape</text><text class="s" x="340" y="258">seconds or more, TBs and up</text></g>
+<text class="s" x="640" y="30" style="fill:var(--mu)">faster</text><text class="s" x="640" y="250" style="fill:var(--mu)">cheaper</text>
+</svg><div class="cap">Going down: bigger, cheaper per bit, but about 10 times slower or more at each step.</div></div>
+<p><b>Volatile</b> memory loses data when power is off: registers, cache and RAM. <b>Non-volatile</b> memory keeps data: SSD, hard disk, optical disc and tape.</p>
+<h3>Why does the pyramid work? Locality of reference</h3>
+<div class="grid">
+<div class="k k-t"><b>Temporal locality</b>An item used recently will probably be used again soon. Example: a loop counter.</div>
+<div class="k k-b"><b>Spatial locality</b>Items near a used address will probably be used next. Example: array elements.</div>
+</div>
+
+<h2><span>2</span>Main Memory</h2>
+<p>Main memory holds the programs and data the CPU is using right now. The CPU can address it directly. It is made of <b>RAM</b> (read and write, loses data without power) and <b>ROM</b> (mostly read-only, keeps data).</p>
+<div class="tw"><table>
+<tr><th>Feature</th><th>SRAM</th><th>DRAM</th></tr>
+<tr><td>Cell</td><td>6 transistors (a latch)</td><td>1 transistor + 1 capacitor</td></tr>
+<tr><td>Refresh</td><td>Not needed</td><td>About every 64 ms</td></tr>
+<tr><td>Speed</td><td>Faster</td><td>Slower</td></tr>
+<tr><td>Cost and density</td><td>Costly, low density</td><td>Cheap, high density</td></tr>
+<tr><td>Used for</td><td>Cache, registers</td><td>Main memory</td></tr>
+</table></div>
+<p><b>DDR SDRAM</b> sends data on both clock edges, so one clock moves two words. <b>DRAM</b> sends the row address first (RAS) and then the column address (CAS), which halves the address pins.</p>
+<h3>ROM types</h3>
+<div class="tw"><table>
+<tr><th>Type</th><th>Programmed</th><th>Erased</th></tr>
+<tr><td>Mask ROM</td><td>At the factory</td><td>Never</td></tr>
+<tr><td>PROM</td><td>Once, by the user</td><td>Never</td></tr>
+<tr><td>EPROM</td><td>By the user</td><td>UV light, whole chip</td></tr>
+<tr><td>EEPROM</td><td>By the user</td><td>Electrically, byte by byte</td></tr>
+<tr><td>Flash</td><td>By the user</td><td>Electrically, in blocks (USB, SSD)</td></tr>
+</table></div>
+<div class="ex"><b>Solved example</b>Make 64K × 8 memory from 16K × 8 chips. Chips needed = (64K × 8) ÷ (16K × 8) = <b>4</b>. The address has 16 bits. A15 and A14 go to a 2-to-4 decoder that picks the chip. A13 to A0 go to every chip.</div>
+<div class="grid">
+<div class="k k-p"><b>Chip 0</b>0000 – 3FFF</div><div class="k k-b"><b>Chip 1</b>4000 – 7FFF</div><div class="k k-t"><b>Chip 2</b>8000 – BFFF</div><div class="k k-a"><b>Chip 3</b>C000 – FFFF</div>
+</div>
+<p>Address 0x9A3C has A15 A14 = 10, so it is in chip 2.</p>
+<div class="ex"><b>Interleaving</b>With 4 banks, address mod 4 picks the bank, so neighbouring words come from different banks at the same time. If each bank needs 4 cycles, 16 words take about 4 + 15 = <b>19 cycles</b> instead of 64.</div>
+
+<h2><span>3</span>Secondary Memory</h2>
+<p>Secondary memory is permanent bulk storage. The CPU does not run programs straight from it. Data is copied in blocks into main memory.</p>
+<h3>Magnetic disk</h3>
+<div class="card"><div class="svgw"><svg viewBox="0 0 520 230" role="img" aria-label="Disk platter with tracks and one sector">
+<g class="g-b"><circle cx="120" cy="115" r="105"/><circle cx="120" cy="115" r="75" style="fill:var(--card)"/><circle cx="120" cy="115" r="45" style="fill:var(--b-bg)"/><circle cx="120" cy="115" r="12" style="fill:var(--card)"/></g>
+<g class="g-c"><path d="M120 115 L225 115 A105 105 0 0 1 211 167 Z"/></g>
+<line x1="170" y1="70" x2="270" y2="50" stroke="var(--mu)"/><text class="t" x="320" y="48" style="fill:var(--tx)">Track (a ring)</text>
+<line x1="190" y1="140" x2="270" y2="140" stroke="var(--mu)"/><text class="t" x="340" y="140" style="fill:var(--tx)">Sector (a slice of a track)</text>
+<text class="s" x="340" y="175" style="fill:var(--mu)">Same track on every platter = cylinder</text>
+</svg></div>
+<ol class="n"><li>Platters spin on a spindle (5400 or 7200 rpm). Each surface has a head on a shared arm.</li><li>A track is split into sectors (512 bytes or 4 KB).</li><li>Access time = seek time + rotational latency + transfer time.</li></ol>
+<p>Average rotational latency = 0.5 × 60 ÷ rpm. Transfer time = rotation time ÷ sectors per track.</p></div>
+<div class="ex"><b>Solved example</b>8 surfaces, 10,000 tracks, 400 sectors, 512 B, 7200 rpm, seek 9 ms. Capacity = 8 × 10,000 × 400 × 512 ≈ <b>16.4 GB</b>. One rotation = 8.33 ms, latency = 4.17 ms, transfer = 0.02 ms. Access time ≈ 9 + 4.17 + 0.02 ≈ <b>13.2 ms</b>.</div>
+<h3>Other devices</h3>
+<div class="grid">
+<div class="k k-a"><b>Magnetic tape</b>Sequential access, 9 tracks (8 data + 1 parity), blocks split by gaps (IRG). Good for backup.</div>
+<div class="k k-t"><b>SSD</b>NAND flash, no moving parts, about 0.1 ms. Flash blocks wear out after many erases.</div>
+<div class="k k-c"><b>Optical disc</b>A laser reads pits and lands on a spiral track. ROM (pressed), R (write once), RW (rewritable).</div>
+</div>
+<div class="tw"><table>
+<tr><th>Disc</th><th>Laser</th><th>Capacity (one layer)</th></tr>
+<tr><td>CD</td><td>780 nm infrared</td><td>about 700 MB</td></tr>
+<tr><td>DVD</td><td>650 nm red</td><td>4.7 GB</td></tr>
+<tr><td>Blu-ray</td><td>405 nm blue-violet</td><td>25 GB</td></tr>
+</table></div>
+<div class="ex"><b>Tape example</b>2400 ft = 28,800 in, 1600 bytes/in, blocks of 4000 bytes, gap 0.6 in. Block + gap = 2.5 + 0.6 = 3.1 in. Blocks = 28,800 ÷ 3.1 ≈ 9290, so capacity ≈ <b>37.2 MB</b> (46.08 MB without gaps).</div>
+
+<h2><span>4</span>Cache Memory</h2>
+<p>A cache is a small, very fast SRAM between the CPU and main memory. It keeps copies of recently used blocks. If the word is found, it is a <b>hit</b>. If not, it is a <b>miss</b> and the whole block is fetched from memory. Think of it as notes kept on your desk instead of walking to the library each time.</p>
+<p>Each cache line stores a valid bit, a tag, the data block (and a dirty bit in write-back caches). The address is split into three parts:</p>
+<div class="bits"><div class="k-b" style="flex:3">Tag<br><small>compared with stored tag</small></div><div class="k-t" style="flex:3">Index (or set)<br><small>picks the line</small></div><div class="k-a" style="flex:2">Offset<br><small>picks the word</small></div></div>
+<h3>Cache read flowchart</h3>
+<div class="card"><div class="fl">
+<div class="k-b">CPU sends address</div><i>↓</i>
+<div class="k-b">Split into tag, index, offset</div><i>↓</i>
+<div class="k-b">Read the line at that index</div><i>↓</i>
+<div class="k-a"><b>Valid bit on and tag matches?</b></div></div>
+<div class="two">
+<div class="fl"><small>Yes (hit)</small><div class="k-t">Word goes to the CPU at once</div></div>
+<div class="fl"><small>No (miss)</small><div class="k-c">Fetch block from main memory</div><i>↓</i><div class="k-c">Evict a victim, write back if dirty</div><i>↓</i><div class="k-c">Load block, set valid bit and tag</div><i>↓</i><div class="k-t">Word goes to the CPU</div></div>
+</div></div>
+<div class="ex"><b>Average memory access time (AMAT)</b>AMAT = hit time + miss rate × miss penalty. With hit time 1 ns, penalty 100 ns, hit ratio 95%: AMAT = 1 + 0.05 × 100 = <b>6 ns</b>. At 99%: <b>2 ns</b>.</div>
+<div class="tw"><table>
+<tr><th>Write policy</th><th>What happens</th><th>Trade-off</th></tr>
+<tr><td>Write-through</td><td>Write cache and memory together</td><td>Simple, memory always current, slower</td></tr>
+<tr><td>Write-back</td><td>Write cache only, set dirty bit, write memory on eviction</td><td>Less bus traffic, needs dirty bits</td></tr>
+</table></div>
+<h3>Mapping: where can a block go?</h3>
+<p>Example: 64K-word memory (16-bit address), 1K-word cache, 16-word blocks, so 1024 ÷ 16 = 64 lines.</p>
+<div class="tw"><table>
+<tr><th>Scheme</th><th>Block can go to</th><th>Address split</th><th>Conflict misses</th></tr>
+<tr><td>Direct</td><td>1 line (block mod 64)</td><td>tag 6, index 6, offset 4</td><td>Highest</td></tr>
+<tr><td>Fully associative</td><td>Any line</td><td>tag 12, offset 4</td><td>None</td></tr>
+<tr><td>4-way set associative</td><td>Any of 4 lines in one set (16 sets)</td><td>tag 8, set 4, offset 4</td><td>Medium</td></tr>
+</table></div>
+<div class="ex"><b>Solved examples</b>Decode 0x2B7C with the direct split: offset = 12, index = 55, tag = 10. For the block sequence 0, 8, 0, 6, 8 on 4 lines: direct mapping has 5 misses, 2-way (LRU) has 4, fully associative has 3.</div>
+<h3>Replacement and speed-ups</h3>
+<div class="grid">
+<div class="k k-p"><b>LRU</b>Evicts the least recently used line. Best in practice.</div>
+<div class="k k-b"><b>FIFO</b>Evicts the oldest line. Simple, may remove a busy line.</div>
+<div class="k k-t"><b>LFU</b>Evicts the least frequently used line. Needs counters.</div>
+<div class="k k-a"><b>Random</b>Evicts any line. Almost no hardware.</div>
+</div>
+<p>Ways to improve a cache: <b>multi-level cache</b> (L2 answers L1 misses), <b>bigger cache</b> (fewer capacity misses), <b>bigger blocks</b> (use spatial locality), <b>more associativity</b> (fewer conflict misses), <b>victim cache</b>, <b>prefetching</b>, <b>write buffer</b> and <b>non-blocking cache</b>. Direct mapping needs no replacement policy.</p>
+<div class="ex"><b>Two-level example</b>L1 hit 1 ns, L1 miss 5%, L2 hit 10 ns, L2 local miss 20%, memory 100 ns. AMAT = 1 + 0.05 × (10 + 0.2 × 100) = <b>2.5 ns</b>, against 6 ns without L2.</div>
+
+<h2><span>5</span>Virtual Memory</h2>
+<p>Virtual memory gives each program its own large, private address space, even when RAM is small and shared. Only the pages in use stay in RAM. The rest wait in the <b>swap area</b> on disk.</p>
+<h3>Paging</h3>
+<p>Virtual memory is cut into equal <b>pages</b>. RAM is cut into <b>frames</b> of the same size (often 4 KB). The <b>page table</b> maps each virtual page number (VPN) to a frame number. Each entry has a valid bit, protection bits, and dirty and reference bits.</p>
+<div class="ex"><b>Formula</b>Physical address = frame number × page size + offset</div>
+<div class="ex"><b>Solved examples</b>Page size 1 KB, virtual address 3000, page 2 is in frame 5. Page = 3000 ÷ 1024 = 2, offset = 952, physical = 5 × 1024 + 952 = <b>6072</b>.<br>Page table size: 32-bit address, 4 KB pages, 4-byte entries. VPN = 20 bits, so 2<sup>20</sup> entries × 4 B = <b>4 MB</b> per process. Multi-level and inverted page tables reduce this.</div>
+<h3>TLB: a cache for translations</h3>
+<p>The translation lookaside buffer (TLB) is a small, fast cache of recent VPN-to-frame translations. Without it, every access needs two memory reads.</p>
+<div class="card"><div class="fl">
+<div class="k-b">Virtual address (page number + offset)</div><i>↓</i>
+<div class="k-a"><b>Page number in TLB?</b></div></div>
+<div class="two">
+<div class="fl"><small>Yes (TLB hit)</small><div class="k-t">Frame number comes from the TLB</div><i>↓</i><div class="k-t">Physical address = frame × page size + offset</div></div>
+<div class="fl"><small>No (TLB miss)</small><div class="k-b">Read the page table from memory</div><i>↓</i><div class="k-a"><b>Valid bit = 1?</b></div><i>↓</i><div class="k-t">Yes: update the TLB, make the physical address</div><div class="k-c">No: page fault, OS loads the page</div></div>
+</div></div>
+<div class="ex"><b>TLB example</b>TLB 10 ns, memory 100 ns, hit ratio 95%. Hit = 110 ns, miss = 210 ns. EAT = 0.95 × 110 + 0.05 × 210 = <b>115 ns</b>.</div>
+<h3>Page fault handling</h3>
+<ol class="n"><li>The MMU sees valid = 0 and traps to the OS.</li><li>The OS checks the reference is legal, otherwise it ends the process.</li><li>The OS finds a free frame, or picks a victim (saved to disk first if dirty).</li><li>The OS reads the needed page from disk into the frame.</li><li>The OS updates the page table and TLB (valid = 1).</li><li>The faulting instruction restarts.</li></ol>
+<div class="ex"><b>Example</b>Memory 200 ns, fault service 8 ms, fault rate 0.001. EAT = 0.999 × 200 + 0.001 × 8,000,000 ≈ <b>8200 ns</b>, about 40 times slower.</div>
+<h3>Page replacement</h3>
+<div class="grid">
+<div class="k k-b"><b>FIFO</b>Removes the oldest page. Simple. Belady’s anomaly: more frames can cause more faults.</div>
+<div class="k k-t"><b>Optimal</b>Removes the page used furthest in the future. Fewest faults, but needs the future, so it is a benchmark.</div>
+<div class="k k-p"><b>LRU</b>Removes the page unused for the longest time. Close to optimal.</div>
+<div class="k k-a"><b>Clock</b>Removes the first page with reference bit 0. A cheap LRU approximation.</div>
+</div>
+<div class="ex"><b>Example</b>Reference string 7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1 with 3 frames: FIFO = <b>15</b> faults, LRU = <b>12</b>, Optimal = <b>9</b>.</div>
+<div class="k k-c"><b>Thrashing</b>A process with too few frames keeps faulting and does almost no useful work. Fix it with more frames or fewer running processes.</div>
+
+<h2><span>6</span>Memory Management Hardware</h2>
+<p>The <b>MMU</b> sits between the CPU and memory. It translates every address in hardware and protects memory, so one process cannot touch another process or the OS. An illegal access becomes a trap to the OS.</p>
+<div class="grid">
+<div class="k k-b"><b>Base and limit registers</b>Base = start address, limit = size. Check address &lt; limit, then base + address, else trap.<br><small>Base 30000, limit 12000: logical 500 gives 30500. Logical 13000 traps.</small></div>
+<div class="k k-t"><b>Paging hardware</b>The page-table base register (PTBR) points to the page table, and a TLB caches translations. No external fragmentation, but the last page wastes space.<br><small>72,766 B, 2048-byte pages: 36 pages, waste = 2048 − 1086 = 962 B.</small></div>
+<div class="k k-a"><b>Segmentation hardware</b>Address = (segment s, offset d). Check d &lt; limit[s], then base[s] + d.<br><small>Segment 2: base 4300, limit 400. (2, 53) gives 4353. (2, 500) traps.</small></div>
+</div>
+<p>Contiguous allocation (base and limit) suffers from external fragmentation. Segmented paging splits each segment into pages to keep a logical structure without external fragmentation.</p>
+<div class="tw"><table>
+<tr><th>Point</th><th>Paging</th><th>Segmentation</th></tr>
+<tr><td>Unit</td><td>Fixed-size page</td><td>Variable-size segment</td></tr>
+<tr><td>Address</td><td>Page number + offset</td><td>Segment number + offset</td></tr>
+<tr><td>Fragmentation</td><td>Internal</td><td>External</td></tr>
+<tr><td>Protection and sharing</td><td>Per page</td><td>Per segment, more natural</td></tr>
+<tr><td>Visible to programmer</td><td>No</td><td>Yes</td></tr>
+</table></div>
+<h3>Other hardware helpers</h3>
+<div class="grid">
+<div class="k k-p"><b>Protection bits</b>Read, write, execute, user or supervisor, kept in each table entry.</div>
+<div class="k k-c"><b>Dirty and reference bits</b>Set by hardware for write-back and LRU-like replacement.</div>
+<div class="k k-b"><b>Cache controller</b>Does tag compare, replacement and write policy in hardware.</div>
+<div class="k k-t"><b>DMA controller</b>Moves blocks between disk and memory without using the CPU.</div>
+<div class="k k-a"><b>MPU</b>A simple MMU in microcontrollers: protects regions, no translation.</div>
+</div>
+
+<h2><span>7</span>Formula Sheet and Exam Questions</h2>
+<div class="tw"><table>
+<tr><th>Topic</th><th>Formula or fact</th></tr>
+<tr><td>Address lines</td><td>2<sup>n</sup> locations need n address bits. Chips = total capacity ÷ chip capacity</td></tr>
+<tr><td>Disk capacity</td><td>surfaces × tracks × sectors per track × bytes per sector</td></tr>
+<tr><td>Disk access time</td><td>seek + 0.5 × (60 ÷ rpm) + (60 ÷ rpm) ÷ sectors per track</td></tr>
+<tr><td>Cache lines</td><td>cache size ÷ block size</td></tr>
+<tr><td>Cache address bits</td><td>offset = log<sub>2</sub>(block size), index = log<sub>2</sub>(lines or sets), tag = the rest</td></tr>
+<tr><td>Sets</td><td>lines ÷ ways (direct: 1 way, fully associative: 1 set)</td></tr>
+<tr><td>AMAT</td><td>hit time + miss rate × miss penalty</td></tr>
+<tr><td>Two-level AMAT</td><td>H1 + M1 × (H2 + M2 × memory)</td></tr>
+<tr><td>Page translation</td><td>frame × page size + offset</td></tr>
+<tr><td>Page table size</td><td>2<sup>(VPN bits)</sup> × entry size</td></tr>
+<tr><td>TLB EAT</td><td>h × (t<sub>TLB</sub> + t<sub>mem</sub>) + (1 − h) × (t<sub>TLB</sub> + 2 × t<sub>mem</sub>)</td></tr>
+<tr><td>Page-fault EAT</td><td>(1 − p) × t<sub>mem</sub> + p × t<sub>fault</sub></td></tr>
+<tr><td>Base and limit</td><td>address &lt; limit, then base + address, else trap</td></tr>
+<tr><td>Segmentation</td><td>d &lt; limit[s], then base[s] + d, else trap</td></tr>
+</table></div>
+<h3>Likely exam questions</h3>
+<div class="card"><ol class="n">
+<li>Compare SRAM and DRAM, and list the ROM types with their erase methods.</li>
+<li>Draw the memory hierarchy and explain why it works (locality).</li>
+<li>Calculate disk capacity and average access time from the given geometry.</li>
+<li>Explain direct, associative and set-associative mapping with the address split, and find hits and misses for a block sequence.</li>
+<li>Compare LRU, FIFO and Optimal on a reference string and count the page faults.</li>
+<li>Explain how a virtual address becomes a physical address, including the TLB and a page fault.</li>
+<li>Compare paging and segmentation, and explain base and limit protection.</li>
+</ol></div>
+</main>
+</body>
+</html>
